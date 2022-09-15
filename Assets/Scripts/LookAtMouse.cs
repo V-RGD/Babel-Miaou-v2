@@ -21,8 +21,7 @@ public class LookAtMouse : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray: ray, hitInfo: out RaycastHit hit, 10000, groundLayerMask) && hit.collider)
         {
-            transform.LookAt(new Vector3(hit.point.x, 17.6f, hit.point.z));
-            //transform.rotation = Quaternion.EulerAngles(0, transform.rotation.y, 0);
+            transform.LookAt(new Vector3(hit.point.x, player.transform.position.y, hit.point.z));
         }
     }
 }

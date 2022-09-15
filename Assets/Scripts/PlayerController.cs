@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        if (movementDir!= Vector2.zero && !isDashing)
+        if (movementDir!= Vector2.zero && !isDashing && speedFactor != 0)
         {
             rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration));
             
@@ -119,7 +119,8 @@ public class PlayerController : MonoBehaviour
             //Friction
             if (!isDashing)
             {
-                rb.velocity = new Vector3(rb.velocity.x / frictionAmount, rb.velocity.y, rb.velocity.z / frictionAmount);
+                //rb.velocity = new Vector3(rb.velocity.x / frictionAmount, rb.velocity.y, rb.velocity.z / frictionAmount);
+                rb.velocity = Vector3.zero;
             }
         }
     }

@@ -5,12 +5,13 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     public float maxSpeed;
+    private float speedFactor = 1;
     public Vector2 movementDir;
 
     public PlayerControls playerControls;
     public InputAction move;
     public InputAction dash;
-    //public InputAction attack;
+    public InputAction attack;
     //public InputAction spell;
 
     [Header("Movement")] 
@@ -34,6 +35,24 @@ public class PlayerController : MonoBehaviour
     //public int groundDetectionLayerMask;
     public float horizontalMovement;
 
+    [Header("Attacks")] public float jabLenght;
+    public float smashLenght;
+    //time 
+    public float jabCooldown;
+    public float smashCooldown;
+    public float smashWarmup;
+    
+    public float jabDamage;
+    public float jabReach;
+    public float comboCooldown;
+    //max time allowed to combo
+    public float comboTimer;
+    public int comboCounter;
+    public bool canAttack = true;
+
+    public GameObject debugSmash;
+    public GameObject debugJab;
+    
     //used to change direction accordingly to sprite direction
     public int dirCoef;
 
@@ -48,6 +67,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         canMove = true;
+        canAttack = true;
     }
 
     void Update()
@@ -108,7 +128,6 @@ public class PlayerController : MonoBehaviour
     {
         if (!isDashing && dashAvailable > 0 && dashCooldownTimer <= 0)
         {
-            Debug.Log("Dashed");
             dashAvailable--;
             isDashing = true;
             StartCoroutine(DashSequence());
@@ -126,7 +145,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            rb.AddForce(dashForce * Vector3.right * dirCoef, ForceMode.Impulse);
+            rb.AddForce(Vector3.right * dashForce * dirCoef, ForceMode.Impulse);
         }
         yield return new WaitForSeconds(dashLenght);
         rb.velocity = new Vector3(0, rb.velocity.y, 0);
@@ -175,12 +194,17 @@ public class PlayerController : MonoBehaviour
             dash = playerControls.Player.Dash;
             dash.Enable();
             dash.performed += Dash;
+            
+            attack = playerControls.Player.Attack;
+            attack.Enable();
+            attack.performed += Attack;
         }
 
         private void OnDisable()
         {
             move.Disable();
             dash.Disable();
+            attack.Disable();
         }
         #endregion
 
@@ -188,6 +212,12 @@ public class PlayerController : MonoBehaviour
         void Timer()
         {
             dashCooldownTimer -= Time.deltaTime;
+            comboTimer -= Time.deltaTime;
+
+            if (comboTimer <= 0)
+            {
+                comboCounter = 0;
+            }
         }
         #endregion
         
@@ -195,6 +225,70 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 inputDir = move.ReadValue<Vector2>();
             movementDir = new Vector2(inputDir.x, inputDir.y);
+        }
+
+        void Attack(InputAction.CallbackContext context)
+        {
+            if (canAttack && !isDashing)
+            {
+                canAttack = false;
+            
+                if (comboCounter < 3)
+                {
+                    Debug.Log("jab");
+                    //Jab
+                    StartCoroutine(JabCooldown());
+                }
+                else
+                {
+                    Debug.Log("smash");
+                    //smash
+                    StartCoroutine(SmashCooldown());
+                }
+            }
+        }
+
+        IEnumerator JabCooldown()
+        {
+            //avant l'attaque
+            
+            //resets combo and ability to combo
+            comboCounter++;
+            comboTimer = comboCooldown;
+
+            //pendant l'attaque
+            debugJab.SetActive(true);
+            speedFactor = 0;
+            //plays animation
+
+            yield return new WaitForSeconds(jabLenght);
+            //après l'attaque
+            speedFactor = 1;
+            debugJab.SetActive(false);
+            canAttack = true;
+        }
+        
+        IEnumerator SmashCooldown()
+        {
+            //avant l'attaque
+            
+            //resets combo and ability to combo
+            comboCounter = 0;
+            comboTimer = 0;
+            
+            //charging time
+            yield return new WaitForSeconds(smashWarmup);
+
+            //pendant l'attaque
+            debugSmash.SetActive(true);
+            speedFactor = 0;
+            //plays animation
+
+            yield return new WaitForSeconds(smashLenght);
+            //après l'attaque
+            speedFactor = 1;
+            debugSmash.SetActive(false);
+            canAttack = true;
         }
 }
 

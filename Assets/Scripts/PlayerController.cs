@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     //max time allowed to combo
     public float comboTimer;
     public int comboCounter;
-    public bool canAttack = true;
+    public bool isAttacking;
 
     public GameObject SmashHitBox;
     public GameObject JabHitBox;
@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         canMove = true;
-        canAttack = true;
+        isAttacking = false;
     }
 
     void Update()
@@ -252,9 +252,9 @@ public class PlayerController : MonoBehaviour
 
         void Attack(InputAction.CallbackContext context)
         {
-            if (canAttack && !isDashing)
+            if (!isAttacking && !isDashing)
             {
-                canAttack = false;
+                isAttacking = true;
             
                 if (comboCounter < 3)
                 {
@@ -286,7 +286,7 @@ public class PlayerController : MonoBehaviour
             //après l'attaque
             speedFactor = 1;
             JabHitBox.SetActive(false);
-            canAttack = true;
+            isAttacking = false;
         }
         
         IEnumerator SmashCooldown()
@@ -309,18 +309,7 @@ public class PlayerController : MonoBehaviour
             //après l'attaque
             speedFactor = 1;
             SmashHitBox.SetActive(false);
-            canAttack = true;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("EnemyAttack") && !isInvincible)
-            {
-                //deals damage
-                gameManager.health -= other.GetComponent<EnemyDamage>().damage;
-                //invisible time
-                invincibleCounter = invincibleTime;
-            }
+            isAttacking = false;
         }
 }
 

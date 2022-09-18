@@ -1,57 +1,53 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class HaunterIA : MonoBehaviour
+public class BelierIA : MonoBehaviour
 {
     public float speed;
-    public float health;
     public float maxHealth;
     public float damage;
-    public float attackRate;
-    private float playerDist;
     public float attackRange;
-
-    private float speedFactor;
-
-    private bool isDashing;
-    private bool canDash;
     public float dashWarmUp;
-    public float dashCooldown;
     public int dashForce;
     public float stunLenght;
+    public int eyesDropped;
+    
+    private float stunCounter;
+    private float health;
+    private float playerDist;
+    private float speedFactor;
+    private Vector3 dashDir;
+    
+    private bool isDashing;
+    private bool canDash;
     public bool isHit;
     public bool isStunned;
-    public float dashLenght;
+    public bool isTouchingWall;
+    public bool isVulnerable;
 
-    public NavMeshAgent agent;
-    public NavMeshSurface navMeshSurface;
-    public GameObject player;
-    public Rigidbody rb;
-    public GameManager gameManager;
+    private LayerMask wallLayerMask;
 
+    private NavMeshAgent agent;
+    private GameObject player;
+    private Rigidbody rb;
+    private GameManager gameManager;
     public GameObject eyeToken;
-
-    public float stunCounter;
-
-    public bool isInPlayerRange;
-
     public GameObject healthSlider;
-
+    
     private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody>();
-        //navMeshSurface.BuildNavMesh();
         canDash = true;
         health = maxHealth;
-        GetComponent<EnemyDamage>().damage = damage;
+        wallLayerMask = LayerMask.GetMask("Wall");
     }
 
     private void Update()
@@ -79,6 +75,7 @@ public class HaunterIA : MonoBehaviour
 
         StunProcess();
         SliderUpdate();
+        WallCheck();
     }
 
     private void FixedUpdate()
@@ -86,24 +83,15 @@ public class HaunterIA : MonoBehaviour
         stunCounter -= Time.deltaTime;
     }
 
-    IEnumerator Dash()
-    {
-        isDashing = true;
-        yield return new WaitForSeconds(dashWarmUp);
-        rb.AddForce((player.transform.position - transform.position).normalized * dashForce);
-        yield return new WaitForSeconds(dashLenght);
-        rb.velocity = Vector3.zero;
-        yield return new WaitForSeconds(dashCooldown);
-        isDashing = false;
-        canDash = true;
-    }
+    
 
     void Behaviour()
     {
+        dashDir = player.transform.position - transform.position;
+        
         //if the enemy is in player range
         if (playerDist <= attackRange)
         {
-            isInPlayerRange = true;
             //stops then attacks
             speedFactor = 0;
             if (canDash)
@@ -116,17 +104,26 @@ public class HaunterIA : MonoBehaviour
         //if it's too far from attacking
         else
         {
-            isInPlayerRange = false;
             speedFactor = 1;
             //follows player
             agent.SetDestination(player.transform.position);
         }
     }
-
-    void Death()
+    
+    IEnumerator Dash()
     {
-        Instantiate(eyeToken, transform.position, quaternion.identity);
-        Destroy(gameObject);
+        isDashing = true;
+        yield return new WaitForSeconds(dashWarmUp);
+        //fonce dans une seule direction
+        rb.AddForce(dashDir * dashForce);
+        yield return new WaitUntil(() => isTouchingWall);
+        //when touching a wall
+        rb.velocity = Vector3.zero;
+        //stuns for a bit
+        stunCounter = stunLenght;
+        //can dash again when not stun
+        isDashing = false;
+        canDash = true;
     }
 
     void StunProcess()
@@ -135,12 +132,25 @@ public class HaunterIA : MonoBehaviour
         if (stunCounter > 0)
         {
             isStunned = true;
+            //is vulnerable
+            isVulnerable = true;
             speedFactor = 0;
         }
         else
         {
             isStunned = false;
+            //can't be touched
+            isVulnerable = false;
         }
+    }
+    
+    void Death()
+    {
+        for (int i = 0; i < eyesDropped; i++)
+        {
+            Instantiate(eyeToken, transform.position, quaternion.identity);
+        }
+        Destroy(gameObject);
     }
 
     void SliderUpdate()
@@ -158,7 +168,7 @@ public class HaunterIA : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlayerAttack"))
+        if (other.CompareTag("PlayerAttack") && isVulnerable)
         {
             health -= other.GetComponent<ObjectDamage>().damage;
         }
@@ -167,6 +177,20 @@ public class HaunterIA : MonoBehaviour
         {
             gameManager.health -= damage;
             player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+        }
+
+        
+    }
+
+    void WallCheck()
+    {
+        if (Physics.Raycast(transform.position, dashDir, 4, wallLayerMask))
+        {
+            isTouchingWall = true;
+        }
+        else
+        {
+            isTouchingWall = false;
         }
     }
 }

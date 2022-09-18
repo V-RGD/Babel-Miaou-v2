@@ -62,6 +62,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Collect"",
+                    ""type"": ""Button"",
+                    ""id"": ""3273ad73-a353-4566-81c6-8fb805189091"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -249,6 +258,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5dbec8a2-d43e-4fbd-aa36-6fb9073d10d9"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Collect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -868,6 +888,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_Spell = m_Player.FindAction("Spell", throwIfNotFound: true);
+        m_Player_Collect = m_Player.FindAction("Collect", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -946,6 +967,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_Spell;
+    private readonly InputAction m_Player_Collect;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -954,6 +976,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
         public InputAction @Spell => m_Wrapper.m_Player_Spell;
+        public InputAction @Collect => m_Wrapper.m_Player_Collect;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -975,6 +998,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Spell.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpell;
                 @Spell.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpell;
                 @Spell.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpell;
+                @Collect.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
+                @Collect.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
+                @Collect.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -991,6 +1017,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Spell.started += instance.OnSpell;
                 @Spell.performed += instance.OnSpell;
                 @Spell.canceled += instance.OnSpell;
+                @Collect.started += instance.OnCollect;
+                @Collect.performed += instance.OnCollect;
+                @Collect.canceled += instance.OnCollect;
             }
         }
     }
@@ -1184,6 +1213,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnSpell(InputAction.CallbackContext context);
+        void OnCollect(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

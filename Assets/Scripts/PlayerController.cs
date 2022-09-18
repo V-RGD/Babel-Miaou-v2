@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private float speedFactor = 1;
     public Vector2 movementDir;
 
-    public PlayerControls playerControls;
+    private PlayerControls playerControls;
     public InputAction move;
     public InputAction dash;
     public InputAction attack;
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody rb;
     [HideInInspector] public SpriteRenderer spriteRenderer;
     private Animator animator;
+    public GameManager gameManager;
 
     [Header("Extra Values")] [HideInInspector]
     //public int groundDetectionLayerMask;
@@ -41,6 +43,7 @@ public class PlayerController : MonoBehaviour
     public float jabCooldown;
     public float smashCooldown;
     public float smashWarmup;
+    public float smashDamage;
     
     public float jabDamage;
     public float jabReach;
@@ -50,9 +53,15 @@ public class PlayerController : MonoBehaviour
     public int comboCounter;
     public bool canAttack = true;
 
-    public GameObject debugSmash;
-    public GameObject debugJab;
-    
+    public GameObject SmashHitBox;
+    public GameObject JabHitBox;
+
+    public float attackMultiplier;
+
+    public float invincibleCounter;
+    public float invincibleTime;
+    public bool isInvincible;
+
     //used to change direction accordingly to sprite direction
     public int dirCoef;
 
@@ -62,6 +71,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerControls = new PlayerControls();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     private void Start()
@@ -75,6 +85,8 @@ public class PlayerController : MonoBehaviour
         JostickDir();
         horizontalMovement = Mathf.Abs(rb.velocity.x);
         //Flip(rb.velocity.x);
+        JabHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * jabDamage;
+        SmashHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * smashDamage;
     }
 
     void FixedUpdate()
@@ -214,10 +226,20 @@ public class PlayerController : MonoBehaviour
         {
             dashCooldownTimer -= Time.deltaTime;
             comboTimer -= Time.deltaTime;
+            invincibleCounter -= Time.deltaTime;
 
             if (comboTimer <= 0)
             {
                 comboCounter = 0;
+            }
+
+            if (invincibleCounter > 0)
+            {
+                isInvincible = true;
+            }
+            else
+            {
+                isInvincible = false;
             }
         }
         #endregion
@@ -236,13 +258,11 @@ public class PlayerController : MonoBehaviour
             
                 if (comboCounter < 3)
                 {
-                    Debug.Log("jab");
                     //Jab
                     StartCoroutine(JabCooldown());
                 }
                 else
                 {
-                    Debug.Log("smash");
                     //smash
                     StartCoroutine(SmashCooldown());
                 }
@@ -258,14 +278,14 @@ public class PlayerController : MonoBehaviour
             comboTimer = comboCooldown;
 
             //pendant l'attaque
-            debugJab.SetActive(true);
-            speedFactor = 0;
+            JabHitBox.SetActive(true);
+            speedFactor = 0.1f;
             //plays animation
 
             yield return new WaitForSeconds(jabLenght);
             //après l'attaque
             speedFactor = 1;
-            debugJab.SetActive(false);
+            JabHitBox.SetActive(false);
             canAttack = true;
         }
         
@@ -281,15 +301,26 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(smashWarmup);
 
             //pendant l'attaque
-            debugSmash.SetActive(true);
+            SmashHitBox.SetActive(true);
             speedFactor = 0;
             //plays animation
 
             yield return new WaitForSeconds(smashLenght);
             //après l'attaque
             speedFactor = 1;
-            debugSmash.SetActive(false);
+            SmashHitBox.SetActive(false);
             canAttack = true;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("EnemyAttack") && !isInvincible)
+            {
+                //deals damage
+                gameManager.health -= other.GetComponent<EnemyDamage>().damage;
+                //invisible time
+                invincibleCounter = invincibleTime;
+            }
         }
 }
 

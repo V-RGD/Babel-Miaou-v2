@@ -41,14 +41,15 @@ public class HaunterIA : MonoBehaviour
     public bool isInPlayerRange;
 
     public GameObject healthSlider;
-
+    
     private void Start()
     {
+        navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody>();
-        //navMeshSurface.BuildNavMesh();
+        navMeshSurface.BuildNavMesh();
         canDash = true;
         health = maxHealth;
         GetComponent<EnemyDamage>().damage = damage;

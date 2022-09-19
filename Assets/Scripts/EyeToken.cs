@@ -36,4 +36,9 @@ public class EyeToken : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    void PosRandomizer()
+    {
+        
+    }
 }

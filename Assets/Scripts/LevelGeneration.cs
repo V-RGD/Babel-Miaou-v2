@@ -4,16 +4,17 @@ using Random = UnityEngine.Random;
 
 public class LevelGeneration : MonoBehaviour
 {
-    //decides how the level is designed
+    /*//decides how the level is designed
 
     public LevelManager levelManager;
     public Vector3 startPos;
     public Vector3 generatingPos;
     public Vector3 generationOffset;
-    public List<float> levelLimits;
 
-    public bool isGenerationFinished = false;
+    public int maxSize;
+    public int minSize;
 
+    public bool isGenerationFinished;
     public int[] levelLenghts;
 
     //grid components used to vary level generation
@@ -65,5 +66,5 @@ public class LevelGeneration : MonoBehaviour
         {
             levelLimits.Add(levelLenghts[i] * generationOffset.y + levelLimits[i - 1]);
         }
-    }
+    }*/
 }

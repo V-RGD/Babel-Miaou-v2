@@ -255,17 +255,18 @@ public class PlayerController : MonoBehaviour
             if (!isAttacking && !isDashing)
             {
                 isAttacking = true;
-            
+                StartCoroutine(JabCooldown());
+
+                /*
                 if (comboCounter < 3)
                 {
                     //Jab
-                    StartCoroutine(JabCooldown());
                 }
                 else
                 {
                     //smash
                     StartCoroutine(SmashCooldown());
-                }
+                }*/
             }
         }
 

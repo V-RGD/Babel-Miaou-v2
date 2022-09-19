@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     public float health;
     public int maxHealth;
 
+    public int currentRoom;
+
     public LevelGeneration levelGeneration;
     public bool hasReachedTheEnd;
 

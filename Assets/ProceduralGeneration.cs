@@ -19,7 +19,6 @@ public class ProceduralGeneration : MonoBehaviour
     public GameObject[] enemies;
 
     private GameObject[] roomsToSpawn;
-    private NavMeshSurface _navMeshSurface;
     
     public Vector3 startPos;
     public Vector3 generatorPos;
@@ -43,8 +42,7 @@ public class ProceduralGeneration : MonoBehaviour
         //generate level's lenght
         size = Random.Range(mixSize, maxSize + 1);
         generatorPos = startPos;
-        _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
-        StartGeneration();
+        //StartGeneration();
         generatingRoomNumber = 1;
     }
 
@@ -54,7 +52,6 @@ public class ProceduralGeneration : MonoBehaviour
         {
             RoomGeneration();
         }
-
     }
 
     void StartGeneration()
@@ -103,8 +100,6 @@ public class ProceduralGeneration : MonoBehaviour
             //spawns exit
             GameObject room = Instantiate(onExitRoom[Random.Range(0, rooms.Length)], generatorPos, Quaternion.identity);
         }
-
-        _navMeshSurface.BuildNavMesh();
         //keep track of room generated
         generatingRoomNumber++;
     }

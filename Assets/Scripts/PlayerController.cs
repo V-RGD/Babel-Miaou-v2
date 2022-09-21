@@ -17,10 +17,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement")] 
     public float acceleration;
-    public bool canMove;
+    private bool canMove;
     public float dashForce;
     public float frictionAmount;
-    public bool isDashing;
+    private bool isDashing;
     public float dashLenght;
 
     public int dashAvailable;
@@ -28,39 +28,37 @@ public class PlayerController : MonoBehaviour
     public float dashCooldownTimer;
 
     [Header("Components")] [HideInInspector]
-    public Rigidbody rb;
+    private Rigidbody rb;
     [HideInInspector] public SpriteRenderer spriteRenderer;
     private Animator animator;
-    public GameManager gameManager;
+    private GameManager gameManager;
 
     [Header("Extra Values")] [HideInInspector]
     //public int groundDetectionLayerMask;
-    public float horizontalMovement;
 
     [Header("Attacks")] public float jabLenght;
     public float smashLenght;
     //time 
-    public float jabCooldown;
-    public float smashCooldown;
     public float smashWarmup;
     public float smashDamage;
     
     public float jabDamage;
-    public float jabReach;
+    private float jabReach;
     public float comboCooldown;
     //max time allowed to combo
-    public float comboTimer;
-    public int comboCounter;
+    private float comboTimer;
+    private int comboCounter;
+    
     public bool isAttacking;
 
     public GameObject SmashHitBox;
     public GameObject JabHitBox;
 
-    public float attackMultiplier;
+    private float attackMultiplier = 1;
 
     public float invincibleCounter;
     public float invincibleTime;
-    public bool isInvincible;
+    private bool isInvincible;
 
     //used to change direction accordingly to sprite direction
     public int dirCoef;
@@ -83,7 +81,6 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         JostickDir();
-        horizontalMovement = Mathf.Abs(rb.velocity.x);
         //Flip(rb.velocity.x);
         JabHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * jabDamage;
         SmashHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * smashDamage;
@@ -311,6 +308,12 @@ public class PlayerController : MonoBehaviour
             speedFactor = 1;
             SmashHitBox.SetActive(false);
             isAttacking = false;
+        }
+
+        public IEnumerator MoveTowardsPoint(Vector3 destination)
+        {
+            //movementDir = destination;
+            yield return new WaitForSeconds(1);
         }
 }
 

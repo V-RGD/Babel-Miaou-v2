@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    private bool isLocked;
+    public bool isLocked;
 
     private MeshCollider col;
     private ProceduralGeneration proGen;
@@ -25,7 +25,7 @@ public class Door : MonoBehaviour
     {
         if (canOpen)
         {
-            Unlock();
+            //Unlock();
         }
     }
 

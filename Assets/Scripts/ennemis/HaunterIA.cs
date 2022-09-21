@@ -49,7 +49,6 @@ public class HaunterIA : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody>();
-        navMeshSurface.BuildNavMesh();
         canDash = true;
         health = maxHealth;
         GetComponent<EnemyDamage>().damage = damage;

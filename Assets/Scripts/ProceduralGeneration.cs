@@ -21,7 +21,6 @@ public class ProceduralGeneration : MonoBehaviour
     private GameObject[] roomsToSpawn;
     
     public Vector3 startPos;
-    public Vector3 generatorPos;
 
     public float fourRoomRate;
     public float twoRoomRate;
@@ -33,15 +32,16 @@ public class ProceduralGeneration : MonoBehaviour
     public int nextObject;
     private int generatingRoomNumber;
 
+    public int lastDoorPos;
+
+    public Vector3 enterPos;
 
 
-    // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         //generate level's lenght
         size = Random.Range(mixSize, maxSize + 1);
-        generatorPos = startPos;
         //StartGeneration();
         generatingRoomNumber = 1;
     }
@@ -65,7 +65,6 @@ public class ProceduralGeneration : MonoBehaviour
         canGenerate = false;
         //to update info
         gameManager.currentRoom = generatingRoomNumber;
-        Debug.Log("generated room");
 
         if (generatingRoomNumber < size - 1)
         {
@@ -83,22 +82,22 @@ public class ProceduralGeneration : MonoBehaviour
             {
                 roomsToSpawn = fourExits;
             }
-            GameObject room = Instantiate(roomsToSpawn[Random.Range(0, rooms.Length)], generatorPos, Quaternion.identity);
+            GameObject room = Instantiate(roomsToSpawn[Random.Range(0, rooms.Length)], startPos, Quaternion.identity);
             //rotate room in the right direction
-            room.transform.LookAt(new Vector3(room.transform.GetChild(0).transform.position.x, generatorPos.y, room.transform.GetChild(0).transform.position.z));
+            room.transform.LookAt(new Vector3(room.transform.GetChild(0).transform.position.x, startPos.y, room.transform.GetChild(0).transform.position.z));
             //keep track of the reward desired
         }
 
         if (generatingRoomNumber == size - 1)
         {
             //spawns shop
-            GameObject room = Instantiate(roomsToSpawn[Random.Range(0, rooms.Length)], generatorPos, Quaternion.identity);
+            GameObject room = Instantiate(roomsToSpawn[Random.Range(0, rooms.Length)], startPos, Quaternion.identity);
         }
         
         if (generatingRoomNumber == size)
         {
             //spawns exit
-            GameObject room = Instantiate(onExitRoom[Random.Range(0, rooms.Length)], generatorPos, Quaternion.identity);
+            GameObject room = Instantiate(onExitRoom[Random.Range(0, rooms.Length)], startPos, Quaternion.identity);
         }
         //keep track of room generated
         generatingRoomNumber++;

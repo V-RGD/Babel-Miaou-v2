@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement")] 
     public float acceleration;
-    private bool canMove;
+    public bool canMove;
     public float dashForce;
     public float frictionAmount;
     private bool isDashing;
@@ -80,7 +80,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        JostickDir();
         //Flip(rb.velocity.x);
         JabHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * jabDamage;
         SmashHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * smashDamage;
@@ -88,9 +87,11 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        MovePlayer();
+
         if (canMove)
         {
-            MovePlayer();
+            JostickDir();
         }
         Timer();
     }
@@ -129,7 +130,7 @@ public class PlayerController : MonoBehaviour
             if (!isDashing)
             {
                 //rb.velocity = new Vector3(rb.velocity.x / frictionAmount, rb.velocity.y, rb.velocity.z / frictionAmount);
-                rb.velocity = Vector3.zero;
+                rb.velocity = new Vector3(0, rb.velocity.y, 0);
             }
         }
     }

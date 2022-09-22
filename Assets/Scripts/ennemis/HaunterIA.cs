@@ -119,7 +119,7 @@ public class HaunterIA : MonoBehaviour
             isInPlayerRange = false;
             speedFactor = 1;
             //follows player
-            agent.SetDestination(player.transform.position);
+            //agent.SetDestination(player.transform.position);
         }
     }
 

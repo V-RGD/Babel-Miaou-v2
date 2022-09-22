@@ -74,7 +74,7 @@ public class MageIA : MonoBehaviour
     void Behaviour()
     {
         //follows player
-        agent.SetDestination(player.transform.position);
+        //agent.SetDestination(player.transform.position);
         
         //calculates the distance between object and player
         projectileDir = player.transform.position - transform.position;

@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     public LevelGeneration levelGeneration;
     public bool hasReachedTheEnd;
 
+    public GameObject[] items;
+
     private void Awake()
     {
         player = GameObject.Find("Player");

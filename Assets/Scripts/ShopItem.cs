@@ -15,8 +15,10 @@ public class ShopItem : MonoBehaviour
     public GameObject player;
     public ItemEffect itemEffect;
     public GameObject messagePrompt;
+    public GameObject collectPrompt;
 
     public GameManager gameManager;
+    public bool isFromAShop;
     
 
     private void Awake()
@@ -26,6 +28,8 @@ public class ShopItem : MonoBehaviour
         itemEffect = GetComponent<ItemEffect>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         messagePrompt.GetComponent<TMP_Text>().text = cost.ToString() + " noeuils";
+        messagePrompt.SetActive(false);
+        collectPrompt.SetActive(false);
     }
 
     void Collect(InputAction.CallbackContext context)
@@ -41,17 +45,41 @@ public class ShopItem : MonoBehaviour
 
     private void Update()
     {
+        
+        //check whether the item is from the shop or not
+        if (!isFromAShop)
+        {
+            //can collect just with a press
+            cost = 0;
+        }
+        
         if ((player.transform.position - transform.position).magnitude <= grabDist)
         {
             //show message prompt
             isPlayerInRange = true;
-            messagePrompt.SetActive(true);
+            
+            if (isFromAShop)
+            {
+                messagePrompt.SetActive(true);
+            }
+            else
+            {
+                collectPrompt.SetActive(true);
+            }
         }
         else
         {
             //disable message prompt
             isPlayerInRange = false;
-            messagePrompt.SetActive(false);
+            
+            if (isFromAShop)
+            {
+                messagePrompt.SetActive(false);
+            }
+            else
+            {
+                collectPrompt.SetActive(false);
+            }
         }
     }
 

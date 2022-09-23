@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ProjectileDamage : MonoBehaviour
@@ -14,6 +12,15 @@ public class ProjectileDamage : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = GameObject.Find("Player");
     }
+
+    private void Update()
+    {
+        if ((player.transform.position - transform.position).magnitude > 50)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))

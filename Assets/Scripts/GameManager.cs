@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
         levelGeneration = GameObject.Find("LevelManager").GetComponent<LevelGeneration>();
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         health = maxHealth;

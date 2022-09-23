@@ -47,7 +47,6 @@ public class Door : MonoBehaviour
         if (CompareTag("LeftDoor"))
         {
             proGen.lastDoorPos = 1;
-            proGen.lastDoorPos = 1;
         }
         
         if (CompareTag("UpDoor"))

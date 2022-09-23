@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 public class ProceduralGeneration : MonoBehaviour
 {
-    private int size;
+    public int size;
     public int maxSize;
     public int mixSize;
 
@@ -17,6 +17,8 @@ public class ProceduralGeneration : MonoBehaviour
     public GameObject[] itemLoots;
     public GameManager gameManager;
     public GameObject[] enemies;
+    public GameObject[] bosses;
+    public GameObject shop;
 
     private GameObject[] roomsToSpawn;
     
@@ -26,11 +28,13 @@ public class ProceduralGeneration : MonoBehaviour
     public float twoRoomRate;
     public float threeRoomRate;
     public float offset;
+    public int roomRotation;
+    public int lastRoomRotation;
 
     public bool canGenerate;
     
     public int nextObject;
-    private int generatingRoomNumber;
+    public int generatingRoomNumber;
 
     public int lastDoorPos;
 
@@ -60,6 +64,23 @@ public class ProceduralGeneration : MonoBehaviour
         //make it an entrance
     }
 
+    void RotateRoom()
+    {
+        lastRoomRotation = roomRotation;
+        if (lastDoorPos == 1)
+        {
+            roomRotation += -90;
+        }
+        if (lastDoorPos == 2)
+        {
+            roomRotation += 180;
+        }
+        if (lastDoorPos == 3)
+        {
+            roomRotation += 90;
+        }
+    }
+
     void RoomGeneration()
     {
         canGenerate = false;
@@ -80,11 +101,11 @@ public class ProceduralGeneration : MonoBehaviour
             }
             if (randRoom > threeRoomRate && randRoom <= fourRoomRate)
             {
-                roomsToSpawn = fourExits;
+                roomsToSpawn = threeExits;
             }
-            GameObject room = Instantiate(roomsToSpawn[Random.Range(0, rooms.Length)], startPos, Quaternion.identity);
+            RotateRoom();
             //rotate room in the right direction
-            room.transform.LookAt(new Vector3(room.transform.GetChild(0).transform.position.x, startPos.y, room.transform.GetChild(0).transform.position.z));
+            GameObject room = Instantiate(roomsToSpawn[Random.Range(0, rooms.Length)], startPos, Quaternion.Euler(0, roomRotation, 0));
             //keep track of the reward desired
         }
 

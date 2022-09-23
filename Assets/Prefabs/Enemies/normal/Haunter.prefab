@@ -630,11 +630,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9061760079702997899}
-  - component: {fileID: 9061760079702997900}
   - component: {fileID: 9061760079702997903}
   - component: {fileID: 9061760079702997902}
   - component: {fileID: 9061760079702997896}
   - component: {fileID: 9061760079702997897}
+  - component: {fileID: 139523042011693707}
+  - component: {fileID: 4056781837868356205}
   m_Layer: 0
   m_Name: Haunter
   m_TagString: EnemyAttack
@@ -660,20 +661,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &9061760079702997900
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9061760079702997937}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 1
-  m_Height: 4
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9061760079702997903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,6 +690,7 @@ MonoBehaviour:
   navMeshSurface: {fileID: 0}
   player: {fileID: 0}
   rb: {fileID: 0}
+  gameManager: {fileID: 0}
   eyeToken: {fileID: 252159430993309912, guid: 2c5e1f53132f7af4ca93a0f5eef6409d, type: 3}
   stunCounter: 0
   isInPlayerRange: 0
@@ -743,7 +731,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &9061760079702997897
 MonoBehaviour:
@@ -758,3 +746,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+--- !u!65 &139523042011693707
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9061760079702997937}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.17, y: 3.41, z: 6.66}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &4056781837868356205
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9061760079702997937}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.29, y: 0.27, z: 1.23}
+  m_Center: {x: 0, y: -1.58, z: 0}

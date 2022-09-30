@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
@@ -24,7 +23,8 @@ public class Room : MonoBehaviour
     public GameObject chestPrefab;
     public GameObject spawnWarning;
     public GameObject player;
-    public GameObject[] enemies;
+    private GameObject[] enemies;
+    private GameObject[] bosses;
     public GameManager gameManager;
     private ProceduralGeneration proGen;
     public GameObject enemyGroup;
@@ -45,6 +45,10 @@ public class Room : MonoBehaviour
 
     public float autoWalkMagnitude = 30;
     
+    public bool canSpawnEnemies;
+    public bool isBossRoom;
+    public bool canShopSpawn;
+    
     private void Awake()
     {
         /*navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
@@ -61,15 +65,15 @@ public class Room : MonoBehaviour
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         currentRoom = gameManager.currentRoom;
         enemies = proGen.enemies;
+        bosses = proGen.bosses;
         canChestSpawn = true;
         
         //black fade out en marchant vers la salle puis enemis spawnent
         uiManager.StartCoroutine("Whiteout");
         
         EntryWalk();
-        
         yield return new WaitForSeconds(2f);
-        StartCoroutine(EnemyGeneration());
+        RoomType();
     }
     
     void Update()
@@ -160,54 +164,104 @@ public class Room : MonoBehaviour
 
     IEnumerator EnemyGeneration()
     {
-        //decides the number of enemies to spawn
-        enemyNumber = Random.Range(minEnemies + currentRoom/2, maxEnemies + currentRoom/2);
-        enemiesRemaining = enemyNumber;
         
-        //for each enemy, randomizes which to spawn
-        for (int i = 0; i < enemyNumber; i++)
+        if (!isBossRoom)//spawns enemies as normal
         {
-            //calculates a random position where the enemy will spawn
-            int randPosX = Random.Range(-20, 21);
-            int randPosY = Random.Range(-20, 21);
-
-            Vector3 spawnPoint = transform.position + new Vector3(randPosX, player.transform.position.y, randPosY);
-
-            int randomizeEnemy = Random.Range(0, 10);
-            int enemyToSpawn = 0;
-            if (randomizeEnemy <= haunterRate)
+            
+            //decides the number of enemies to spawn
+            enemyNumber = Random.Range(minEnemies + currentRoom/2, maxEnemies + currentRoom/2);
+            enemiesRemaining = enemyNumber;
+        
+            //for each enemy, randomizes which to spawn
+            for (int i = 0; i < enemyNumber; i++)
             {
-                enemyToSpawn = 0;
-            }
-            if (randomizeEnemy > haunterRate && randomizeEnemy <= mageRate)
-            {
-                enemyToSpawn = 1;
+                //calculates a random position where the enemy will spawn
+                int randPosX = Random.Range(-20, 21);
+                int randPosY = Random.Range(-20, 21);
 
+                Vector3 spawnPoint = transform.position + new Vector3(randPosX, player.transform.position.y + 5, randPosY);
+
+                int randomizeEnemy = Random.Range(0, 10);
+                int enemyToSpawn = 0;
+                if (randomizeEnemy <= haunterRate)
+                {
+                    enemyToSpawn = 0;
+                }
+                if (randomizeEnemy > haunterRate && randomizeEnemy <= mageRate)
+                {
+                    enemyToSpawn = 1;
+                }
+                if (randomizeEnemy > mageRate && randomizeEnemy <= bullRate)
+                {
+                    enemyToSpawn = 2;
+                }
+                //enables a gameobject there to show spawn point
+                //GameObject debugSpawnPoint = Instantiate(spawnWarning);
+                //debugSpawnPoint.transform.position = spawnPoint;
+                //Destroy(debugSpawnPoint);
+                GameObject enemySpawning = Instantiate(enemies[enemyToSpawn], enemyGroup.transform);
+                enemySpawning.transform.position = spawnPoint;
+                
+                yield return new WaitForSeconds(0.4f);
             }
-            if (randomizeEnemy > mageRate && randomizeEnemy <= bullRate)
-            {
-                enemyToSpawn = 2;
-            }
+
+            finishedEnemySpawn = true;
+        }
+        
+        else //spawns boss instead
+        {
             //enables a gameobject there to show spawn point
-            //GameObject debugSpawnPoint = Instantiate(spawnWarning);
+            //GameObject debugBossSpawn = Instantiate(bossSpawnWarning);
             //debugSpawnPoint.transform.position = spawnPoint;
             //Destroy(debugSpawnPoint);
-            GameObject enemySpawning = Instantiate(enemies[enemyToSpawn], enemyGroup.transform);
-            enemySpawning.transform.position = spawnPoint;
+            GameObject bossSpawning = Instantiate(bosses[Random.Range(0, bosses.Length)], enemyGroup.transform);
+            bossSpawning.transform.position = transform.position;
             yield return new WaitForSeconds(0.4f);
         }
-
-        finishedEnemySpawn = true;
+        
     }
 
     IEnumerator WalkToPoint()
     {
         player.GetComponent<PlayerController>().canMove = false;
+        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
         autoWalk = true;
         yield return new WaitForSeconds(2);
         autoWalk = false;
-        changeRoom = true;
         player.GetComponent<PlayerController>().canMove = true;
+        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        changeRoom = true;
+    }
+    
+    void RoomType()
+    {
+        //starting room doesn't have any ennemies
+        if (currentRoom == 0)
+        {
+            //do nothing
+            canEnterDoor = true;
+        }
+        
+        //if room = shop, opens by default
+        else if (currentRoom == proGen.size - 1)
+        {
+            canShopSpawn = true;
+            GameObject mecLouche = Instantiate(proGen.shop, transform);
+            mecLouche.transform.position = new Vector3(0, player.transform.position.y , 0) + Vector3.up * 5;
+            canEnterDoor = true;
+        }
+        //if room = boss spawns boss instead
+        else if (currentRoom == proGen.size)
+        {
+            isBossRoom = true;
+            StartCoroutine(EnemyGeneration());
+        }
+
+        //if room normal, act as usual
+        else
+        {
+            StartCoroutine(EnemyGeneration());
+        }
     }
     
 

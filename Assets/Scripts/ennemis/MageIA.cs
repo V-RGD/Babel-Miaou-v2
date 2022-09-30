@@ -48,12 +48,6 @@ public class MageIA : MonoBehaviour
         agent.speed = speed * speedFactor;
         playerDist = (player.transform.position - transform.position).magnitude;
 
-        if (!isStunned)
-        {
-            //if is not stunned by player
-            Behaviour();
-        }
-
         if (health <= 0)
         {
             //dies
@@ -67,6 +61,12 @@ public class MageIA : MonoBehaviour
     private void FixedUpdate()
     {
         stunCounter -= Time.deltaTime;
+        
+        if (!isStunned)
+        {
+            //if is not stunned by player
+            Behaviour();
+        }
     }
 
     

@@ -8,6 +8,7 @@ public class Room : MonoBehaviour
 {
     //manages enemy spawns, chest loot, doors
 
+    /*
     public int maxEnemies = 4;
     public int minEnemies = 2;
     private int enemyNumber;
@@ -26,7 +27,7 @@ public class Room : MonoBehaviour
     private GameObject[] enemies;
     private GameObject[] bosses;
     public GameManager gameManager;
-    private ProceduralGeneration proGen;
+    //private ProceduralGeneration proGen;
     public GameObject enemyGroup;
     public NavMeshSurface navMeshSurface;
     public UIManager uiManager;
@@ -51,9 +52,9 @@ public class Room : MonoBehaviour
     
     private void Awake()
     {
-        /*navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
+        navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
         navMeshSurface.transform.position = transform.position;
-        navMeshSurface.BuildNavMesh();*/
+        navMeshSurface.BuildNavMesh();
     }
 
     IEnumerator Start()
@@ -61,11 +62,11 @@ public class Room : MonoBehaviour
         //assignations
         player = GameObject.Find("Player");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        proGen = GameObject.Find("LevelManager").GetComponent<ProceduralGeneration>();
+        //proGen = GameObject.Find("LevelManager").GetComponent<ProceduralGeneration>();
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         currentRoom = gameManager.currentRoom;
-        enemies = proGen.enemies;
-        bosses = proGen.bosses;
+        //enemies = proGen.enemies;
+        //bosses = proGen.bosses;
         canChestSpawn = true;
         
         //black fade out en marchant vers la salle puis enemis spawnent
@@ -80,7 +81,7 @@ public class Room : MonoBehaviour
     {
         //when all enemies defeated
         enemiesRemaining = enemyGroup.transform.childCount;
-        lastDoorPos = proGen.lastDoorPos;
+        //lastDoorPos = proGen.lastDoorPos;
         if (finishedEnemySpawn && enemiesRemaining == 0 && canChestSpawn)
         {
             canChestSpawn = false;
@@ -116,7 +117,7 @@ public class Room : MonoBehaviour
         if (changeRoom)
         {
             //genere salle suivante
-            proGen.canGenerate = true;
+            //proGen.canGenerate = true;
             //tp dans salle suivante
             player.transform.position = enterPoint;
             //destroy itself
@@ -136,7 +137,7 @@ public class Room : MonoBehaviour
         else
         {
             Debug.Log("this is the" + currentRoom + "room");
-            player.transform.position = proGen.enterPos;
+            //player.transform.position = proGen.enterPos;
         }
     }
     
@@ -158,7 +159,7 @@ public class Room : MonoBehaviour
             enterPoint = transform.position + Vector3.left * 30;
         }
 
-        proGen.enterPos = enterPoint;
+        //proGen.enterPos = enterPoint;
         StartCoroutine(WalkToPoint());
     }
 
@@ -264,5 +265,5 @@ public class Room : MonoBehaviour
         }
     }
     
-
+    */
 }

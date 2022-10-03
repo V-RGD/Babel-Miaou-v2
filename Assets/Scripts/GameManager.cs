@@ -9,15 +9,13 @@ public class GameManager : MonoBehaviour
 
     public int currentRoom;
 
-    public LevelGeneration levelGeneration;
-    public bool hasReachedTheEnd;
+    public bool canSpawnEnemies;
 
     public GameObject[] items;
 
     private void Awake()
     {
         player = GameObject.Find("Player");
-        levelGeneration = GameObject.Find("LevelManager").GetComponent<LevelGeneration>();
     }
 
     void Start()

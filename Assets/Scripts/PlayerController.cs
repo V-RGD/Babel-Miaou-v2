@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
     public InputAction move;
     public InputAction dash;
     public InputAction attack;
-    //public InputAction spell;
 
     [Header("Movement")] 
     public float acceleration;
@@ -27,11 +26,9 @@ public class PlayerController : MonoBehaviour
     public float dashCooldownLenght;
     public float dashCooldownTimer;
 
-    [Header("Components")] [HideInInspector]
+    [Header("Components")] 
     private Rigidbody rb;
     [HideInInspector] public SpriteRenderer spriteRenderer;
-    private Animator animator;
-    private GameManager gameManager;
 
     [Header("Extra Values")] [HideInInspector]
     //public int groundDetectionLayerMask;
@@ -63,13 +60,15 @@ public class PlayerController : MonoBehaviour
     //used to change direction accordingly to sprite direction
     public int dirCoef;
 
+    public GameObject attackAnchor;
+    private Vector3 attackDir;
+    private Vector3 lastWalkedDir;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerControls = new PlayerControls();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     private void Start()
@@ -103,6 +102,7 @@ public class PlayerController : MonoBehaviour
         if (movementDir!= Vector2.zero && !isDashing && speedFactor != 0)
         {
             rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration));
+            lastWalkedDir = movementDir;
             
             //cap x speed
             if(rb.velocity.x > maxSpeed)
@@ -129,8 +129,7 @@ public class PlayerController : MonoBehaviour
             //Friction
             if (!isDashing)
             {
-                //rb.velocity = new Vector3(rb.velocity.x / frictionAmount, rb.velocity.y, rb.velocity.z / frictionAmount);
-                rb.velocity = new Vector3(0, rb.velocity.y, 0);
+                rb.velocity = new Vector3(rb.velocity.x / frictionAmount, rb.velocity.y, rb.velocity.z / frictionAmount);
             }
         }
     }
@@ -156,7 +155,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            rb.AddForce(Vector3.right * dashForce * dirCoef, ForceMode.Impulse);
+            rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y), ForceMode.Impulse);
         }
         yield return new WaitForSeconds(dashLenght);
         rb.velocity = new Vector3(0, rb.velocity.y, 0);
@@ -166,8 +165,7 @@ public class PlayerController : MonoBehaviour
         dashCooldownTimer = dashCooldownLenght;
     }
     #endregion
-    
-        
+
     #region Flip
 
         void Flip(float velocity)
@@ -195,7 +193,6 @@ public class PlayerController : MonoBehaviour
 
         #endregion
         
-
     #region InputSystemRequirements
         private void OnEnable()
         {
@@ -219,7 +216,7 @@ public class PlayerController : MonoBehaviour
         }
         #endregion
 
-        #region Timer
+    #region Timer
         void Timer()
         {
             dashCooldownTimer -= Time.deltaTime;
@@ -271,7 +268,7 @@ public class PlayerController : MonoBehaviour
         IEnumerator JabCooldown()
         {
             //avant l'attaque
-            
+            attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
             //resets combo and ability to combo
             comboCounter++;
             comboTimer = comboCooldown;

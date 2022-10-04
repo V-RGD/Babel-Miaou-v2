@@ -83,8 +83,6 @@ public class BelierIA : MonoBehaviour
         stunCounter -= Time.deltaTime;
     }
 
-    
-
     void Behaviour()
     {
         dashDir = player.transform.position - transform.position;
@@ -178,8 +176,6 @@ public class BelierIA : MonoBehaviour
             gameManager.health -= damage;
             player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
         }
-
-        
     }
 
     void WallCheck()

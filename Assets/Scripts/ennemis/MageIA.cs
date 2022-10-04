@@ -68,9 +68,7 @@ public class MageIA : MonoBehaviour
             Behaviour();
         }
     }
-
     
-
     void Behaviour()
     {
         //follows player

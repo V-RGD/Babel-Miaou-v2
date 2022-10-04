@@ -307,12 +307,6 @@ public class PlayerController : MonoBehaviour
             SmashHitBox.SetActive(false);
             isAttacking = false;
         }
-
-        public IEnumerator MoveTowardsPoint(Vector3 destination)
-        {
-            //movementDir = destination;
-            yield return new WaitForSeconds(1);
-        }
 }
 
 

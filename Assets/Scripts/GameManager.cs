@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject player;
+    private GameObject player;
     public GameObject[] items;
 
     public int money;
-    public float health;
-    public int maxHealth;
+    public int maxHealth = 3;
+    [HideInInspector]public float health;
 
     public int currentRoom;
 

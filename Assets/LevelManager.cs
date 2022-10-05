@@ -11,8 +11,8 @@ public class LevelManager : MonoBehaviour
     public GameObject chest; 
     public GameObject shop;
 
-    [HideInInspector] public int minEnemies;
-    [HideInInspector] public float populationGrowthFactor; //used for enemy population increase over time
+    public int minEnemies = 3;
+    public float populationGrowthFactor = 0.5f; //used for enemy population increase over time -- enemyspawnfactor
 
     public float roomSize;
     public int[] spawnMatrixUnlock = new int[5]; //--- spawnMatrixUnlock -- serves to tweak the number of rooms needed to unlock new enemies

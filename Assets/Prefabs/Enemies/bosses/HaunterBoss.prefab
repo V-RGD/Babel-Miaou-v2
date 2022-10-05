@@ -636,6 +636,9 @@ GameObject:
   - component: {fileID: 9061760079702997896}
   - component: {fileID: 9061760079702997897}
   - component: {fileID: 1713813538400904141}
+  - component: {fileID: -6387638345239529235}
+  - component: {fileID: 4842930966932604931}
+  - component: {fileID: -7201200762497991562}
   m_Layer: 0
   m_Name: HaunterBoss
   m_TagString: EnemyAttack
@@ -774,3 +777,49 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -1.16, z: 0}
+--- !u!114 &-6387638345239529235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9061760079702997937}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9386125659fbb264692d28dc48617014, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startSpawning: 0
+--- !u!114 &4842930966932604931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9061760079702997937}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9ed563e713a2c44f86e2f04f7eba992, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyType: 0
+  speed: 0
+  max_health: 0
+  damage: 0
+  attackRange: 0
+  eyeToken: {fileID: 0}
+  healthSlider: {fileID: 0}
+  mageProjectile: {fileID: 0}
+--- !u!114 &-7201200762497991562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9061760079702997937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24207a6eee7544540944d3e266f4324d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 0

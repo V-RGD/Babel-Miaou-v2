@@ -4,6 +4,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     private GameObject spawnZone;
+    private SpriteRenderer _spriteRenderer;
     
     public bool startSpawning;
     private bool canInitiateSpawning = true;
@@ -11,8 +12,9 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         spawnZone = transform.GetChild(0).gameObject;
+        _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
         GetComponent<EnemyBehaviour>().enabled = false;
-        GetComponent<SpriteRenderer>().enabled = false;
+        _spriteRenderer.enabled = false;
         spawnZone.SetActive(true);
     }
 
@@ -35,6 +37,6 @@ public class Enemy : MonoBehaviour
         //then enemy spawns
         spawnZone.SetActive(false);
         GetComponent<EnemyBehaviour>().enabled = true;
-        GetComponent<SpriteRenderer>().enabled = true;
+        _spriteRenderer.enabled = true;
     }
 }

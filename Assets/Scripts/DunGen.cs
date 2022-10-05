@@ -16,6 +16,7 @@ public class DunGen : MonoBehaviour
     private readonly int[,] _map = new int[100, 100];
     private int[,] _roomNumberMap = new int[100, 100];
     private int _roomToSpawnNumber = 1;
+    public int dungeonSize;
 
     //
     private NavMeshSurface _navMeshSurface;
@@ -85,7 +86,7 @@ public class DunGen : MonoBehaviour
             //add room
             _map[tblX, tblY] = 1;
             _roomNumberMap[tblX, tblY] = _roomToSpawnNumber; //used to track room ID for the golden path
-            _roomToSpawnNumber = 1;
+            _roomToSpawnNumber += 1;
             yield return new WaitForSeconds(0.01f);
             //GameObject roomChecker = Instantiate(goldenPathCheck, new Vector3(tblX * offset, 0, tblY * offset) - new Vector3(500, 0, 500), Quaternion.Euler(90, 0, 0));
             //roomChecker.SetActive(true);
@@ -211,14 +212,16 @@ public class DunGen : MonoBehaviour
                     {
                         GameObject roomPrepared = potentialRooms[Random.Range(0, potentialRooms.Count)];
                         GameObject roomSpawning = Instantiate(roomPrepared, new Vector3(i * offset, 0, j * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(90, 0, 0));
-                        roomSpawning.GetComponent<Room>().currentRoom = _roomNumberMap[tblX, tblY];
-                        ;
+                        roomSpawning.GetComponent<Room>().currentRoom = _roomNumberMap[i, j];
                         roomSpawning.SetActive(true);
                     }
                     yield return new WaitForSeconds(0.01f);
                 }
             }
         }
+
+        dungeonSize = _roomToSpawnNumber;
+
         #endregion
     }
     #endregion

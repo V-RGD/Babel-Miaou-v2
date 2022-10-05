@@ -154,6 +154,7 @@ public class EnemyBehaviour : MonoBehaviour
         {
             Instantiate(eyeToken, transform.position, quaternion.identity);
         }
+        Debug.Log("dies");
         Destroy(gameObject);
     }
 

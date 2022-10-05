@@ -34,13 +34,15 @@ public class Room : MonoBehaviour
     public int roomType;
     public int currentRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which'll detect the player if it's close from the center
-    void Start()
+    void Awake()
     {
         // component assignations
         _player = GameObject.Find("Player");
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
         _enemyGroup = transform.GetChild(0).gameObject;
+        chest = _lm.chest;
 
         RoomType();
         //PropsSpawn();
@@ -49,10 +51,9 @@ public class Room : MonoBehaviour
     
     void Update()
     {
-        currentRoom = _gameManager.currentRoom; //checks which room this one is
         _enemiesRemaining = _enemyGroup.transform.childCount; //check how many enemies are still in the room
         
-        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0)
+        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
         {
             _canChestSpawn = false;
             chest = Instantiate(chest, new Vector3(transform.position.x, 0, transform.position.z), quaternion.identity);
@@ -148,7 +149,8 @@ public class Room : MonoBehaviour
     void EnemyGeneration()
     {
         //decides the number of enemies to spawn : base population + difficulty increase + 20% incertainty
-        int enemyPopulation = Mathf.RoundToInt((_lm.minEnemies + currentRoom * -_lm.populationGrowthFactor) * Random.Range(1f, 1.2f));
+        int enemyPopulation = Mathf.RoundToInt((_lm.minEnemies + currentRoom * _lm.populationGrowthFactor) * Random.Range(1f, 1.2f));
+
         _enemiesRemaining = enemyPopulation;
         //for each enemy, randomizes which to spawn
         for (int i = 0; i < enemyPopulation; i++)
@@ -164,9 +166,10 @@ public class Room : MonoBehaviour
             {
                 if (_lm.enemySpawnMatrix[j] == 1)
                 {
-                    enemiesAvailable.Add(i);
+                    enemiesAvailable.Add(j);
                 }
             }
+            Debug.Log(enemiesAvailable.Count);
 
             //take a random one for a list of available enemies
             int enemyToSpawn = enemiesAvailable[Random.Range(0, enemiesAvailable.Count)];
@@ -194,17 +197,23 @@ public class Room : MonoBehaviour
     
     void RoomType()
     {
-        switch (currentRoom)
+        if (currentRoom == 0)
         {
-            if (currentRoom == 0)
-            {
-                roomType = 0;
-            }
+            roomType = 0;
+        }
 
-            if (currentRoom == _dunGen.)
-            {
-                roomType = 1;
-            }
+        else if (currentRoom == _dunGen.dungeonSize)
+        {
+            roomType = 4;
+        }
+
+        else if (currentRoom == _dunGen.dungeonSize - 1)
+        {
+            roomType = 3;
+        }
+        else
+        {
+            roomType = 1;
         }
         //starting room doesn't have any ennemies
         switch (roomType)
@@ -260,7 +269,6 @@ public class Room : MonoBehaviour
             _player.transform.position.z > roomDetectionZMin && _player.transform.position.z < roomDetectionZMax )
         {
             _hasPlayerEnteredRoom = true;
-            Debug.Log("player is in a room");
         }
         else
         {
@@ -273,6 +281,10 @@ public class Room : MonoBehaviour
         for (int i = 0; i < _enemyGroup.transform.childCount; i++)
         {
             _enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
+            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().enabled = true;
+            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyBehaviour>().enabled = true;
+            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
+
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
         }
     }

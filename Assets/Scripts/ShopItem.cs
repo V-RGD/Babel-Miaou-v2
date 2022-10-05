@@ -20,7 +20,6 @@ public class ShopItem : MonoBehaviour
     public GameManager gameManager;
     public bool isFromAShop;
     
-
     private void Awake()
     {
         playerControls = new PlayerControls();

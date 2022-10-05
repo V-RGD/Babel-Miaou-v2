@@ -223,6 +223,7 @@ public class DunGen : MonoBehaviour
         dungeonSize = _roomToSpawnNumber;
 
         #endregion
+        _navMeshSurface.BuildNavMesh();
     }
     #endregion
 }

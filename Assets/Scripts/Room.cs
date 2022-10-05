@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
@@ -71,7 +72,7 @@ public class Room : MonoBehaviour
         if (_hasPlayerEnteredRoom == _canActivateEnemies)
         {
             _canActivateEnemies = false;
-            ActivateAllEnemies();
+            StartCoroutine(ActivateAllEnemies());
         }
         /*
         //quand prend une porte, les autres se ferment
@@ -156,8 +157,8 @@ public class Room : MonoBehaviour
         for (int i = 0; i < enemyPopulation; i++)
         {
             //calculates a random position where the enemy will spawn
-            float randPosX = Random.Range(-_lm.roomSize, -_lm.roomSize);
-            float randPosY = Random.Range(-_lm.roomSize, -_lm.roomSize);
+            float randPosX = Random.Range(-30, 30);
+            float randPosY = Random.Range(-30, 30);
             Vector3 spawnPoint = transform.position + new Vector3(randPosX, 0, randPosY);
 
             //check which enemy is available
@@ -169,7 +170,6 @@ public class Room : MonoBehaviour
                     enemiesAvailable.Add(j);
                 }
             }
-            Debug.Log(enemiesAvailable.Count);
 
             //take a random one for a list of available enemies
             int enemyToSpawn = enemiesAvailable[Random.Range(0, enemiesAvailable.Count)];
@@ -276,7 +276,7 @@ public class Room : MonoBehaviour
         }
     }
 
-    void ActivateAllEnemies()
+    IEnumerator ActivateAllEnemies()
     {
         for (int i = 0; i < _enemyGroup.transform.childCount; i++)
         {
@@ -286,6 +286,7 @@ public class Room : MonoBehaviour
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
 
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
+            yield return new WaitForSeconds(0.5f);
         }
     }
 }

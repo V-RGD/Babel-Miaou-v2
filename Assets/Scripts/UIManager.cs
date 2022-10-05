@@ -9,15 +9,13 @@ public class UIManager : MonoBehaviour
 {
     public GameManager gameManager;
     public TMP_Text MoneyUI;
-    public GameObject heartUIPrefab;
-    public List<GameObject> heartUIs = new List<GameObject>(20);
+    public GameObject[] heartUIs;
     public Sprite fullHeart;
     public Sprite emptyHeart;
     public Image panel;
 
     [HideInInspector]public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
-    private GameObject canvas;
 
     public float transitionLenght;
     private float _panelAlpha;
@@ -25,16 +23,83 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        canvas = GameObject.Find("UI Canvas").transform.GetChild(3).gameObject;
     }
 
     void Update()
     {
-        MoneyUI.text = gameManager.money.ToString();
         PanelAlpha();
         HealthBar();
+        Money();
     }
     
+    //Minimap 
+    void MiniMapUpdate()
+    {
+        //manages camera position
+        //updates position
+        //blends outside
+    }
+    //Barre de vie joueur 
+    void HealthBar()
+    {
+        //gerer si le coeur est actif
+        for (var i = 0; i < 20; i++)
+        {
+            if (i > gameManager.maxHealth - 1)
+            {
+                heartUIs[i].GetComponent<Image>().enabled = false;
+            }
+            else
+            {
+                heartUIs[i].GetComponent<Image>().enabled = true;
+                //gerer si le coeur est rempli ou pas
+                for (var j = 0; j < 20; j++)
+                {
+                    if (j <= gameManager.health - 1)
+                    {
+                        heartUIs[j].GetComponent<Image>().sprite = fullHeart;
+                    }
+                    else
+                    {
+                        heartUIs[j].GetComponent<Image>().sprite = emptyHeart;
+                    }
+                }            
+            }
+        }
+    }
+    void Money()
+    {
+        //updates current money on screen
+        MoneyUI.text = gameManager.money.ToString();
+    }
+    
+    // // Slot Spell
+    // void ()
+    // {
+    //     
+    // }
+    // // Slots d’Items
+    // void ()
+    // {
+    //     
+    // }
+
+    // // Menu Pause
+    // void ()
+    // {
+    //     
+    // }
+    // // Menu Principal
+    // void ()
+    // {
+    //     
+    // }
+    // // Menu Options (son, résolutions)
+    // void ()
+    // {
+    //     
+    // }
+    #region panel alpha
     public IEnumerator Whiteout()
     {
         _panelAlpha = 1;
@@ -67,72 +132,5 @@ public class UIManager : MonoBehaviour
             panel.color = new Color(0, 0, 0, _panelAlpha);
         }
     }
-    
-    //Minimap 
-    void MiniMapUpdate()
-    {
-        //manages camera position
-        //updates position
-        //blends outside
-    }
-    //Barre de vie joueur 
-    void HealthBar()
-    {
-        //pour chaque vie, mettre un coeur offset de X par rapport au précédent
-        Vector3 firstPos = new Vector3(-852,438,0);
-        Vector3 offset = new Vector3(0, 0, -200);
-        //pour chaque point de vie, on crée un coeur
-        for (int i = 0; i < gameManager.maxHealth; i++)
-        {
-            Debug.Log(i);
-            if (heartUIs[i] == null)
-            {
-                GameObject heart = Instantiate(heartUIPrefab, canvas.transform);
-                heart.transform.position = firstPos + (offset * i);
-            }
-        }
-        //pour chaque point de vie max, créer un coeur
-        for (int i = 0; i < gameManager.maxHealth; i++)
-        {
-            if (i <= gameManager.health)
-            {
-                heartUIs[i].GetComponent<SpriteRenderer>().sprite = fullHeart;
-            }
-            else
-            {
-                heartUIs[i].GetComponent<SpriteRenderer>().sprite = emptyHeart;
-            }
-        }
-    }
-    // //Thunes
-    // void Money()
-    // {
-    //     
-    // }
-    // // Slot Spell
-    // void ()
-    // {
-    //     
-    // }
-    // // Slots d’Items
-    // void ()
-    // {
-    //     
-    // }
-    //
-    // // Menu Pause
-    // void ()
-    // {
-    //     
-    // }
-    // // Menu Principal
-    // void ()
-    // {
-    //     
-    // }
-    // // Menu Options (son, résolutions)
-    // void ()
-    // {
-    //     
-    // }
+    #endregion
 }

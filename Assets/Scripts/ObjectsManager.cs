@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ObjectsManager : MonoBehaviour
 {
@@ -37,7 +39,7 @@ public class ObjectsManager : MonoBehaviour
     private bool No_Hit_Speedrun; //rentre dans une salle, dgt doublés, annule jusqu'a la prochaine salle si prend des degats
     private bool Strange_Pact; //peut payer en vie si pas assez d'yeux (1 = X)
     
-    public GameObject[] objectsEquipped;
+    public List<GameObject> objectsEquipped = new List<GameObject>(5);
     public GameObject[] objectsList;
     public ObjectTextData textData;
     public Sprite[] objectSprites;
@@ -47,15 +49,24 @@ public class ObjectsManager : MonoBehaviour
     [HideInInspector]public List<GameObject> chestPool;
     [HideInInspector]public List<GameObject> specialChestPool;
 
+    public GameObject[] itemBoxes;
+
     private void Start()
     {
         CreateItemPools();
         AssignObjectInfos();
     }
 
+    private void Update()
+    {
+        ObjectsInInventory();
+    }
+
     void ObjectsInInventory()
     {
-        for (int i = 0; i < objectsEquipped.Length; i++)
+        //pour chaque case, si un objet est equippé (bool), on active l'id de l'objet.
+        ItemBoxesUpdate();
+        for (int i = 0; i < objectsEquipped.Count; i++)
         {
             //check if an object is equipped
             if (objectsEquipped[i] != null)
@@ -63,7 +74,7 @@ public class ObjectsManager : MonoBehaviour
                 //check the ID of the object to add additional effects
                 switch (objectsEquipped[i].GetComponent<Item>().objectID)
                 {
-                    //acitver les effets
+                    //activer les effets
                     
                 }
             }
@@ -115,6 +126,43 @@ public class ObjectsManager : MonoBehaviour
                 case 4 : objectsList[i].GetComponent<Item>().itemCost = 35; break;
             }
             objectsList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
+        }
+    }
+
+    void ItemBoxesUpdate()
+    {
+        for (int i = 0; i < itemBoxes.Length; i++)
+        {
+            if (objectsEquipped[i] != null)
+            {
+                int id = objectsEquipped[i].GetComponent<Item>().objectID;
+                //update : box name, icon, description, rarity color
+                string name = textData.names[id];
+                Sprite icon = objectSprites[id];
+                string desc = textData.descriptions[id];
+                int rarity = textData.rarity[id];
+                Color color = Color.grey;
+
+                itemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = name;
+                itemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
+                itemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
+                switch (rarity)
+                {
+                    case 1 : color = Color.green; break;
+                    case 2 : color = Color.blue; break;
+                    case 3 : color = Color.magenta; break;
+                    case 4 : color = Color.yellow; break;
+                }
+                itemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = color;
+            }
+            else
+            {
+                //shows empty box
+                itemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
+                itemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = null;
+                itemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
+                itemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ObjectsManager : MonoBehaviour
@@ -35,5 +36,44 @@ public class ObjectsManager : MonoBehaviour
     private bool No_Hit_Speedrun; //rentre dans une salle, dgt doublés, annule jusqu'a la prochaine salle si prend des degats
     private bool Strange_Pact; //peut payer en vie si pas assez d'yeux (1 = X)
     
-    
+    public GameObject[] objectsEquipped;
+    public GameObject[] objectsList;
+    public ObjectTextData textData;
+    public Sprite[] objectSprites;
+
+    private void Start()
+    {
+        AssignObjectIDs();
+    }
+
+    void ObjectsInInventory()
+    {
+        for (int i = 0; i < objectsEquipped.Length; i++)
+        {
+            //check if an object is equipped
+            if (objectsEquipped[i] != null)
+            {
+                //check the ID of the object to add additional effects
+                switch (objectsEquipped[i].GetComponent<Item>().objectID)
+                {
+                    //acitver les effets
+                    
+                }
+            }
+        }
+    }
+
+    void AssignObjectIDs()
+    {
+        //assigns object id depending on it's position on the list.
+        for (int i = 0; i < objectsList.Length; i++)
+        {
+            objectsList[i].GetComponent<Item>().objectID = i;
+            objectsList[i].GetComponent<Item>().description = textData.descriptions[i];
+            objectsList[i].GetComponent<Item>().itemName = textData.names[i];
+            objectsList[i].GetComponent<Item>().itemCost = textData.itemCosts[i];
+            objectsList[i].GetComponent<Item>().rarity = textData.rarity[i];
+            objectsList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
+        }
+    }
 }

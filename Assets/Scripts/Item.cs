@@ -1,43 +1,46 @@
+using System;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ShopItem : MonoBehaviour
+public class Item : MonoBehaviour
 {
+    private PlayerControls playerControls;
+    private ObjectsManager _objectsManager;
+    [HideInInspector]public InputAction collect;
+    private GameManager gameManager;
+
+    private GameObject player;
+    public GameObject costPrompt;
+
+    [HideInInspector]public bool isFromAShop;
     private bool isPlayerInRange;
     private float grabDist = 5;
-
-    public int cost;
     
-    public PlayerControls playerControls;
-    public InputAction collect;
+    //object info
+    public int objectID;
+    public string description;
+    public string itemName;
+    public int itemCost;
+    public int rarity;
 
-    public GameObject player;
-    public ItemEffect itemEffect;
-    public GameObject messagePrompt;
-    public GameObject collectPrompt;
-
-    public GameManager gameManager;
-    public bool isFromAShop;
-    
     private void Awake()
     {
         playerControls = new PlayerControls();
         player = GameObject.Find("Player");
-        itemEffect = GetComponent<ItemEffect>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        messagePrompt.GetComponent<TMP_Text>().text = cost.ToString() + " noeuils";
-        messagePrompt.SetActive(false);
-        collectPrompt.SetActive(false);
+        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+        costPrompt.GetComponent<TMP_Text>().text = itemCost + " noeuils";
+        costPrompt.SetActive(false);
     }
 
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && gameManager.money >= cost)
+        if (isPlayerInRange && gameManager.money >= itemCost)
         {
             //does gameobject effect
-            itemEffect.activeEffect = true;
-            gameManager.money -= cost;
+            gameManager.money -= itemCost;
             Destroy(gameObject);
         }
     }
@@ -49,36 +52,35 @@ public class ShopItem : MonoBehaviour
         if (!isFromAShop)
         {
             //can collect just with a press
-            cost = 0;
+            itemCost = 0;
+
+            if (isPlayerInRange)
+            {
+                costPrompt.SetActive(true);
+            }
+            else
+            {
+                costPrompt.SetActive(false);
+            }
         }
         
         if ((player.transform.position - transform.position).magnitude <= grabDist)
         {
             //show message prompt
             isPlayerInRange = true;
-            
-            if (isFromAShop)
-            {
-                messagePrompt.SetActive(true);
-            }
-            else
-            {
-                collectPrompt.SetActive(true);
-            }
         }
         else
         {
             //disable message prompt
             isPlayerInRange = false;
-            
-            if (isFromAShop)
-            {
-                messagePrompt.SetActive(false);
-            }
-            else
-            {
-                collectPrompt.SetActive(false);
-            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            //
         }
     }
 

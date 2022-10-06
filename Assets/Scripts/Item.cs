@@ -35,21 +35,16 @@ public class Item : MonoBehaviour
         costPrompt.SetActive(false);
     }
 
-    void Collect(InputAction.CallbackContext context)
-    {
-        if (isPlayerInRange && gameManager.money >= itemCost)
-        {
-            //does gameobject effect
-            gameManager.money -= itemCost;
-            Destroy(gameObject);
-        }
-    }
 
     private void Update()
     {
-        
+        ShopItem();
+    }
+
+    void ShopItem()
+    {
         //check whether the item is from the shop or not
-        if (!isFromAShop)
+        if (isFromAShop)
         {
             //can collect just with a press
             itemCost = 0;
@@ -62,25 +57,39 @@ public class Item : MonoBehaviour
             {
                 costPrompt.SetActive(false);
             }
-        }
-        
-        if ((player.transform.position - transform.position).magnitude <= grabDist)
-        {
-            //show message prompt
-            isPlayerInRange = true;
-        }
-        else
-        {
-            //disable message prompt
-            isPlayerInRange = false;
+            
+            if ((player.transform.position - transform.position).magnitude <= grabDist)
+            {
+                //show message prompt
+                isPlayerInRange = true;
+            }
+            else
+            {
+                //disable message prompt
+                isPlayerInRange = false;
+            }
         }
     }
-
+    void Collect(InputAction.CallbackContext context)
+    {
+        if (isPlayerInRange && gameManager.money >= itemCost && isFromAShop)
+        {
+            //does gameobject effect
+            gameManager.money -= itemCost;
+            Destroy(gameObject);
+        }
+    }
+    
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !isFromAShop)
         {
-            //
+            //actives ui
+            _objectsManager.itemBoxesUI.SetActive(true);
+            //stop time
+            Time.timeScale = 0;
+            //actives choosing cursor : default on right, a cursor is placed and moves when pressing a button
+            pressing s
         }
     }
 

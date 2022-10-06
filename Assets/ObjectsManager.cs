@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectsManager : MonoBehaviour
@@ -41,9 +42,15 @@ public class ObjectsManager : MonoBehaviour
     public ObjectTextData textData;
     public Sprite[] objectSprites;
 
+    //creates special pools
+    [HideInInspector]public List<GameObject> shopPool;
+    [HideInInspector]public List<GameObject> chestPool;
+    [HideInInspector]public List<GameObject> specialChestPool;
+
     private void Start()
     {
-        AssignObjectIDs();
+        CreateItemPools();
+        AssignObjectInfos();
     }
 
     void ObjectsInInventory()
@@ -62,8 +69,36 @@ public class ObjectsManager : MonoBehaviour
             }
         }
     }
+    void CreateItemPools()
+    {
+        //chest pool = reserved chest + commom
+        foreach (var id in textData.chestReservedItems)
+        {
+            chestPool.Add(objectsList[id]);
+        }
+        
+        foreach (var id in textData.commonItems)
+        {
+            chestPool.Add(objectsList[id]);
+        }
 
-    void AssignObjectIDs()
+        //special chest pool = special chest
+        foreach (var id in textData.specialChestReservedItems)
+        {
+            specialChestPool.Add(objectsList[id]);
+        }
+        
+        //shop pool
+        foreach (var id in textData.shopItemReservedItems)
+        {
+            shopPool.Add(objectsList[id]);
+        }
+        foreach (var id in textData.commonItems)
+        {
+            shopPool.Add(objectsList[id]);
+        }
+    }
+    void AssignObjectInfos()
     {
         //assigns object id depending on it's position on the list.
         for (int i = 0; i < objectsList.Length; i++)
@@ -71,8 +106,14 @@ public class ObjectsManager : MonoBehaviour
             objectsList[i].GetComponent<Item>().objectID = i;
             objectsList[i].GetComponent<Item>().description = textData.descriptions[i];
             objectsList[i].GetComponent<Item>().itemName = textData.names[i];
-            objectsList[i].GetComponent<Item>().itemCost = textData.itemCosts[i];
             objectsList[i].GetComponent<Item>().rarity = textData.rarity[i];
+            switch (objectsList[i].GetComponent<Item>().rarity)
+            {
+                case 1 : objectsList[i].GetComponent<Item>().itemCost = 15; break;
+                case 2 : objectsList[i].GetComponent<Item>().itemCost = 25; break;
+                case 3 : objectsList[i].GetComponent<Item>().itemCost = 35; break;
+                case 4 : objectsList[i].GetComponent<Item>().itemCost = 35; break;
+            }
             objectsList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
         }
     }

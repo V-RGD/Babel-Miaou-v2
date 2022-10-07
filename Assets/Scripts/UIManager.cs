@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     public PlayerControls playerControls;
     private InputAction escape;
+    private InputAction mouseClick;
     private ObjectsManager _objectsManager;
     public TMP_Text MoneyUI;
     public GameObject[] heartUIs;
@@ -22,11 +23,14 @@ public class UIManager : MonoBehaviour
     public float transitionLenght;
     private float _panelAlpha;
 
+    public bool canEscapeObjectMenu = true;
+
     private void Awake()
     {
         playerControls = new PlayerControls();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         escape = playerControls.Menus.Escape;
+        mouseClick = playerControls.Menus.MouseClick;
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
     }
 
@@ -35,6 +39,7 @@ public class UIManager : MonoBehaviour
         PanelAlpha();
         HealthBar();
         Money();
+        Debug.Log(canEscapeObjectMenu);
     }
     
     //Minimap 
@@ -92,9 +97,14 @@ public class UIManager : MonoBehaviour
 
     public void DisableObjectMenu(InputAction.CallbackContext context)
     {
-        if (_objectsManager.objectMenu.activeInHierarchy)
+        if (_objectsManager.objectMenu.activeInHierarchy && canEscapeObjectMenu)
         {
+            //si objet pas dans boite
+            
+            //retourne dans boite
+            
             //deletes 6th box object
+            Destroy(_objectsManager.itemObjectsInventory[5]);
             _objectsManager.itemObjectsInventory[5] = null;
             //disables menu
             _objectsManager.objectMenu.SetActive(false);
@@ -139,12 +149,17 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
+        mouseClick.Enable();
+        mouseClick.performed += _ => canEscapeObjectMenu = false;
+        mouseClick.canceled += _ => canEscapeObjectMenu = true;
         escape.Enable();
         escape.performed += DisableObjectMenu;
+        escape.ReadValue<bool>();
     }
     
     private void OnDisable()
     {
+        mouseClick.Disable();
         escape.Disable();
     }
 }

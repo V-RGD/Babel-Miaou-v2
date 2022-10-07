@@ -1,13 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public GameManager gameManager;
+    private GameManager gameManager;
+    public PlayerControls playerControls;
+    private InputAction escape;
+    private ObjectsManager _objectsManager;
     public TMP_Text MoneyUI;
     public GameObject[] heartUIs;
     public Sprite fullHeart;
@@ -22,7 +24,10 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        playerControls = new PlayerControls();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        escape = playerControls.Menus.Escape;
+        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
     }
 
     void Update()
@@ -72,33 +77,31 @@ public class UIManager : MonoBehaviour
         //updates current money on screen
         MoneyUI.text = gameManager.money.ToString();
     }
-    
-    // // Slot Spell
-    // void ()
-    // {
-    //     
-    // }
-    // // Slots d’Items
-    // void ()
-    // {
-    //     
-    // }
 
-    // // Menu Pause
-    // void ()
-    // {
-    //     
-    // }
-    // // Menu Principal
-    // void ()
-    // {
-    //     
-    // }
-    // // Menu Options (son, résolutions)
-    // void ()
-    // {
-    //     
-    // }
+    public void ActiveObjectMenu()
+    {
+        if (!_objectsManager.objectMenu.activeInHierarchy)
+        {
+            //actives ui
+            _objectsManager.objectMenu.SetActive(true);
+            //stop time
+            Time.timeScale = 0;
+        }
+    }
+    
+
+    public void DisableObjectMenu(InputAction.CallbackContext context)
+    {
+        if (_objectsManager.objectMenu.activeInHierarchy)
+        {
+            //deletes 6th box object
+            _objectsManager.itemObjectsInventory[5] = null;
+            //disables menu
+            _objectsManager.objectMenu.SetActive(false);
+            //resume time
+            Time.timeScale = 1;
+        }
+    }
     #region panel alpha
     public IEnumerator Whiteout()
     {
@@ -133,4 +136,15 @@ public class UIManager : MonoBehaviour
         }
     }
     #endregion
+
+    private void OnEnable()
+    {
+        escape.Enable();
+        escape.performed += DisableObjectMenu;
+    }
+    
+    private void OnDisable()
+    {
+        escape.Disable();
+    }
 }

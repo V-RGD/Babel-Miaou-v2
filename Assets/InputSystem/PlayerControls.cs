@@ -817,6 +817,34 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Menus"",
+            ""id"": ""21847dc1-1eba-4f86-bf78-d662a351a00f"",
+            ""actions"": [
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""eb376f7d-6dc8-4548-82ed-e05b6c16f63b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""6534c743-91b8-49ac-b86a-92d04ab8d3dc"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -904,6 +932,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         // Mouse
         m_Mouse = asset.FindActionMap("Mouse", throwIfNotFound: true);
         m_Mouse_MousePos = m_Mouse.FindAction("MousePos", throwIfNotFound: true);
+        // Menus
+        m_Menus = asset.FindActionMap("Menus", throwIfNotFound: true);
+        m_Menus_Escape = m_Menus.FindAction("Escape", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1162,6 +1193,39 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         }
     }
     public MouseActions @Mouse => new MouseActions(this);
+
+    // Menus
+    private readonly InputActionMap m_Menus;
+    private IMenusActions m_MenusActionsCallbackInterface;
+    private readonly InputAction m_Menus_Escape;
+    public struct MenusActions
+    {
+        private @PlayerControls m_Wrapper;
+        public MenusActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Escape => m_Wrapper.m_Menus_Escape;
+        public InputActionMap Get() { return m_Wrapper.m_Menus; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenusActions set) { return set.Get(); }
+        public void SetCallbacks(IMenusActions instance)
+        {
+            if (m_Wrapper.m_MenusActionsCallbackInterface != null)
+            {
+                @Escape.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnEscape;
+                @Escape.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnEscape;
+                @Escape.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnEscape;
+            }
+            m_Wrapper.m_MenusActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Escape.started += instance.OnEscape;
+                @Escape.performed += instance.OnEscape;
+                @Escape.canceled += instance.OnEscape;
+            }
+        }
+    }
+    public MenusActions @Menus => new MenusActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1231,5 +1295,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     public interface IMouseActions
     {
         void OnMousePos(InputAction.CallbackContext context);
+    }
+    public interface IMenusActions
+    {
+        void OnEscape(InputAction.CallbackContext context);
     }
 }

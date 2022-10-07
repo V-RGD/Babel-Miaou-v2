@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -39,9 +38,9 @@ public class ObjectsManager : MonoBehaviour
     private bool No_Hit_Speedrun; //rentre dans une salle, dgt doublés, annule jusqu'a la prochaine salle si prend des degats
     private bool Strange_Pact; //peut payer en vie si pas assez d'yeux (1 = X)
     
-    public List<GameObject> objectsEquipped = new List<GameObject>(5);
-    public GameObject[] objectsList;
-    public ObjectTextData textData;
+    public List<GameObject> itemObjectsInventory = new List<GameObject>(5);
+    public GameObject[] itemList;
+    public ObjectTextData itemDataScriptable;
     public Sprite[] objectSprites;
 
     //creates special pools
@@ -49,30 +48,34 @@ public class ObjectsManager : MonoBehaviour
     [HideInInspector]public List<GameObject> chestPool;
     [HideInInspector]public List<GameObject> specialChestPool;
 
-    public GameObject[] itemBoxes;
+    public GameObject[] uiItemBoxes;
+    public GameObject objectMenu;
+
+    public GameObject uiItemPrefab;
 
     private void Start()
     {
-        CreateItemPools();
         AssignObjectInfos();
+        CreateItemPools();
     }
 
     private void Update()
     {
-        ObjectsInInventory();
+        //ObjectsInInventory();
+        UiItemBoxesUpdate();
+        DisableObjectMenu();
     }
 
     void ObjectsInInventory()
     {
         //pour chaque case, si un objet est equippé (bool), on active l'id de l'objet.
-        ItemBoxesUpdate();
-        for (int i = 0; i < objectsEquipped.Count; i++)
+        for (int i = 0; i < itemObjectsInventory.Count - 1; i++)
         {
             //check if an object is equipped
-            if (objectsEquipped[i] != null)
+            if (itemObjectsInventory[i] != null)
             {
                 //check the ID of the object to add additional effects
-                switch (objectsEquipped[i].GetComponent<Item>().objectID)
+                switch (itemObjectsInventory[i].GetComponent<ItemDragDrop>().objectID)
                 {
                     //activer les effets
                     
@@ -83,69 +86,70 @@ public class ObjectsManager : MonoBehaviour
     void CreateItemPools()
     {
         //chest pool = reserved chest + commom
-        foreach (var id in textData.chestReservedItems)
+        foreach (var id in itemDataScriptable.chestReservedItems)
         {
-            chestPool.Add(objectsList[id]);
+            chestPool.Add(itemList[id]);
         }
         
-        foreach (var id in textData.commonItems)
+        foreach (var id in itemDataScriptable.commonItems)
         {
-            chestPool.Add(objectsList[id]);
+            chestPool.Add(itemList[id]);
         }
 
         //special chest pool = special chest
-        foreach (var id in textData.specialChestReservedItems)
+        foreach (var id in itemDataScriptable.specialChestReservedItems)
         {
-            specialChestPool.Add(objectsList[id]);
+            specialChestPool.Add(itemList[id]);
         }
         
         //shop pool
-        foreach (var id in textData.shopItemReservedItems)
+        foreach (var id in itemDataScriptable.shopItemReservedItems)
         {
-            shopPool.Add(objectsList[id]);
+            shopPool.Add(itemList[id]);
         }
-        foreach (var id in textData.commonItems)
+        foreach (var id in itemDataScriptable.commonItems)
         {
-            shopPool.Add(objectsList[id]);
+            shopPool.Add(itemList[id]);
         }
     }
     void AssignObjectInfos()
     {
-        //assigns object id depending on it's position on the list.
-        for (int i = 0; i < objectsList.Length; i++)
+        //assigns object info depending on it's position on the list.
+        for (int i = 0; i < itemList.Length; i++)
         {
-            objectsList[i].GetComponent<Item>().objectID = i;
-            objectsList[i].GetComponent<Item>().description = textData.descriptions[i];
-            objectsList[i].GetComponent<Item>().itemName = textData.names[i];
-            objectsList[i].GetComponent<Item>().rarity = textData.rarity[i];
-            switch (objectsList[i].GetComponent<Item>().rarity)
+            itemList[i].GetComponent<Item>().objectID = i;
+            itemList[i].GetComponent<Item>().description = itemDataScriptable.descriptions[i];
+            itemList[i].GetComponent<Item>().itemName = itemDataScriptable.names[i];
+            itemList[i].GetComponent<Item>().rarity = itemDataScriptable.rarity[i];
+            switch (itemList[i].GetComponent<Item>().rarity)
             {
-                case 1 : objectsList[i].GetComponent<Item>().itemCost = 15; break;
-                case 2 : objectsList[i].GetComponent<Item>().itemCost = 25; break;
-                case 3 : objectsList[i].GetComponent<Item>().itemCost = 35; break;
-                case 4 : objectsList[i].GetComponent<Item>().itemCost = 35; break;
+                case 1 : itemList[i].GetComponent<Item>().itemCost = 15; break;
+                case 2 : itemList[i].GetComponent<Item>().itemCost = 25; break;
+                case 3 : itemList[i].GetComponent<Item>().itemCost = 35; break;
+                case 4 : itemList[i].GetComponent<Item>().itemCost = 35; break;
             }
-            objectsList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
+            itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
         }
     }
 
-    void ItemBoxesUpdate()
+    void UiItemBoxesUpdate()
     {
-        for (int i = 0; i < itemBoxes.Length; i++)
+        //used to reload data from the object when added
+        for (int i = 0; i < 6; i++)
         {
-            if (objectsEquipped[i] != null)
+            if (itemObjectsInventory[i] != null)
             {
-                int id = objectsEquipped[i].GetComponent<Item>().objectID;
+                int id = itemObjectsInventory[i].GetComponent<ItemDragDrop>().objectID;
                 //update : box name, icon, description, rarity color
-                string name = textData.names[id];
+                string name = itemDataScriptable.names[id];
                 Sprite icon = objectSprites[id];
-                string desc = textData.descriptions[id];
-                int rarity = textData.rarity[id];
+                string desc = itemDataScriptable.descriptions[id];
+                int rarity = itemDataScriptable.rarity[id];
                 Color color = Color.grey;
 
-                itemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = name;
-                itemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
-                itemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
+                uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = name;
+                //uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
+                uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
                 switch (rarity)
                 {
                     case 1 : color = Color.green; break;
@@ -153,16 +157,24 @@ public class ObjectsManager : MonoBehaviour
                     case 3 : color = Color.magenta; break;
                     case 4 : color = Color.yellow; break;
                 }
-                itemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = color;
+                uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = color;
             }
             else
             {
                 //shows empty box
-                itemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
-                itemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = null;
-                itemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
-                itemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+                uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
+                //uiItemBoxes[i].transform.GetChild(4).GetComponent<Image>().sprite = null;
+                uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
+                uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
             }
+        }
+    }
+
+    void DisableObjectMenu()
+    {
+        if (objectMenu.activeInHierarchy)
+        {
+            
         }
     }
 }

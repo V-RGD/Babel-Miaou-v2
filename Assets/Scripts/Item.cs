@@ -1,21 +1,23 @@
-using System;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Item : MonoBehaviour
 {
     private PlayerControls playerControls;
+    private UIManager _uiManager;
     private ObjectsManager _objectsManager;
     [HideInInspector]public InputAction collect;
     private GameManager gameManager;
 
     private GameObject player;
+    private GameObject canvas;
     public GameObject costPrompt;
 
     [HideInInspector]public bool isFromAShop;
     private bool isPlayerInRange;
+    private bool canBeTaken = true;
     private float grabDist = 5;
     
     //object info
@@ -30,9 +32,11 @@ public class Item : MonoBehaviour
         playerControls = new PlayerControls();
         player = GameObject.Find("Player");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         costPrompt.GetComponent<TMP_Text>().text = itemCost + " noeuils";
         costPrompt.SetActive(false);
+        canvas = GameObject.Find("UI Canvas");
     }
 
 
@@ -82,14 +86,20 @@ public class Item : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isFromAShop)
+        if (other.CompareTag("Player") && !isFromAShop && canBeTaken)
         {
-            //actives ui
-            _objectsManager.itemBoxesUI.SetActive(true);
-            //stop time
-            Time.timeScale = 0;
-            //actives choosing cursor : default on right, a cursor is placed and moves when pressing a button
-            pressing s
+            canBeTaken = false;
+            _uiManager.ActiveObjectMenu();
+            //instantiates a new ui item in the canvas
+            GameObject newItem = Instantiate(_objectsManager.uiItemPrefab, canvas.transform);
+            _objectsManager.itemObjectsInventory[5] = newItem;
+            //puts it in the 6th box
+            _objectsManager.itemObjectsInventory[5].GetComponent<RectTransform>().transform.position = _objectsManager.uiItemBoxes[5].transform.position;
+            //updates it's id
+            _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().objectID = objectID;
+            _objectsManager.itemObjectsInventory[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
+            _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().boxAssociated = 5;
+            Destroy(gameObject);
         }
     }
 

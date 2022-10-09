@@ -53,7 +53,7 @@ public class EnemyBehaviour : MonoBehaviour
     public GameObject healthSlider;
     public GameObject mageProjectile;
     
-    private void Start()
+    private void Awake()
     {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _agent = GetComponent<NavMeshAgent>();
@@ -173,7 +173,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlayerAttack") && _isVulnerable)
+        if (other.CompareTag("PlayerAttack"))
         {
             _health -= other.GetComponent<ObjectDamage>().damage;
         }

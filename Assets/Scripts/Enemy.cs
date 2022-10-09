@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
@@ -36,6 +37,7 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(2);
         //then enemy spawns
         spawnZone.SetActive(false);
+        GetComponent<NavMeshAgent>().enabled = true;
         GetComponent<EnemyBehaviour>().enabled = true;
         _spriteRenderer.enabled = true;
     }

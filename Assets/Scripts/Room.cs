@@ -159,18 +159,31 @@ public class Room : MonoBehaviour
             //calculates a random position where the enemy will spawn
             float randPosX = Random.Range(-30, 30);
             float randPosY = Random.Range(-30, 30);
-            Vector3 spawnPoint = transform.position + new Vector3(randPosX, 0, randPosY);
+            Vector3 spawnPoint = transform.position + new Vector3(randPosX, 3, randPosY);
 
             //check which enemy is available
-            List<int> enemiesAvailable = new List<int>();
-            for (int j = 0; j < _lm.enemySpawnMatrix.Length; j++)
-            {
-                if (_lm.enemySpawnMatrix[j] == 1)
-                {
-                    enemiesAvailable.Add(j);
-                }
-            }
+            List<int> enemiesAvailable = new List<int>(5);
 
+            if (currentRoom >= _lm.spawnMatrixUnlock[0])
+            {
+                enemiesAvailable.Add(0);
+            }
+            if (currentRoom >= _lm.spawnMatrixUnlock[1])
+            {
+                enemiesAvailable.Add(1);
+            }
+            if (currentRoom >= _lm.spawnMatrixUnlock[2])
+            {
+                enemiesAvailable.Add(2);
+            }
+            if (currentRoom >= _lm.spawnMatrixUnlock[3])
+            {
+                enemiesAvailable.Add(3);
+            }
+            if (currentRoom >= _lm.spawnMatrixUnlock[4])
+            {
+                enemiesAvailable.Add(4);
+            }
             //take a random one for a list of available enemies
             int enemyToSpawn = enemiesAvailable[Random.Range(0, enemiesAvailable.Count)];
             //instanciates it as a child to track down how many are left

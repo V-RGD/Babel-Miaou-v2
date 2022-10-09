@@ -36,7 +36,7 @@ public class MenuManager : MonoBehaviour
         {
             SettingsMenu();
         }
-        
+
         if (quitWarningActive && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
             MainMenu();

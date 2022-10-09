@@ -63,7 +63,6 @@ public class ObjectsManager : MonoBehaviour
     {
         //ObjectsInInventory();
         UiItemBoxesUpdate();
-        DisableObjectMenu();
     }
 
     void ObjectsInInventory()
@@ -167,14 +166,6 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
                 uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
             }
-        }
-    }
-
-    void DisableObjectMenu()
-    {
-        if (objectMenu.activeInHierarchy)
-        {
-            
         }
     }
 }

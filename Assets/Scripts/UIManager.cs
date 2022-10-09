@@ -39,7 +39,6 @@ public class UIManager : MonoBehaviour
         PanelAlpha();
         HealthBar();
         Money();
-        Debug.Log(canEscapeObjectMenu);
     }
     
     //Minimap 

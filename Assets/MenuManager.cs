@@ -27,14 +27,14 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (sceneID == null)
-        {
-            ExitGameWarning();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !isInOptions)
         {
             PauseMenu();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Escape) && isInOptions)
+        {
+            SettingsMenu();
         }
         
         if (quitWarningActive && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.KeypadEnter)))
@@ -79,12 +79,12 @@ public class MenuManager : MonoBehaviour
         if (!isInOptions)
         {
             isInOptions = true;
-            pauseMenu.SetActive(true);
+            optionMenu.SetActive(true);
         }
         else
         {
             isInOptions = false;
-            pauseMenu.SetActive(false);
+            optionMenu.SetActive(false);
         }
     }
 
@@ -93,19 +93,16 @@ public class MenuManager : MonoBehaviour
         if (!gameIsPaused)
         {
             gameIsPaused = true;
-            Debug.Log("pause ");
             pauseMenu.SetActive(true);
             Time.timeScale = 0;
         }
         else
         {
             gameIsPaused = false;
-            Debug.Log("unpause ");
             pauseMenu.SetActive(false);
             Time.timeScale = 1;
         }
     }
-
     #region WarningPrompt
     
     public void ShowUpExitWarning()
@@ -119,10 +116,6 @@ public class MenuManager : MonoBehaviour
         {
             DiscardWarningPrompt();
         }
-    }
-    private void ExitGameWarning()
-    {
-        
     }
 
     public void DiscardWarningPrompt()

@@ -49,6 +49,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "AttackHold",
+                    "type": "Button",
+                    "id": "91cd78e0-d231-429c-b3ed-85f2021949a1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -247,6 +256,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Collect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c9191175-f148-4c9e-aba2-58c9f515cbc5",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Hold(duration=0.2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttackHold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -815,7 +835,7 @@
                     "id": "a249112a-40bd-44b3-afae-d77f08829d1b",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Hold",
+                    "interactions": "Hold(duration=0.1,pressPoint=0.5)",
                     "initialStateCheck": false
                 }
             ],

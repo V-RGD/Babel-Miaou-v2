@@ -40,10 +40,12 @@ public class PlayerController : MonoBehaviour
     private float _speedFactor = 1;
     private float _dashCooldownTimer;
     private float smashTimer;
-    private int _dashesAvailable = 1;
+    private float _mouseHoldTimer;
     private bool _isInvincible;
     [HideInInspector]public bool isAttacking;
     private bool _isDashing;
+    private bool _isMouseHolding;
+    private int _dashesAvailable = 1;
     private int _comboCounter;
     private int _dirCoef; //sprite direction
 
@@ -57,6 +59,7 @@ public class PlayerController : MonoBehaviour
     private InputAction _move;
     private InputAction _dash;
     private InputAction _attack;
+    private InputAction _mouseHold;
     private void Awake()
     {
         canMove = true;
@@ -86,6 +89,32 @@ public class PlayerController : MonoBehaviour
         Timer();
     }
 
+    
+    #region Flip
+
+    void Flip(float velocity)
+    {
+        //Flips the sprite when turning around
+        if (movementDir.x > 0.1f)
+        {
+            _spriteRenderer.flipX = false;
+        }
+
+        else if (movementDir.x < -0.1f)
+        {
+            _spriteRenderer.flipX = true;
+        }
+
+        if (!_spriteRenderer.flipX)
+        {
+            _dirCoef = 1;
+        }
+        else
+        {
+            _dirCoef = -1;
+        }
+    }
+    #endregion
     #region Basic Movement
 
     void MovePlayer()
@@ -168,80 +197,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Flip
-
-        void Flip(float velocity)
-        {
-            //Flips the sprite when turning around
-            if (movementDir.x > 0.1f)
-            {
-                _spriteRenderer.flipX = false;
-            }
-
-            else if (movementDir.x < -0.1f)
-            {
-                _spriteRenderer.flipX = true;
-            }
-
-            if (!_spriteRenderer.flipX)
-            {
-                _dirCoef = 1;
-            }
-            else
-            {
-                _dirCoef = -1;
-            }
-        }
-
-        #endregion
-        
-    #region InputSystemRequirements
-        private void OnEnable()
-        {
-            _move = _playerControls.Player.Move;
-            _move.Enable();
-
-            _dash = _playerControls.Player.Dash;
-            _dash.Enable();
-            _dash.performed += Dash;
-            
-            _attack = _playerControls.Player.Attack;
-            _attack.Enable();
-            _attack.performed += Attack;
-        }
-
-        private void OnDisable()
-        {
-            _move.Disable();
-            _dash.Disable();
-            _attack.Disable();
-        }
-        #endregion
-
-    #region Timer
-        void Timer()
-        {
-            _dashCooldownTimer -= Time.deltaTime;
-            _comboTimer -= Time.deltaTime;
-            invincibleCounter -= Time.deltaTime;
-
-            if (_comboTimer <= 0)
-            {
-                _comboCounter = 0;
-            }
-
-            if (invincibleCounter > 0)
-            {
-                _isInvincible = true;
-            }
-            else
-            {
-                _isInvincible = false;
-            }
-        }
-        #endregion
-        
-        void JostickDir()
+    void JostickDir()
         {
             Vector2 inputDir = _move.ReadValue<Vector2>();
             movementDir = new Vector2(inputDir.x, inputDir.y);
@@ -321,6 +277,76 @@ public class PlayerController : MonoBehaviour
             hitbox.SetActive(false);
             isAttacking = false;
         }
+
+        void MouseHold(InputAction.CallbackContext context)
+        {
+            _isMouseHolding = true;
+        }
+        void MouseReleased(InputAction.CallbackContext context)
+        {
+            _isMouseHolding = false;
+        }
+        
+        #region InputSystemRequirements
+        private void OnEnable()
+        {
+            _move = _playerControls.Player.Move;
+            _move.Enable();
+
+            _dash = _playerControls.Player.Dash;
+            _dash.Enable();
+            _dash.performed += Dash;
+            
+            _attack = _playerControls.Player.Attack;
+            _attack.Enable();
+            _attack.performed += Attack;
+
+            _mouseHold = _playerControls.Player.AttackHold;
+            _mouseHold.performed += MouseHold;
+            _mouseHold.canceled += MouseReleased;
+            _mouseHold.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _move.Disable();
+            _dash.Disable();
+            _attack.Disable();
+            _mouseHold.Disable();
+        }
+        #endregion
+
+        #region Timer
+        void Timer()
+        {
+            _dashCooldownTimer -= Time.deltaTime;
+            _comboTimer -= Time.deltaTime;
+            invincibleCounter -= Time.deltaTime;
+
+            if (_comboTimer <= 0)
+            {
+                _comboCounter = 0;
+            }
+
+            if (invincibleCounter > 0)
+            {
+                _isInvincible = true;
+            }
+            else
+            {
+                _isInvincible = false;
+            }
+
+            if (_isMouseHolding)
+            {
+                _mouseHoldTimer += Time.deltaTime;
+            }
+            else
+            {
+                _mouseHoldTimer = 0;
+            }
+        }
+        #endregion
 }
 
 

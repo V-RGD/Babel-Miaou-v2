@@ -71,6 +71,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AttackHold"",
+                    ""type"": ""Button"",
+                    ""id"": ""91cd78e0-d231-429c-b3ed-85f2021949a1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -269,6 +278,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Collect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c9191175-f148-4c9e-aba2-58c9f515cbc5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Hold(duration=0.2)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttackHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -837,7 +857,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""id"": ""a249112a-40bd-44b3-afae-d77f08829d1b"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Hold(duration=0.1,pressPoint=0.5)"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -937,6 +957,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_Spell = m_Player.FindAction("Spell", throwIfNotFound: true);
         m_Player_Collect = m_Player.FindAction("Collect", throwIfNotFound: true);
+        m_Player_AttackHold = m_Player.FindAction("AttackHold", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1020,6 +1041,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_Spell;
     private readonly InputAction m_Player_Collect;
+    private readonly InputAction m_Player_AttackHold;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1029,6 +1051,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
         public InputAction @Spell => m_Wrapper.m_Player_Spell;
         public InputAction @Collect => m_Wrapper.m_Player_Collect;
+        public InputAction @AttackHold => m_Wrapper.m_Player_AttackHold;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1053,6 +1076,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Collect.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
                 @Collect.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
                 @Collect.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
+                @AttackHold.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackHold;
+                @AttackHold.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackHold;
+                @AttackHold.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackHold;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -1072,6 +1098,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Collect.started += instance.OnCollect;
                 @Collect.performed += instance.OnCollect;
                 @Collect.canceled += instance.OnCollect;
+                @AttackHold.started += instance.OnAttackHold;
+                @AttackHold.performed += instance.OnAttackHold;
+                @AttackHold.canceled += instance.OnAttackHold;
             }
         }
     }
@@ -1307,6 +1336,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
         void OnSpell(InputAction.CallbackContext context);
         void OnCollect(InputAction.CallbackContext context);
+        void OnAttackHold(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

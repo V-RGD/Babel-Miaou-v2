@@ -14,7 +14,7 @@ public class EnemyBehaviour : MonoBehaviour
     
     private float dashWarmUp;
     private int dashForce;
-    private int eyesDropped;
+    public int eyesDropped;
     private Vector3 dashDir;
     
     private LayerMask wallLayerMask;
@@ -47,6 +47,8 @@ public class EnemyBehaviour : MonoBehaviour
     private GameObject _player;
     private GameManager _gameManager;
     private Rigidbody _rb;
+
+    public EnemyType enemyTypeSo;
 
     [Header("*Objects*")]
     public GameObject eyeToken;

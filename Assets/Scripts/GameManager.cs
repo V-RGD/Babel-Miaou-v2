@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     public int currentRoom;
 
+    public bool isDead;
+
     private void Awake()
     {
         player = GameObject.Find("Player");
@@ -28,6 +30,11 @@ public class GameManager : MonoBehaviour
         if (maxHealth < health)
         {
             health = maxHealth;
+        }
+
+        if (health <= 0)
+        {
+            isDead = true;
         }
     }
 }

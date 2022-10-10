@@ -1,97 +1,88 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     public float maxSpeed;
-    private float speedFactor = 1;
-    public Vector2 movementDir;
-
-    private PlayerControls playerControls;
-    public InputAction move;
-    public InputAction dash;
-    public InputAction attack;
-
-    [Header("Movement")] 
     public float acceleration;
-    public bool canMove;
     public float dashForce;
     public float frictionAmount;
-    private bool isDashing;
     public float dashLenght;
-
-    public int dashAvailable;
     public float dashCooldownLenght;
-    public float dashCooldownTimer;
+    [HideInInspector] public bool canMove = true;
 
-    [Header("Components")] 
-    private Rigidbody rb;
-    [HideInInspector] public SpriteRenderer spriteRenderer;
-
-    [Header("Extra Values")] [HideInInspector]
-    //public int groundDetectionLayerMask;
-
-    [Header("Attacks")] public float jabLenght;
-    public float smashLenght;
-    //time 
-    public float smashWarmup;
-    public float smashDamage;
+    [Header("Attacks")]
+    public float smashDamage = 5;
+    public float slashDamage = 1;
+    public float pickDamage = 2;
     
-    public float jabDamage;
-    private float jabReach;
-    public float comboCooldown;
-    //max time allowed to combo
-    private float comboTimer;
-    private int comboCounter;
-    
-    public bool isAttacking;
+    public float slashCooldown = 0.4f;
+    public float pickCooldown = 0.7f;
+    public float smashCooldown = 2;
+    public float smashWarmup = 1;
 
-    public GameObject SmashHitBox;
-    public GameObject JabHitBox;
+    public float smashForce = 10;
+    public float slashForce = 15;
+    public float pickForce = 50;
 
-    private float attackMultiplier = 1;
+    private GameObject _attackAnchor;
+    private GameObject _smashHitBox;
+    private GameObject _slashHitBox;
+    private GameObject _pickHitBox;
 
-    public float invincibleCounter;
-    public float invincibleTime;
-    private bool isInvincible;
+    private float _comboCooldown = 0.7f; //max time allowed to combo
+    private float _comboTimer;
+    private float _attackMultiplier = 1;
+    [HideInInspector] public float invincibleCounter;
+    [HideInInspector] public float invincibleTime;
+    private float _speedFactor = 1;
+    private float _dashCooldownTimer;
+    private float smashTimer;
+    private int _dashesAvailable = 1;
+    private bool _isInvincible;
+    [HideInInspector]public bool isAttacking;
+    private bool _isDashing;
+    private int _comboCounter;
+    private int _dirCoef; //sprite direction
 
-    //used to change direction accordingly to sprite direction
-    public int dirCoef;
+    private Vector3 _attackDir;
+    private Vector3 _lastWalkedDir;
+    public Vector2 movementDir;
 
-    public GameObject attackAnchor;
-    private Vector3 attackDir;
-    private Vector3 lastWalkedDir;
-
+    private Rigidbody _rb;
+    private SpriteRenderer _spriteRenderer;
+    private PlayerControls _playerControls;
+    private InputAction _move;
+    private InputAction _dash;
+    private InputAction _attack;
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        playerControls = new PlayerControls();
-    }
-
-    private void Start()
-    {
         canMove = true;
-        isAttacking = false;
-    }
+        
+        _rb = GetComponent<Rigidbody>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _playerControls = new PlayerControls();
 
-    void Update()
-    {
-        //Flip(rb.velocity.x);
-        JabHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * jabDamage;
-        SmashHitBox.GetComponent<ObjectDamage>().damage = attackMultiplier * smashDamage;
+        _attackAnchor = transform.GetChild(0).gameObject;
+        _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
+        _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
+        _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
+        
+        _slashHitBox.GetComponent<ObjectDamage>().damage = _attackMultiplier * slashDamage;
+        _smashHitBox.GetComponent<ObjectDamage>().damage = _attackMultiplier * smashDamage;
+        _pickHitBox.GetComponent<ObjectDamage>().damage = _attackMultiplier * pickDamage;
     }
 
     void FixedUpdate()
     {
-        MovePlayer();
-
         if (canMove)
         {
+            MovePlayer();
             JostickDir();
         }
+        Friction();
         Timer();
     }
 
@@ -99,70 +90,81 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        if (movementDir!= Vector2.zero && !isDashing && speedFactor != 0)
+        if (movementDir!= Vector2.zero && !_isDashing && _speedFactor != 0)
         {
-            rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration));
-            lastWalkedDir = movementDir;
+            _rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration), ForceMode.Impulse);
+            _lastWalkedDir = movementDir;
             
             //cap x speed
-            if(rb.velocity.x > maxSpeed)
+            if(_rb.velocity.x > maxSpeed)
             {
-                rb.velocity = new Vector3(maxSpeed, rb.velocity.y, rb.velocity.z);
+                _rb.velocity = new Vector3(maxSpeed, _rb.velocity.y, _rb.velocity.z);
             }
-            if(rb.velocity.x < -maxSpeed)
+            if(_rb.velocity.x < -maxSpeed)
             {
-                rb.velocity = new Vector3(-maxSpeed, rb.velocity.y, rb.velocity.z);
+                _rb.velocity = new Vector3(-maxSpeed, _rb.velocity.y, _rb.velocity.z);
             }
             
             //cap x speed
-            if(rb.velocity.z > maxSpeed)
+            if(_rb.velocity.z > maxSpeed)
             {
-                rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, maxSpeed);
+                _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, maxSpeed);
             }
-            if(rb.velocity.z < -maxSpeed)
+            if(_rb.velocity.z < -maxSpeed)
             {
-                rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, -maxSpeed);
+                _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -maxSpeed);
             }
         }
-        else
+    }
+
+    void Friction()
+    {
+        //deceleration
+        if (!_isDashing && movementDir == Vector2.zero)
         {
-            //Friction
-            if (!isDashing)
+            if (!isAttacking)
             {
-                rb.velocity = new Vector3(rb.velocity.x / frictionAmount, rb.velocity.y, rb.velocity.z / frictionAmount);
+                Debug.Log("friction pas attack");
+                _rb.velocity = new Vector3(_rb.velocity.x / frictionAmount, _rb.velocity.y, _rb.velocity.z / frictionAmount);
             }
+        }
+
+        if (isAttacking)
+        {
+            Debug.Log("friction attack");
+            _rb.velocity = new Vector3(_rb.velocity.x * 0.95f, _rb.velocity.y, _rb.velocity.z * 0.95f);
         }
     }
 
     void Dash(InputAction.CallbackContext context)
     {
-        if (!isDashing && dashAvailable > 0 && dashCooldownTimer <= 0)
+        if (!_isDashing && _dashesAvailable > 0 && _dashCooldownTimer <= 0 && !isAttacking)
         {
-            dashAvailable--;
-            isDashing = true;
+            _dashesAvailable--;
+            _isDashing = true;
             StartCoroutine(DashSequence());
         }
     }
 
     IEnumerator DashSequence()
     {
-        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+        _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
         //applies dash force
         if (movementDir != Vector2.zero)
         {
-            rb.AddForce(new Vector3(dashForce * movementDir.x, 0, dashForce * movementDir.y), ForceMode.Impulse);
+            _rb.AddForce(new Vector3(dashForce * movementDir.x, 0, dashForce * movementDir.y), ForceMode.Impulse);
         }
         else
         {
-            rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y), ForceMode.Impulse);
+            _rb.AddForce(new Vector3(dashForce * _lastWalkedDir.x, 0, dashForce * _lastWalkedDir.y), ForceMode.Impulse);
         }
         yield return new WaitForSeconds(dashLenght);
-        rb.velocity = new Vector3(0, rb.velocity.y, 0);
-        isDashing = false;
+        _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
+        _isDashing = false;
         canMove = true;
-        dashAvailable++;
-        dashCooldownTimer = dashCooldownLenght;
+        _dashesAvailable++;
+        _dashCooldownTimer = dashCooldownLenght;
     }
     #endregion
 
@@ -173,21 +175,21 @@ public class PlayerController : MonoBehaviour
             //Flips the sprite when turning around
             if (movementDir.x > 0.1f)
             {
-                spriteRenderer.flipX = false;
+                _spriteRenderer.flipX = false;
             }
 
             else if (movementDir.x < -0.1f)
             {
-                spriteRenderer.flipX = true;
+                _spriteRenderer.flipX = true;
             }
 
-            if (!spriteRenderer.flipX)
+            if (!_spriteRenderer.flipX)
             {
-                dirCoef = 1;
+                _dirCoef = 1;
             }
             else
             {
-                dirCoef = -1;
+                _dirCoef = -1;
             }
         }
 
@@ -196,115 +198,127 @@ public class PlayerController : MonoBehaviour
     #region InputSystemRequirements
         private void OnEnable()
         {
-            move = playerControls.Player.Move;
-            move.Enable();
+            _move = _playerControls.Player.Move;
+            _move.Enable();
 
-            dash = playerControls.Player.Dash;
-            dash.Enable();
-            dash.performed += Dash;
+            _dash = _playerControls.Player.Dash;
+            _dash.Enable();
+            _dash.performed += Dash;
             
-            attack = playerControls.Player.Attack;
-            attack.Enable();
-            attack.performed += Attack;
+            _attack = _playerControls.Player.Attack;
+            _attack.Enable();
+            _attack.performed += Attack;
         }
 
         private void OnDisable()
         {
-            move.Disable();
-            dash.Disable();
-            attack.Disable();
+            _move.Disable();
+            _dash.Disable();
+            _attack.Disable();
         }
         #endregion
 
     #region Timer
         void Timer()
         {
-            dashCooldownTimer -= Time.deltaTime;
-            comboTimer -= Time.deltaTime;
+            _dashCooldownTimer -= Time.deltaTime;
+            _comboTimer -= Time.deltaTime;
             invincibleCounter -= Time.deltaTime;
 
-            if (comboTimer <= 0)
+            if (_comboTimer <= 0)
             {
-                comboCounter = 0;
+                _comboCounter = 0;
             }
 
             if (invincibleCounter > 0)
             {
-                isInvincible = true;
+                _isInvincible = true;
             }
             else
             {
-                isInvincible = false;
+                _isInvincible = false;
             }
         }
         #endregion
         
         void JostickDir()
         {
-            Vector2 inputDir = move.ReadValue<Vector2>();
+            Vector2 inputDir = _move.ReadValue<Vector2>();
             movementDir = new Vector2(inputDir.x, inputDir.y);
         }
 
         void Attack(InputAction.CallbackContext context)
         {
-            if (!isAttacking && !isDashing)
+            if (!isAttacking && !_isDashing)
             {
                 isAttacking = true;
-                StartCoroutine(JabCooldown());
-
-                /*
-                if (comboCounter < 3)
-                {
-                    //Jab
-                }
-                else
-                {
-                    //smash
-                    StartCoroutine(SmashCooldown());
-                }*/
+                StartCoroutine(AttackCooldown()); 
             }
         }
 
-        IEnumerator JabCooldown()
+        IEnumerator AttackCooldown()
         {
-            //avant l'attaque
-            attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
-            //resets combo and ability to combo
-            comboCounter++;
-            comboTimer = comboCooldown;
-
-            //pendant l'attaque
-            JabHitBox.SetActive(true);
-            speedFactor = 0.1f;
+            //determines attack length, damage, hitbox, force to add
+            GameObject hitbox = null;
+            float damage = 0;
+            float cooldown = 0;
+            float force = 0;
+            
+            switch (_comboCounter)
+            {
+                case 0 : 
+                    cooldown = slashCooldown; 
+                    damage = slashDamage;
+                    hitbox = _slashHitBox; 
+                    force = slashForce;
+                    //1st anim
+                    break;
+                case 1 : 
+                    cooldown = slashCooldown; 
+                    damage = slashDamage;
+                    hitbox = _slashHitBox; 
+                    force = slashForce;
+                    //2nd anim
+                    break;
+                case 2 : 
+                    cooldown = pickCooldown; 
+                    damage = pickDamage;
+                    hitbox = _pickHitBox; 
+                    force = pickForce;
+                    break;
+                case 3 : 
+                    cooldown = smashCooldown; 
+                    damage = smashDamage;
+                    hitbox = _smashHitBox; 
+                    force = smashForce;
+                    break;
+            }
+            
+            //determine ou l'attaque va se faire
+            _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
+            //used to combo if done in a row
+            _comboCounter++;
+            //starts timer for combos
+            _comboTimer = _comboCooldown;
+            //stops movement
+            canMove = false;
+            //add current damage stat to weapon
+            hitbox.GetComponent<ObjectDamage>().damage = damage;
+            //actives weapon
+            hitbox.SetActive(true);
+            //adds force to simulate inertia
+            _rb.velocity = Vector3.zero;
+            Vector3 pushedDir = new Vector3(_lastWalkedDir.x, 0, _lastWalkedDir.y);
+                
+            _rb.AddForce(pushedDir * force, ForceMode.Impulse);
             //plays animation
 
-            yield return new WaitForSeconds(jabLenght);
-            //après l'attaque
-            speedFactor = 1;
-            JabHitBox.SetActive(false);
-            isAttacking = false;
-        }
-        
-        IEnumerator SmashCooldown()
-        {
-            //avant l'attaque
-            
-            //resets combo and ability to combo
-            comboCounter = 0;
-            comboTimer = 0;
-            
-            //charging time
-            yield return new WaitForSeconds(smashWarmup);
-
-            //pendant l'attaque
-            SmashHitBox.SetActive(true);
-            speedFactor = 0;
-            //plays animation
-
-            yield return new WaitForSeconds(smashLenght);
-            //après l'attaque
-            speedFactor = 1;
-            SmashHitBox.SetActive(false);
+            //waits cooldown depending on the attack used
+            yield return new WaitForSeconds(cooldown);
+            //restores speed
+            canMove = true;
+            //disables hitbox
+            hitbox.SetActive(false);
             isAttacking = false;
         }
 }

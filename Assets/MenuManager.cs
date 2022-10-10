@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
     public bool isLoading;
@@ -14,58 +13,75 @@ public class MenuManager : MonoBehaviour
     public GameObject loadingUI;
     public GameObject pauseMenu;
     public GameObject optionMenu;
+    public GameObject deathPanel;
+    
+    private GameManager _gameManager;
+    private ObjectsManager _objectsManager;
 
-    private GameObject _player;
+    private bool _canActiveDeathPanel = true;
+    private bool _canPause = true;
+    public bool canEscapeObjectMenu = true;
+    private bool isInObjectMenu;
 
-    public GameObject sceneID;
-    public GameObject minimapUI;
 
     private void Awake()
     {
-        _player = GameObject.Find("Player");
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !isInOptions)
+        //escape shortcut
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (isInOptions)
+            {
+                SettingsMenu();
+                return;
+            }
+
+            if (isInObjectMenu)
+            {
+                ObjectMenu();
+                return;
+            }
             PauseMenu();
-        }
-        
-        if (Input.GetKeyDown(KeyCode.Escape) && isInOptions)
-        {
-            SettingsMenu();
         }
 
         if (quitWarningActive && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
             MainMenu();
         }
+        if (_gameManager.isDead && _canActiveDeathPanel)
+        {
+            _canActiveDeathPanel = false;
+            DeathPanel();
+        }
     }
 
+
+    #region fonctionne
     public void StartGame()
     {
         StartCoroutine(LoadingScreen());
     }
-    
     public void MainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
-        
-            if (!quitWarningActive)
-            {
-                ShowUpExitWarning();
-            }
-
-            //shortcuts for use
-            if (quitWarningActive)
-            {
-                MainMenu();
-            }
+        //shortcuts for use
+        if (quitWarningActive)
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+        else
+        {
+            quitWarningActive = true;
+            quitWarning.SetActive(true);
+        }
     }
-
     public void RestartLevel()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("MainScene");
     }
 
@@ -73,7 +89,6 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
-    
     public void SettingsMenu()
     {
         if (!isInOptions)
@@ -87,7 +102,6 @@ public class MenuManager : MonoBehaviour
             optionMenu.SetActive(false);
         }
     }
-
     public void PauseMenu()
     {
         if (!gameIsPaused)
@@ -103,27 +117,40 @@ public class MenuManager : MonoBehaviour
             Time.timeScale = 1;
         }
     }
+    #endregion
+    
+    public void ObjectMenu()
+    {
+        if (isInObjectMenu && canEscapeObjectMenu)
+        {
+            isInObjectMenu = false;
+            //deletes 6th box object
+            Destroy(_objectsManager.itemObjectsInventory[5]);
+            _objectsManager.itemObjectsInventory[5] = null;
+            //disables menu
+            _objectsManager.objectMenu.SetActive(false);
+            //resume time
+            Time.timeScale = 1;
+            //can pause
+            _canPause = true;
+            return;
+        }
+        
+        if (!isInObjectMenu)
+        {
+            isInObjectMenu = true;
+            //actives ui
+            _objectsManager.objectMenu.SetActive(true);
+            //stop time
+            Time.timeScale = 0;
+            //can't pause
+            _canPause = false;
+            return;
+        }
+    }
+    
     #region WarningPrompt
     
-    public void ShowUpExitWarning()
-    {
-        if (!quitWarningActive)
-        {
-            quitWarningActive = true;
-            quitWarning.SetActive(true);
-        }
-        else
-        {
-            DiscardWarningPrompt();
-        }
-    }
-
-    public void DiscardWarningPrompt()
-    {
-        quitWarningActive = false;
-        quitWarning.SetActive(false);
-        //cache la souris
-    }
     #endregion
     IEnumerator LoadingScreen()
     {
@@ -135,6 +162,18 @@ public class MenuManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         //change scene
         SceneManager.LoadScene("MainScene");
+    }
+
+    public void DeathPanel()
+    {
+        deathPanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void DiscardWarningPrompt()
+    {
+        quitWarningActive = false;
+        quitWarning.SetActive(false);
     }
 }
     

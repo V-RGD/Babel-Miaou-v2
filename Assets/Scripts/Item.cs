@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Item : MonoBehaviour
 {
     private PlayerControls playerControls;
-    private UIManager _uiManager;
+    private MenuManager _menuManager;
     private ObjectsManager _objectsManager;
     [HideInInspector]public InputAction collect;
     private GameManager gameManager;
@@ -32,9 +32,9 @@ public class Item : MonoBehaviour
         playerControls = new PlayerControls();
         player = GameObject.Find("Player");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        _menuManager = GameObject.Find("UIManager").GetComponent<MenuManager>();
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
-        costPrompt.GetComponent<TMP_Text>().text = itemCost + " noeuils";
+        costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
         costPrompt.SetActive(false);
         canvas = GameObject.Find("UI Canvas");
     }
@@ -89,7 +89,7 @@ public class Item : MonoBehaviour
         if (other.CompareTag("Player") && !isFromAShop && canBeTaken)
         {
             canBeTaken = false;
-            _uiManager.ActiveObjectMenu();
+            _menuManager.ObjectMenu();
             //instantiates a new ui item in the canvas
             GameObject newItem = Instantiate(_objectsManager.uiItemPrefab, canvas.transform);
             _objectsManager.itemObjectsInventory[5] = newItem;

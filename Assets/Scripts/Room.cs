@@ -74,34 +74,6 @@ public class Room : MonoBehaviour
             _canActivateEnemies = false;
             StartCoroutine(ActivateAllEnemies());
         }
-        /*
-        //quand prend une porte, les autres se ferment
-        if (doorTaken && canEnterDoor)
-        {
-            canEnterDoor = false;
-            doorTaken = false;
-            //blackout
-            uiManager.StartCoroutine("Blackout");
-            //marche vers le couloir
-            ExitWalk();
-        }
-        
-        if (autoWalk)
-        {
-            //player.GetComponent<Rigidbody>().AddForce(exitPoint - transform.position * autoWalkMagnitude);
-            player.GetComponent<PlayerController>().movementDir = (exitPoint - transform.position).normalized;
-        }
-
-        if (changeRoom)
-        {
-            //genere salle suivante
-            //_dunGen.canGenerate = true;
-            //tp dans salle suivante
-            player.transform.position = enterPoint;
-            //destroy itself
-            Destroy(gameObject);
-        }
-        */
         CheckPlayerPresence();
     }
 
@@ -192,21 +164,6 @@ public class Room : MonoBehaviour
             enemySpawning.SetActive(false);
         }
     }
-
-    /*
-    IEnumerator WalkToPoint()
-    {
-        
-        player.GetComponent<PlayerController>().canMove = false;
-        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        autoWalk = true;
-        yield return new WaitForSeconds(2);
-        autoWalk = false;
-        player.GetComponent<PlayerController>().canMove = true;
-        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        changeRoom = true;
-    }
-    */
     
     void RoomType()
     {
@@ -295,9 +252,7 @@ public class Room : MonoBehaviour
         {
             _enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().enabled = true;
-            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyBehaviour>().enabled = true;
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(0.5f);
         }

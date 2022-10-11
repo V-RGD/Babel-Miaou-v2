@@ -179,7 +179,5 @@ public class AspirateurIA : MonoBehaviour
             gameManager.health -= damage;
             player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
         }
-
-        
     }
 }

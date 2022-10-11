@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     private GameManager gameManager;
+    private PlayerController _playerController;
+    
     public PlayerControls playerControls;
     private InputAction mouseClick;
     public TMP_Text MoneyUI;
@@ -14,6 +16,7 @@ public class UIManager : MonoBehaviour
     public Sprite fullHeart;
     public Sprite emptyHeart;
     public Image panel;
+    public Image smashSlider;
 
     [HideInInspector]public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
@@ -25,6 +28,7 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        _playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         playerControls = new PlayerControls();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mouseClick = playerControls.Menus.MouseClick;
@@ -35,14 +39,7 @@ public class UIManager : MonoBehaviour
         PanelAlpha();
         HealthBar();
         Money();
-    }
-    
-    //Minimap 
-    void MiniMapUpdate()
-    {
-        //manages camera position
-        //updates position
-        //blends outside
+        SmashGauge();
     }
     //Barre de vie joueur 
     void HealthBar()
@@ -123,5 +120,24 @@ public class UIManager : MonoBehaviour
     private void OnDisable()
     {
         mouseClick.Disable();
+    }
+
+    void SmashGauge()
+    {
+        //used to display progress bar for smash holding
+        float value = _playerController.smashGauge * 100;
+        float xValue = value / 2 - 50;
+
+        if (value > 20)
+        {
+            smashSlider.gameObject.SetActive(true);
+            smashSlider.GetComponent<RectTransform>().localPosition = new Vector3(xValue, 0, 0);
+            smashSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, 10);
+        }
+        else
+        {
+            smashSlider.gameObject.SetActive(false);
+        }
+        
     }
 }

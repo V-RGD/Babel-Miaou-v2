@@ -634,11 +634,11 @@ GameObject:
   - component: {fileID: 891223104118376885}
   - component: {fileID: 3023633170605113837}
   - component: {fileID: 8327917130810663734}
-  - component: {fileID: -4242100288011620374}
   - component: {fileID: -6891914241870890661}
   - component: {fileID: -1075485152293503970}
+  - component: {fileID: 2755578119426194888}
   m_Layer: 0
-  m_Name: Mage
+  m_Name: Turret
   m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,29 +727,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.99, y: 0.24, z: 1.41}
   m_Center: {x: 0, y: -1.62, z: 0}
---- !u!114 &-4242100288011620374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 891223104118376844}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9ed563e713a2c44f86e2f04f7eba992, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyType: 3
-  speed: 3
-  max_health: 3
-  damage: 2
-  eyesDropped: 1
-  attackRange: 10
-  enemyTypeSo: {fileID: 0}
-  eyeToken: {fileID: 252159430993309912, guid: 2c5e1f53132f7af4ca93a0f5eef6409d, type: 3}
-  healthSlider: {fileID: 891223102442624942}
-  mageProjectile: {fileID: 1084243870843448940, guid: 3653f42742fb9e445a4f1b228477db31,
-    type: 3}
 --- !u!114 &-6891914241870890661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -762,6 +739,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9386125659fbb264692d28dc48617014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActive: 0
   startSpawning: 0
 --- !u!114 &-1075485152293503970
 MonoBehaviour:
@@ -776,6 +754,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+--- !u!114 &2755578119426194888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 891223104118376844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31fa5242b4c00b24993695ba180f5c90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyTypeData: {fileID: 11400000, guid: 9ccc39e93183e6c4f92a030adc62484b, type: 2}
+  healthSlider: {fileID: 891223102442624942}
 --- !u!1 &3330938863752326515
 GameObject:
   m_ObjectHideFlags: 0

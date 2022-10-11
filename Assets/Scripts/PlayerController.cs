@@ -32,19 +32,20 @@ public class PlayerController : MonoBehaviour
     private GameObject _slashHitBox;
     private GameObject _pickHitBox;
 
-    private float _comboCooldown = 0.7f; //max time allowed to combo
-    private float _comboTimer;
+    public float _comboCooldown = 1f; //max time allowed to combo
+    public float _comboTimer;
     private float _attackMultiplier = 1;
+    private float _frictionMultiplier = 1;
     [HideInInspector] public float invincibleCounter;
     [HideInInspector] public float invincibleTime;
     private float _speedFactor = 1;
     private float _dashCooldownTimer;
-    private float smashTimer;
-    private float _mouseHoldTimer;
+    public float smashGauge;
     private bool _isInvincible;
     [HideInInspector]public bool isAttacking;
     private bool _isDashing;
     private bool _isMouseHolding;
+    [HideInInspector] public float stunCounter;
     private int _dashesAvailable = 1;
     private int _comboCounter;
     private int _dirCoef; //sprite direction
@@ -58,7 +59,6 @@ public class PlayerController : MonoBehaviour
     private PlayerControls _playerControls;
     private InputAction _move;
     private InputAction _dash;
-    private InputAction _attack;
     private InputAction _mouseHold;
     private void Awake()
     {
@@ -80,13 +80,18 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (canMove)
-        {
-            MovePlayer();
-            JostickDir();
-        }
-        Friction();
+        JostickDir();
         Timer();
+        Friction();
+
+        if (stunCounter <= 0)
+        {
+            if (canMove)
+            {
+                MovePlayer();
+            }
+            AttackManagement();
+        }
     }
 
     
@@ -121,6 +126,7 @@ public class PlayerController : MonoBehaviour
     {
         if (movementDir!= Vector2.zero && !_isDashing && _speedFactor != 0)
         {
+            
             _rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration), ForceMode.Impulse);
             _lastWalkedDir = movementDir;
             
@@ -149,20 +155,21 @@ public class PlayerController : MonoBehaviour
     void Friction()
     {
         //deceleration
+        if (isAttacking || stunCounter > 0 || _isDashing)
+        {
+            _frictionMultiplier = 0.95f;
+            return;
+        }
+        
         if (!_isDashing && movementDir == Vector2.zero)
         {
             if (!isAttacking)
             {
-                Debug.Log("friction pas attack");
-                _rb.velocity = new Vector3(_rb.velocity.x / frictionAmount, _rb.velocity.y, _rb.velocity.z / frictionAmount);
+                _frictionMultiplier = 1/frictionAmount;
             }
         }
 
-        if (isAttacking)
-        {
-            Debug.Log("friction attack");
-            _rb.velocity = new Vector3(_rb.velocity.x * 0.95f, _rb.velocity.y, _rb.velocity.z * 0.95f);
-        }
+        _rb.velocity = new Vector3(_rb.velocity.x * _frictionMultiplier, _rb.velocity.y, _rb.velocity.z * _frictionMultiplier);
     }
 
     void Dash(InputAction.CallbackContext context)
@@ -197,13 +204,13 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    void JostickDir()
+        void JostickDir()
         {
             Vector2 inputDir = _move.ReadValue<Vector2>();
             movementDir = new Vector2(inputDir.x, inputDir.y);
         }
 
-        void Attack(InputAction.CallbackContext context)
+        void Attack()
         {
             if (!isAttacking && !_isDashing)
             {
@@ -227,6 +234,7 @@ public class PlayerController : MonoBehaviour
                     damage = slashDamage;
                     hitbox = _slashHitBox; 
                     force = slashForce;
+                    _comboCounter++;  //used to combo if done in a row
                     //1st anim
                     break;
                 case 1 : 
@@ -234,6 +242,7 @@ public class PlayerController : MonoBehaviour
                     damage = slashDamage;
                     hitbox = _slashHitBox; 
                     force = slashForce;
+                    _comboCounter++;  //used to combo if done in a row
                     //2nd anim
                     break;
                 case 2 : 
@@ -241,19 +250,12 @@ public class PlayerController : MonoBehaviour
                     damage = pickDamage;
                     hitbox = _pickHitBox; 
                     force = pickForce;
-                    break;
-                case 3 : 
-                    cooldown = smashCooldown; 
-                    damage = smashDamage;
-                    hitbox = _smashHitBox; 
-                    force = smashForce;
+                    _comboCounter = 0; //resets combo if last attack
                     break;
             }
             
             //determine ou l'attaque va se faire
             _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
-            //used to combo if done in a row
-            _comboCounter++;
             //starts timer for combos
             _comboTimer = _comboCooldown;
             //stops movement
@@ -264,13 +266,14 @@ public class PlayerController : MonoBehaviour
             hitbox.SetActive(true);
             //adds force to simulate inertia
             _rb.velocity = Vector3.zero;
-            Vector3 pushedDir = new Vector3(_lastWalkedDir.x, 0, _lastWalkedDir.y);
+            Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
                 
             _rb.AddForce(pushedDir * force, ForceMode.Impulse);
             //plays animation
 
             //waits cooldown depending on the attack used
             yield return new WaitForSeconds(cooldown);
+            _rb.velocity = Vector3.zero;
             //restores speed
             canMove = true;
             //disables hitbox
@@ -296,13 +299,9 @@ public class PlayerController : MonoBehaviour
             _dash = _playerControls.Player.Dash;
             _dash.Enable();
             _dash.performed += Dash;
-            
-            _attack = _playerControls.Player.Attack;
-            _attack.Enable();
-            _attack.performed += Attack;
 
             _mouseHold = _playerControls.Player.AttackHold;
-            _mouseHold.performed += MouseHold;
+            _mouseHold.started += MouseHold;
             _mouseHold.canceled += MouseReleased;
             _mouseHold.Enable();
         }
@@ -311,7 +310,6 @@ public class PlayerController : MonoBehaviour
         {
             _move.Disable();
             _dash.Disable();
-            _attack.Disable();
             _mouseHold.Disable();
         }
         #endregion
@@ -322,6 +320,7 @@ public class PlayerController : MonoBehaviour
             _dashCooldownTimer -= Time.deltaTime;
             _comboTimer -= Time.deltaTime;
             invincibleCounter -= Time.deltaTime;
+            stunCounter -= Time.deltaTime;
 
             if (_comboTimer <= 0)
             {
@@ -336,17 +335,91 @@ public class PlayerController : MonoBehaviour
             {
                 _isInvincible = false;
             }
-
-            if (_isMouseHolding)
-            {
-                _mouseHoldTimer += Time.deltaTime;
-            }
-            else
-            {
-                _mouseHoldTimer = 0;
-            }
         }
         #endregion
+
+         IEnumerator Smash()
+        {
+            //determines attack length, damage, hitbox, force to add
+            GameObject hitbox = _smashHitBox;
+            float damage = smashDamage;
+            float cooldown = smashCooldown;
+            float force = smashForce;
+
+            //determine ou l'attaque va se faire
+            _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
+            //stops combo
+            _comboCounter = 0;
+            //stops movement
+            canMove = false;
+            //add current damage stat to weapon
+            hitbox.GetComponent<ObjectDamage>().damage = damage;
+            //adds force to simulate inertia
+            _rb.velocity = Vector3.zero;
+            Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
+            _rb.AddForce(pushedDir * force, ForceMode.Impulse);
+            //warmup
+            yield return new WaitForSeconds(smashWarmup);
+            //actives weapon
+            hitbox.SetActive(true);
+            //stops player
+            _rb.velocity = Vector3.zero;
+            //plays animation
+            
+            //waits cooldown depending on the attack used
+            yield return new WaitForSeconds(cooldown);
+            //restores speed
+            canMove = true;
+            //disables hitbox
+            hitbox.SetActive(false);
+            isAttacking = false;
+        }
+
+         void AttackManagement()
+         {
+             if (!isAttacking && !_isDashing)
+             {
+                 if (_isMouseHolding)
+                 {
+                     canMove = false;
+                     _rb.velocity = Vector3.zero;
+                     //charges smash gauge
+                     smashGauge += Time.deltaTime;
+                 }
+                 else
+                 {
+                     //if initial input
+                     if (smashGauge > 0)
+                     {
+                         //on release, if a little bit hold, attacks
+                         if (smashGauge <= 0.3)
+                         {
+                             canMove = true;
+                             Attack();
+                         }
+                         //if too long, smash or pass (lol)
+                         else 
+                         {
+                             if (smashGauge == 1)
+                             {
+                                 isAttacking = true;
+                                 StartCoroutine(Smash());
+                             }
+                             else
+                             {
+                                 canMove = true;
+                             }
+                         }
+                     }
+                     smashGauge = 0;
+                 }
+
+                 if (smashGauge >= 1)
+                 {
+                     smashGauge = 1;
+                 }
+             }
+         }
 }
 
 

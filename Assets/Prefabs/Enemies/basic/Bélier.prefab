@@ -96,9 +96,9 @@ GameObject:
   - component: {fileID: 2968841949496062431}
   - component: {fileID: 7190544992094592916}
   - component: {fileID: 7589144019135704199}
-  - component: {fileID: -6087989529908105090}
   - component: {fileID: -3445798133415046204}
   - component: {fileID: 238949419215076202}
+  - component: {fileID: 7796962586599521996}
   m_Layer: 0
   m_Name: "B\xE9lier"
   m_TagString: EnemyAttack
@@ -189,29 +189,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2, y: 0.38, z: 1.6}
   m_Center: {x: 0, y: -1.48, z: 0}
---- !u!114 &-6087989529908105090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2968841949496062438}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9ed563e713a2c44f86e2f04f7eba992, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyType: 2
-  speed: 3
-  max_health: 5
-  damage: 2
-  eyesDropped: 2
-  attackRange: 10
-  enemyTypeSo: {fileID: 0}
-  eyeToken: {fileID: 252159430993309912, guid: 2c5e1f53132f7af4ca93a0f5eef6409d, type: 3}
-  healthSlider: {fileID: 2968841951305248708}
-  mageProjectile: {fileID: 1084243870843448940, guid: 3653f42742fb9e445a4f1b228477db31,
-    type: 3}
 --- !u!114 &-3445798133415046204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9386125659fbb264692d28dc48617014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActive: 0
   startSpawning: 0
 --- !u!114 &238949419215076202
 MonoBehaviour:
@@ -238,6 +216,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
+--- !u!114 &7796962586599521996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2968841949496062438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854e067e4575a3d4fae86b7f7d7047e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyTypeData: {fileID: 11400000, guid: 8f6bc1c0420a2e64ea799aa9c5551333, type: 2}
+  healthSlider: {fileID: 2968841951305248708}
 --- !u!1 &2968841949653778818
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,7 +409,6 @@ GameObject:
   - component: {fileID: 2968841950414670415}
   - component: {fileID: 2968841950414670412}
   - component: {fileID: 2968841950414670413}
-  - component: {fileID: 2968841950414670410}
   m_Layer: 0
   m_Name: JabRange
   m_TagString: Untagged
@@ -503,19 +494,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2968841950414670410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2968841950414670408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 558c4a661029c04429cd94767048ac44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
 --- !u!1 &2968841950551092051
 GameObject:
   m_ObjectHideFlags: 0

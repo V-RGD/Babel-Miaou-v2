@@ -29,5 +29,10 @@ public class ProjectileDamage : MonoBehaviour
             player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
             Destroy(gameObject);
         }
+
+        if (other.CompareTag("Wall"))
+        {
+            Destroy(gameObject);
+        }
     }
 }

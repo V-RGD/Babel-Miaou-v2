@@ -9,31 +9,29 @@ public class Room : MonoBehaviour
     //manages what spawns in the room, and what events happen (doors, events, stairs)
 
     [Header("Generic Prefabs")]
-    [HideInInspector] public GameObject chest;
-    [HideInInspector] public GameObject doorL;
-    [HideInInspector] public GameObject doorR;
-    [HideInInspector] public GameObject doorU;
-    [HideInInspector] public GameObject doorD;
+    public GameObject chest;
+    [HideInInspector] public GameObject doorPrefab;
+    [HideInInspector] public List<GameObject> doorsObjects;
 
     //components
     private LevelManager _lm;
     private UIManager _uiManager;
     private GameManager _gameManager;
     private DunGen _dunGen;
+    
+    //room info
+    public int roomType;
+    public int currentRoom;
 
     //values
     private GameObject _player;
     private GameObject _enemyGroup;
     private int _enemiesRemaining;
-    private int _lastDoorPos;
-    private bool _isDoorUnlocked;
     private bool _canChestSpawn = true;
-    private bool _doorTaken;
+    private bool _canOpenDoors = true;
     private bool _canSpawnStela;
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
-    public int roomType;
-    public int currentRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which'll detect the player if it's close from the center
     void Awake()
     {
@@ -44,10 +42,12 @@ public class Room : MonoBehaviour
         _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
         _enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
+        doorPrefab = _lm.door;
+        _canOpenDoors = true;
 
         RoomType();
         //PropsSpawn();
-        //DoorLock();
+        DoorSpawn();
     }
     
     void Update()
@@ -56,25 +56,23 @@ public class Room : MonoBehaviour
         
         if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
         {
+            _canOpenDoors = true;
             _canChestSpawn = false;
             chest = Instantiate(chest, new Vector3(transform.position.x, 0, transform.position.z), quaternion.identity);
-        }
-
-        if (chest != null) //opens door
-
-        {
-            if (chest.GetComponent<Chest>().isOpen) 
+            if (roomType == 4)
             {
-                _isDoorUnlocked = true;
+                _lm.exit.SetActive(true);
             }
         }
 
-        if (_hasPlayerEnteredRoom == _canActivateEnemies)
+        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType == 1)
         {
             _canActivateEnemies = false;
             StartCoroutine(ActivateAllEnemies());
         }
+        
         CheckPlayerPresence();
+        DoorUnlock();
     }
 
     #region AutoWalk
@@ -167,6 +165,8 @@ public class Room : MonoBehaviour
     
     void RoomType()
     {
+        //Debug.Log(currentRoom);
+        Debug.Log(_dunGen.dungeonSize);
         if (currentRoom == 0)
         {
             roomType = 0;
@@ -189,7 +189,7 @@ public class Room : MonoBehaviour
         switch (roomType)
         {
             case 0 : //start room
-                _isDoorUnlocked = true; 
+                _lm.entrance.transform.position = transform.position + Vector3.up * 5;
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -200,32 +200,28 @@ public class Room : MonoBehaviour
                 break;
             case 3 : //shop room
                 ShopSpawn();
-                _isDoorUnlocked = true;
                 break;
             case 4 : //miniboss room
                 MiniBossSpawn();
+                _lm.exit.transform.position = transform.position + Vector3.up * 5;
+                _lm.exit.SetActive(false);
                 break;
             case 5 : //final boss room
-                MiniBossSpawn();
                 break;
         }
     }
 
     void MiniBossSpawn()
     {
-        GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], _enemyGroup.transform);
-        bossSpawning.transform.position = transform.position;
-    }
-
-    void FinalBossSpawn()
-    {
+        Debug.Log("spawned miniboss");
         GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], _enemyGroup.transform);
         bossSpawning.transform.position = transform.position;
     }
 
     void ShopSpawn()
     {
-        Instantiate(_lm.shop, transform.position, quaternion.identity);
+        Debug.Log("spawned shop");
+        Instantiate(_lm.shop, transform.position + Vector3.up * 7, quaternion.identity);
     }
 
     void CheckPlayerPresence()
@@ -248,6 +244,7 @@ public class Room : MonoBehaviour
 
     IEnumerator ActivateAllEnemies()
     {
+        _canOpenDoors = false;
         for (int i = 0; i < _enemyGroup.transform.childCount; i++)
         {
             _enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
@@ -255,6 +252,54 @@ public class Room : MonoBehaviour
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
             _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    void DoorSpawn()
+    {
+        RoomInfo info = GetComponent<RoomInfo>();
+        for (int i = 0; i < 4; i++)
+        {
+            //checks if there is supposed to be doors on each corner
+            if (info.doors[i] == 1)
+            {
+                //spawns doors accordingly
+                var cornerOffset = 5;
+                var upOffset = 8;
+                var roomSize = 50;
+                var spawnPoint = Vector3.zero;
+                var rotation = Vector3.zero;
+                switch (i)
+                {
+                    case 0 : //left
+                        spawnPoint = new Vector3(-roomSize + cornerOffset, upOffset, 0);
+                        rotation = new Vector3(90, -90, 0); break;
+                    case 1 :  //up
+                        spawnPoint = new Vector3(0, upOffset, roomSize - cornerOffset);
+                        rotation = new Vector3(90, 0, 0); break;
+                    case 2 :  //right
+                        spawnPoint = new Vector3(roomSize - cornerOffset, upOffset, 0);
+                        rotation = new Vector3(90, 90, 0); break;
+                    case 3 :  //down
+                        spawnPoint = new Vector3(0, upOffset, -roomSize + cornerOffset);
+                        rotation = new Vector3(90, 180, 0); break;
+                }
+                GameObject door = Instantiate(doorPrefab, spawnPoint + transform.position, Quaternion.Euler(rotation));
+                door.transform.parent = gameObject.transform;
+                doorsObjects.Add(door);
+            }
+        }
+    }
+
+    void DoorUnlock()
+    {
+        foreach (var door in doorsObjects)
+        {
+            switch (_canOpenDoors)
+            {
+                case true : door.SetActive(false); break;
+                case false : door.SetActive(true); break;
+            }
         }
     }
 }

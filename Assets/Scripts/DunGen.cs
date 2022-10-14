@@ -18,19 +18,19 @@ public class DunGen : MonoBehaviour
     private int _roomToSpawnNumber = 1;
     public int dungeonSize;
 
-    //
+    //components
     private NavMeshSurface _navMeshSurface;
-    private GameManager gameManager;
+    private LevelManager _lm;
 
     private void Start()
     {
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        StartCoroutine(Genpro());
+        _lm = GetComponent<LevelManager>();
+        StartCoroutine(GenPro());
     }
 
     #region Genpro
-    IEnumerator Genpro()
+    public IEnumerator GenPro()
     {
         //set un offset
         float offset = 100;
@@ -86,11 +86,13 @@ public class DunGen : MonoBehaviour
             //add room
             _map[tblX, tblY] = 1;
             _roomNumberMap[tblX, tblY] = _roomToSpawnNumber; //used to track room ID for the golden path
-            _roomToSpawnNumber += 1;
+            _roomToSpawnNumber = i;
+            dungeonSize = i;
             yield return new WaitForSeconds(0.01f);
             //GameObject roomChecker = Instantiate(goldenPathCheck, new Vector3(tblX * offset, 0, tblY * offset) - new Vector3(500, 0, 500), Quaternion.Euler(90, 0, 0));
             //roomChecker.SetActive(true);
         }
+        dungeonSize -= 1;
         #region Branches
         //adds multiple branches
         for (int a = 0; a < 100; a++)
@@ -212,16 +214,17 @@ public class DunGen : MonoBehaviour
                     {
                         GameObject roomPrepared = potentialRooms[Random.Range(0, potentialRooms.Count)];
                         GameObject roomSpawning = Instantiate(roomPrepared, new Vector3(i * offset, 0, j * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(90, 0, 0));
+                        //giving it a proper name
+                        roomSpawning.name = "Room" + _roomNumberMap[i, j];
                         roomSpawning.GetComponent<Room>().currentRoom = _roomNumberMap[i, j];
+                        //adding room to the list
+                        _lm.roomList.Add(roomSpawning);
                         roomSpawning.SetActive(true);
                     }
                     yield return new WaitForSeconds(0.01f);
                 }
             }
         }
-
-        dungeonSize = _roomToSpawnNumber;
-
         #endregion
         _navMeshSurface.BuildNavMesh();
     }

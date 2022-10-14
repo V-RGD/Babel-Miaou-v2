@@ -166,7 +166,11 @@ public class Room : MonoBehaviour
     void RoomType()
     {
         //Debug.Log(currentRoom);
-        Debug.Log(_dunGen.dungeonSize);
+        if (currentRoom == 999)
+        {
+            roomType = 2;
+        }
+
         if (currentRoom == 0)
         {
             roomType = 0;
@@ -189,7 +193,7 @@ public class Room : MonoBehaviour
         switch (roomType)
         {
             case 0 : //start room
-                _lm.entrance.transform.position = transform.position + Vector3.up * 5;
+                _lm.entrance.transform.position = transform.position;
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -203,7 +207,7 @@ public class Room : MonoBehaviour
                 break;
             case 4 : //miniboss room
                 MiniBossSpawn();
-                _lm.exit.transform.position = transform.position + Vector3.up * 5;
+                _lm.exit.transform.position = transform.position;
                 _lm.exit.SetActive(false);
                 break;
             case 5 : //final boss room

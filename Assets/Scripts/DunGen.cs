@@ -70,7 +70,7 @@ public class DunGen : MonoBehaviour
         _map[50, 50] = 1;
         
         //prepares rooms to be instanciated
-        for (int i = 0; i < goldenPathLength; i++)
+        for (int i = 1; i < goldenPathLength; i++)
         {
             //either go one way or the other, in the direction of the diagonal;
             int randDir = Random.Range(0, 2);
@@ -86,13 +86,15 @@ public class DunGen : MonoBehaviour
             //add room
             _map[tblX, tblY] = 1;
             _roomNumberMap[tblX, tblY] = _roomToSpawnNumber; //used to track room ID for the golden path
-            _roomToSpawnNumber = i;
-            dungeonSize = i;
+            _roomToSpawnNumber++;
+            dungeonSize = _roomToSpawnNumber;
             yield return new WaitForSeconds(0.01f);
             //GameObject roomChecker = Instantiate(goldenPathCheck, new Vector3(tblX * offset, 0, tblY * offset) - new Vector3(500, 0, 500), Quaternion.Euler(90, 0, 0));
             //roomChecker.SetActive(true);
         }
         dungeonSize -= 1;
+
+        
         #region Branches
         //adds multiple branches
         for (int a = 0; a < 100; a++)
@@ -111,17 +113,17 @@ public class DunGen : MonoBehaviour
                         {
                             potentialDirections.Add(0);
                         }
-
+        
                         if (_map[a, b + 1] == 0)
                         {
                             potentialDirections.Add(1);
                         }
-
+        
                         if (_map[a - 1, b] == 0)
                         {
                             potentialDirections.Add(2);
                         }
-
+        
                         if (_map[a, b - 1] == 0)
                         {
                             potentialDirections.Add(3);
@@ -129,29 +131,33 @@ public class DunGen : MonoBehaviour
                         
                         int branchOffsetX = 0;
                         int branchOffsetY = 0;
-
+        
                         //adds a random one where available
                         int randDir = potentialDirections[Random.Range(0, potentialDirections.Count)];
                         switch (randDir)
                         {
                             case 0:
                                 _map[a + 1, b] = 1;
+                                _roomNumberMap[a + 1, b] = 999; 
                                 branchOffsetX = 1;
                                 break;
                             case 1:
                                 _map[a, b + 1] = 1;
                                 branchOffsetY = 1;
+                                _roomNumberMap[a, b + 1] = 999;
                                 break;
                             case 2:
                                 _map[a - 1, b] = 1;
                                 branchOffsetX = -1;
+                                _roomNumberMap[a - 1, b] = 999; 
                                 break;
                             case 3:
                                 _map[a, b - 1] = 1;
                                 branchOffsetY = -1;
+                                _roomNumberMap[a, b - 1] = 999;
                                 break;
                         }
-
+        
                         yield return new WaitForSeconds(0.01f);
                         //GameObject roomChecker = Instantiate(branchCheck, new Vector3((a + branchOffsetX) * offset, 0, (b + branchOffsetY) * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(90, 0, 0));
                         //roomChecker.SetActive(true);
@@ -160,6 +166,8 @@ public class DunGen : MonoBehaviour
             }
         }
         #endregion
+        
+        
         #region instanciation
         //pour chaque salle définie, checker quelles sont les salles ajdacentes avec le systeme de tableau
         //for each location possible

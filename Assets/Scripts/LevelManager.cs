@@ -39,17 +39,17 @@ public class LevelManager : MonoBehaviour
         //disables all current rooms
         for (int i = 0; i < roomList.Count; i++)
         {
-            roomList[i].SetActive(false);
-            Destroy(roomList[i]);
+            GameObject objectToRemove = roomList[i];
+            roomList.Remove(roomList[i]);
+            Destroy(objectToRemove);
         }
         
         //builds new level
         _dunGen.StartCoroutine(_dunGen.GenPro());
         
-        //organises room order, so the list isn't made by spawn order, but by roomIndex
-        roomList = new List<GameObject>(_dunGen.dungeonSize);
-
+        
+        
         //places player in first room
-        GameObject.Find("Player").transform.position = entrance.transform.position;
+        GameObject.Find("Player").transform.position = new Vector3(entrance.transform.position.x, 1, entrance.transform.position.z);
     }
 }

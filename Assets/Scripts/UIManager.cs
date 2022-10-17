@@ -127,16 +127,19 @@ public class UIManager : MonoBehaviour
         //used to display progress bar for smash holding
         float value = _playerController.smashGauge * 100;
         float xValue = value / 2 - 50;
+        Debug.Log(value);
 
         if (value > 20)
         {
             smashSlider.gameObject.SetActive(true);
             smashSlider.GetComponent<RectTransform>().localPosition = new Vector3(xValue, 0, 0);
             smashSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, 10);
+            smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(true);
         }
         else
         {
             smashSlider.gameObject.SetActive(false);
+            smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(false);
         }
         
     }

@@ -8,8 +8,13 @@ public class GameManager : MonoBehaviour
 
     public int money;
     public int maxHealth = 3;
-    [HideInInspector]public float health;
+    [HideInInspector]public int health;
 
+    //player base stats
+    [HideInInspector]public float baseHealth;
+    [HideInInspector]public float baseAttack;
+    [HideInInspector]public float baseDexterity;
+    
     public int currentRoom;
 
     public bool isDead;

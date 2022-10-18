@@ -14,9 +14,9 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool canMove = true;
 
     [Header("Attacks")]
-    public float smashDamage = 5;
-    public float slashDamage = 1;
-    public float pickDamage = 2;
+    public int smashDamage = 5;
+    public int slashDamage = 1;
+    public int pickDamage = 2;
     
     public float slashCooldown = 0.4f;
     public float pickCooldown = 0.7f;
@@ -39,12 +39,14 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float invincibleCounter;
     [HideInInspector] public float invincibleTime;
     private float _speedFactor = 1;
-    private float _dashCooldownTimer;
+    [HideInInspector] public float dashCooldownTimer;
     public float smashGauge;
     private bool _isInvincible;
     [HideInInspector]public bool isAttacking;
     private bool _isDashing;
     private bool _isMouseHolding;
+    [HideInInspector] public bool isMasterSword;
+    [HideInInspector] public bool canRepel;
     [HideInInspector] public float stunCounter;
     private int _dashesAvailable = 1;
     private int _comboCounter;
@@ -73,9 +75,9 @@ public class PlayerController : MonoBehaviour
         _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
         
-        _slashHitBox.GetComponent<ObjectDamage>().damage = _attackMultiplier * slashDamage;
-        _smashHitBox.GetComponent<ObjectDamage>().damage = _attackMultiplier * smashDamage;
-        _pickHitBox.GetComponent<ObjectDamage>().damage = _attackMultiplier * pickDamage;
+        _slashHitBox.GetComponent<ObjectDamage>().damage = slashDamage;
+        _smashHitBox.GetComponent<ObjectDamage>().damage = smashDamage;
+        _pickHitBox.GetComponent<ObjectDamage>().damage = pickDamage;
     }
 
     void FixedUpdate()
@@ -174,7 +176,7 @@ public class PlayerController : MonoBehaviour
 
     void Dash(InputAction.CallbackContext context)
     {
-        if (!_isDashing && _dashesAvailable > 0 && _dashCooldownTimer <= 0 && !isAttacking)
+        if (!_isDashing && _dashesAvailable > 0 && dashCooldownTimer <= 0 && !isAttacking)
         {
             _dashesAvailable--;
             _isDashing = true;
@@ -200,7 +202,7 @@ public class PlayerController : MonoBehaviour
         _isDashing = false;
         canMove = true;
         _dashesAvailable++;
-        _dashCooldownTimer = dashCooldownLenght;
+        dashCooldownTimer = dashCooldownLenght;
     }
     #endregion
 
@@ -223,9 +225,19 @@ public class PlayerController : MonoBehaviour
         {
             //determines attack length, damage, hitbox, force to add
             GameObject hitbox = null;
-            float damage = 0;
+            int damage = 0;
             float cooldown = 0;
             float force = 0;
+            Vector3 attackDir = Vector3.zero;
+
+            if (movementDir != Vector2.zero)
+            {
+                attackDir = new Vector3(movementDir.x, 0, movementDir.y);
+            }
+            else
+            {
+                attackDir = new Vector3(_lastWalkedDir.x, 0, _lastWalkedDir.y);
+            }
             
             switch (_comboCounter)
             {
@@ -255,7 +267,7 @@ public class PlayerController : MonoBehaviour
             }
             
             //determine ou l'attaque va se faire
-            _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
+            _attackAnchor.transform.LookAt(transform.position + attackDir);
             //starts timer for combos
             _comboTimer = _comboCooldown;
             //stops movement
@@ -266,9 +278,7 @@ public class PlayerController : MonoBehaviour
             hitbox.SetActive(true);
             //adds force to simulate inertia
             _rb.velocity = Vector3.zero;
-            Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
-                
-            _rb.AddForce(pushedDir * force, ForceMode.Impulse);
+            _rb.AddForce(attackDir * force, ForceMode.Impulse);
             //plays animation
 
             //waits cooldown depending on the attack used
@@ -317,7 +327,7 @@ public class PlayerController : MonoBehaviour
         #region Timer
         void Timer()
         {
-            _dashCooldownTimer -= Time.deltaTime;
+            dashCooldownTimer -= Time.deltaTime;
             _comboTimer -= Time.deltaTime;
             invincibleCounter -= Time.deltaTime;
             stunCounter -= Time.deltaTime;
@@ -342,7 +352,7 @@ public class PlayerController : MonoBehaviour
         {
             //determines attack length, damage, hitbox, force to add
             GameObject hitbox = _smashHitBox;
-            float damage = smashDamage;
+            int damage = smashDamage;
             float cooldown = smashCooldown;
             float force = smashForce;
 

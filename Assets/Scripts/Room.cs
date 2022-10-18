@@ -25,7 +25,7 @@ public class Room : MonoBehaviour
 
     //values
     private GameObject _player;
-    private GameObject _enemyGroup;
+    public GameObject enemyGroup;
     private int _enemiesRemaining;
     private bool _canChestSpawn = true;
     private bool _canOpenDoors = true;
@@ -40,7 +40,7 @@ public class Room : MonoBehaviour
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
-        _enemyGroup = transform.GetChild(0).gameObject;
+        enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
         _canOpenDoors = true;
@@ -52,7 +52,7 @@ public class Room : MonoBehaviour
     
     void Update()
     {
-        _enemiesRemaining = _enemyGroup.transform.childCount; //check how many enemies are still in the room
+        _enemiesRemaining = enemyGroup.transform.childCount; //check how many enemies are still in the room
         
         if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
         {
@@ -157,7 +157,7 @@ public class Room : MonoBehaviour
             //take a random one for a list of available enemies
             int enemyToSpawn = enemiesAvailable[Random.Range(0, enemiesAvailable.Count)];
             //instanciates it as a child to track down how many are left
-            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyToSpawn], _enemyGroup.transform);
+            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyToSpawn], enemyGroup.transform);
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.SetActive(false);
         }
@@ -217,14 +217,12 @@ public class Room : MonoBehaviour
 
     void MiniBossSpawn()
     {
-        Debug.Log("spawned miniboss");
-        GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], _enemyGroup.transform);
+        GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], enemyGroup.transform);
         bossSpawning.transform.position = transform.position;
     }
 
     void ShopSpawn()
     {
-        Debug.Log("spawned shop");
         Instantiate(_lm.shop, transform.position + Vector3.up * 7, quaternion.identity);
     }
 
@@ -249,12 +247,12 @@ public class Room : MonoBehaviour
     IEnumerator ActivateAllEnemies()
     {
         _canOpenDoors = false;
-        for (int i = 0; i < _enemyGroup.transform.childCount; i++)
+        for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
-            _enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
-            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().enabled = true;
-            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-            _enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
+            enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
+            enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().enabled = true;
+            enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
+            enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(0.5f);
         }
     }

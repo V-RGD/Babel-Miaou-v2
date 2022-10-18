@@ -21,19 +21,23 @@ public class ItemDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
     }
     
+    
+    //when initializing click
     public void OnBeginDrag(PointerEventData eventData)
     {
         canvasGroup.blocksRaycasts = false;
     }
-
+    
+    //when dragging
     public void OnDrag(PointerEventData eventData)
     {
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
         //removes old assignation
+        _objectsManager.OnObjectUnEquip(eventData.pointerDrag.gameObject);
         _objectsManager.itemObjectsInventory[eventData.pointerDrag.GetComponent<ItemDragDrop>().boxAssociated] = null;
-        Debug.Log("dragging");
     }
 
+    //when releasing click
     public void OnEndDrag(PointerEventData eventData)
     {
         canvasGroup.blocksRaycasts = true;

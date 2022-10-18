@@ -14,7 +14,7 @@ public class PullIA : MonoBehaviour
     private LayerMask wallLayerMask;
     
     //values
-    private float _health;
+    private int _health;
     private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
@@ -69,8 +69,6 @@ public class PullIA : MonoBehaviour
             Behaviour();
         }
     }
-
-    
 
     void Behaviour()
     {

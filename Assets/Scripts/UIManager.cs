@@ -18,8 +18,10 @@ public class UIManager : MonoBehaviour
     public Image panel;
     public Image smashSlider;
 
-    [HideInInspector]public bool doWhiteout;
+    [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
+    [HideInInspector] public bool isMapHighlight;
+    [HideInInspector] public bool isMapFull;
 
     public float transitionLenght;
     private float _panelAlpha;
@@ -133,10 +135,12 @@ public class UIManager : MonoBehaviour
             smashSlider.gameObject.SetActive(true);
             smashSlider.GetComponent<RectTransform>().localPosition = new Vector3(xValue, 0, 0);
             smashSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, 10);
+            smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(true);
         }
         else
         {
             smashSlider.gameObject.SetActive(false);
+            smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(false);
         }
         
     }

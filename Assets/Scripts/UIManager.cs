@@ -18,8 +18,10 @@ public class UIManager : MonoBehaviour
     public Image panel;
     public Image smashSlider;
 
-    [HideInInspector]public bool doWhiteout;
+    [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
+    [HideInInspector] public bool isMapHighlight;
+    [HideInInspector] public bool isMapFull;
 
     public float transitionLenght;
     private float _panelAlpha;
@@ -127,7 +129,6 @@ public class UIManager : MonoBehaviour
         //used to display progress bar for smash holding
         float value = _playerController.smashGauge * 100;
         float xValue = value / 2 - 50;
-        Debug.Log(value);
 
         if (value > 20)
         {

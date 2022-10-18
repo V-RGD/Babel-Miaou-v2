@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ObjectsManager : MonoBehaviour
 {
-    /*
+    
     public List<GameObject> itemObjectsInventory = new List<GameObject>(5);
     public GameObject[] itemList;
     public ObjectTextData itemDataScriptable;
@@ -57,7 +57,32 @@ public class ObjectsManager : MonoBehaviour
     private int _bsbKillStreak;
     private bool _ffCanKill;
     private GameManager _gameManager;
-    
+    private UIManager _uiManager;
+    private PlayerController _player;
+
+    public bool playerHit;
+
+    private float _catWrath_damageMultiplier;
+    private float _catWrath_attackCooldown;
+    private float _invincibilityTimer;
+    private float _sacredCross_tookDamageTimer;
+    private float _witherShield_speedDecrease;
+    private float _glassCanonDamage;
+    private float _catWrathTimer;
+    private float _killingSpreeTimer;
+    public int sourceDamage;
+    private int _currentRoomIndex;
+    private bool noHitStreak;
+    public bool enteredRoom;
+    public bool killedEnemy;
+    private Room _currentRoom;
+
+    private void Awake()
+    {
+        _player = GameObject.Find("Player").GetComponent<PlayerController>();
+        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+    }
+
     private void Start()
     {
         AssignObjectInfos();
@@ -67,13 +92,19 @@ public class ObjectsManager : MonoBehaviour
     private void Update()
     {
         UiItemBoxesUpdate();
+    }
+
+    private void FixedUpdate()
+    {
         ObjectEffects();
     }
 
-    void OnObjectEquip(GameObject item)
+    public void OnObjectEquip(GameObject item)
     {
+        int id = item.GetComponent<ItemDragDrop>().objectID;
+        Debug.Log("equiped " + id);
         //check the ID of the object to add additional effects
-        switch (item.GetComponent<ItemDragDrop>().objectID)
+        switch (id)
         {
             case 0 : allSeeingEye = true; break;
             case 1 : bloodBlade = true; break;
@@ -103,10 +134,12 @@ public class ObjectsManager : MonoBehaviour
             case 25 : allSeeingEye = true; break;
         }
     }
-    void OnObjectUnEquip(GameObject item)
+    public void OnObjectUnEquip(GameObject item)
     {
-        //check the ID of the object to add additional effects
-        switch (item.GetComponent<ItemDragDrop>().objectID)
+        int id = item.GetComponent<ItemDragDrop>().objectID;
+        Debug.Log("unequiped " + id);
+        //check the ID of the object to remove additional effects
+        switch (id)
         {
             case 0 : allSeeingEye = false; break;
             case 1 : bloodBlade = false; break;
@@ -139,11 +172,86 @@ public class ObjectsManager : MonoBehaviour
 
     void ObjectEffects()
     {
+        //--------------------Permanent Effects---------------------------------
+
+        //all seeing eye - glass canon - all knowing eye - the force - master sword - no pet - strong grasp - swift art - tank power - strange pact - catnip - safety blessing
         switch (allSeeingEye)
         {
-            case true : uiManager.isMapFull = true; break; //sets map to full size
-            case false : uiManager.isMapFull = false; break;
+            case true : _uiManager.isMapFull = true; break; //sets map to full size
+            case false : _uiManager.isMapFull = false; break;
         }
+        switch (glassCanon)
+        {
+            case true : //increases damage depending on the effect wished
+                int maxHealth = _gameManager.maxHealth;
+                int health = _gameManager.health;
+                int diff = (maxHealth - health) % 2; //rounds attack to int
+                switch (diff)
+                {
+                    case 0 : _glassCanonDamage = (maxHealth - health) / 2 * _gameVariables.glassCanonDamage; break; 
+                    case 1 : _glassCanonDamage = Mathf.CeilToInt((maxHealth - health) / 2 * _gameVariables.glassCanonDamage); break;
+                }
+                break;
+            case false : break;
+        }
+        switch (allKnowingEye)
+        {
+            case true : _uiManager.isMapHighlight = true; break; //highlights interesting places on the map
+            case false : _uiManager.isMapHighlight = false; break;
+        }
+        switch (theForce)
+        {
+            case true : _player.canRepel = true; break;
+            case false : _player.canRepel = false; break;
+        }
+        switch (masterSword)
+        {
+            case true : _player.isMasterSword = true; break;
+            case false : _player.isMasterSword = false; break;
+        }
+        //--------------------Event Effects---------------------------------
+        
+        //on hit - cat wrath - sacred cross - inner peace - wither shield - no hit
+        if (playerHit)
+        {
+            playerHit = false;
+            if (catWrath) 
+            {
+                _catWrathTimer = _gameVariables.catWrathTime; //sets timer
+            }
+            if (sacredCross)
+            {
+                _player.invincibleCounter = _gameVariables.sacredCrossTimer;
+            }
+            if (innerPeace) 
+            {
+                int damage = sourceDamage;
+                if (damage != 1)
+                {
+                    damage--;
+                }
+                _gameManager.health -= damage;
+            }
+
+            if (witherShield)
+            {
+                List<GameObject> enemyList = new List<GameObject>();
+                for (int i = 0; i < _currentRoom.enemyGroup.transform.childCount; i++)
+                {
+                    //access enemy speed and decreases it
+                    //_currentRoom.enemyGroup.transform.GetChild(i).GetComponent<Enemy>().speedFactor = _gameVariables.witherShield_speedDecrease;
+                }
+            }
+
+            switch (noHit)
+            {
+                case true : noHitStreak = false; break;
+            }
+        }
+        
+        //--------------------other---------------------------------
+        //knit ball - eye collector - catluck - 
+        
         switch (bloodBlade)
         {
             case true :
@@ -160,188 +268,46 @@ public class ObjectsManager : MonoBehaviour
             case true :
                 if (_ffCanKill && enteredRoom)
                 {
+                    enteredRoom = false;
                     //kills random enemy
                 }
                 break;
             case false :  break;
         }
-        switch (glassCanon)
-        {
-            case true :
-                int maxHealth = _gameManager.maxHealth;
-                int health = _gameManager.health;
-                int diff = (maxHealth - health) % 2; //rounds attack to int
-                switch (diff)
-                {
-                    case 0 : glassCanonDamage = (maxHealth - health) / 2 * _gameVariables.glassCanonDamage; break; 
-                    case 1 : glassCanonDamage = Mathf.CeilToInt((maxHealth - health) / 2 * _gameVariables.glassCanonDamage); break;
-                }
-                break;
-            case false : break;
-        }
-        switch (catWrath)
-        {
-            case true :
-                if (catWrath_lostHealth) //when loses life
-                {
-                    catWrathTimer = _gameVariables.catWrathTime; //sets timer
-                    catWrath_lostHealth = false;
-                }
-
-                if (catWrathTimer > 0)
-                {
-                    catWrath_damageMultiplier = _gameVariables.catWrath_damageMultiplier; //increases attack speed and damage
-                    catWrath_attackCooldown = _gameVariables.catWrath_attackCooldown;
-                }
-                break;
-            case false : break;
-        }
-        switch (allKnowingEye)
-        {
-            case true : uiManager.isHighlight = true; break; //highlights interesting places on the map
-            case false : uiManager.isHighlight = false; break;
-        }
-        switch (assassin) // see later
+        switch (assassin) //later
         {
             case true : break;  //if hits on the back, deals extra damage
             case false : break;
         }
-        switch (killingSpree)
+        if (killedEnemy) //when kills an enemy
         {
-            case true :
-                if (killingSpree_killedEnemy) //when kills an enemy
-                {
-                    killingSpree_killedEnemy = false;
-                    killingSpree_killedEnemyTimer = _gameVariables.killingSpree_killedEnemyTimer; //sets timer
-                    _player.dashCooldownTimer = 0;
-                }
-                break;
-            case false : break;
+            killedEnemy = false;
+            if (killingSpree)
+            {
+                _killingSpreeTimer = _gameVariables.killingSpreeTimer; //sets timer
+                _player.dashCooldownTimer = 0;
+            }
         }
-        switch (theForce)
-        {
-            case true : _player.isForce = true; break;
-            case false : _player.isForce = false; break;
-        }
-        switch (masterSword)
-        {
-            case true :
-                if (_gameManager.health == _gameManager.maxHealth) //if equipped and max health : can shoot projectiles
-                {
-                    _player.canLaunchProjo = true;
-                }
-                else
-                {
-                    _player.canLaunchProjo = false;
-                } 
-                break;
-            case false : break;
-        }
-        switch (sacredCross)
-        {
-            case true :
-                if (sacredCross_tookDamage)
-                {
-                    sacredCross_tookDamage = false;
-                    _player.invincibilityTimer = _gameVariables.sacredCross_tookDamageTimer;
-                }
-                break;
-            case false : break;
-        }
+        
         switch (bluSmash) //later
         {
             case true : break;
             case false : break;
         }
-        switch (innerPeace) 
+
+        //---------Manages effects based on timers-------------
+        if (_catWrathTimer > 0)
         {
-            case true : //when hit
-                if (tookDamage) //decreases damage taken
-                {
-                    innerPeace_tookDamage = false;
-                    int damage = source_damage;
-                    if (damage == 1)
-                    {
-                        //damage stays the same
-                        break;
-                    }
-                    else
-                    {
-                        damage--;
-                    }
-                    _gameManager.health -= damage;
-                }
-                break;
-            case false : break;
+            _catWrath_damageMultiplier = _gameVariables.catWrath_damageMultiplier; //increases attack speed and damage
+            _catWrath_attackCooldown = _gameVariables.catWrath_attackCooldown;
         }
-        switch (noPetting) //plus tard
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (witherShield) 
-        {
-            case true : 
-                if (tookDamage) //slows down enemies
-                {
-                    foreach (var enemy in room.enemyList)
-                    {
-                        enemy.getComponent<Enemy>.speedFactor = _gameVariables.witherShield_speedDecrease;
-                    }
-                }
-                break;
-            case false : break;
-        }
-        switch (strongGrasp)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (swiftArt)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (tankPower)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (noHit)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (strangePact)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (knittingBall)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (eyeCollector)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (catLuck)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (catNip)
-        {
-            case true : break;
-            case false : break;
-        }
-        switch (safetyBlessing)
-        {
-            case true : break;
-            case false : break;
-        }
+    }
+
+    void StatsCalculation()
+    {
+        //attack
+        //dex
+        //max health
     }
     void CreateItemPools()
     {
@@ -428,5 +394,5 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
             }
         }
-    }*/
+    }
 }

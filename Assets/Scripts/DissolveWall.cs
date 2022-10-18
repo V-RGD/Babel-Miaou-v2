@@ -55,7 +55,6 @@ public class DissolveWall : MonoBehaviour
         {
             if (hit.collider.gameObject.CompareTag("Wall"))
             {
-                Debug.Log("wall detected");
                 _wallInBetween = true;
             }
             else

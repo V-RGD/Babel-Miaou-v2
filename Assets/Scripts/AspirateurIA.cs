@@ -1,16 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class AspirateurIA : MonoBehaviour
 {
     public float maxHealth;
-    public float damage;
-    public float projectileDamage;
+    public int damage;
+    public int projectileDamage;
     public float projectileCooldown = 2;
     public float stunLenght;
     public float shootWarmup;

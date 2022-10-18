@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ProjectileDamage : MonoBehaviour
 {
-    public float damage;
+    public int damage;
 
     private GameObject player;
     private GameManager gameManager;

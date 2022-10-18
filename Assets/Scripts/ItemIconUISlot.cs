@@ -18,10 +18,13 @@ public class ItemIconUISlot : MonoBehaviour , IDropHandler
             if (_objectsManager.itemObjectsInventory[boxIndex] == null)
             {
                 //equips item
-                eventData.pointerDrag.GetComponent<RectTransform>().transform.position =
-                    GetComponent<RectTransform>().transform.position;
+                eventData.pointerDrag.GetComponent<RectTransform>().transform.position = GetComponent<RectTransform>().transform.position;
                 _objectsManager.itemObjectsInventory[boxIndex] = eventData.pointerDrag.gameObject;
                 eventData.pointerDrag.GetComponent<ItemDragDrop>().boxAssociated = boxIndex;
+                if (boxIndex != 5)
+                {
+                    _objectsManager.OnObjectEquip(eventData.pointerDrag.gameObject);
+                }
             }
             else
             {

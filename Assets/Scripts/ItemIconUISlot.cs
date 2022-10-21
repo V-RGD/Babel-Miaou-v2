@@ -25,6 +25,10 @@ public class ItemIconUISlot : MonoBehaviour , IDropHandler
                 {
                     _objectsManager.OnObjectEquip(eventData.pointerDrag.gameObject);
                 }
+                else
+                {
+                    _objectsManager.UiItemBoxesUpdate();
+                }
             }
             else
             {

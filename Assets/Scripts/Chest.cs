@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,13 +28,42 @@ public class Chest : MonoBehaviour
     {
         if (isPlayerInRange)
         {
-            //spawns a random item between items, spells, or loot
+            StartCoroutine(ChestLoot());
+        }
+    }
+
+    IEnumerator ChestLoot()
+    {
+        //spawns a random item between items, spells, or loot
+        int randLoot = Random.Range(0, 100);
+        if (randLoot <= 15)
+        {
             GameObject item = Instantiate(objectManager.chestPool[Random.Range(0, objectManager.chestPool.Count)], transform.position,
                 quaternion.identity);
             item.SetActive(true);
-            isOpen = true;
-            Destroy(gameObject);
+            float randDir = Random.Range(0, 1f);
+            Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;
+            item.GetComponent<Rigidbody>().AddForce(pushDir.normalized * 10);
         }
+        else
+        {
+            //heal,eyes
+            GameObject heal = Instantiate(objectManager.healToken, transform.position + Vector3.up * 5,
+                quaternion.identity);
+            heal.SetActive(true);
+            float randHealDir = Random.Range(0, 1f);
+            Vector3 healDir = Vector3.up * 10 + new Vector3(0.5f - randHealDir, 0, 0.5f + randHealDir) * 5;
+            heal.GetComponent<Rigidbody>().AddForce(healDir.normalized * 100);
+            yield return new WaitForSeconds(0.5f);
+            GameObject eyes = Instantiate(objectManager.eyeToken, transform.position + Vector3.up * 5,
+                quaternion.identity);
+            eyes.SetActive(true);
+            float randDir = Random.Range(0, 1f);
+            Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;
+            eyes.GetComponent<Rigidbody>().AddForce(pushDir.normalized * 100);
+        }
+        isOpen = true;
+        Destroy(gameObject);
     }
 
     private void Update()

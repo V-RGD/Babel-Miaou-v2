@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Movement Values
     [Header("Movement")]
     public float maxSpeed;
     public float acceleration;
@@ -12,12 +15,16 @@ public class PlayerController : MonoBehaviour
     public float dashLenght;
     public float dashCooldownLenght;
     [HideInInspector] public bool canMove = true;
+    #endregion
 
-    [Header("Attacks")]
-    public int smashDamage = 5;
-    public int slashDamage = 1;
-    public int pickDamage = 2;
-    
+    #region Attack Values
+
+    [Header("Attacks")] 
+    public float attackStat = 1;
+    public float pickDamageMultiplier = 1.5f;
+    public float smashDamageMultiplier = 5;
+    public float dexterity;
+
     public float slashCooldown = 0.4f;
     public float pickCooldown = 0.7f;
     public float smashCooldown = 2;
@@ -31,7 +38,11 @@ public class PlayerController : MonoBehaviour
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _pickHitBox;
+    public GameObject masterSwordProjo;
 
+    #endregion
+
+    #region Intern Values
     public float _comboCooldown = 1f; //max time allowed to combo
     public float _comboTimer;
     private float _attackMultiplier = 1;
@@ -47,6 +58,7 @@ public class PlayerController : MonoBehaviour
     private bool _isMouseHolding;
     [HideInInspector] public bool isMasterSword;
     [HideInInspector] public bool canRepel;
+    [HideInInspector] public bool noPet;
     [HideInInspector] public float stunCounter;
     private int _dashesAvailable = 1;
     private int _comboCounter;
@@ -55,29 +67,30 @@ public class PlayerController : MonoBehaviour
     private Vector3 _attackDir;
     private Vector3 _lastWalkedDir;
     public Vector2 movementDir;
+    #endregion
 
+    #region Components
     private Rigidbody _rb;
     private SpriteRenderer _spriteRenderer;
     private PlayerControls _playerControls;
     private InputAction _move;
     private InputAction _dash;
     private InputAction _mouseHold;
+    private GameManager _gameManager;
+    #endregion
     private void Awake()
     {
         canMove = true;
         
         _rb = GetComponent<Rigidbody>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteRenderer = transform.GetComponentInChildren<SpriteRenderer>();
         _playerControls = new PlayerControls();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         _attackAnchor = transform.GetChild(0).gameObject;
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
-        
-        _slashHitBox.GetComponent<ObjectDamage>().damage = slashDamage;
-        _smashHitBox.GetComponent<ObjectDamage>().damage = smashDamage;
-        _pickHitBox.GetComponent<ObjectDamage>().damage = pickDamage;
     }
 
     void FixedUpdate()
@@ -94,12 +107,14 @@ public class PlayerController : MonoBehaviour
             }
             AttackManagement();
         }
+        
+        Flip();
     }
 
-    
+
     #region Flip
 
-    void Flip(float velocity)
+    void Flip()
     {
         //Flips the sprite when turning around
         if (movementDir.x > 0.1f)
@@ -123,7 +138,6 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
     #region Basic Movement
-
     void MovePlayer()
     {
         if (movementDir!= Vector2.zero && !_isDashing && _speedFactor != 0)
@@ -205,8 +219,7 @@ public class PlayerController : MonoBehaviour
         dashCooldownTimer = dashCooldownLenght;
     }
     #endregion
-
-        void JostickDir()
+    void JostickDir()
         {
             Vector2 inputDir = _move.ReadValue<Vector2>();
             movementDir = new Vector2(inputDir.x, inputDir.y);
@@ -242,24 +255,24 @@ public class PlayerController : MonoBehaviour
             switch (_comboCounter)
             {
                 case 0 : 
-                    cooldown = slashCooldown; 
-                    damage = slashDamage;
+                    cooldown = slashCooldown * dexterity; 
+                    damage = Mathf.CeilToInt(attackStat);
                     hitbox = _slashHitBox; 
                     force = slashForce;
                     _comboCounter++;  //used to combo if done in a row
                     //1st anim
                     break;
                 case 1 : 
-                    cooldown = slashCooldown; 
-                    damage = slashDamage;
+                    cooldown = slashCooldown * dexterity; 
+                    damage = Mathf.CeilToInt(attackStat);
                     hitbox = _slashHitBox; 
                     force = slashForce;
                     _comboCounter++;  //used to combo if done in a row
                     //2nd anim
                     break;
                 case 2 : 
-                    cooldown = pickCooldown; 
-                    damage = pickDamage;
+                    cooldown = pickCooldown * dexterity; 
+                    damage = Mathf.CeilToInt(attackStat * pickDamageMultiplier);
                     hitbox = _pickHitBox; 
                     force = pickForce;
                     _comboCounter = 0; //resets combo if last attack
@@ -273,14 +286,20 @@ public class PlayerController : MonoBehaviour
             //stops movement
             canMove = false;
             //add current damage stat to weapon
-            hitbox.GetComponent<ObjectDamage>().damage = damage;
+            hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
             //actives weapon
             hitbox.SetActive(true);
             //adds force to simulate inertia
             _rb.velocity = Vector3.zero;
             _rb.AddForce(attackDir * force, ForceMode.Impulse);
             //plays animation
-
+            
+            //if master sword, launches projectile
+            if (isMasterSword && _gameManager.health == _gameManager.maxHealth)
+            {
+                GameObject projo = Instantiate(masterSwordProjo, transform.position, quaternion.identity);
+                projo.GetComponent<Rigidbody>().AddForce(attackDir * 100);
+            }
             //waits cooldown depending on the attack used
             yield return new WaitForSeconds(cooldown);
             _rb.velocity = Vector3.zero;
@@ -352,7 +371,7 @@ public class PlayerController : MonoBehaviour
         {
             //determines attack length, damage, hitbox, force to add
             GameObject hitbox = _smashHitBox;
-            int damage = smashDamage;
+            float damage = attackStat * smashDamageMultiplier;
             float cooldown = smashCooldown;
             float force = smashForce;
 
@@ -363,7 +382,7 @@ public class PlayerController : MonoBehaviour
             //stops movement
             canMove = false;
             //add current damage stat to weapon
-            hitbox.GetComponent<ObjectDamage>().damage = damage;
+            hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
             //adds force to simulate inertia
             _rb.velocity = Vector3.zero;
             Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);

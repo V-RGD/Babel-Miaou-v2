@@ -30,15 +30,6 @@ public class EyeToken : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        /*
-        if ((player.transform.position - transform.position).magnitude <= pickupDist)
-        {
-            rb.AddForce((player.transform.position - transform.position) * collectSpeed);
-        }*/
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))

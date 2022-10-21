@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class ProjectileDamage : MonoBehaviour
@@ -7,10 +6,14 @@ public class ProjectileDamage : MonoBehaviour
 
     private GameObject player;
     private GameManager gameManager;
+    private ObjectsManager _objectsManager;
+    private Rigidbody _rb;
     private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         player = GameObject.Find("Player");
+        _rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -25,14 +28,38 @@ public class ProjectileDamage : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            gameManager.health -= damage;
-            player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
-            Destroy(gameObject);
+            if (_objectsManager.safetyBlessing)
+            {
+                //checks if safety blessing is equipped, then calculates if projectile can touche
+                int rand = Random.Range(0, 100);
+                if (rand > Mathf.CeilToInt(1/_objectsManager.gameVariables.safetyBlessingRate * 100))
+                {
+                    gameManager.health -= damage;
+                    player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    //destroys it without damage
+                    Destroy(gameObject);
+                }
+            }
+            else
+            {
+                gameManager.health -= damage;
+                player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+                Destroy(gameObject);
+            }
         }
 
         if (other.CompareTag("Wall"))
         {
             Destroy(gameObject);
+        }
+
+        if (other.CompareTag("PlayerAttack") && other.GetComponent<ObjectDamage>().canRepel)
+        {
+            _rb.velocity = -_rb.velocity;
         }
     }
 }

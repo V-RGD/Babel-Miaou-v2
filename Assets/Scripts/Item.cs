@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -76,11 +77,24 @@ public class Item : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && gameManager.money >= itemCost && isFromAShop)
+        if (isPlayerInRange && isFromAShop)
         {
-            //does gameobject effect
-            gameManager.money -= itemCost;
-            Destroy(gameObject);
+            if (gameManager.money >= itemCost)
+            {
+                //does gameobject effect
+                gameManager.money -= itemCost;
+                //adds effect
+                //destroyed
+                Destroy(gameObject);
+            }
+            else if (gameManager.health - itemCost/2 >= 1 && _objectsManager.strangePact)
+            {
+                //reduces cost by all money available
+                float newCost = itemCost - gameManager.money;
+                gameManager.money = 0;
+                //new cost 
+                gameManager.health -= Mathf.CeilToInt(newCost/2);
+            }
         }
     }
     
@@ -91,7 +105,7 @@ public class Item : MonoBehaviour
             canBeTaken = false;
             _menuManager.ObjectMenu();
             //instantiates a new ui item in the canvas
-            GameObject newItem = Instantiate(_objectsManager.uiItemPrefab, canvas.transform);
+            GameObject newItem = Instantiate(_objectsManager.uiItemPrefab, _objectsManager.objectMenu.transform);
             _objectsManager.itemObjectsInventory[5] = newItem;
             //puts it in the 6th box
             _objectsManager.itemObjectsInventory[5].GetComponent<RectTransform>().transform.position = _objectsManager.uiItemBoxes[5].transform.position;
@@ -99,6 +113,7 @@ public class Item : MonoBehaviour
             _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().objectID = objectID;
             _objectsManager.itemObjectsInventory[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
             _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().boxAssociated = 5;
+            _objectsManager.UiItemBoxesUpdate();
             Destroy(gameObject);
         }
     }

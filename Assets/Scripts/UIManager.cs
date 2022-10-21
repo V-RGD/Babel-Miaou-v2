@@ -39,17 +39,16 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         PanelAlpha();
-        HealthBar();
         Money();
         SmashGauge();
     }
     //Barre de vie joueur 
-    void HealthBar()
+    public void HealthBar(int health)
     {
         //gerer si le coeur est actif
         for (var i = 0; i < 20; i++)
         {
-            if (i > gameManager.maxHealth - 1)
+            if (i > health - 1)
             {
                 heartUIs[i].GetComponent<Image>().enabled = false;
             }
@@ -59,7 +58,7 @@ public class UIManager : MonoBehaviour
                 //gerer si le coeur est rempli ou pas
                 for (var j = 0; j < 20; j++)
                 {
-                    if (j <= gameManager.health - 1)
+                    if (j <= health - 1)
                     {
                         heartUIs[j].GetComponent<Image>().sprite = fullHeart;
                     }

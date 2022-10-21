@@ -18,7 +18,8 @@ public class Room : MonoBehaviour
     private UIManager _uiManager;
     private GameManager _gameManager;
     private DunGen _dunGen;
-    
+    private ObjectsManager _objectsManager;
+
     //room info
     public int roomType;
     public int currentRoom;
@@ -40,6 +41,7 @@ public class Room : MonoBehaviour
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
+        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
@@ -247,6 +249,7 @@ public class Room : MonoBehaviour
     IEnumerator ActivateAllEnemies()
     {
         _canOpenDoors = false;
+        _objectsManager.noHitStreak = true;
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
@@ -254,6 +257,11 @@ public class Room : MonoBehaviour
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(0.5f);
+        }
+
+        if (_objectsManager.foreignFriend)
+        {
+            StartCoroutine(ForeignFriend());
         }
     }
 
@@ -303,5 +311,12 @@ public class Room : MonoBehaviour
                 case false : door.SetActive(true); break;
             }
         }
+    }
+
+    IEnumerator ForeignFriend()
+    {
+        yield return new WaitForSeconds(2);
+        int rand = Random.Range(0, enemyGroup.transform.childCount);
+        Destroy(enemyGroup.transform.GetChild(rand));
     }
 }

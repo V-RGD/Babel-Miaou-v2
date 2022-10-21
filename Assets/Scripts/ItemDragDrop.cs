@@ -31,10 +31,13 @@ public class ItemDragDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandle
     //when dragging
     public void OnDrag(PointerEventData eventData)
     {
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
-        //removes old assignation
-        _objectsManager.OnObjectUnEquip(eventData.pointerDrag.gameObject);
-        _objectsManager.itemObjectsInventory[eventData.pointerDrag.GetComponent<ItemDragDrop>().boxAssociated] = null;
+        if (_objectsManager.objectMenu.activeInHierarchy)
+        {
+            rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+            //removes old assignation
+            _objectsManager.OnObjectUnEquip(eventData.pointerDrag.gameObject);
+            _objectsManager.itemObjectsInventory[eventData.pointerDrag.GetComponent<ItemDragDrop>().boxAssociated] = null;
+        }
     }
 
     //when releasing click

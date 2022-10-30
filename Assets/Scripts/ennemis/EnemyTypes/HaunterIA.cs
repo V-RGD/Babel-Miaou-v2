@@ -21,12 +21,12 @@ public class HaunterIA : MonoBehaviour
     private bool _canShootProjectile = true;
     private bool _canDash = true;
     private bool _isStunned;
-    private bool _canMove;
     private bool _isDashing;
     private bool _isAttacking;
     private bool _isHit;
     private bool _isTouchingWall;
     private bool _isVulnerable;
+    public bool isTank;
 
     private Enemy _enemyTrigger;
 
@@ -61,13 +61,6 @@ public class HaunterIA : MonoBehaviour
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position).normalized;
 
-        if (!_isStunned && _enemyTrigger.isActive)
-        {
-            //if is not stunned by player
-            //main behaviour
-            Haunter();
-        }
-
         if (_health <= 0)
         {
             //dies
@@ -88,6 +81,13 @@ public class HaunterIA : MonoBehaviour
         _stunCounter -= Time.deltaTime;
         Friction();
         StunProcess();
+        
+        if (!_isStunned && _enemyTrigger.isActive)
+        {
+            //if is not stunned by player
+            //main behaviour
+            Haunter();
+        }
     }
 
     void Friction()
@@ -108,6 +108,7 @@ public class HaunterIA : MonoBehaviour
             _speedFactor = 0;
             if (!_isAttacking)
             {
+                //stops moving
                 _isAttacking = true;
                 StartCoroutine(AttackCooldown());
             }
@@ -126,31 +127,25 @@ public class HaunterIA : MonoBehaviour
     {
             float force = enemyTypeData.attackForce;
             //determines attack length, damage, hitbox, force to add
-            Vector3 lookAtDir = _player.transform.position;
-
-            //determine ou l'attaque va se faire
-            _attackAnchor.transform.LookAt(lookAtDir);
             //stops movement
-            _canMove = false;
             //add current damage stat to weapon
             _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>().damage = enemyTypeData.damage;
             //warmup
             yield return new WaitForSeconds(enemyTypeData.shootWarmup);
+            //determine où l'attaque va se faire
+            _attackAnchor.transform.LookAt(_player.transform.position);
             //actives weapon
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             _rb.velocity = Vector3.zero;
             Vector3 pushedDir = playerDir;
             _rb.AddForce(pushedDir * force, ForceMode.Impulse);
             //plays animation
-            
             //attack duration : time when the player can actually be hit
             yield return new WaitForSeconds(0.4f);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
             //waits cooldown depending on the attack used
             yield return new WaitForSeconds(enemyTypeData.attackCooldown - 0.4f);
             _rb.velocity = Vector3.zero;
-            //restores speed
-            _canMove = true;
             //disables hitbox
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
             _isAttacking = false;
@@ -201,7 +196,14 @@ public class HaunterIA : MonoBehaviour
     {
         if (other.CompareTag("PlayerAttack"))
         {
-            _health -= other.GetComponent<ObjectDamage>().damage;
+            if (isTank)
+            {
+                isTank = false;
+            }
+            else
+            {
+                _health -= other.GetComponent<ObjectDamage>().damage;
+            }
         }
         
         if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0)

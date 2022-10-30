@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,8 +24,9 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (startSpawning && canInitiateSpawning)
+        if ((startSpawning && canInitiateSpawning ) || Input.GetKeyDown(KeyCode.T))
         {
+            GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>().BuildNavMesh();
             canInitiateSpawning = false;
             StartCoroutine(EnemyApparition());
         }

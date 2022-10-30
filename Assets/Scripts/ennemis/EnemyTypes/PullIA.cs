@@ -34,6 +34,9 @@ public class PullIA : MonoBehaviour
     private Rigidbody _rb;
     public EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
+    private SpriteRenderer _spriteRenderer;
+    public BoxCollider collider;
+    private List<GameObject> _projeciles;
 
     [Header("*Objects*")]
     public GameObject healthSlider;
@@ -45,6 +48,17 @@ public class PullIA : MonoBehaviour
         _canShootProjectile = true;
         _health = enemyTypeData.maxHealth;
         _enemyTrigger = GetComponent<Enemy>();
+        _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
+
+        //creates a list of projectiles for further use
+        _projeciles = new List<GameObject>();
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject projo = Instantiate(enemyTypeData.mageProjectile);
+            _projeciles.Add(projo);
+            projo.GetComponent<AspireurProjectile>().damage = enemyTypeData.projectileDamage;
+            projo.SetActive(false);
+        }
     }
 
     private void Update()
@@ -81,59 +95,65 @@ public class PullIA : MonoBehaviour
     
     IEnumerator ShootProjectile()
     {
-        //shoots a projectile
-        GameObject projN = Instantiate(enemyTypeData.mageProjectile, transform.position + Vector3.forward * 5, quaternion.identity);
-        GameObject projS = Instantiate(enemyTypeData.mageProjectile, transform.position + Vector3.back * 5, quaternion.identity);        
-        GameObject projE = Instantiate(enemyTypeData.mageProjectile, transform.position + Vector3.left * 5, quaternion.identity);
-        GameObject projW = Instantiate(enemyTypeData.mageProjectile, transform.position + Vector3.right * 5, quaternion.identity);
+        Debug.Log("active");
+        //actives projo
+        _projeciles[0].SetActive(true);
+        _projeciles[1].SetActive(true);
+        _projeciles[2].SetActive(true);
+        _projeciles[3].SetActive(true);
+        //stoppe eventuels mouvements
+        _projeciles[0].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        _projeciles[1].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        _projeciles[2].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        _projeciles[3].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        //shoots projectile
+        _projeciles[0].transform.position =  transform.position + Vector3.forward * 5;
+        _projeciles[1].transform.position =  transform.position + Vector3.back * 5;
+        _projeciles[2].transform.position =  transform.position + Vector3.left * 5;
+        _projeciles[3].transform.position =  transform.position + Vector3.right * 5;
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
+        Debug.Log("shoots");
         //gives it proper force
-        projN.GetComponent<Rigidbody>().AddForce(new Vector3(20, 0, 20) * enemyTypeData.projectileForce);
-        projN.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
-        
-        projS.GetComponent<Rigidbody>().AddForce(new Vector3(-20, 0, -20) * enemyTypeData.projectileForce);
-        projS.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
-        
-        projE.GetComponent<Rigidbody>().AddForce(new Vector3(-20, 0, 20) * enemyTypeData.projectileForce);
-        projE.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
-        
-        projW.GetComponent<Rigidbody>().AddForce(new Vector3(20, 0, -20) * enemyTypeData.projectileForce);
-        projW.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
-        
+        _projeciles[0].GetComponent<Rigidbody>().AddForce(new Vector3(20, 0, 20) * enemyTypeData.projectileForce);
+        _projeciles[1].GetComponent<Rigidbody>().AddForce(new Vector3(-20, 0, -20) * enemyTypeData.projectileForce);
+        _projeciles[2].GetComponent<Rigidbody>().AddForce(new Vector3(-20, 0, 20) * enemyTypeData.projectileForce);
+        _projeciles[3].GetComponent<Rigidbody>().AddForce(new Vector3(20, 0, -20) * enemyTypeData.projectileForce);
+
+        yield return new WaitForSeconds(1f);
+        // //les stoppe
+        // _projeciles[0].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        // _projeciles[1].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        // _projeciles[2].GetComponent<Rigidbody>().velocity = Vector3.zero;
+        // _projeciles[3].GetComponent<Rigidbody>().velocity = Vector3.zero;
         //se tp 
+        _spriteRenderer.enabled = false;
+        collider.enabled = false;
+
         yield return new WaitForSeconds(1);
+
+        _spriteRenderer.enabled = true;
+        collider.enabled = true;
         //calculates a random position where the enemy will spawn
         int randPosX = Random.Range(-20, 21);
         int randPosY = Random.Range(-20, 21);
         Vector3 tpPoint = transform.position + new Vector3(randPosX, _player.transform.position.y + 5, randPosY);
         transform.position = tpPoint;
+
+        Debug.Log("rappelle");
+        //rappelle ses projectiles
+        _projeciles[0].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[0].transform.position) * enemyTypeData.projectileForce);
+        _projeciles[1].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[1].transform.position) * enemyTypeData.projectileForce);
+        _projeciles[2].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[2].transform.position) * enemyTypeData.projectileForce);
+        _projeciles[3].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[3].transform.position) * enemyTypeData.projectileForce);
+
+        yield return new WaitForSeconds(1.5f);
+        Debug.Log("desactive");
+        //sets projectiles inactive
+        _projeciles[0].SetActive(false);
+        _projeciles[1].SetActive(false);
+        _projeciles[2].SetActive(false);
+        _projeciles[3].SetActive(false);
         
-        
-        //les rappelle
-        if (projN != null)
-        {        
-            projN.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            projN.GetComponent<Rigidbody>().AddForce((transform.position - projN.transform.position) * enemyTypeData.projectileForce);
-        }
-
-        if (projS != null)
-        {
-            projS.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            projS.GetComponent<Rigidbody>().AddForce((transform.position - projS.transform.position) * enemyTypeData.projectileForce);
-        }
-
-        if (projE != null)
-        {
-            projE.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            projE.GetComponent<Rigidbody>().AddForce((transform.position - projE.transform.position) * enemyTypeData.projectileForce);
-        }
-
-        if (projW != null)
-        {
-            projW.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            projW.GetComponent<Rigidbody>().AddForce((transform.position - projW.transform.position) * enemyTypeData.projectileForce);
-        }
-
         //waits for cooldown to refresh to shoot again
         yield return new WaitForSeconds(enemyTypeData.attackCooldown);
         //can shoot again

@@ -19,13 +19,12 @@ public class BullIA : MonoBehaviour
     private float _speedFactor;
     private Vector3 _projectileDir;
     private bool _canDash = true;
-    private bool _isStunned;
     private bool _isDashing;
     private bool _isHit;
     private bool _isTouchingWall;
     private bool _isAttacking;
     private bool _isVulnerable;
-    private float _dashDir;
+    private float dashFactor;
 
     //components
     private NavMeshAgent _agent;
@@ -55,14 +54,7 @@ public class BullIA : MonoBehaviour
     {
         _agent.speed = enemyTypeData.speed * _speedFactor;
         _playerDist = (_player.transform.position - transform.position).magnitude;
-        playerDir = (_player.transform.position - transform.position).normalized;
-
-        if (!_isStunned && !_isDashing && _enemyTrigger.isActive)
-        {
-            //if is not stunned by player
-            //main behaviour
-            Bull();
-        }
+        playerDir = (_player.transform.position - transform.position);
 
         if (_health <= 0)
         {
@@ -75,57 +67,38 @@ public class BullIA : MonoBehaviour
             //resets stun counter
             _stunCounter = enemyTypeData.stunLenght;
         }
-
+        
         StunProcess();
         SliderUpdate();
-        WallCheck();
     }
 
     private void FixedUpdate()
     {
         _stunCounter -= Time.deltaTime;
-        Mathf.Clamp(_rb.velocity.magnitude, 10f, 20f);
-        Friction();
         ForceManagement();
         MaxSpeed();
+        WallCheck();
+        Friction();
+
+        if (_stunCounter < 0 && !_isDashing && _enemyTrigger.isActive)
+        {
+            //if is not stunned by player
+            //main behaviour
+            Bull();
+        }
     }
     
     void Friction()
     {
-        if (!_isDashing)
+        if (_stunCounter > 0)
         {
-            _agent.speed = 0;
             _rb.velocity = new Vector3(_rb.velocity.x * 0.95f, _rb.velocity.y, _rb.velocity.z * 0.95f);
-        }
-    }
-
-    void MaxSpeed()
-    {
-        //cap x speed
-        if(_rb.velocity.x > enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
-        }
-        if(_rb.velocity.x < -enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(-enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
-        }
-            
-        //cap x speed
-        if(_rb.velocity.z > enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, enemyTypeData.maxSpeed);
-        }
-        if(_rb.velocity.z < -enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -enemyTypeData.maxSpeed);
         }
     }
 
     void Bull()
     {
-        
-        //if the enemy is in player range
+        //if the enemy is in player range and if player is in view 
         if (_playerDist <= enemyTypeData.attackRange)
         {
             //stops then attacks
@@ -133,6 +106,7 @@ public class BullIA : MonoBehaviour
             if (_canDash)
             {
                 _canDash = false;
+                attackDir = playerDir;
                 StartCoroutine(Dash());
             }
         }
@@ -148,22 +122,25 @@ public class BullIA : MonoBehaviour
 
     IEnumerator Dash()
     {
-        _isDashing = true;
-        attackDir = playerDir;
-        _dashDir = -0.15f;
-        yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
-        //fonce dans une seule direction
-        _dashDir = 1;
-        yield return new WaitUntil(() => _isTouchingWall);
-        //when touching a wall
-        _dashDir = 0;
+        Debug.Log("meep");
+        //stops movement
         _rb.velocity = Vector3.zero;
-        _rb.AddForce(-attackDir * enemyTypeData.recoilForce);
+        dashFactor = -0.1f;
+        //adds force to character
+        _isDashing = true;
+        //waits for the attack to start
+        yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
+        dashFactor = 1;
+        //fonce jusuqu'a toucher un mur
+        yield return new WaitUntil(() => _isTouchingWall);
+        _isDashing = false;
+        //stops
+        _rb.velocity = Vector3.zero;
+        //recoil
+        _rb.AddForce(-attackDir * enemyTypeData.recoilForce, ForceMode.Impulse);
         //stuns for a bit
         _stunCounter = enemyTypeData.stunLenght;
-        _rb.velocity = Vector3.zero;
         //can dash again when not stun
-        _isDashing = false;
         _canDash = true;
     }
 
@@ -172,14 +149,12 @@ public class BullIA : MonoBehaviour
         //when stunned
         if (_stunCounter > 0)
         {
-            _isStunned = true;
             //is vulnerable
             _isVulnerable = true;
             _speedFactor = 0;
         }
         else
         {
-            _isStunned = false;
             //can't be touched
             _isVulnerable = false;
         }
@@ -187,35 +162,12 @@ public class BullIA : MonoBehaviour
 
     void ForceManagement()
     {
-        if (_dashDir != 0)
+        if (_isDashing)
         {
-            _rb.AddForce(_dashDir * attackDir * enemyTypeData.dashForce);
+            _speedFactor = 0;
+            _rb.AddForce(dashFactor * attackDir * enemyTypeData.dashForce);
         }
     }
-
-    void Death()
-    {
-        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
-        {
-            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
-        }
-        Debug.Log("dies");
-        Destroy(gameObject);
-    }
-
-    void SliderUpdate()
-    {
-        if (_health >= enemyTypeData.maxHealth)
-        {
-            healthSlider.SetActive(false);
-        }
-        else
-        {
-            healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
-        }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("PlayerAttack"))
@@ -247,6 +199,53 @@ public class BullIA : MonoBehaviour
         else
         {
             _isTouchingWall = false;
+        }
+    }
+    
+    void MaxSpeed()
+    {
+        //cap x speed
+        if(_rb.velocity.x > enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
+        }
+        if(_rb.velocity.x < -enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(-enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
+        }
+            
+        //cap x speed
+        if(_rb.velocity.z > enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, enemyTypeData.maxSpeed);
+        }
+        if(_rb.velocity.z < -enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -enemyTypeData.maxSpeed);
+        }
+    }
+
+    
+    void Death()
+    {
+        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
+        {
+            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
+        }
+        Debug.Log("dies");
+        Destroy(gameObject);
+    }
+
+    void SliderUpdate()
+    {
+        if (_health >= enemyTypeData.maxHealth)
+        {
+            healthSlider.SetActive(false);
+        }
+        else
+        {
+            healthSlider.SetActive(true);
+            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
         }
     }
 

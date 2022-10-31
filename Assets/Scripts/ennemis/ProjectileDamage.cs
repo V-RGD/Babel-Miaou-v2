@@ -30,7 +30,7 @@ public class ProjectileDamage : MonoBehaviour
         {
             if (_objectsManager.safetyBlessing)
             {
-                //checks if safety blessing is equipped, then calculates if projectile can touche
+                //checks if safety blessing is equipped, then calculates if projectile can touch
                 int rand = Random.Range(0, 100);
                 if (rand > Mathf.CeilToInt(1/_objectsManager.gameVariables.safetyBlessingRate * 100))
                 {

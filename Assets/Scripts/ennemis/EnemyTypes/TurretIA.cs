@@ -26,6 +26,11 @@ public class TurretIA : MonoBehaviour
     private bool _isHit;
     private bool _isTouchingWall;
     private bool _isVulnerable;
+    private float _desiredRange = 13f;
+    private float attackCooldownWhenRunningAway = 4;
+    private bool isRunningAway;
+    private float attackCooldown;
+    private Vector3 _fleeDir;
 
     //components
     private NavMeshAgent _agent;
@@ -57,13 +62,6 @@ public class TurretIA : MonoBehaviour
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = _player.transform.position - transform.position;
 
-        if (!_isStunned && _enemyTrigger.isActive)
-        {
-            //if is not stunned by player
-            //main behaviour
-            Mage();
-        }
-
         if (_health <= 0)
         {
             //dies
@@ -83,35 +81,50 @@ public class TurretIA : MonoBehaviour
     private void FixedUpdate()
     {
         _stunCounter -= Time.deltaTime;
+        
+        if (!_isStunned && _enemyTrigger.isActive)
+        {
+            //if is not stunned by player
+            //main behaviour
+            Shooter();
+        }
+        
+        MaxSpeed();
+        FleeDir();
     }
 
-    void Mage()
+    void Shooter()
     {
-        //follows player
-        //agent.SetDestination(player.transform.position);
-        
         //calculates the distance between object and player
         _projectileDir = _player.transform.position - transform.position;
 
-        //if the enemy is too far away, gets closer
-        if (_playerDist <= enemyTypeData.attackRange)
+        //if the enemy is too close, walks away
+        if (_playerDist < _desiredRange)
         {
-            //avance
-            _speedFactor = 1;
+            //increases cooldown
+            attackCooldown = attackCooldownWhenRunningAway;
+            //recule
+            _speedFactor = 0;
+            _rb.AddForce(_fleeDir.normalized * 10, ForceMode.Acceleration);
         }
-        
-        //if the enemy is in player rangetoo close, walks back to position
-        if (_playerDist < enemyTypeData.attackRange)
+        //if the enemy is in range, and not too far
+        if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
         {
             //recule
             _speedFactor = 0;
-            if (_rb.velocity.magnitude < enemyTypeData.speed) 
-            { 
-                _rb.AddForce(-_projectileDir * enemyTypeData.speed, ForceMode.Impulse);
-            }
+            attackCooldown = enemyTypeData.attackCooldown;
+            _agent.SetDestination(transform.position);
         }
+        //if the enemy is too far, gets closer
+        if (_playerDist > enemyTypeData.attackRange)
+        {
+            //avance
+            _speedFactor = 1;
+            _agent.SetDestination(_player.transform.position);
+        }
+        
             
-        if (_canShootProjectile)
+        if (_canShootProjectile && _playerDist < enemyTypeData.attackRange)
         {
             _canShootProjectile = false;
             StartCoroutine(ShootProjectile());
@@ -127,7 +140,7 @@ public class TurretIA : MonoBehaviour
         projectile.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized * enemyTypeData.projectileForce);
         projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
         //waits for cooldown to refresh to shoot again
-        yield return new WaitForSeconds(enemyTypeData.attackCooldown);
+        yield return new WaitForSeconds(attackCooldown);
         //can shoot again
         _canShootProjectile = true;
     }
@@ -149,6 +162,29 @@ public class TurretIA : MonoBehaviour
             _isVulnerable = false;
         }
     }
+    
+    void MaxSpeed()
+    {
+        //cap x speed
+        if(_rb.velocity.x > enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
+        }
+        if(_rb.velocity.x < -enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(-enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
+        }
+            
+        //cap x speed
+        if(_rb.velocity.z > enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, enemyTypeData.maxSpeed);
+        }
+        if(_rb.velocity.z < -enemyTypeData.maxSpeed)
+        {
+            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -enemyTypeData.maxSpeed);
+        }
+    }
 
     void Death()
     {
@@ -156,7 +192,6 @@ public class TurretIA : MonoBehaviour
         {
             Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
         }
-        Debug.Log("dies");
         Destroy(gameObject);
     }
 
@@ -170,6 +205,21 @@ public class TurretIA : MonoBehaviour
         {
             healthSlider.SetActive(true);
             healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
+        }
+    }
+    
+    void FleeDir()
+    {
+        if (Physics.Raycast(transform.position, -playerDir, 4, wallLayerMask))
+        {
+            Debug.Log("hit wall");
+            //else, turns a bit
+            _fleeDir = Quaternion.Euler(0, 45, 0) * -playerDir;
+        }
+        else
+        {
+            //if there isn't a wall in flee direction, simply run away from player
+            _fleeDir = -playerDir;
         }
     }
 

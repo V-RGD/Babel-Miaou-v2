@@ -95,10 +95,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1084243870843448946}
   - component: {fileID: 1084243870843448941}
-  - component: {fileID: 1084243870843448944}
   - component: {fileID: 1084243870843448947}
+  - component: {fileID: 4599018915023672036}
   m_Layer: 0
-  m_Name: MageProjectile
+  m_Name: AspiProjo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,19 +133,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1084243870843448944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1084243870843448940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6af2d36966148dd4f9933800fcadc5ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 0
 --- !u!54 &1084243870843448947
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,3 +149,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
+--- !u!114 &4599018915023672036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084243870843448940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d84adada3d642d843ba5009dd378b0f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 0

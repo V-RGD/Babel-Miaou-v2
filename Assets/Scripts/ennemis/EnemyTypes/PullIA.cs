@@ -14,7 +14,6 @@ public class PullIA : MonoBehaviour
     private LayerMask wallLayerMask;
     
     //values
-    private int _health;
     private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
@@ -30,23 +29,17 @@ public class PullIA : MonoBehaviour
     //components
     private NavMeshAgent _agent;
     private GameObject _player;
-    private GameManager _gameManager;
     private Rigidbody _rb;
-    public EnemyType enemyTypeData;
+    private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
     private SpriteRenderer _spriteRenderer;
     public BoxCollider collider;
     private List<GameObject> _projeciles;
 
-    [Header("*Objects*")]
-    public GameObject healthSlider;
-    
     private void Start()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _player = GameObject.Find("Player");
         _canShootProjectile = true;
-        _health = enemyTypeData.maxHealth;
         _enemyTrigger = GetComponent<Enemy>();
         _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
 
@@ -63,14 +56,7 @@ public class PullIA : MonoBehaviour
 
     private void Update()
     {
-        if (_health <= 0)
-        {
-            //dies
-            Death();
-        }
-
         StunProcess();
-        SliderUpdate();
     }
 
     private void FixedUpdate()
@@ -171,40 +157,6 @@ public class PullIA : MonoBehaviour
         else
         {
             _isStunned = false;
-        }
-    }
-    
-    void Death()
-    {
-        Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
-        Destroy(gameObject);
-    }
-
-    void SliderUpdate()
-    {
-        if (_health == enemyTypeData.maxHealth)
-        {
-            healthSlider.SetActive(false);
-        }
-        else
-        {
-            healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PlayerAttack"))
-        {
-            _health -= other.GetComponent<ObjectDamage>().damage;
-            _stunCounter = enemyTypeData.stunLenght;
-        }
-        
-        if (other.CompareTag("Player"))
-        {
-            _gameManager.health -= enemyTypeData.damage;
-            _player.GetComponent<PlayerController>().invincibleCounter = _player.GetComponent<PlayerController>().invincibleTime;
         }
     }
 }

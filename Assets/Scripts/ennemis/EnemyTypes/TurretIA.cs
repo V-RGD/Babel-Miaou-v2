@@ -14,7 +14,6 @@ public class TurretIA : MonoBehaviour
     private LayerMask wallLayerMask;
     
     //values
-    private float _health;
     private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
@@ -31,27 +30,22 @@ public class TurretIA : MonoBehaviour
     private bool isRunningAway;
     private float attackCooldown;
     private Vector3 _fleeDir;
+    public bool isBigShooter;
 
     //components
     private NavMeshAgent _agent;
     private GameObject _player;
-    private GameManager _gameManager;
     private Rigidbody _rb;
-    public EnemyType enemyTypeData;
+    private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
 
-    [Header("*Objects*")]
-    public GameObject healthSlider;
-    
     private void Awake()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
         _enemyTrigger = GetComponent<Enemy>();
 
-        _health = enemyTypeData.maxHealth;
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
     }
@@ -61,13 +55,7 @@ public class TurretIA : MonoBehaviour
         _agent.speed = enemyTypeData.speed * _speedFactor;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = _player.transform.position - transform.position;
-
-        if (_health <= 0)
-        {
-            //dies
-            Death();
-        }
-
+        
         if (_isHit)
         {
             //resets stun counter
@@ -75,7 +63,6 @@ public class TurretIA : MonoBehaviour
         }
 
         StunProcess();
-        SliderUpdate();
     }
 
     private void FixedUpdate()
@@ -101,8 +88,11 @@ public class TurretIA : MonoBehaviour
         //if the enemy is too close, walks away
         if (_playerDist < _desiredRange)
         {
-            //increases cooldown
-            attackCooldown = attackCooldownWhenRunningAway;
+            //increases cooldown if is normal version
+            if (!isBigShooter)
+            {
+                attackCooldown = attackCooldownWhenRunningAway;
+            }
             //recule
             _speedFactor = 0;
             _rb.AddForce(_fleeDir.normalized * 10, ForceMode.Acceleration);
@@ -110,7 +100,7 @@ public class TurretIA : MonoBehaviour
         //if the enemy is in range, and not too far
         if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
         {
-            //recule
+            //attaque et agit normalement
             _speedFactor = 0;
             attackCooldown = enemyTypeData.attackCooldown;
             _agent.SetDestination(transform.position);
@@ -139,6 +129,50 @@ public class TurretIA : MonoBehaviour
         //gives it proper force
         projectile.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized * enemyTypeData.projectileForce);
         projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+        //waits for cooldown to refresh to shoot again
+        yield return new WaitForSeconds(attackCooldown);
+        //can shoot again
+        _canShootProjectile = true;
+    }
+    
+    IEnumerator ShootBigShooterProjectile()
+    {
+        float maxAngle = 100; //degrees
+        float projectilesNumber = 7;
+        float baseAngle = -maxAngle/2;
+        float angleOffset = maxAngle / (projectilesNumber - 1);
+        float projectionAngle = baseAngle;
+        
+        yield return new WaitForSeconds(enemyTypeData.shootWarmup);
+        //shoots multiples projectiles
+
+        for (int i = 0; i < projectilesNumber - 1; i++)
+        {
+            //activates projecile
+            GameObject projo = Instantiate(enemyTypeData.mageProjectile);
+            projo.SetActive(true);
+            //places it correctly
+            projo.transform.position = transform.position + playerDir.normalized;
+            //gives it force, in desired angle
+            projo.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, projectionAngle, 0) * playerDir  * enemyTypeData.projectileForce);
+            //sets damage
+            projo.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+            //adds angle offset
+            projectionAngle += angleOffset;
+        }
+        
+        //then adds big projectile
+        
+        GameObject bigProjectile = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+        //activates projecile
+        bigProjectile.SetActive(true);
+        //places it correctly
+        bigProjectile.transform.position = transform.position + playerDir.normalized;
+        //gives it force, in desired angle
+        bigProjectile.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, baseAngle, 0) * playerDir  * enemyTypeData.projectileForce);
+        //sets damage
+        bigProjectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+        
         //waits for cooldown to refresh to shoot again
         yield return new WaitForSeconds(attackCooldown);
         //can shoot again
@@ -186,28 +220,6 @@ public class TurretIA : MonoBehaviour
         }
     }
 
-    void Death()
-    {
-        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
-        {
-            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
-        }
-        Destroy(gameObject);
-    }
-
-    void SliderUpdate()
-    {
-        if (_health >= enemyTypeData.maxHealth)
-        {
-            healthSlider.SetActive(false);
-        }
-        else
-        {
-            healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
-        }
-    }
-    
     void FleeDir()
     {
         if (Physics.Raycast(transform.position, -playerDir, 4, wallLayerMask))
@@ -220,14 +232,6 @@ public class TurretIA : MonoBehaviour
         {
             //if there isn't a wall in flee direction, simply run away from player
             _fleeDir = -playerDir;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PlayerAttack"))
-        {
-            _health -= other.GetComponent<ObjectDamage>().damage;
         }
     }
 }

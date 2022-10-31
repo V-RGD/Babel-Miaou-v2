@@ -13,7 +13,6 @@ public class BullIA : MonoBehaviour
     private LayerMask wallLayerMask;
     
     //values
-    private float _health;
     private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
@@ -23,29 +22,26 @@ public class BullIA : MonoBehaviour
     private bool _isHit;
     private bool _isTouchingWall;
     private bool _isAttacking;
-    private bool _isVulnerable;
     private float dashFactor;
+    public bool isBigBull;
+    private bool _wallInSight;
+    private float _bigBullDriftLenght = 0.5f;
 
     //components
     private NavMeshAgent _agent;
     private GameObject _player;
-    private GameManager _gameManager;
     private Rigidbody _rb;
-    public EnemyType enemyTypeData;
+    private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
-
-    [Header("*Objects*")]
-    public GameObject healthSlider;
     
     private void Awake()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
         _enemyTrigger = GetComponent<Enemy>();
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
-        _health = enemyTypeData.maxHealth;
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
     }
@@ -56,12 +52,6 @@ public class BullIA : MonoBehaviour
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position);
 
-        if (_health <= 0)
-        {
-            //dies
-            Death();
-        }
-
         if (_isHit)
         {
             //resets stun counter
@@ -69,7 +59,6 @@ public class BullIA : MonoBehaviour
         }
         
         StunProcess();
-        SliderUpdate();
     }
 
     private void FixedUpdate()
@@ -94,7 +83,13 @@ public class BullIA : MonoBehaviour
         {
             _rb.velocity = new Vector3(_rb.velocity.x * 0.95f, _rb.velocity.y, _rb.velocity.z * 0.95f);
         }
+
+        if (_wallInSight && _isDashing)
+        {
+            _rb.velocity = new Vector3(_rb.velocity.x * 0.8f, _rb.velocity.y, _rb.velocity.z * 0.8f);
+        }
     }
+    
 
     void Bull()
     {
@@ -107,7 +102,14 @@ public class BullIA : MonoBehaviour
             {
                 _canDash = false;
                 attackDir = playerDir;
-                StartCoroutine(Dash());
+                if (isBigBull)
+                {
+                    StartCoroutine(BigBullDrift());
+                }
+                else
+                {
+                    StartCoroutine(Dash());
+                }
             }
         }
         
@@ -122,7 +124,6 @@ public class BullIA : MonoBehaviour
 
     IEnumerator Dash()
     {
-        Debug.Log("meep");
         //stops movement
         _rb.velocity = Vector3.zero;
         dashFactor = -0.1f;
@@ -150,13 +151,7 @@ public class BullIA : MonoBehaviour
         if (_stunCounter > 0)
         {
             //is vulnerable
-            _isVulnerable = true;
             _speedFactor = 0;
-        }
-        else
-        {
-            //can't be touched
-            _isVulnerable = false;
         }
     }
 
@@ -170,17 +165,8 @@ public class BullIA : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlayerAttack"))
-        {
-            _health -= other.GetComponent<ObjectDamage>().damage;
-        }
-        
         if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0)
         {
-            //deals damage
-            _gameManager.health -= enemyTypeData.damage;
-            _player.GetComponent<PlayerController>().invincibleCounter = _player.GetComponent<PlayerController>().invincibleTime;
-
             if (_isDashing)
             {
                 //bumps the player
@@ -199,6 +185,19 @@ public class BullIA : MonoBehaviour
         else
         {
             _isTouchingWall = false;
+        }
+
+        if (isBigBull)
+        {
+            //drifts if a wall is upfront
+            if (Physics.Raycast(transform.position, attackDir, 10, wallLayerMask))
+            {
+                _wallInSight = true;
+            }
+            else
+            {
+                _wallInSight = false;
+            }
         }
     }
     
@@ -225,29 +224,38 @@ public class BullIA : MonoBehaviour
         }
     }
 
-    
-    void Death()
+    IEnumerator BigBullDrift()
     {
-        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
-        {
-            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
-        }
-        Debug.Log("dies");
-        Destroy(gameObject);
+        //stops movement
+        _rb.velocity = Vector3.zero;
+        dashFactor = -0.1f;
+        //adds force to character
+        _isDashing = true;
+        //waits for the attack to start
+        yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
+        
+        //fonce jusuqu'a toucher un mur
+        dashFactor = 1;
+        yield return new WaitUntil(() => _wallInSight);
+        
+        //drifte - ralentit de fou
+        dashFactor = 0;
+        
+        yield return new WaitForSeconds(_bigBullDriftLenght);
+        attackDir = playerDir;
+        
+        //fonce une nouvelle fois jusuqu'a toucher un mur
+        dashFactor = 1;
+        yield return new WaitUntil(() => _isTouchingWall);
+        
+        //stops
+        _isDashing = false;
+        _rb.velocity = Vector3.zero;
+        //recoil
+        _rb.AddForce(-attackDir * enemyTypeData.recoilForce, ForceMode.Impulse);
+        //stuns for a bit
+        _stunCounter = enemyTypeData.stunLenght;
+        //can dash again when not stun
+        _canDash = true;
     }
-
-    void SliderUpdate()
-    {
-        if (_health >= enemyTypeData.maxHealth)
-        {
-            healthSlider.SetActive(false);
-        }
-        else
-        {
-            healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
-        }
-    }
-
-
 }

@@ -57,6 +57,7 @@ public class MarksManIA : MonoBehaviour
         _enemyTrigger = GetComponent<Enemy>();
         _lineRenderer = GetComponent<LineRenderer>();
         laserMaterial = _lineRenderer.material;
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
         _wallLayerMask = LayerMask.GetMask("Wall");
         _playerLayerMask = LayerMask.GetMask("Player");

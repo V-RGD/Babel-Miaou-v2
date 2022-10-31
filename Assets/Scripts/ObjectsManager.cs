@@ -94,7 +94,7 @@ public class ObjectsManager : MonoBehaviour
     public void OnObjectEquip(GameObject item)
     {
         int id = item.GetComponent<ItemDragDrop>().objectID;
-        Debug.Log("equiped " + id);
+        Debug.Log("equiped Item#" + id);
         //check the ID of the object to add additional effects
         switch (id)
         {
@@ -130,7 +130,7 @@ public class ObjectsManager : MonoBehaviour
     public void OnObjectUnEquip(GameObject item)
     {
         int id = item.GetComponent<ItemDragDrop>().objectID;
-        Debug.Log("unequiped " + id);
+        Debug.Log("unequiped Item#" + id);
         //check the ID of the object to remove additional effects
         switch (id)
         {

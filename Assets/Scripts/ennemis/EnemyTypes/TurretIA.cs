@@ -35,6 +35,7 @@ public class TurretIA : MonoBehaviour
     //components
     private NavMeshAgent _agent;
     private GameObject _player;
+    public GameObject bigShooterProjo;
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
@@ -45,6 +46,7 @@ public class TurretIA : MonoBehaviour
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
         _enemyTrigger = GetComponent<Enemy>();
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
@@ -63,6 +65,7 @@ public class TurretIA : MonoBehaviour
         }
 
         StunProcess();
+        FleeDir();
     }
 
     private void FixedUpdate()
@@ -77,7 +80,6 @@ public class TurretIA : MonoBehaviour
         }
         
         MaxSpeed();
-        FleeDir();
     }
 
     void Shooter()
@@ -95,7 +97,7 @@ public class TurretIA : MonoBehaviour
             }
             //recule
             _speedFactor = 0;
-            _rb.AddForce(_fleeDir.normalized * 10, ForceMode.Acceleration);
+            _rb.AddForce(_fleeDir.normalized * enemyTypeData.speed, ForceMode.VelocityChange);
         }
         //if the enemy is in range, and not too far
         if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
@@ -117,7 +119,14 @@ public class TurretIA : MonoBehaviour
         if (_canShootProjectile && _playerDist < enemyTypeData.attackRange)
         {
             _canShootProjectile = false;
-            StartCoroutine(ShootProjectile());
+            if (isBigShooter)
+            {
+                StartCoroutine(ShootBigShooterProjectile());
+            }
+            else
+            {
+                StartCoroutine(ShootProjectile());
+            }
         }
     }
 
@@ -154,7 +163,7 @@ public class TurretIA : MonoBehaviour
             //places it correctly
             projo.transform.position = transform.position + playerDir.normalized;
             //gives it force, in desired angle
-            projo.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, projectionAngle, 0) * playerDir  * enemyTypeData.projectileForce);
+            projo.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, projectionAngle, 0) * _projectileDir.normalized  * enemyTypeData.projectileForce);
             //sets damage
             projo.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
             //adds angle offset
@@ -163,13 +172,14 @@ public class TurretIA : MonoBehaviour
         
         //then adds big projectile
         
-        GameObject bigProjectile = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+        GameObject bigProjectile = Instantiate(bigShooterProjo, transform.position, quaternion.identity);
+        bigProjectile.GetComponent<BigShooterProjectile>().enemyTypeData = enemyTypeData;
         //activates projecile
         bigProjectile.SetActive(true);
         //places it correctly
         bigProjectile.transform.position = transform.position + playerDir.normalized;
         //gives it force, in desired angle
-        bigProjectile.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, baseAngle, 0) * playerDir  * enemyTypeData.projectileForce);
+        bigProjectile.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized  * enemyTypeData.projectileForce);
         //sets damage
         bigProjectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
         
@@ -222,11 +232,14 @@ public class TurretIA : MonoBehaviour
 
     void FleeDir()
     {
-        if (Physics.Raycast(transform.position, -playerDir, 4, wallLayerMask))
+        Debug.DrawRay(transform.position, -playerDir.normalized * 20,  Color.blue, wallLayerMask);
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -playerDir.normalized, out hit, 20, wallLayerMask))
         {
-            Debug.Log("hit wall");
             //else, turns a bit
-            _fleeDir = Quaternion.Euler(0, 45, 0) * -playerDir;
+            Vector3 wallDir = transform.position - hit.point;
+            _fleeDir = wallDir;
+            Debug.Log("touches wall");
         }
         else
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text MoneyUI;
     public GameObject[] heartUIs;
     public Sprite fullHeart;
+    public Sprite midHeart;
     public Sprite emptyHeart;
     public Image panel;
     public Image smashSlider;
@@ -48,25 +50,32 @@ public class UIManager : MonoBehaviour
         //gerer si le coeur est actif
         for (var i = 0; i < 20; i++)
         {
-            if (i > health - 1)
+            Image image = heartUIs[i].GetComponent<Image>();
+            int ceil = i * 2 + 1;
+            if (gameManager.maxHealth >= ceil)
             {
-                heartUIs[i].GetComponent<Image>().enabled = false;
+                if (health < ceil)
+                {
+                    //si la vie est en dessous du seuil requis pour l'activation du coeur, le desactiver
+                    image.sprite = emptyHeart;
+                }
+                else
+                {
+                    image.enabled = true;
+                    if (health == ceil)
+                    {
+                        image.sprite = midHeart;
+                    }
+
+                    if (health > ceil)
+                    {
+                        image.sprite = fullHeart;
+                    }
+                }
             }
             else
             {
-                heartUIs[i].GetComponent<Image>().enabled = true;
-                //gerer si le coeur est rempli ou pas
-                for (var j = 0; j < 20; j++)
-                {
-                    if (j <= health - 1)
-                    {
-                        heartUIs[j].GetComponent<Image>().sprite = fullHeart;
-                    }
-                    else
-                    {
-                        heartUIs[j].GetComponent<Image>().sprite = emptyHeart;
-                    }
-                }            
+                image.enabled = false;  
             }
         }
     }

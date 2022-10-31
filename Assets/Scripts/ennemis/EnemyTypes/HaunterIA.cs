@@ -42,6 +42,7 @@ public class HaunterIA : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _attackAnchor = transform.GetChild(1).gameObject;
         _enemyTrigger = GetComponent<Enemy>();
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
     }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    private float _health;
+    public float health;
     public bool startSpawning;
     private bool canInitiateSpawning = true;
     public bool isActive;
@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     private GameObject spawnZone;
     
     private GameManager _gameManager;
+    private UIManager _uiManager;
     private SpriteRenderer _spriteRenderer;
     public EnemyType enemyTypeData;
     
@@ -30,7 +31,8 @@ public class Enemy : MonoBehaviour
         isActive = false;
         _spriteRenderer.enabled = false;
         spawnZone.SetActive(true);
-        _health = enemyTypeData.maxHealth;
+        health = enemyTypeData.maxHealth;
+        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
        
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
@@ -49,7 +51,7 @@ public class Enemy : MonoBehaviour
             StartCoroutine(EnemyApparition());
         }
         
-        if (_health <= 0)
+        if (health <= 0)
         {
             //dies
             Death();
@@ -72,40 +74,35 @@ public class Enemy : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-        //receives damage
+        //if player hit
         if (other.CompareTag("PlayerAttack"))
         {
             if (isTank)
             {
+                //tanks take a hit before being vulnerable
                 isTank = false;
             }
             else
             {
-                TakeDamage(other.GetComponent<ObjectDamage>().damage);
+                //receives damage
+                _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
             }
         }
         
         //deals damage
         if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0)
         {
-            DealDamage(enemyTypeData.damage);
+            _gameManager.DealDamageToPlayer(enemyTypeData.damage);
         }
     }
 
     void TakeDamage(float damageTaken)
     {
         //receives damage and applies object effects accordingly
-        _health -= damageTaken;
+        health -= damageTaken;
         //_stunCounter = enemyTypeData.stunLenght;
     }
 
-    void DealDamage(float damageDealt)
-    {
-        //deals damage to player and applies object affects accordingly
-        _gameManager.health -= Mathf.CeilToInt(damageDealt);
-        _player.GetComponent<PlayerController>().invincibleCounter = _player.GetComponent<PlayerController>().invincibleTime;
-    }
-    
     void Death()
     {
         for (int i = 0; i < enemyTypeData.eyesDropped; i++)
@@ -117,14 +114,14 @@ public class Enemy : MonoBehaviour
     
     void SliderUpdate()
     {
-        if (_health >= enemyTypeData.maxHealth)
+        if (health >= enemyTypeData.maxHealth)
         {
             healthSlider.SetActive(false);
         }
         else
         {
             healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
+            healthSlider.GetComponent<Slider>().value = health / enemyTypeData.maxHealth;
         }
     }
 }

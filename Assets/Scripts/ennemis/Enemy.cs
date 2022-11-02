@@ -16,11 +16,16 @@ public class Enemy : MonoBehaviour
     private GameObject _player;
     public GameObject healthSlider;
     private GameObject spawnZone;
-    
+    public BoxCollider mainCollider;
+    private Rigidbody _rb;
+
     private GameManager _gameManager;
     private UIManager _uiManager;
     private SpriteRenderer _spriteRenderer;
     public EnemyType enemyTypeData;
+    private NavMeshAgent _agent;
+
+    [HideInInspector]public GameObject room;
     
     void Start()
     {
@@ -30,10 +35,14 @@ public class Enemy : MonoBehaviour
         _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
         isActive = false;
         _spriteRenderer.enabled = false;
-        spawnZone.SetActive(true);
+        spawnZone.SetActive(false);
         health = enemyTypeData.maxHealth;
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-       
+        _rb = GetComponent<Rigidbody>();
+        _rb.useGravity = false;
+        mainCollider.enabled = false;
+        _agent = GetComponent<NavMeshAgent>();
+
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
         {
@@ -67,7 +76,9 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(2);
         //then enemy spawns
         spawnZone.SetActive(false);
-        GetComponent<NavMeshAgent>().enabled = true;
+        _agent.enabled = true;
+        _rb.useGravity = true;
+        mainCollider.enabled = true;
         isActive = true;
         _spriteRenderer.enabled = true;
     }

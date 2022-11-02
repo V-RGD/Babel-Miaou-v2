@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class PullIA : MonoBehaviour
@@ -35,6 +33,7 @@ public class PullIA : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     public BoxCollider collider;
     private List<GameObject> _projeciles;
+    [HideInInspector]public Transform roomPosition;
 
     private void Start()
     {
@@ -42,6 +41,7 @@ public class PullIA : MonoBehaviour
         _canShootProjectile = true;
         _enemyTrigger = GetComponent<Enemy>();
         _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
         //creates a list of projectiles for further use
         _projeciles = new List<GameObject>();
@@ -122,6 +122,7 @@ public class PullIA : MonoBehaviour
         //calculates a random position where the enemy will spawn
         int randPosX = Random.Range(-20, 21);
         int randPosY = Random.Range(-20, 21);
+        
         Vector3 tpPoint = transform.position + new Vector3(randPosX, _player.transform.position.y + 5, randPosY);
         transform.position = tpPoint;
 

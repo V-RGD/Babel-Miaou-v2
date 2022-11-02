@@ -10,10 +10,8 @@ public class HaunterIA : MonoBehaviour
     
     private Vector3 playerDir;
     private Vector3 attackDir;
-    private LayerMask wallLayerMask;
     
     //values
-    private float _health;
     private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
@@ -34,24 +32,18 @@ public class HaunterIA : MonoBehaviour
     private NavMeshAgent _agent;
     private GameObject _player;
     private GameObject _attackAnchor;
-    private GameManager _gameManager;
     private Rigidbody _rb;
-    public EnemyType enemyTypeData;
-    
-    [Header("*Objects*")]
-    public GameObject healthSlider;
+    private EnemyType enemyTypeData;
     
     private void Awake()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
         _attackAnchor = transform.GetChild(1).gameObject;
         _enemyTrigger = GetComponent<Enemy>();
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
-        _health = enemyTypeData.maxHealth;
-        wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
     }
 
@@ -61,19 +53,11 @@ public class HaunterIA : MonoBehaviour
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position).normalized;
 
-        if (_health <= 0)
-        {
-            //dies
-            Death();
-        }
-
         if (_isHit)
         {
             //resets stun counter
             _stunCounter = enemyTypeData.stunLenght;
         }
-
-        SliderUpdate();
     }
 
     private void FixedUpdate()
@@ -166,50 +150,6 @@ public class HaunterIA : MonoBehaviour
             _isStunned = false;
             //can't be touched
             _isVulnerable = false;
-        }
-    }
-
-    void Death()
-    {
-        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
-        {
-            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
-        }
-        Debug.Log("dies");
-        Destroy(gameObject);
-    }
-
-    void SliderUpdate()
-    {
-        if (_health >= enemyTypeData.maxHealth)
-        {
-            healthSlider.SetActive(false);
-        }
-        else
-        {
-            healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PlayerAttack"))
-        {
-            if (isTank)
-            {
-                isTank = false;
-            }
-            else
-            {
-                _health -= other.GetComponent<ObjectDamage>().damage;
-            }
-        }
-        
-        if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0)
-        {
-            _gameManager.health -= enemyTypeData.damage;
-            _player.GetComponent<PlayerController>().invincibleCounter = _player.GetComponent<PlayerController>().invincibleTime;
         }
     }
 }

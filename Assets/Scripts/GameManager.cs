@@ -29,7 +29,11 @@ public class GameManager : MonoBehaviour
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
     }
 
-    void Start() => health = maxHealth;
+    void Start()
+    {
+        health = maxHealth;
+        _uiManager.HealthBar(health);
+    }
 
     private void Update()
     {
@@ -66,5 +70,31 @@ public class GameManager : MonoBehaviour
                 isDead = true;
             }
         }
+    }
+    
+    public void DealDamageToPlayer(float damageDealt) //when player takes hit
+    {
+        //clamps damage to an int (security)
+        int damage = Mathf.CeilToInt(damageDealt);
+        //applies effects --- including damage taken
+        _objectsManager.OnPlayerHit(damage);
+        //player is invincible for a time
+        _playerController.invincibleCounter = _playerController.invincibleTime;
+        //sets health bar
+        _uiManager.HealthBar(health);
+    }
+    
+    public void DealDamageToEnemy(float damageDealt, Enemy enemy) //when enemy takes hit
+    {
+        //clamps damage to an int (security)
+        int damage = Mathf.CeilToInt(damageDealt);
+        //applies killing effects
+        if (enemy.health - damage <= 0)
+        {
+            _objectsManager.OnEnemyKill();
+        }
+        //applies damage
+        enemy.health -= damage;
+        
     }
 }

@@ -15,7 +15,6 @@ public class MarksManIA : MonoBehaviour
     private LayerMask _playerLayerMask;
 
     //values
-    private float _health;
     private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
@@ -45,13 +44,10 @@ public class MarksManIA : MonoBehaviour
     private GameObject _player;
     private GameManager _gameManager;
     private Rigidbody _rb;
-    public EnemyType enemyTypeData;
+    private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
     private LineRenderer _lineRenderer;
 
-    [Header("*Objects*")]
-    public GameObject healthSlider;
-    
     private void Awake()
     {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -61,8 +57,8 @@ public class MarksManIA : MonoBehaviour
         _enemyTrigger = GetComponent<Enemy>();
         _lineRenderer = GetComponent<LineRenderer>();
         laserMaterial = _lineRenderer.material;
+        enemyTypeData = _enemyTrigger.enemyTypeData;
 
-        _health = enemyTypeData.maxHealth;
         _wallLayerMask = LayerMask.GetMask("Wall");
         _playerLayerMask = LayerMask.GetMask("Player");
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
@@ -80,12 +76,6 @@ public class MarksManIA : MonoBehaviour
         _playerDist = (_player.transform.position - transform.position).magnitude;
         _playerDir = _player.transform.position - transform.position;
 
-        if (_health <= 0)
-        {
-            //dies
-            Death();
-        }
-
         if (_isHit)
         {
             //resets stun counter
@@ -93,7 +83,6 @@ public class MarksManIA : MonoBehaviour
         }
 
         StunProcess();
-        SliderUpdate();
     }
 
     private void FixedUpdate()
@@ -296,28 +285,6 @@ public class MarksManIA : MonoBehaviour
         }
     }
 
-    void Death()
-    {
-        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
-        {
-            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
-        }
-        Destroy(gameObject);
-    }
-
-    void SliderUpdate()
-    {
-        if (_health >= enemyTypeData.maxHealth)
-        {
-            healthSlider.SetActive(false);
-        }
-        else
-        {
-            healthSlider.SetActive(true);
-            healthSlider.GetComponent<Slider>().value = _health / enemyTypeData.maxHealth;
-        }
-    }
-    
     void FleeDir()
     {
         if (Physics.Raycast(transform.position, -_playerDir, 4, _wallLayerMask))
@@ -330,14 +297,6 @@ public class MarksManIA : MonoBehaviour
         {
             //if there isn't a wall in flee direction, simply run away from player
             _fleeDir = -_playerDir;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PlayerAttack"))
-        {
-            _health -= other.GetComponent<ObjectDamage>().damage;
         }
     }
 }

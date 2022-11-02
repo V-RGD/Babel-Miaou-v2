@@ -34,8 +34,7 @@ public class ProjectileDamage : MonoBehaviour
                 int rand = Random.Range(0, 100);
                 if (rand > Mathf.CeilToInt(1/_objectsManager.gameVariables.safetyBlessingRate * 100))
                 {
-                    gameManager.health -= damage;
-                    player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+                    gameManager.DealDamageToPlayer(damage);
                     Destroy(gameObject);
                 }
                 else
@@ -46,8 +45,7 @@ public class ProjectileDamage : MonoBehaviour
             }
             else
             {
-                gameManager.health -= damage;
-                player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+                gameManager.DealDamageToPlayer(damage);
                 Destroy(gameObject);
             }
         }

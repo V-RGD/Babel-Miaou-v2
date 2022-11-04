@@ -232,7 +232,6 @@ public class TurretIA : MonoBehaviour
 
     void FleeDir()
     {
-        Debug.DrawRay(transform.position, -playerDir.normalized * 20,  Color.blue, wallLayerMask);
         RaycastHit hit;
         if (Physics.Raycast(transform.position, -playerDir.normalized, out hit, 20, wallLayerMask))
         {

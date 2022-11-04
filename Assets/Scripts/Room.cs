@@ -19,6 +19,7 @@ public class Room : MonoBehaviour
     private GameManager _gameManager;
     private DunGen _dunGen;
     private ObjectsManager _objectsManager;
+    private RoomInfo _roomInfo;
 
     //room info
     public int roomType;
@@ -46,6 +47,7 @@ public class Room : MonoBehaviour
         chest = _lm.chest;
         doorPrefab = _lm.door;
         _canOpenDoors = true;
+        _roomInfo = GetComponent<RoomInfo>();
 
         RoomType();
         //PropsSpawn();
@@ -268,11 +270,10 @@ public class Room : MonoBehaviour
 
     void DoorSpawn()
     {
-        RoomInfo info = GetComponent<RoomInfo>();
         for (int i = 0; i < 4; i++)
         {
             //checks if there is supposed to be doors on each corner
-            if (info.doors[i] == 1)
+            if (_roomInfo.doors[i] == 1)
             {
                 //spawns doors accordingly
                 var cornerOffset = 5;
@@ -319,5 +320,45 @@ public class Room : MonoBehaviour
         yield return new WaitForSeconds(2);
         int rand = Random.Range(0, enemyGroup.transform.childCount);
         Destroy(enemyGroup.transform.GetChild(rand));
+    }
+
+    void RoomLayout()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            //checks if there is supposed to be doors on each corner
+            if (_roomInfo.doors[i] == 1)
+            {
+                //destroys blocks blocking doors.
+                var cornerOffset = 5;
+                var upOffset = 8;
+                var roomSize = 50;
+                var spawnPoint = Vector3.zero;
+                var rotation = Vector3.zero;
+                switch (i)
+                {
+                    case 0: //left
+                        spawnPoint = new Vector3(-roomSize + cornerOffset, upOffset, 0);
+                        rotation = new Vector3(90, -90, 0);
+                        break;
+                    case 1: //up
+                        spawnPoint = new Vector3(0, upOffset, roomSize - cornerOffset);
+                        rotation = new Vector3(90, 0, 0);
+                        break;
+                    case 2: //right
+                        spawnPoint = new Vector3(roomSize - cornerOffset, upOffset, 0);
+                        rotation = new Vector3(90, 90, 0);
+                        break;
+                    case 3: //down
+                        spawnPoint = new Vector3(0, upOffset, -roomSize + cornerOffset);
+                        rotation = new Vector3(90, 180, 0);
+                        break;
+                }
+
+                GameObject door = Instantiate(doorPrefab, spawnPoint + transform.position, Quaternion.Euler(rotation));
+                door.transform.parent = gameObject.transform;
+                doorsObjects.Add(door);
+            }
+        }
     }
 }

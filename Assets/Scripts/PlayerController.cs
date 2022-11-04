@@ -77,13 +77,22 @@ public class PlayerController : MonoBehaviour
     private InputAction _dash;
     private InputAction _mouseHold;
     private GameManager _gameManager;
+    private Animator _animator;
+
+    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Run_Side = Animator.StringToHash("Run_Side");
+    private static readonly int Run_Back = Animator.StringToHash("Run_Back");
+    private static readonly int Run_Front = Animator.StringToHash("Run_Front");
+    private int _currentState;
+    private float _lockedTill;
+
     #endregion
     private void Awake()
     {
         canMove = true;
         
         _rb = GetComponent<Rigidbody>();
-        _spriteRenderer = transform.GetComponentInChildren<SpriteRenderer>();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _playerControls = new PlayerControls();
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
@@ -91,6 +100,7 @@ public class PlayerController : MonoBehaviour
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
+        _animator = GetComponent<Animator>();
     }
 
     void FixedUpdate()
@@ -107,8 +117,71 @@ public class PlayerController : MonoBehaviour
             }
             AttackManagement();
         }
-        
+    }
+
+    private void Update()
+    {
         Flip();
+        
+        var state = GetState();
+
+        if (state == _currentState) return;
+        _animator.CrossFade(state, 0, 0);
+        _currentState = state;
+    }
+
+    private int GetState()
+    {
+        if (Time.time < _lockedTill) return _currentState;
+        //checks player speed for orientation
+        float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
+        float yVal = movementDir.y >= 0 ? movementDir.y : -movementDir.y;
+
+        //if is attacking, animation plays, then locks current state during x seconds
+        if (isAttacking)
+        {
+            return Idle;
+        }
+        
+        //if is dashing, lock current state during x seconds
+        if (_isDashing)
+        {
+            LockState(_currentState, dashLenght);
+        }
+
+        //if running
+        if (!isAttacking && !_isDashing)
+        {
+            if (movementDir != Vector2.zero)
+            {
+                //checks the best option depending on the speed
+                if (yVal >= xVal && movementDir.y != 0)
+                {
+                    //plays back and forward anims instead of side
+                    return movementDir.y >= 0 ? Run_Back : Run_Front;
+                }
+                else
+                {
+                    //plays side anim
+                    return Run_Side;
+                }
+            }
+            else
+            {
+                //if the player isn't moving, simply plays idle anim
+                return Idle;
+            }
+        }
+        else
+        {
+            return Idle;
+        }
+
+        int LockState(int s, float t)
+        {
+            _lockedTill = Time.time + t;
+            return s;
+        }
     }
 
 
@@ -243,15 +316,6 @@ public class PlayerController : MonoBehaviour
             float force = 0;
             Vector3 attackDir = Vector3.zero;
 
-            if (movementDir != Vector2.zero)
-            {
-                attackDir = new Vector3(movementDir.x, 0, movementDir.y);
-            }
-            else
-            {
-                attackDir = new Vector3(_lastWalkedDir.x, 0, _lastWalkedDir.y);
-            }
-            
             switch (_comboCounter)
             {
                 case 0 : 
@@ -277,6 +341,16 @@ public class PlayerController : MonoBehaviour
                     force = pickForce;
                     _comboCounter = 0; //resets combo if last attack
                     break;
+            }
+            
+            if (movementDir != Vector2.zero)
+            {
+                attackDir = new Vector3(movementDir.x, 0, movementDir.y);
+            }
+            else
+            {
+                attackDir = new Vector3(_lastWalkedDir.x, 0, _lastWalkedDir.y);
+                force = 0;
             }
             
             //determine ou l'attaque va se faire

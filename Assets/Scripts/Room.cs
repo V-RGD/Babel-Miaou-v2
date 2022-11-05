@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -48,16 +49,18 @@ public class Room : MonoBehaviour
         doorPrefab = _lm.door;
         _canOpenDoors = true;
         _roomInfo = GetComponent<RoomInfo>();
+    }
 
+    private void Start()
+    {
         RoomType();
         //PropsSpawn();
         DoorSpawn();
     }
-    
+
     void Update()
     {
         _enemiesRemaining = enemyGroup.transform.childCount; //check how many enemies are still in the room
-        
         if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
         {
             _canOpenDoors = true;
@@ -165,27 +168,24 @@ public class Room : MonoBehaviour
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(false);
+            Debug.Log("enemy spawned");
         }
     }
     
     void RoomType()
     {
-        //Debug.Log(currentRoom);
         if (currentRoom == 999)
         {
             roomType = 2;
         }
-
         if (currentRoom == 0)
         {
             roomType = 0;
         }
-
         else if (currentRoom == _dunGen.dungeonSize)
         {
             roomType = 4;
         }
-
         else if (currentRoom == _dunGen.dungeonSize - 1)
         {
             roomType = 3;

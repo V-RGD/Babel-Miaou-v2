@@ -92,7 +92,7 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         
         _rb = GetComponent<Rigidbody>();
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
         _playerControls = new PlayerControls();
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 

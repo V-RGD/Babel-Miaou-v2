@@ -52,9 +52,9 @@ public class PlayerController : MonoBehaviour
     private float _speedFactor = 1;
     [HideInInspector] public float dashCooldownTimer;
     public float smashGauge;
-    private bool _isInvincible;
-    [HideInInspector]public bool isAttacking;
-    private bool _isDashing;
+    //private bool _isInvincible;
+    //[HideInInspector]public bool isAttacking;
+    //private bool _isDashing;
     private bool _isMouseHolding;
     [HideInInspector] public bool isMasterSword;
     [HideInInspector] public bool canRepel;
@@ -80,13 +80,58 @@ public class PlayerController : MonoBehaviour
     private Animator _animator;
 
     private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Dash = Animator.StringToHash("Dash");
     private static readonly int Run_Side = Animator.StringToHash("Run_Side");
     private static readonly int Run_Back = Animator.StringToHash("Run_Back");
     private static readonly int Run_Front = Animator.StringToHash("Run_Front");
-    private int _currentState;
+    private static readonly int Attack_Side = Animator.StringToHash("Attack_Side");
+    private static readonly int Attack_Back = Animator.StringToHash("Attack_Back");
+    private static readonly int Attack_Front = Animator.StringToHash("Attack_Front");
+    private static readonly int SecondAttack_Side = Animator.StringToHash("SecondAttack_Side");
+    private static readonly int SecondAttack_Back = Animator.StringToHash("SecondAttack_Back");
+    private static readonly int SecondAttack_Front = Animator.StringToHash("SecondAttack_Front");
+    private int _currentAnimatorState;
     private float _lockedTill;
 
     #endregion
+
+    public PlayerStates currentState;
+    
+    void Behaviour(PlayerStates state)
+    {
+        switch (state)
+        {
+            case PlayerStates.Run: 
+                MovePlayer();
+                AttackManagement();
+                MovingAnimations();
+                break;
+            case PlayerStates.Attack:
+                break;
+            case PlayerStates.Dash:
+                break;
+        }
+    }
+
+    void MovingAnimations()
+    {
+        var state = GetMovingAnimation();
+        if (state == _currentAnimatorState) return;
+        _animator.CrossFade(state, 0, 0);
+        _currentAnimatorState = state;
+    }
+    
+    void SwitchState(PlayerStates nextState)
+    {
+        currentState = nextState;
+    }
+    
+    public enum PlayerStates
+    {
+        Run, 
+        Attack,
+        Dash,
+    }
     private void Awake()
     {
         canMove = true;
@@ -101,79 +146,60 @@ public class PlayerController : MonoBehaviour
         _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
         _animator = GetComponent<Animator>();
+        currentState = PlayerStates.Run;
     }
 
     void FixedUpdate()
     {
+        Behaviour(currentState);
         JostickDir();
         Timer();
         Friction();
-
-        if (stunCounter <= 0)
-        {
-            if (canMove)
-            {
-                MovePlayer();
-            }
-            AttackManagement();
-        }
     }
 
     private void Update()
     {
         Flip();
-        
-        var state = GetState();
-
-        if (state == _currentState) return;
-        _animator.CrossFade(state, 0, 0);
-        _currentState = state;
     }
 
-    private int GetState()
+    void PlayAnimation(int state)
     {
-        if (Time.time < _lockedTill) return _currentState;
+        //if is dashing, lock current state during x seconds
+        if (currentState == PlayerStates.Dash)
+        {
+            //state = _currentAnimatorState;
+        }
+        
+        if (state == _currentAnimatorState) return;
+        _animator.CrossFade(state, 0, 0);
+        _currentAnimatorState = state;
+    }
+
+    private int GetMovingAnimation()
+    {
+        if (Time.time < _lockedTill) return _currentAnimatorState;
         //checks player speed for orientation
         float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
         float yVal = movementDir.y >= 0 ? movementDir.y : -movementDir.y;
-
-        //if is attacking, animation plays, then locks current state during x seconds
-        if (isAttacking)
-        {
-            return Idle;
-        }
         
-        //if is dashing, lock current state during x seconds
-        if (_isDashing)
-        {
-            LockState(_currentState, dashLenght);
-        }
-
         //if running
-        if (!isAttacking && !_isDashing)
+        if (movementDir != Vector2.zero)
         {
-            if (movementDir != Vector2.zero)
+            //checks the best option depending on the speed
+            if (yVal > xVal && movementDir.y != 0)
             {
-                //checks the best option depending on the speed
-                if (yVal >= xVal && movementDir.y != 0)
-                {
-                    //plays back and forward anims instead of side
-                    return movementDir.y >= 0 ? Run_Back : Run_Front;
-                }
-                else
-                {
-                    //plays side anim
-                    return Run_Side;
-                }
+                //plays back and forward anims instead of side
+                return movementDir.y >= 0 ? Run_Back : Run_Front;
             }
             else
             {
-                //if the player isn't moving, simply plays idle anim
-                return Idle;
+                //plays side anim
+                return Run_Side;
             }
         }
         else
         {
+            //if the player isn't moving, simply plays idle anim
             return Idle;
         }
 
@@ -183,7 +209,6 @@ public class PlayerController : MonoBehaviour
             return s;
         }
     }
-
 
     #region Flip
 
@@ -213,9 +238,8 @@ public class PlayerController : MonoBehaviour
     #region Basic Movement
     void MovePlayer()
     {
-        if (movementDir!= Vector2.zero && !_isDashing && _speedFactor != 0)
+        if (movementDir!= Vector2.zero && _speedFactor != 0)
         {
-            
             _rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration), ForceMode.Impulse);
             _lastWalkedDir = movementDir;
             
@@ -244,35 +268,32 @@ public class PlayerController : MonoBehaviour
     void Friction()
     {
         //deceleration
-        if (isAttacking || stunCounter > 0 || _isDashing)
+        if (currentState == PlayerStates.Attack || stunCounter > 0 || currentState == PlayerStates.Dash)
         {
             _frictionMultiplier = 0.95f;
             return;
         }
         
-        if (!_isDashing && movementDir == Vector2.zero)
+        if (currentState != PlayerStates.Dash && currentState != PlayerStates.Attack && movementDir == Vector2.zero)
         {
-            if (!isAttacking)
-            {
-                _frictionMultiplier = 1/frictionAmount;
-            }
+            _frictionMultiplier = 1/frictionAmount;
         }
 
         _rb.velocity = new Vector3(_rb.velocity.x * _frictionMultiplier, _rb.velocity.y, _rb.velocity.z * _frictionMultiplier);
     }
 
-    void Dash(InputAction.CallbackContext context)
+    void InputDash(InputAction.CallbackContext context)
     {
-        if (!_isDashing && _dashesAvailable > 0 && dashCooldownTimer <= 0 && !isAttacking)
+        if (currentState == PlayerStates.Run && _dashesAvailable > 0 && dashCooldownTimer <= 0)
         {
             _dashesAvailable--;
-            _isDashing = true;
             StartCoroutine(DashSequence());
         }
     }
 
     IEnumerator DashSequence()
     {
+        SwitchState(PlayerStates.Dash);
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
         //applies dash force
@@ -286,29 +307,21 @@ public class PlayerController : MonoBehaviour
         }
         yield return new WaitForSeconds(dashLenght);
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
-        _isDashing = false;
         canMove = true;
         _dashesAvailable++;
         dashCooldownTimer = dashCooldownLenght;
+        SwitchState(PlayerStates.Run);
     }
     #endregion
-    void JostickDir()
+        void JostickDir()
         {
             Vector2 inputDir = _move.ReadValue<Vector2>();
             movementDir = new Vector2(inputDir.x, inputDir.y);
         }
 
-        void Attack()
-        {
-            if (!isAttacking && !_isDashing)
-            {
-                isAttacking = true;
-                StartCoroutine(AttackCooldown()); 
-            }
-        }
-
         IEnumerator AttackCooldown()
         {
+            SwitchState(PlayerStates.Attack);
             //determines attack length, damage, hitbox, force to add
             GameObject hitbox = null;
             int damage = 0;
@@ -352,7 +365,7 @@ public class PlayerController : MonoBehaviour
                 attackDir = new Vector3(_lastWalkedDir.x, 0, _lastWalkedDir.y);
                 force = 0;
             }
-            
+            PlayAttackAnim(attackDir);
             //determine ou l'attaque va se faire
             _attackAnchor.transform.LookAt(transform.position + attackDir);
             //starts timer for combos
@@ -365,7 +378,7 @@ public class PlayerController : MonoBehaviour
             hitbox.SetActive(true);
             //adds force to simulate inertia
             _rb.velocity = Vector3.zero;
-            _rb.AddForce(attackDir * force, ForceMode.Impulse);
+            //_rb.AddForce(attackDir * force, ForceMode.Impulse);
             //plays animation
             
             //if master sword, launches projectile
@@ -381,7 +394,7 @@ public class PlayerController : MonoBehaviour
             canMove = true;
             //disables hitbox
             hitbox.SetActive(false);
-            isAttacking = false;
+            SwitchState(PlayerStates.Run);
         }
 
         void MouseHold(InputAction.CallbackContext context)
@@ -401,7 +414,7 @@ public class PlayerController : MonoBehaviour
 
             _dash = _playerControls.Player.Dash;
             _dash.Enable();
-            _dash.performed += Dash;
+            _dash.performed += InputDash;
 
             _mouseHold = _playerControls.Player.AttackHold;
             _mouseHold.started += MouseHold;
@@ -429,20 +442,12 @@ public class PlayerController : MonoBehaviour
             {
                 _comboCounter = 0;
             }
-
-            if (invincibleCounter > 0)
-            {
-                _isInvincible = true;
-            }
-            else
-            {
-                _isInvincible = false;
-            }
         }
         #endregion
 
          IEnumerator Smash()
         {
+            SwitchState(PlayerStates.Attack);
             //determines attack length, damage, hitbox, force to add
             GameObject hitbox = _smashHitBox;
             float damage = attackStat * smashDamageMultiplier;
@@ -460,7 +465,7 @@ public class PlayerController : MonoBehaviour
             //adds force to simulate inertia
             _rb.velocity = Vector3.zero;
             Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
-            _rb.AddForce(pushedDir * force, ForceMode.Impulse);
+            //_rb.AddForce(pushedDir * force, ForceMode.Impulse);
             //warmup
             yield return new WaitForSeconds(smashWarmup);
             //actives weapon
@@ -475,12 +480,12 @@ public class PlayerController : MonoBehaviour
             canMove = true;
             //disables hitbox
             hitbox.SetActive(false);
-            isAttacking = false;
+            SwitchState(PlayerStates.Run);
         }
 
          void AttackManagement()
          {
-             if (!isAttacking && !_isDashing)
+             if (currentState == PlayerStates.Run)
              {
                  if (_isMouseHolding)
                  {
@@ -498,14 +503,16 @@ public class PlayerController : MonoBehaviour
                          if (smashGauge <= 0.3)
                          {
                              canMove = true;
-                             Attack();
+                             if (currentState == PlayerStates.Run)
+                             {
+                                 StartCoroutine(AttackCooldown());
+                             }
                          }
                          //if too long, smash or pass (lol)
                          else 
                          {
                              if (smashGauge == 1)
                              {
-                                 isAttacking = true;
                                  StartCoroutine(Smash());
                              }
                              else
@@ -522,6 +529,57 @@ public class PlayerController : MonoBehaviour
                      smashGauge = 1;
                  }
              }
+         }
+
+         void PlayAttackAnim(Vector3 playerDir)
+         {
+             int state = Idle;
+             //checks player speed for orientation
+             float xVal = playerDir.x >= 0 ? playerDir.x : -playerDir.x;
+             float yVal = playerDir.z >= 0 ? playerDir.z : -playerDir.z;
+             //if is attacking, animation plays, then locks current state during x seconds
+             if (playerDir != Vector3.zero)
+             {
+                 //checks the best option depending on the speed
+                 if (yVal >= xVal)
+                 {
+                     Debug.Log(xVal + "Xval");
+                     Debug.Log(yVal + "Yval");
+                     //string red = "red";
+                     //plays back and forward anims instead of side
+                     if (_comboCounter == 0)
+                     {
+                         state = playerDir.z >= 0 ? Attack_Back : Attack_Front;
+                         Debug.Log("Attack_Back");
+                     }
+                     else
+                     {
+                         state = playerDir.z >= 0 ? Attack_Back : Attack_Front;
+                         Debug.Log("SecondAttack_Back");
+                     }
+                 }
+                 else
+                 {
+                     switch (state)
+                     {
+                         case 0 :
+                             state = Attack_Side; break;
+                             case 1 :  
+                             state = SecondAttack_Side; break;
+                     }
+                     
+                     state = _comboCounter == 1 ? SecondAttack_Side : Attack_Side;
+                     Debug.Log("Attack_Side");
+                 }
+             }
+             else
+             {
+                 state = _comboCounter == 0 ? Attack_Side : SecondAttack_Side;
+                 Debug.Log("Attack_Side");
+             }
+             
+             _animator.CrossFade(state, 0, 0);
+             _currentAnimatorState = state;
          }
 }
 

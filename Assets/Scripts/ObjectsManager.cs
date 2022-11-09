@@ -86,9 +86,9 @@ public class ObjectsManager : MonoBehaviour
         AssignObjectInfos();
         CreateItemPools();
 
-        _player.dexterity = gameVariables.baseDexterity;
+        _player._playerAttacks.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
-        _player.attackStat = gameVariables.baseAttack;
+        _player._playerAttacks.attackStat = gameVariables.baseAttack;
     }
     
     public void OnObjectEquip(GameObject item)
@@ -106,12 +106,12 @@ public class ObjectsManager : MonoBehaviour
             case 5 : _uiManager.isMapHighlight = true; break; //highlights interesting places on the map
             case 6 : assassinDamageMultiplier = gameVariables.assassinDamageMultiplier; break;
             case 7 : killingSpree = true; break;
-            case 8 : _player.canRepel = false; break;
-            case 9 : _player.isMasterSword = true; break;
+            case 8 : _player._playerAttacks.canRepel = false; break;
+            case 9 : _player._playerAttacks.isMasterSword = true; break;
             case 10 : sacredCross = true; break;
             case 11 : bluSmash = true; break;
             case 12 : innerPeace = true; break;
-            case 13 : _player.noPet = true; break;
+            case 13 : _player._playerAttacks.noPet = true; break;
             case 14 : witherShield = true; break;
             case 15 : strongGrasp = true; break;
             case 16 : swiftArt = true; break;
@@ -142,12 +142,12 @@ public class ObjectsManager : MonoBehaviour
             case 5 : _uiManager.isMapHighlight = false; break; //highlights interesting places on the map
             case 6 : assassinDamageMultiplier = 1; break;
             case 7 : killingSpree = false; break;
-            case 8 : _player.canRepel = false; break;
-            case 9 : _player.isMasterSword = false; break;
+            case 8 : _player._playerAttacks.canRepel = false; break;
+            case 9 : _player._playerAttacks.isMasterSword = false; break;
             case 10 : sacredCross = false; break;
             case 11 : bluSmash = false; break;
             case 12 : innerPeace = false; break;
-            case 13 : _player.noPet = false; break;
+            case 13 : _player._playerAttacks.noPet = false; break;
             case 14 : witherShield = false; break;
             case 15 : strongGrasp = false; break;
             case 16 : swiftArt = false; break;
@@ -222,7 +222,7 @@ public class ObjectsManager : MonoBehaviour
 
         float attackBonuses = glassCanonDamage + killingSpreeDamage + tankPowerBonus + catNipDamage;
         float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier * assassinDamageMultiplier * catWrathDamageMultiplier;
-        _player.attackStat = attack;
+        _player._playerAttacks.attackStat = attack;
         
         //HP Max
         _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + catNipHpIncrease + _gameManager.healthBonus);
@@ -230,7 +230,7 @@ public class ObjectsManager : MonoBehaviour
         //dexterity
         float bonusDex = catWrathDexterityIncrease + catNipDexIncrease;
         float dex = (gameVariables.baseDexterity + bonusDex);
-        _player.dexterity = dex;
+        _player._playerAttacks.dexterity = dex;
 
         float speedBonus = catNipSpeedIncrease;
         float speed = gameVariables.baseSpeed + speedBonus;

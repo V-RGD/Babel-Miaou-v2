@@ -135,7 +135,7 @@ public class UIManager : MonoBehaviour
     void SmashGauge()
     {
         //used to display progress bar for smash holding
-        float value = _playerController.smashGauge * 100;
+        float value = _playerController._playerAttacks.smashGauge * 100;
         float xValue = value / 2 - 50;
 
         if (value > 20)

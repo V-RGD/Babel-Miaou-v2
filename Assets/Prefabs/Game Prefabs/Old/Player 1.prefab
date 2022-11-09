@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 8128021922536996437}
   - component: {fileID: 8128021922536996470}
   - component: {fileID: 24020359763117557}
+  - component: {fileID: 7145637680211389601}
   m_Layer: 0
   m_Name: Player 1
   m_TagString: Player
@@ -315,29 +316,14 @@ MonoBehaviour:
   dashLenght: 0.1
   dashCooldownLenght: 0.35
   canMove: 0
-  attackStat: 1
-  pickDamageMultiplier: 1.5
-  smashDamageMultiplier: 5
-  dexterity: 0
-  slashCooldown: 0.4
-  pickCooldown: 0.7
-  smashCooldown: 1
-  smashWarmup: 0.3
-  smashForce: 5
-  slashForce: 10
-  pickForce: 20
-  masterSwordProjo: {fileID: 0}
-  _comboCooldown: 1
-  _comboTimer: 0
   invincibleCounter: 0
   invincibleTime: 2
   dashCooldownTimer: 0
-  smashGauge: 0
-  isMasterSword: 0
-  canRepel: 0
-  noPet: 0
   stunCounter: 0
+  lastWalkedDir: {x: 0, y: 0, z: 0}
   movementDir: {x: 0, y: 0}
+  _playerAttacks: {fileID: 0}
+  currentAnimatorState: 0
   currentState: 0
 --- !u!54 &8128021922536996424
 Rigidbody:
@@ -454,6 +440,40 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7145637680211389601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8128021922536996425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa6ad9564dde36148bbcf7bbce83db0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comboCooldown: 1
+  _comboTimer: 0
+  smashGauge: 0
+  isMasterSword: 0
+  canRepel: 0
+  noPet: 0
+  attackStat: 1
+  pickDamageMultiplier: 1.5
+  smashDamageMultiplier: 5
+  dexterity: 0
+  slashCooldown: 0.4
+  pickCooldown: 0.7
+  smashCooldown: 2
+  smashWarmup: 1
+  smashForce: 10
+  slashForce: 15
+  pickForce: 50
+  masterSwordProjo: {fileID: 0}
+  attackParameters: {fileID: 11400000, guid: b453879381bbe4944a7703322391cfb6, type: 2}
+  canInterruptAnimation: 0
+  comboState: 0
+  currentAttackState: 0
 --- !u!1 &8357895284105246556
 GameObject:
   m_ObjectHideFlags: 0

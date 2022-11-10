@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
+    
     public float health;
     public bool startSpawning;
     private bool canInitiateSpawning = true;

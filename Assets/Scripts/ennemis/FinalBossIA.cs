@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 using Random = UnityEngine.Random;
 public class FinalBossIA : MonoBehaviour
 {
     #region Global Values
     [Header("Values")]
-    //public LineRenderer HLaser_LineRenderer;
+    public LineRenderer HLaser_LineRenderer;
     public FinalBossValues values;
     public List<string> handAttacksPool;
     public List<string> bodyAttacksPool;
@@ -35,9 +36,11 @@ public class FinalBossIA : MonoBehaviour
     #endregion
     
     private List<GameObject> _lightningEyeList;
+    private NavMeshSurface _navMeshSurface;
     private bool _canAttack;
     public float health;
     private float _handRespawnTimer;
+    private float roomSize = 20;
 
     #region M_Laser
     [Header("M_Laser")]
@@ -46,7 +49,7 @@ public class FinalBossIA : MonoBehaviour
     private Vector3 m_laserDir;
     private LaserVisuals _laserVisuals_L;
     private LaserVisuals _laserVisuals_R;
-    private GameObject _laserHitbox;
+    //private GameObject _laserHitbox;
     #endregion
 
     #region Wanderer
@@ -91,17 +94,20 @@ public class FinalBossIA : MonoBehaviour
         _laserVisuals_R = transform.GetChild(1).GetComponent<LaserVisuals>();
         _laserVisuals_L.values = values;
         _laserVisuals_R.values = values;
-        //HLaser_LineRenderer = GetComponent<LineRenderer>();
-        //_HlaserMat = HLaser_LineRenderer.material;
+        HLaser_LineRenderer = GetComponent<LineRenderer>();
+        _HlaserMat = HLaser_LineRenderer.material;
         _player = GameObject.Find("Player");
-        _laserHitbox = HLaser.transform.GetChild(0).gameObject;
-        _laserHitbox.GetComponent<HugeLaserDamage>().damage = values.hugeLaserDamage;
+        //_laserHitbox = HLaser.transform.GetChild(0).gameObject;
+        //_laserHitbox.GetComponent<HugeLaserDamage>().damage = values.hugeLaserDamage;
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
     void Start()
     {
         handAttackCount = 0;
-        currentState = IAStates.HugeLaser;
+        currentState = IAStates.WandererSpawn;
         _canAttack = true;
+        _navMeshSurface.BuildNavMesh();
     }
     void Update()
     {
@@ -151,7 +157,7 @@ public class FinalBossIA : MonoBehaviour
         {
             //some wanderer appears next to the player
             //take a random one for a list of available enemies
-            Vector3 spawnLocation = Vector3.zero;
+            Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-roomSize, roomSize), 0, Random.Range(-roomSize, roomSize)) + Vector3.up * 5;
             GameObject enemySpawning = Instantiate(wandererPrefab, spawnLocation, Quaternion.identity);
             //enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(true);
@@ -159,12 +165,16 @@ public class FinalBossIA : MonoBehaviour
             enemySpawning.GetComponent<EnemyDamage>().enabled = true;
             enemySpawning.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(values.wandererSpawnInterval);
+            currentState = IAStates.WandererSpawn;
         }
+        yield return new WaitForSeconds(2);
+        StartCoroutine(SwitchState(IAStates.WandererSpawn));
     }
     void SpawnWanderers()
     {
         if (_canAttack)
         {
+            _canAttack = false;
             StartCoroutine(SpawnWandererPrefabs());
         }
     }
@@ -229,7 +239,6 @@ public class FinalBossIA : MonoBehaviour
     #region HLaser
     IEnumerator HugeLaserAttack()
     {
-        float roomSize = 20;
         Vector3 rockSpawnPoint = roomCenter + new Vector3(Random.Range(-roomSize, roomSize), 0, Random.Range(-roomSize, roomSize));
         //rock warning
         _rockWarning.SetActive(true);
@@ -244,12 +253,12 @@ public class FinalBossIA : MonoBehaviour
         yield return new WaitForSeconds(2);
         _laserWarning.SetActive(false);
         //laser 
-        _laserHitbox.SetActive(true);
+        HLaser_LineRenderer.enabled = true;
         HLaserTimer = 0;
         HLaserActive = true;
         yield return new WaitForSeconds(1);
         HLaserActive = false;
-        _laserHitbox.SetActive(false);
+        HLaser_LineRenderer.enabled = false;
         rockPrefab.SetActive(false);
         yield return new WaitForSeconds(values.m_laserCooldown);
         StartCoroutine(SwitchState(IAStates.HugeLaser));
@@ -270,14 +279,17 @@ public class FinalBossIA : MonoBehaviour
             HLaser.transform.rotation = Quaternion.Euler(0, -70 * (1 + -2 * HLaserTimer), 0);
             //updates position
             _HLaserDir = (HLaser_ScopeTo.transform.position - transform.position).normalized;
-            //_HlaserMat.color = Color.magenta;
+            Debug.DrawRay(transform.position, _HLaserDir * 1000, Color.red);
+            _HlaserMat.color = Color.magenta;
                 
             //updates laser position
             Vector3 hitPoint;
             RaycastHit hit;
+            HLaser_ScopeTo.transform.position =
+                new Vector3(HLaser_ScopeTo.transform.position.x, _player.transform.position.y , HLaser_ScopeTo.transform.position.z);
             
             //check if a wall is in between laser
-            if (Physics.Raycast(transform.position, _playerDir, out hit, 1000, values.wallLayerMask))
+            if (Physics.Raycast(HLaser.transform.position, _HLaserDir, out hit, 1000, values.wallLayerMask))
             {
                 hitPoint = hit.point;
             }
@@ -286,13 +298,13 @@ public class FinalBossIA : MonoBehaviour
                 hitPoint = transform.position + _HLaserDir.normalized * 200;
             }
             
-            //HLaser_LineRenderer.SetPosition(0, transform.position);
-            //HLaser_LineRenderer.SetPosition(1, hitPoint);
-            _laserHitbox.transform.localScale = new Vector3(5, 15, (hitPoint - transform.position).magnitude);
+            HLaser_LineRenderer.SetPosition(0, transform.position);
+            HLaser_LineRenderer.SetPosition(1, hitPoint);
+            //_laserHitbox.transform.localScale = new Vector3(5, 15, (hitPoint - transform.position).magnitude);
             //HLaser.transform.position = transform.position + (hitPoint - transform.position / 2);
 
             //check if player touches laser
-            if (Physics.Raycast(transform.position, _HLaserDir, 1000, values.playerLayerMask))
+            if (Physics.Raycast(HLaser.transform.position, _HLaserDir, (hitPoint - HLaser.transform.position).magnitude, values.playerLayerMask))
             {
                 Debug.Log("hit player");
                 //deals damage

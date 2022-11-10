@@ -85,7 +85,6 @@ public class GameManager : MonoBehaviour
             //sets health bar
             _uiManager.HealthBar(health);
             _playerController.invincibleCounter = 1;
-            Debug.Log(damage);
         }
     }
     

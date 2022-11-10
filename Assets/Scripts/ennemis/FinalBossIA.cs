@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -62,7 +61,7 @@ public class FinalBossIA : MonoBehaviour
     void Start()
     {
         handAttackCount = 0;
-        currentState = IAStates.M_Laser;
+        currentState = IAStates.EyeChain;
         _canAttack = true;
     }
     void Update()
@@ -202,31 +201,10 @@ public class FinalBossIA : MonoBehaviour
     #region H_Laser
     IEnumerator HugeLaserAttack(LineRenderer laser)
     {
-        /*
-        //while charging, laser is in direction of player, and color is updated depending on the current charge
-        laser.enabled = true;
-        _isCharging = true;
-
-        yield return new WaitForSeconds(values.m_laserWarmup);
-        
-        _isCharging = false;
-        m_laserTimer = 0;
-        laser.material.color = Color.cyan;
-        //waits a bit for the player to avoid the laser
-        yield return new WaitForSeconds(0.5f);
-        
-        //shoots laser
-        _isLaserOn = true;
-        
-        //laser set inactive
-        yield return new WaitForSeconds(values.m_laserLength);
-        _isLaserOn = false;
-        laser.enabled = false;
-        
-        //can shoot again
-        yield return new WaitForSeconds(values.m_laserCooldown);
-        laser.enabled = false;
-        _canShootLaser = true;*/
+        //rock warning
+        //rock
+        //laser warning
+        //laser 
         yield return new WaitForSeconds(values.m_laserCooldown);
     }
     void HugeLaser()

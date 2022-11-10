@@ -58,7 +58,7 @@ public class PlayerAttacks : MonoBehaviour
     private static readonly int SecondAttack_Side = Animator.StringToHash("SecondAttack_Side");
     private static readonly int SecondAttack_Back = Animator.StringToHash("SecondAttack_Back");
     private static readonly int SecondAttack_Front = Animator.StringToHash("SecondAttack_Front");
-    private static readonly int SpinAttack = Animator.StringToHash("SpinAttack");
+    private static readonly int Spin_Attack = Animator.StringToHash("Spin_Attack");
     
     public bool canInterruptAnimation;
     public enum AttackState
@@ -92,11 +92,16 @@ public class PlayerAttacks : MonoBehaviour
 
     private void Update()
     {
-        AttackManagement();
+        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
+        {
+            AttackManagement();
+            Timer();
+        }
     }
 
-    void PlayAnimation(int state)
+    void PlayAnimation(Vector3 playerDirection)
     {
+        int state = GetAttackAnimation(playerDirection);
         if (state == _pc.currentAnimatorState) return;
         _animator.CrossFade(state, 0, 0);
         _pc.currentAnimatorState = state;    
@@ -120,6 +125,22 @@ public class PlayerAttacks : MonoBehaviour
         float activeLength = 0;
         float recoverLength = 0;
         
+        /*
+        //if master sword, launches projectile
+        if (isMasterSword && _gameManager.health == _gameManager.maxHealth)
+        {
+            GameObject projo = Instantiate(masterSwordProjo, transform.position, quaternion.identity);
+            projo.GetComponent<Rigidbody>().AddForce(attackDir * 100);
+        }*/
+        
+        //-----------startup state
+        //defines values, blocks walking
+        SetAttackState(AttackState.Startup);
+        _pc.SwitchState(PlayerController.PlayerStates.Attack);
+        
+        //starts timer for combos
+        _comboTimer = recoverLength + 0.2f;
+        
         if (_pc.movementDir != Vector2.zero)
         {
             attackDir = new Vector3(_pc.movementDir.x, 0, _pc.movementDir.y);
@@ -128,6 +149,11 @@ public class PlayerAttacks : MonoBehaviour
         {
             attackDir = new Vector3(_pc.lastWalkedDir.x, 0, _pc.lastWalkedDir.y);
             force = 0;
+        }
+
+        if (comboState == ComboState.SpinAttack)
+        {
+            comboState = ComboState.Default;
         }
         
         switch (comboState)
@@ -141,8 +167,8 @@ public class PlayerAttacks : MonoBehaviour
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 //1st anim
-                PlayAnimation(0);
                 comboState = ComboState.SimpleAttack;
+                PlayAnimation(attackDir);
                 break;
             case ComboState.SimpleAttack : 
                 cooldown = slashCooldown * dexterity; 
@@ -153,8 +179,8 @@ public class PlayerAttacks : MonoBehaviour
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 //2nd anim
-                PlayAnimation(1);
                 comboState = ComboState.ReverseAttack;
+                PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
                 cooldown = pickCooldown * dexterity; 
@@ -164,34 +190,20 @@ public class PlayerAttacks : MonoBehaviour
                 startUpLength = attackParameters.pickStartupLength;
                 activeLength = attackParameters.pickActiveLength;
                 recoverLength = attackParameters.pickRecoverLength;
+                //3rd anim
                 comboState = ComboState.SpinAttack;
-                PlayAnimation(2);
+                PlayAnimation(attackDir);
                 break;
         }
         
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);
-        //starts timer for combos
-        _comboTimer = _comboCooldown;
         //stops movement
         _pc.canMove = false;
         //add current damage stat to weapon
         hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
         //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
-        
-        /*
-        //if master sword, launches projectile
-        if (isMasterSword && _gameManager.health == _gameManager.maxHealth)
-        {
-            GameObject projo = Instantiate(masterSwordProjo, transform.position, quaternion.identity);
-            projo.GetComponent<Rigidbody>().AddForce(attackDir * 100);
-        }*/
-        
-        //-----------startup state
-        //defines values, blocks walking
-        SetAttackState(AttackState.Startup);
-        _pc.SwitchState(PlayerController.PlayerStates.Attack);
         yield return new WaitForSeconds(startUpLength);
 
         //-----------active state
@@ -199,7 +211,7 @@ public class PlayerAttacks : MonoBehaviour
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
         _pc.invincibleCounter = activeLength;
-        //_rb.AddForce(attackDir * force, ForceMode.Impulse);
+        _rb.AddForce(attackDir * force, ForceMode.Impulse);
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
@@ -210,6 +222,7 @@ public class PlayerAttacks : MonoBehaviour
 
         //-----------can attack again
         SetAttackState(AttackState.Default);
+        //comboState = ComboState.Default;
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
@@ -277,51 +290,50 @@ public class PlayerAttacks : MonoBehaviour
         }*/
     void AttackManagement()
          {
-             if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
+             if (_isMouseHolding)
              {
-                 if (_isMouseHolding)
+                 _pc.canMove = false;
+                 _rb.velocity = Vector3.zero;
+                 //charges smash gauge
+                 smashGauge += Time.deltaTime;
+             }
+             else
+             {
+                 //if initial input
+                 if (smashGauge > 0)
                  {
-                     _pc.canMove = false;
-                     _rb.velocity = Vector3.zero;
-                     //charges smash gauge
-                     smashGauge += Time.deltaTime;
-                 }
-                 else
-                 {
-                     //if initial input
-                     if (smashGauge > 0)
+                     //on release, if a little bit hold, attacks
+                     if (smashGauge <= 0.3)
                      {
-                         //on release, if a little bit hold, attacks
-                         if (smashGauge <= 0.3)
+                         _pc.canMove = true;
+                         StopAllCoroutines();
+                         StartCoroutine(AttackCoroutine());
+                     }
+                     //if too long, smash or pass (lol)
+                     else 
+                     {
+                         if (smashGauge == 1)
+                         {
+                             //StartCoroutine(Smash());
+                         }
+                         else
                          {
                              _pc.canMove = true;
-                             StartCoroutine(AttackCoroutine());
-                         }
-                         //if too long, smash or pass (lol)
-                         else 
-                         {
-                             if (smashGauge == 1)
-                             {
-                                 //StartCoroutine(Smash());
-                             }
-                             else
-                             {
-                                 _pc.canMove = true;
-                             }
                          }
                      }
-                     smashGauge = 0;
                  }
+                 smashGauge = 0;
+             }
 
-                 if (smashGauge >= 1)
-                 {
-                     smashGauge = 1;
-                 }
+             if (smashGauge >= 1)
+             {
+                 smashGauge = 1;
              }
          }
 
-    void PlayAttackAnim(Vector3 playerDir)
+    int GetAttackAnimation(Vector3 playerDir)
     {
+        //Debug.Log("attack anim" + comboState);
         int state = Idle;
         //checks player speed for orientation
         float xVal = playerDir.x >= 0 ? playerDir.x : -playerDir.x;
@@ -340,7 +352,7 @@ public class PlayerAttacks : MonoBehaviour
                     state = playerDir.z >= 0 ? SecondAttack_Back : SecondAttack_Front;
                     break;
                 case ComboState.SpinAttack:
-                    state = SpinAttack;
+                    state = Spin_Attack;
                     break;
             }
         }
@@ -356,13 +368,31 @@ public class PlayerAttacks : MonoBehaviour
                     state = SecondAttack_Side;
                     break;
                 case ComboState.SpinAttack:
-                    state = SpinAttack;
+                    state = Spin_Attack;
                     break;
             }
-
-            _animator.CrossFade(state, 0, 0);
-            _pc.currentAnimatorState = state;
         }
+        return state;
+    }
+    
+    int GetAttackAnimationNoDir()
+    {
+        //Debug.Log("attack anim" + comboState);
+        int state = Idle;
+        switch (comboState)
+        {
+            case ComboState.SimpleAttack:
+                state = Attack_Side;
+                break;
+            case ComboState.ReverseAttack:
+                state = SecondAttack_Side;
+                break;
+            case ComboState.SpinAttack:
+                state = Spin_Attack;
+                break;
+        }
+        Debug.Log(comboState);
+        return state;
     }
 
     #region InputSystemRequirements

@@ -239,7 +239,8 @@ public class PlayerAttacks : MonoBehaviour
             _isMouseHolding = false;
         }
     #region Timer
-    void Timer()
+
+    private void Timer()
         {
             _comboTimer -= Time.deltaTime;
 
@@ -288,7 +289,7 @@ public class PlayerAttacks : MonoBehaviour
             hitbox.SetActive(false);
             SwitchState(PlayerController.PlayerStates.Run);
         }*/
-    void AttackManagement()
+    private void AttackManagement()
          {
              if (_isMouseHolding)
              {
@@ -334,43 +335,33 @@ public class PlayerAttacks : MonoBehaviour
     int GetAttackAnimation(Vector3 playerDir)
     {
         //Debug.Log("attack anim" + comboState);
-        int state = Idle;
+        var state = Idle;
         //checks player speed for orientation
-        float xVal = playerDir.x >= 0 ? playerDir.x : -playerDir.x;
-        float yVal = playerDir.z >= 0 ? playerDir.z : -playerDir.z;
+        var xVal = playerDir.x >= 0 ? playerDir.x : -playerDir.x;
+        var yVal = playerDir.z >= 0 ? playerDir.z : -playerDir.z;
         //if is attacking, animation plays, then locks current state during x seconds
         //checks the best option depending on the speed
         if (yVal >= xVal)
         {
             //if y value is dominant, plays up or down anims
-            switch (comboState)
+            state = comboState switch
             {
-                case ComboState.SimpleAttack:
-                    state = playerDir.z >= 0 ? Attack_Back : Attack_Front;
-                    break;
-                case ComboState.ReverseAttack:
-                    state = playerDir.z >= 0 ? SecondAttack_Back : SecondAttack_Front;
-                    break;
-                case ComboState.SpinAttack:
-                    state = Spin_Attack;
-                    break;
-            }
+                ComboState.SimpleAttack => playerDir.z >= 0 ? Attack_Back : Attack_Front,
+                ComboState.ReverseAttack => playerDir.z >= 0 ? SecondAttack_Back : SecondAttack_Front,
+                ComboState.SpinAttack => Spin_Attack,
+                _ => state
+            };
         }
         else
         {
             //else, plays side
-            switch (comboState)
+            state = comboState switch
             {
-                case ComboState.SimpleAttack:
-                    state = Attack_Side;
-                    break;
-                case ComboState.ReverseAttack:
-                    state = SecondAttack_Side;
-                    break;
-                case ComboState.SpinAttack:
-                    state = Spin_Attack;
-                    break;
-            }
+                ComboState.SimpleAttack => Attack_Side,
+                ComboState.ReverseAttack => SecondAttack_Side,
+                ComboState.SpinAttack => Spin_Attack,
+                _ => state
+            };
         }
         return state;
     }
@@ -378,19 +369,13 @@ public class PlayerAttacks : MonoBehaviour
     int GetAttackAnimationNoDir()
     {
         //Debug.Log("attack anim" + comboState);
-        int state = Idle;
-        switch (comboState)
+        int state = comboState switch
         {
-            case ComboState.SimpleAttack:
-                state = Attack_Side;
-                break;
-            case ComboState.ReverseAttack:
-                state = SecondAttack_Side;
-                break;
-            case ComboState.SpinAttack:
-                state = Spin_Attack;
-                break;
-        }
+            ComboState.SimpleAttack => Attack_Side,
+            ComboState.ReverseAttack => SecondAttack_Side,
+            ComboState.SpinAttack => Spin_Attack,
+            _ => Idle
+        };
         Debug.Log(comboState);
         return state;
     }

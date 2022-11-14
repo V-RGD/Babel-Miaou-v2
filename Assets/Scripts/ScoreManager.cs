@@ -4,12 +4,13 @@ public class ScoreManager : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
     public bool showScore = false;
-    private float score;
+    public float score;
     private float elapsedTime;
     private float perSecond;
     void Start()
     { 
         elapsedTime = 0;
+        perSecond = 1;
     }
     
     void Update()
@@ -24,7 +25,7 @@ public class ScoreManager : MonoBehaviour
         if (elapsedTime >= second)
         {
             elapsedTime = 0;
-            if (score !< 0)
+            if (score > 0)
             {
                 score -= 1;
             }

@@ -21,6 +21,7 @@ public class Room : MonoBehaviour
     private DunGen _dunGen;
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
+    [SerializeField]private Transform roomCenter;
 
     //room info
     public int roomType;
@@ -28,7 +29,8 @@ public class Room : MonoBehaviour
 
     //values
     private GameObject _player;
-    public GameObject enemyGroup;
+    [SerializeField]private GameObject empty;
+    [HideInInspector]public GameObject enemyGroup;
     private int _enemiesRemaining;
     private bool _canChestSpawn = true;
     private bool _canOpenDoors = true;
@@ -49,6 +51,8 @@ public class Room : MonoBehaviour
         doorPrefab = _lm.door;
         _canOpenDoors = true;
         _roomInfo = GetComponent<RoomInfo>();
+        GameObject group = Instantiate(empty, transform);
+        enemyGroup = group;
     }
 
     private void Start()
@@ -65,7 +69,7 @@ public class Room : MonoBehaviour
         {
             _canOpenDoors = true;
             _canChestSpawn = false;
-            chest = Instantiate(chest, new Vector3(transform.position.x, 0, transform.position.z), quaternion.identity);
+            chest = Instantiate(chest, new Vector3(roomCenter.position.x, 0, roomCenter.position.z), quaternion.identity);
             if (roomType == 4)
             {
                 _lm.exit.SetActive(true);
@@ -134,9 +138,9 @@ public class Room : MonoBehaviour
         for (int i = 0; i < enemyPopulation; i++)
         {
             //calculates a random position where the enemy will spawn
-            float randPosX = Random.Range(-30, 30);
-            float randPosY = Random.Range(-30, 30);
-            Vector3 spawnPoint = transform.position + new Vector3(randPosX, 3, randPosY);
+            float randPosX = Random.Range(-15, 15);
+            float randPosY = Random.Range(-15, 15);
+            Vector3 spawnPoint = roomCenter.position + new Vector3(randPosX, 3, randPosY);
 
             //check which enemy is available
             List<int> enemiesAvailable = new List<int>(5);
@@ -198,7 +202,7 @@ public class Room : MonoBehaviour
         switch (roomType)
         {
             case 0 : //start room
-                _lm.entrance.transform.position = transform.position;
+                _lm.entrance.transform.position = roomCenter.position;
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -212,7 +216,7 @@ public class Room : MonoBehaviour
                 break;
             case 4 : //miniboss room
                 MiniBossSpawn();
-                _lm.exit.transform.position = transform.position;
+                _lm.exit.transform.position = roomCenter.position;
                 _lm.exit.SetActive(false);
                 break;
             case 5 : //final boss room
@@ -223,20 +227,20 @@ public class Room : MonoBehaviour
     void MiniBossSpawn()
     {
         GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], enemyGroup.transform);
-        bossSpawning.transform.position = transform.position;
+        bossSpawning.transform.position = roomCenter.position;
     }
 
     void ShopSpawn()
     {
-        Instantiate(_lm.shop, transform.position + Vector3.up * 7, quaternion.identity);
+        Instantiate(_lm.shop, roomCenter.position + Vector3.up * 7, quaternion.identity);
     }
 
     void CheckPlayerPresence()
     {
-        float roomDetectionXMax = transform.position.x + _lm.roomSize * RoomDetectZoneSize;
-        float roomDetectionXMin = transform.position.x - _lm.roomSize * RoomDetectZoneSize;
-        float roomDetectionZMax = transform.position.z + _lm.roomSize * RoomDetectZoneSize;
-        float roomDetectionZMin = transform.position.z - _lm.roomSize * RoomDetectZoneSize;
+        float roomDetectionXMax = roomCenter.position.x + _lm.roomSize * RoomDetectZoneSize;
+        float roomDetectionXMin = roomCenter.position.x - _lm.roomSize * RoomDetectZoneSize;
+        float roomDetectionZMax = roomCenter.position.z + _lm.roomSize * RoomDetectZoneSize;
+        float roomDetectionZMin = roomCenter.position.z - _lm.roomSize * RoomDetectZoneSize;
         
         if (_player.transform.position.x < roomDetectionXMax && _player.transform.position.x > roomDetectionXMin && 
             _player.transform.position.z > roomDetectionZMin && _player.transform.position.z < roomDetectionZMax )
@@ -270,15 +274,16 @@ public class Room : MonoBehaviour
 
     void DoorSpawn()
     {
+        
         for (int i = 0; i < 4; i++)
         {
             //checks if there is supposed to be doors on each corner
             if (_roomInfo.doors[i] == 1)
             {
                 //spawns doors accordingly
-                var cornerOffset = 5;
+                var cornerOffset = 5 / 2;
                 var upOffset = 8;
-                var roomSize = 50;
+                var roomSize = 50 /2;
                 var spawnPoint = Vector3.zero;
                 var rotation = Vector3.zero;
                 switch (i)
@@ -296,8 +301,9 @@ public class Room : MonoBehaviour
                         spawnPoint = new Vector3(0, upOffset, -roomSize + cornerOffset);
                         rotation = new Vector3(90, 180, 0); break;
                 }
-                GameObject door = Instantiate(doorPrefab, spawnPoint + transform.position, Quaternion.Euler(rotation));
+                GameObject door = Instantiate(doorPrefab, spawnPoint + roomCenter.position, Quaternion.Euler(rotation));
                 door.transform.parent = gameObject.transform;
+                door.SetActive(true);
                 doorsObjects.Add(door);
             }
         }
@@ -355,7 +361,7 @@ public class Room : MonoBehaviour
                         break;
                 }
 
-                GameObject door = Instantiate(doorPrefab, spawnPoint + transform.position, Quaternion.Euler(rotation));
+                GameObject door = Instantiate(doorPrefab, spawnPoint + roomCenter.position, Quaternion.Euler(rotation));
                 door.transform.parent = gameObject.transform;
                 doorsObjects.Add(door);
             }

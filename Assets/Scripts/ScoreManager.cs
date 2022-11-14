@@ -3,6 +3,7 @@ using TMPro;
 public class ScoreManager : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
+    private bool countingDown;
     public bool showScore = false;
     public float score;
     private float elapsedTime;
@@ -21,13 +22,16 @@ public class ScoreManager : MonoBehaviour
 
     void TimePass(float second)
     {
-        elapsedTime += Time.deltaTime;
-        if (elapsedTime >= second)
+        if (countingDown)
         {
-            elapsedTime = 0;
-            if (score > 0)
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= second)
             {
-                score -= 1;
+                elapsedTime = 0;
+                if (score > 0)
+                {
+                    score -= 1;
+                }
             }
         }
     }
@@ -43,6 +47,11 @@ public class ScoreManager : MonoBehaviour
         {
             scoreText.text = score.ToString();
         }
+    }
+
+    public void StopCounting()
+    {
+        countingDown = false;
     }
     
 }

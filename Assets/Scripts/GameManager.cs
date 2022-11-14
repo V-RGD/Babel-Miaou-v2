@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,16 +11,16 @@ public class GameManager : MonoBehaviour
     private PlayerController _playerController;
     private Room _room;
     public CinemachineShake _cmShake;
+    private PlayerAttacks _playerAttacks;
 
     public int money;
     public int maxHealth = 3;
-
     public int health;
-
     public int healthBonus;
 
     public int currentRoom;
     public bool isDead;
+    private bool isFreezed;
 
     private void Awake()
     {
@@ -29,12 +30,21 @@ public class GameManager : MonoBehaviour
         _playerController = player.GetComponent<PlayerController>();
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
+        _playerAttacks = player.GetComponent<PlayerAttacks>();
     }
 
     void Start()
     {
         health = maxHealth;
         _uiManager.HealthBar(health);
+    }
+
+    IEnumerator FreezeFrame(float length)
+    {
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(length);
+        Time.timeScale = 0;
+        isFreezed = false;
     }
 
     private void Update()
@@ -87,11 +97,38 @@ public class GameManager : MonoBehaviour
             //sets health bar
             _uiManager.HealthBar(health);
             _playerController.invincibleCounter = 1;
-            _cmShake.ShakeCamera(5, .1f);
+            _cmShake.ShakeCamera(2, .1f);
         }
     }
     
     public void DealDamageToEnemy(float damageDealt, Enemy enemy) //when enemy takes hit
+    {
+        //clamps damage to an int (security)
+        int damage = Mathf.CeilToInt(damageDealt);
+        //applies killing effects
+        if (enemy.health - damage <= 0)
+        {
+            _objectsManager.OnEnemyKill();
+        }
+        //applies damage
+        enemy.health -= damage;
+        _cmShake.ShakeCamera(5, .1f);
+        
+        switch (_playerAttacks.comboState)
+        {
+            case PlayerAttacks.ComboState.SimpleAttack:
+                _cmShake.ShakeCamera(2, .1f);
+                break;
+            case PlayerAttacks.ComboState.ReverseAttack:
+                _cmShake.ShakeCamera(2, .1f);
+                break;
+            case PlayerAttacks.ComboState.SpinAttack:
+                _cmShake.ShakeCamera(2, .1f);
+                break;
+        }
+    }
+    
+    public void DealDamageToEnemy(float damageDealt, Enemy enemy, float shakeValue, float shakeAmount) //when enemy takes hit
     {
         //clamps damage to an int (security)
         int damage = Mathf.CeilToInt(damageDealt);

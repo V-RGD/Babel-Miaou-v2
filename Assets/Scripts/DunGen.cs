@@ -12,9 +12,10 @@ public class DunGen : MonoBehaviour
     public List<GameObject> rooms;
     public GameObject goldenPathCheck;
     public GameObject branchCheck;
+    public GameObject roomList;
 
     private readonly int[,] _map = new int[100, 100];
-    private int[,] _roomNumberMap = new int[100, 100];
+    private readonly int[,] _roomNumberMap = new int[100, 100];
     private int _roomToSpawnNumber = 1;
     public int dungeonSize;
 
@@ -35,10 +36,10 @@ public class DunGen : MonoBehaviour
         //set un offset
         float offset = 100;
         //choisit une diagonale
-        int randDiagonale = Random.Range(0, 4);
+        int randDiagonal = Random.Range(0, 4);
         int dirX = 0;
         int dirY = 0;
-        switch (randDiagonale)
+        switch (randDiagonal)
         {
             //upleft
             case 0 :
@@ -227,6 +228,7 @@ public class DunGen : MonoBehaviour
                         roomSpawning.GetComponent<Room>().currentRoom = _roomNumberMap[i, j];
                         //adding room to the list
                         _lm.roomList.Add(roomSpawning);
+                        roomSpawning.transform.parent = roomList.transform;
                         roomSpawning.SetActive(true);
                     }
                     yield return new WaitForSeconds(0.01f);
@@ -235,6 +237,8 @@ public class DunGen : MonoBehaviour
         }
         #endregion
         _navMeshSurface.BuildNavMesh();
+        roomList.transform.Rotate(0, 45, 0);
+        
     }
     #endregion
 }

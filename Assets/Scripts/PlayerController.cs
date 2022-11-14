@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -42,7 +40,6 @@ public class PlayerController : MonoBehaviour
     public PlayerControls playerControls;
     private InputAction _move;
     private InputAction _dash;
-    private GameManager _gameManager;
     private Animator _animator;
     public PlayerAttacks _playerAttacks;
     public int currentAnimatorState;
@@ -102,7 +99,6 @@ public class PlayerController : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
         playerControls = new PlayerControls();
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         
         _animator = GetComponent<Animator>();
         _playerAttacks = GetComponent<PlayerAttacks>();

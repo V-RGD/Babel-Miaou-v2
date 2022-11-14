@@ -14,9 +14,7 @@ public class GameManager : MonoBehaviour
 
     public int money;
     public int maxHealth = 3;
-
     public int health;
-
     public int healthBonus;
 
     public int currentRoom;

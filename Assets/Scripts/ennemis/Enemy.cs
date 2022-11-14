@@ -11,7 +11,8 @@ public class Enemy : MonoBehaviour
     public bool startSpawning;
     private bool canInitiateSpawning = true;
     public bool isActive;
-    private bool isTank;
+    private bool _isTank;
+    private float _stunCounter;
 
     private GameObject _player;
     public GameObject healthSlider;
@@ -47,7 +48,7 @@ public class Enemy : MonoBehaviour
         if (GetComponent<HaunterIA>())
         {
             HaunterIA ia = GetComponent<HaunterIA>();
-            isTank = ia.isTank;
+            _isTank = ia.isTank;
         }
     }
 
@@ -88,17 +89,18 @@ public class Enemy : MonoBehaviour
         //if player hit
         if (other.CompareTag("PlayerAttack"))
         {
-            if (isTank)
+            if (_isTank)
             {
                 //tanks take a hit before being vulnerable
-                isTank = false;
+                _isTank = false;
             }
             else
             {
                 //receives damage
                 _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
             }
-            _rb.AddForce((_player.transform.position - transform.position) * -100, ForceMode.Impulse);
+            _rb.AddForce((_player.transform.position - transform.position) * -20, ForceMode.Impulse);
+            _stunCounter = 1;
         }
         
         //deals damage

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -17,7 +16,6 @@ public class Room : MonoBehaviour
     //components
     private LevelManager _lm;
     private UIManager _uiManager;
-    private GameManager _gameManager;
     private DunGen _dunGen;
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
@@ -37,12 +35,11 @@ public class Room : MonoBehaviour
     private bool _canSpawnStela;
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
-    private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which'll detect the player if it's close from the center
+    private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
     void Awake()
     {
         // component assignations
         _player = GameObject.Find("Player");
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
@@ -69,7 +66,8 @@ public class Room : MonoBehaviour
         {
             _canOpenDoors = true;
             _canChestSpawn = false;
-            chest = Instantiate(chest, new Vector3(roomCenter.position.x, 0, roomCenter.position.z), quaternion.identity);
+            var position = roomCenter.position;
+            chest = Instantiate(chest, new Vector3(position.x, 0, position.z), quaternion.identity);
             if (roomType == 4)
             {
                 _lm.exit.SetActive(true);
@@ -130,17 +128,17 @@ public class Room : MonoBehaviour
     
     void EnemyGeneration()
     {
-        //decides the number of enemies to spawn : base population + difficulty increase + 20% incertainty
+        //decides the number of enemies to spawn : base population + difficulty increase + 20% uncertainty
         int enemyPopulation = Mathf.RoundToInt((_lm.minEnemies + currentRoom * _lm.populationGrowthFactor) * Random.Range(1f, 1.2f));
 
         _enemiesRemaining = enemyPopulation;
         //for each enemy, randomizes which to spawn
-        for (int i = 0; i < enemyPopulation; i++)
+        for (var i = 0; i < enemyPopulation; i++)
         {
             //calculates a random position where the enemy will spawn
             float randPosX = Random.Range(-15, 15);
             float randPosY = Random.Range(-15, 15);
-            Vector3 spawnPoint = roomCenter.position + new Vector3(randPosX, 3, randPosY);
+            var spawnPoint = roomCenter.position + new Vector3(randPosX, 3, randPosY);
 
             //check which enemy is available
             List<int> enemiesAvailable = new List<int>(5);
@@ -167,7 +165,7 @@ public class Room : MonoBehaviour
             }
             //take a random one for a list of available enemies
             int enemyToSpawn = enemiesAvailable[Random.Range(0, enemiesAvailable.Count)];
-            //instanciates it as a child to track down how many are left
+            //instantiates it as a child to track down how many are left
             GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyToSpawn], enemyGroup.transform);
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.GetComponent<Enemy>().room = gameObject;
@@ -180,7 +178,8 @@ public class Room : MonoBehaviour
     {
         if (currentRoom == 999)
         {
-            roomType = 2;
+            return;
+            //roomType = 2;
         }
         if (currentRoom == 0)
         {
@@ -198,11 +197,12 @@ public class Room : MonoBehaviour
         {
             roomType = 1;
         }
-        //starting room doesn't have any ennemies
+        //starting room doesn't have any enemies
         switch (roomType)
         {
             case 0 : //start room
                 _lm.entrance.transform.position = roomCenter.position;
+                StartCoroutine(PlacePlayerAtSpawnPoint());
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -214,7 +214,7 @@ public class Room : MonoBehaviour
             case 3 : //shop room
                 ShopSpawn();
                 break;
-            case 4 : //miniboss room
+            case 4 : //mini-boss room
                 MiniBossSpawn();
                 _lm.exit.transform.position = roomCenter.position;
                 _lm.exit.SetActive(false);
@@ -237,10 +237,11 @@ public class Room : MonoBehaviour
 
     void CheckPlayerPresence()
     {
-        float roomDetectionXMax = roomCenter.position.x + _lm.roomSize * RoomDetectZoneSize;
-        float roomDetectionXMin = roomCenter.position.x - _lm.roomSize * RoomDetectZoneSize;
-        float roomDetectionZMax = roomCenter.position.z + _lm.roomSize * RoomDetectZoneSize;
-        float roomDetectionZMin = roomCenter.position.z - _lm.roomSize * RoomDetectZoneSize;
+        var position = roomCenter.position;
+        var roomDetectionXMax = position.x + _lm.roomSize * RoomDetectZoneSize;
+        var roomDetectionXMin = position.x - _lm.roomSize * RoomDetectZoneSize;
+        var roomDetectionZMax = position.z + _lm.roomSize * RoomDetectZoneSize;
+        var roomDetectionZMin = position.z - _lm.roomSize * RoomDetectZoneSize;
         
         if (_player.transform.position.x < roomDetectionXMax && _player.transform.position.x > roomDetectionXMin && 
             _player.transform.position.z > roomDetectionZMin && _player.transform.position.z < roomDetectionZMax )
@@ -281,7 +282,7 @@ public class Room : MonoBehaviour
             if (_roomInfo.doors[i] == 1)
             {
                 //spawns doors accordingly
-                var cornerOffset = 5 / 2;
+                var cornerOffset = -17;
                 var upOffset = 8;
                 var roomSize = 50 /2;
                 var spawnPoint = Vector3.zero;
@@ -328,43 +329,9 @@ public class Room : MonoBehaviour
         Destroy(enemyGroup.transform.GetChild(rand));
     }
 
-    void RoomLayout()
+    IEnumerator PlacePlayerAtSpawnPoint()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            //checks if there is supposed to be doors on each corner
-            if (_roomInfo.doors[i] == 1)
-            {
-                //destroys blocks blocking doors.
-                var cornerOffset = 5;
-                var upOffset = 8;
-                var roomSize = 50;
-                var spawnPoint = Vector3.zero;
-                var rotation = Vector3.zero;
-                switch (i)
-                {
-                    case 0: //left
-                        spawnPoint = new Vector3(-roomSize + cornerOffset, upOffset, 0);
-                        rotation = new Vector3(90, -90, 0);
-                        break;
-                    case 1: //up
-                        spawnPoint = new Vector3(0, upOffset, roomSize - cornerOffset);
-                        rotation = new Vector3(90, 0, 0);
-                        break;
-                    case 2: //right
-                        spawnPoint = new Vector3(roomSize - cornerOffset, upOffset, 0);
-                        rotation = new Vector3(90, 90, 0);
-                        break;
-                    case 3: //down
-                        spawnPoint = new Vector3(0, upOffset, -roomSize + cornerOffset);
-                        rotation = new Vector3(90, 180, 0);
-                        break;
-                }
-
-                GameObject door = Instantiate(doorPrefab, spawnPoint + roomCenter.position, Quaternion.Euler(rotation));
-                door.transform.parent = gameObject.transform;
-                doorsObjects.Add(door);
-            }
-        }
+        yield return new WaitForSeconds(0.5f);
+        _player.transform.position = roomCenter.transform.position + Vector3.up * 3;
     }
 }

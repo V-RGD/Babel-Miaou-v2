@@ -34,6 +34,12 @@ public class HaunterIA : MonoBehaviour
     private GameObject _attackAnchor;
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
+    [SerializeField]private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
+    public int currentAnimatorState;
+    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Attack = Animator.StringToHash("Attack");
+    private static readonly int Death = Animator.StringToHash("Death");
     
     private void Awake()
     {
@@ -43,7 +49,6 @@ public class HaunterIA : MonoBehaviour
         _attackAnchor = transform.GetChild(1).gameObject;
         _enemyTrigger = GetComponent<Enemy>();
         enemyTypeData = _enemyTrigger.enemyTypeData;
-
         GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
     }
 
@@ -58,6 +63,7 @@ public class HaunterIA : MonoBehaviour
             //resets stun counter
             _stunCounter = enemyTypeData.stunLenght;
         }
+        GetAnimation();
     }
 
     private void FixedUpdate()
@@ -72,6 +78,21 @@ public class HaunterIA : MonoBehaviour
             //main behaviour
             Haunter();
         }
+    }
+    
+    void GetAnimation()
+    {
+        if (_isAttacking)
+        {
+            return;
+        }
+        else
+        {
+            if (Idle == currentAnimatorState) return;
+            _animator.CrossFade(Idle, 0, 0);
+            currentAnimatorState = Idle;
+        }
+        
     }
 
     void Friction()
@@ -109,6 +130,8 @@ public class HaunterIA : MonoBehaviour
     
     IEnumerator AttackCooldown()
     {
+            _animator.CrossFade(Attack, 0, 0);
+            currentAnimatorState = Attack;
             float force = enemyTypeData.attackForce;
             //determines attack length, damage, hitbox, force to add
             //stops movement

@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    
     public float health;
     public bool startSpawning;
     private bool canInitiateSpawning = true;
@@ -27,7 +26,7 @@ public class Enemy : MonoBehaviour
     private NavMeshAgent _agent;
 
     [HideInInspector]public GameObject room;
-    
+
     void Start()
     {
         _player = GameObject.Find("Player");
@@ -99,6 +98,7 @@ public class Enemy : MonoBehaviour
                 //receives damage
                 _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
             }
+            _rb.AddForce((_player.transform.position - transform.position) * -100, ForceMode.Impulse);
         }
         
         //deals damage

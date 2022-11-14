@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     private ObjectsManager _objectsManager;
     private PlayerController _playerController;
     private Room _room;
+    public CinemachineShake _cmShake;
 
     public int money;
     public int maxHealth = 3;
@@ -27,6 +28,7 @@ public class GameManager : MonoBehaviour
         _gameVariables = GetComponent<ObjectsManager>().gameVariables;
         _playerController = player.GetComponent<PlayerController>();
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        _cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
     }
 
     void Start()
@@ -85,7 +87,7 @@ public class GameManager : MonoBehaviour
             //sets health bar
             _uiManager.HealthBar(health);
             _playerController.invincibleCounter = 1;
-            Debug.Log(damage);
+            _cmShake.ShakeCamera(5, .1f);
         }
     }
     
@@ -100,6 +102,6 @@ public class GameManager : MonoBehaviour
         }
         //applies damage
         enemy.health -= damage;
-        
+        _cmShake.ShakeCamera(5, .1f);
     }
 }

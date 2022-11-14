@@ -1,40 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 using Random = UnityEngine.Random;
 public class FinalBossIA : MonoBehaviour
 {
+    #region Global Values
     [Header("Values")]
-    public GameObject leftHand;
-    public GameObject rightHand;
-    public GameObject lightningEyePrefab;
-    public GameObject wandererPrefab;
-    public LineRenderer laserL;
-    public LineRenderer laserR;
+    public LineRenderer HLaser_LineRenderer;
     public FinalBossValues values;
     public List<string> handAttacksPool;
     public List<string> bodyAttacksPool;
     private List<string> _handAttacksQueue;
     private List<string> _bodyAttacksQueue;
     public int handAttackCount;
-
-    public List<GameObject> lightningEyeList;
+    #endregion
+    
+    #region Assignations
+    [Header("Assignations")]
+    [Space]
+    private GameObject _player;
+    private GameManager _gameManager;
+    private GameObject leftHand;
+    private GameObject rightHand;
+    public GameObject lightningEyePrefab;
+    public GameObject wandererPrefab;
+    public GameObject rockPrefab;
+    public GameObject HLaser;
+    public GameObject HLaser_ScopeTo;
+    [Space]
+    public GameObject _leftClawWarning;
+    public GameObject _rightClawWarning;
+    public GameObject _laserWarning;
+    public GameObject _rockWarning;
+    #endregion
+    
+    private List<GameObject> _lightningEyeList;
+    private NavMeshSurface _navMeshSurface;
     private bool _canAttack;
     public float health;
-
     private float _handRespawnTimer;
+    private float roomSize = 20;
 
+    #region M_Laser
     [Header("M_Laser")]
     private Vector3 _playerDir;
     private Vector3 m_laserPos;
     private Vector3 m_laserDir;
-    public LaserVisuals _laserVisuals_L;
-    public LaserVisuals _laserVisuals_R;
-    
+    private LaserVisuals _laserVisuals_L;
+    private LaserVisuals _laserVisuals_R;
+    //private GameObject _laserHitbox;
+    #endregion
+
+    #region Wanderer
     [Header("Wanderer")]
-    
+    #endregion
+
+    #region Claw
     [Header("Claw")]
-    
+    #endregion
+
+    #region Circle
     [Header("Circle")]
     public float _playerDist;
     public float _circleMaxDist;
@@ -44,42 +70,50 @@ public class FinalBossIA : MonoBehaviour
     private bool _circleActive;
     public GameObject circleSprite;
     public Vector3 roomCenter;
-    
-    [Header("EyeChain")]
-    [Header("H_Laser")]
-    
-    public GameObject player;
-    public GameManager gameManager;
-    public IAStates currentState;
+    #endregion
 
+    #region EyeChain
+    [Header("EyeChain")] 
+    #endregion
+
+    #region HLaser
+    [Header("HLaser")]
+    public float HLaserRotation;
+    public float HLaserTimer;
+    public bool HLaserActive;
+    private bool _isHLaserCharging;
+    private float _HLaserTimer;
+    private Material _HlaserMat;
+    private Vector3 _HLaserDir;
+    #endregion
+
+    public IAStates currentState;
     private void Awake()
     {
+        _laserVisuals_L = transform.GetChild(0).GetComponent<LaserVisuals>();
+        _laserVisuals_R = transform.GetChild(1).GetComponent<LaserVisuals>();
         _laserVisuals_L.values = values;
         _laserVisuals_R.values = values;
+        HLaser_LineRenderer = GetComponent<LineRenderer>();
+        _HlaserMat = HLaser_LineRenderer.material;
+        _player = GameObject.Find("Player");
+        //_laserHitbox = HLaser.transform.GetChild(0).gameObject;
+        //_laserHitbox.GetComponent<HugeLaserDamage>().damage = values.hugeLaserDamage;
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
-
     void Start()
     {
         handAttackCount = 0;
-        currentState = IAStates.EyeChain;
+        currentState = IAStates.WandererSpawn;
         _canAttack = true;
+        _navMeshSurface.BuildNavMesh();
     }
     void Update()
     {
-        if (Input.GetKey(KeyCode.C))
-        {
-        }
-        if (Input.GetKey(KeyCode.M))
-        {
-        }
-        if (Input.GetKey(KeyCode.R))
-        {
-        }
-        if (Input.GetKey(KeyCode.L))
-        {
-        }
         BehaviourIA(currentState);
-        _playerDist = (player.transform.position - roomCenter).magnitude;
+        _playerDist = (_player.transform.position - roomCenter).magnitude;
+        VisualsUpdate();
     }
     
     #region M_Laser
@@ -123,7 +157,7 @@ public class FinalBossIA : MonoBehaviour
         {
             //some wanderer appears next to the player
             //take a random one for a list of available enemies
-            Vector3 spawnLocation = Vector3.zero;
+            Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-roomSize, roomSize), 0, Random.Range(-roomSize, roomSize)) + Vector3.up * 5;
             GameObject enemySpawning = Instantiate(wandererPrefab, spawnLocation, Quaternion.identity);
             //enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(true);
@@ -131,12 +165,16 @@ public class FinalBossIA : MonoBehaviour
             enemySpawning.GetComponent<EnemyDamage>().enabled = true;
             enemySpawning.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(values.wandererSpawnInterval);
+            currentState = IAStates.WandererSpawn;
         }
+        yield return new WaitForSeconds(2);
+        StartCoroutine(SwitchState(IAStates.WandererSpawn));
     }
     void SpawnWanderers()
     {
         if (_canAttack)
         {
+            _canAttack = false;
             StartCoroutine(SpawnWandererPrefabs());
         }
     }
@@ -171,7 +209,7 @@ public class FinalBossIA : MonoBehaviour
         //manages playerhitbox check
         if (_playerDist > _circleMinDist && _playerDist < _circleMaxDist && _circleActive)
         {
-            gameManager.DealDamageToPlayer(values.circleDamage);
+            _gameManager.DealDamageToPlayer(values.circleDamage);
         }
         
         if (_canAttack)
@@ -198,23 +236,82 @@ public class FinalBossIA : MonoBehaviour
         //links
     }
     #endregion
-    #region H_Laser
-    IEnumerator HugeLaserAttack(LineRenderer laser)
+    #region HLaser
+    IEnumerator HugeLaserAttack()
     {
+        Vector3 rockSpawnPoint = roomCenter + new Vector3(Random.Range(-roomSize, roomSize), 0, Random.Range(-roomSize, roomSize));
         //rock warning
+        _rockWarning.SetActive(true);
+        _rockWarning.transform.position = rockSpawnPoint;
+        yield return new WaitForSeconds(1.2f);
         //rock
+        _rockWarning.SetActive(false);
+        rockPrefab.SetActive(true);
+        rockPrefab.transform.position = rockSpawnPoint + Vector3.up * 10;
         //laser warning
+        _laserWarning.SetActive(true);
+        yield return new WaitForSeconds(2);
+        _laserWarning.SetActive(false);
         //laser 
+        HLaser_LineRenderer.enabled = true;
+        HLaserTimer = 0;
+        HLaserActive = true;
+        yield return new WaitForSeconds(1);
+        HLaserActive = false;
+        HLaser_LineRenderer.enabled = false;
+        rockPrefab.SetActive(false);
         yield return new WaitForSeconds(values.m_laserCooldown);
+        StartCoroutine(SwitchState(IAStates.HugeLaser));
     }
     void HugeLaser()
     {
         if (_canAttack)
         {
-            StartCoroutine(HugeLaserAttack(laserL));
+            _canAttack = false;
+            StartCoroutine(HugeLaserAttack());
         }
-        //warning where the rock is supposed to fall
-        //a rock appears
+    }
+    void VisualsUpdate()
+    {
+        if (HLaserActive)
+        {
+            HLaserTimer += Time.deltaTime;
+            HLaser.transform.rotation = Quaternion.Euler(0, -70 * (1 + -2 * HLaserTimer), 0);
+            //updates position
+            _HLaserDir = (HLaser_ScopeTo.transform.position - transform.position).normalized;
+            Debug.DrawRay(transform.position, _HLaserDir * 1000, Color.red);
+            _HlaserMat.color = Color.magenta;
+                
+            //updates laser position
+            Vector3 hitPoint;
+            RaycastHit hit;
+            HLaser_ScopeTo.transform.position =
+                new Vector3(HLaser_ScopeTo.transform.position.x, _player.transform.position.y , HLaser_ScopeTo.transform.position.z);
+            
+            //check if a wall is in between laser
+            if (Physics.Raycast(HLaser.transform.position, _HLaserDir, out hit, 1000, values.wallLayerMask))
+            {
+                hitPoint = hit.point;
+            }
+            else
+            {
+                hitPoint = transform.position + _HLaserDir.normalized * 200;
+            }
+            
+            HLaser_LineRenderer.SetPosition(0, transform.position);
+            HLaser_LineRenderer.SetPosition(1, hitPoint);
+            //_laserHitbox.transform.localScale = new Vector3(5, 15, (hitPoint - transform.position).magnitude);
+            //HLaser.transform.position = transform.position + (hitPoint - transform.position / 2);
+
+            //check if player touches laser
+            if (Physics.Raycast(HLaser.transform.position, _HLaserDir, (hitPoint - HLaser.transform.position).magnitude, values.playerLayerMask))
+            {
+                Debug.Log("hit player");
+                //deals damage
+                _gameManager.DealDamageToPlayer(values.m_laserDamage);
+                //can touch laser twice
+            }
+        }
     }
 
     #endregion

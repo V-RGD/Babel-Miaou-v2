@@ -221,7 +221,7 @@ public class DunGen : MonoBehaviour
                     if (potentialRooms.Count != 0)
                     {
                         GameObject roomPrepared = potentialRooms[Random.Range(0, potentialRooms.Count)];
-                        GameObject roomSpawning = Instantiate(roomPrepared, new Vector3(i * offset, 0, j * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(90, 0, 0));
+                        GameObject roomSpawning = Instantiate(roomPrepared, new Vector3(i * offset, 0, j * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(0, 0, 0));
                         //giving it a proper name
                         roomSpawning.name = "Room " + _roomNumberMap[i, j];
                         roomSpawning.GetComponent<Room>().currentRoom = _roomNumberMap[i, j];

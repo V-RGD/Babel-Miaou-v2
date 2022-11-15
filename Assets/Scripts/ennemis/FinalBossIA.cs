@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
 public class FinalBossIA : MonoBehaviour
 {
     #region Global Values
-    [Header("Values")]
-    public LineRenderer HLaser_LineRenderer;
+
+    [Header("Values")] public LineRenderer HLaser_LineRenderer;
     public FinalBossValues values;
     public List<string> handAttacksPool;
     public List<string> bodyAttacksPool;
     private List<string> _handAttacksQueue;
     private List<string> _bodyAttacksQueue;
     public int handAttackCount;
+
     #endregion
-    
+
     #region Assignations
-    [Header("Assignations")]
-    [Space]
-    private GameObject _player;
+
+    [Header("Assignations")] [Space] private GameObject _player;
     private GameManager _gameManager;
     private GameObject leftHand;
     private GameObject rightHand;
@@ -28,13 +29,13 @@ public class FinalBossIA : MonoBehaviour
     public GameObject rockPrefab;
     public GameObject HLaser;
     public GameObject HLaser_ScopeTo;
-    [Space]
-    public GameObject _leftClawWarning;
+    [Space] public GameObject _leftClawWarning;
     public GameObject _rightClawWarning;
     public GameObject _laserWarning;
     public GameObject _rockWarning;
+
     #endregion
-    
+
     private List<GameObject> _lightningEyeList;
     private NavMeshSurface _navMeshSurface;
     private bool _canAttack;
@@ -43,26 +44,34 @@ public class FinalBossIA : MonoBehaviour
     private float roomSize = 20;
 
     #region M_Laser
-    [Header("M_Laser")]
-    private Vector3 _playerDir;
+
+    [Header("M_Laser")] private Vector3 _playerDir;
     private Vector3 m_laserPos;
     private Vector3 m_laserDir;
     private LaserVisuals _laserVisuals_L;
+
     private LaserVisuals _laserVisuals_R;
     //private GameObject _laserHitbox;
+
     #endregion
 
     #region Wanderer
+
     [Header("Wanderer")]
+
     #endregion
 
     #region Claw
+
     [Header("Claw")]
+
     #endregion
 
     #region Circle
+
     [Header("Circle")]
     public float _playerDist;
+
     public float _circleMaxDist;
     public float _circleMinDist;
     private float _circleTimer;
@@ -70,11 +79,19 @@ public class FinalBossIA : MonoBehaviour
     private bool _circleActive;
     public GameObject circleSprite;
     public Vector3 roomCenter;
+
     #endregion
 
     #region EyeChain
-    [Header("EyeChain")] 
-    #endregion
+
+    [Header("EyeChain")] [Header("EyeChain")]
+    public LineRenderer eyeChainLr;
+    public List<GameObject> eyeList;
+    public List<GameObject> bonusEyeList;
+    private bool _eyeChainActive;
+    [SerializeField] private GameObject eyePrefab;
+
+#endregion
 
     #region HLaser
     [Header("HLaser")]
@@ -105,9 +122,22 @@ public class FinalBossIA : MonoBehaviour
     void Start()
     {
         handAttackCount = 0;
-        currentState = IAStates.WandererSpawn;
+        currentState = IAStates.EyeChain;
         _canAttack = true;
         _navMeshSurface.BuildNavMesh();
+        
+        for (int i = 0; i < values.eyeNumber; i++)
+        {
+            GameObject eye = Instantiate(eyePrefab);
+            eye.SetActive(false);
+            eyeList.Add(eye);
+        }
+        for (int i = 0; i < values.bonusEyes; i++)
+        {
+            GameObject eye = Instantiate(eyePrefab);
+            eye.SetActive(false);
+            bonusEyeList.Add(eye);
+        }
     }
     void Update()
     {
@@ -220,10 +250,88 @@ public class FinalBossIA : MonoBehaviour
     }
 
     #endregion
-    #region EyeChain
+   #region EyeChain
     IEnumerator EyeChainAttack()
     {
-        yield return new WaitForSeconds(values.eyeSpawnInterval);
+        //-----place les yeux
+        
+        List<int> eyeChainRows = new List<int>(values.eyeNumber);
+        List<int> bonusEyeLines = new List<int>(values.bonusEyes);
+        //creates a grid with x separations on each side, scaled to the terrain
+        float xMin = roomCenter.x - roomSize / 2;
+        float yMin = roomCenter.y - roomSize / 2;
+        //creates a list of 10possible placements
+        List<int> possibleRows = new List<int>(values.eyeNumber);
+        for (int i = 0; i < values.eyeNumber; i++)
+        {
+            possibleRows.Add(i);
+        }
+        //distribue les placements en faisant gaffe a ce qu'il y ait pas 2 yeux sur la même colonne
+        //active les yeux
+        for (int i = 0; i < values.eyeNumber; i++)
+        {
+            //place l'oeil sur la ligne i, avec la position de la colonne aléatoire
+            int row = possibleRows[Random.Range(0, possibleRows.Count)];
+            possibleRows.Remove(row);
+            Vector3 placement = new Vector3(xMin, 0, yMin) + new Vector3(roomSize * row, 0, roomSize * i);
+            eyeList[i].transform.position = placement;
+            eyeList[i].SetActive(true);
+            eyeChainRows[i] = row;
+            yield return new WaitForSeconds(values.eyeSpawnInterval);
+        }
+        
+        /*
+        
+        //ajoute quelques yeux en + pour varier le pattern
+        //pour ne pas avoir plusieurs fois la même ligne
+        List<int> possibleBonusLines = new List<int>(_eyeNumber);
+        for (int i = 0; i < values.eyeNumber; i++)
+        {
+            possibleBonusLines.Add(i);
+        }
+        for (int i = 0; i < _bonusEyes; i++)
+        {
+            //choisit une ligne au hasard
+            int bonusLine = possibleBonusLines[Random.Range(0, possibleBonusLines.Count)];
+            possibleBonusLines.Remove(bonusLine);
+            //check la colonne déja prise, puis spawn un oeil sur une random parmi celles pas prises
+            List<Vector3> possibleRowPositions = new List<Vector3>(_eyeNumber);
+            for (int j = 0; j < values.eyeNumber; j++)
+            {
+                Vector3 theoricalPos = new Vector3(xMin, 0, yMin) + new Vector3(roomSize * j, 0, roomSize * bonusLine);
+                //if (theoricalPos != eyePlacements[i])
+                {
+                    possibleRowPositions.Add(theoricalPos);
+                }
+            }
+
+            Vector3 bonusPlacement = possibleRowPositions[Random.Range(0, possibleRowPositions.Count)];
+            eyeList[i].transform.position = bonusPlacement;
+            eyeList[i].SetActive(true);
+            yield return new WaitForSeconds(values.eyeSpawnInterval);
+            
+        }*/
+        
+        //----attend un peu
+        yield return new WaitForSeconds(1);
+
+        //-----les relie avec le line renderer
+        
+        for (int i = 0; i < values.eyeNumber; i++)
+        {
+            //relie tous les yeux avec le line renderer
+            eyeChainLr.material.color = Color.red;
+            eyeChainLr.SetPosition(i, eyeList[i].transform.position);
+            yield return new WaitForSeconds(0.5f);
+        }
+        
+        //----check si le joueur se fait toucher pendant le temps d'activation
+        eyeChainLr.material.color = Color.magenta;
+        _eyeChainActive = true;
+        
+        yield return new WaitForSeconds(2);
+        _eyeChainActive = false;
+        StartCoroutine(SwitchState(IAStates.EyeChain));
     }
     void EyeChain()
     {

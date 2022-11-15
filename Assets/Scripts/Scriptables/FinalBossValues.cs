@@ -22,11 +22,12 @@ public class FinalBossValues : ScriptableObject
     public float circleOriginalSize;
     public float circlePosInterval;
 
-    [Header("EyeLightning")] public float wandererSpawnAmount;
+    [Header("Wanderer")] public float wandererSpawnAmount;
     public float wandererSpawnInterval;
     
-    [Header("EyeLightning")]
-    public float eyeNumber;
+    [Header("EyeChain")]
+    public int eyeNumber;
+    public int bonusEyes;
     public float eyeSpawnInterval;
     
     [Header("HugeLaser")]

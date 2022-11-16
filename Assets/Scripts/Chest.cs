@@ -6,15 +6,13 @@ using Random = UnityEngine.Random;
 
 public class Chest : MonoBehaviour
 {
-
-    private bool isPlayerInRange;
+    public bool isPlayerInRange;
     private float openDist = 5;
     private PlayerControls _playerControls;
     private InputAction _collect;
     private GameObject _player;
     public GameObject messagePrompt;
     public ObjectsManager objectManager;
-    public bool isOpen;
 
     private void Awake()
     {
@@ -48,21 +46,14 @@ public class Chest : MonoBehaviour
         else
         {
             //heal,eyes
-            GameObject heal = Instantiate(objectManager.healToken, transform.position + Vector3.up * 5,
+            GameObject heal = Instantiate(objectManager.healToken, transform.position + Vector3.left,
                 quaternion.identity);
             heal.SetActive(true);
-            float randHealDir = Random.Range(0, 1f);
-            Vector3 healDir = Vector3.up * 10 + new Vector3(0.5f - randHealDir, 0, 0.5f + randHealDir) * 5;
-            heal.GetComponent<Rigidbody>().AddForce(healDir.normalized * 100);
             yield return new WaitForSeconds(0.5f);
-            GameObject eyes = Instantiate(objectManager.eyeToken, transform.position + Vector3.up * 5,
+            GameObject eyes = Instantiate(objectManager.eyeToken, transform.position + Vector3.right,
                 quaternion.identity);
             eyes.SetActive(true);
-            float randDir = Random.Range(0, 1f);
-            Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;
-            eyes.GetComponent<Rigidbody>().AddForce(pushDir.normalized * 100);
         }
-        isOpen = true;
         Destroy(gameObject);
     }
 

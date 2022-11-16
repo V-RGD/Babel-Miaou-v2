@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
 
     public int currentRoom;
     public bool isDead;
+    private bool isFreezed;
 
     private void Awake()
     {
@@ -35,6 +37,14 @@ public class GameManager : MonoBehaviour
     {
         health = maxHealth;
         _uiManager.HealthBar(health);
+    }
+
+    IEnumerator FreezeFrame(float length)
+    {
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(length);
+        Time.timeScale = 0;
+        isFreezed = false;
     }
 
     private void Update()
@@ -87,7 +97,7 @@ public class GameManager : MonoBehaviour
             //sets health bar
             _uiManager.HealthBar(health);
             _playerController.invincibleCounter = 1;
-            _cmShake.ShakeCamera(4, .1f);
+            _cmShake.ShakeCamera(2, .1f);
         }
     }
     
@@ -107,13 +117,13 @@ public class GameManager : MonoBehaviour
         switch (_playerAttacks.comboState)
         {
             case PlayerAttacks.ComboState.SimpleAttack:
-                _cmShake.ShakeCamera(4, .1f);
+                _cmShake.ShakeCamera(2, .1f);
                 break;
             case PlayerAttacks.ComboState.ReverseAttack:
-                _cmShake.ShakeCamera(5, .1f);
+                _cmShake.ShakeCamera(2, .1f);
                 break;
             case PlayerAttacks.ComboState.SpinAttack:
-                _cmShake.ShakeCamera(10, .3f);
+                _cmShake.ShakeCamera(2, .1f);
                 break;
         }
     }

@@ -31,7 +31,6 @@ public class Room : MonoBehaviour
     [HideInInspector]public GameObject enemyGroup;
     private int _enemiesRemaining;
     private bool _canChestSpawn = true;
-    private bool _canOpenDoors = true;
     private bool _canSpawnStela;
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
@@ -46,7 +45,6 @@ public class Room : MonoBehaviour
         enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
-        _canOpenDoors = true;
         _roomInfo = GetComponent<RoomInfo>();
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
@@ -62,12 +60,11 @@ public class Room : MonoBehaviour
     void Update()
     {
         _enemiesRemaining = enemyGroup.transform.childCount; //check how many enemies are still in the room
-        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
+        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 || Input.GetKeyDown(KeyCode.O))
         {
-            _canOpenDoors = true;
             _canChestSpawn = false;
-            var position = roomCenter.position;
-            chest = Instantiate(chest, new Vector3(position.x, 0, position.z), quaternion.identity);
+            chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+            DoorUnlock();
             if (roomType == 4)
             {
                 _lm.exit.SetActive(true);
@@ -81,7 +78,6 @@ public class Room : MonoBehaviour
         }
         
         CheckPlayerPresence();
-        DoorUnlock();
     }
 
     #region AutoWalk
@@ -256,7 +252,6 @@ public class Room : MonoBehaviour
 
     IEnumerator ActivateAllEnemies()
     {
-        _canOpenDoors = false;
         _objectsManager.noHitStreak = true;
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
@@ -314,11 +309,7 @@ public class Room : MonoBehaviour
     {
         foreach (var door in doorsObjects)
         {
-            switch (_canOpenDoors)
-            {
-                case true : door.SetActive(false); break;
-                case false : door.SetActive(true); break;
-            }
+            door.SetActive(false);
         }
     }
 
@@ -332,6 +323,6 @@ public class Room : MonoBehaviour
     IEnumerator PlacePlayerAtSpawnPoint()
     {
         yield return new WaitForSeconds(0.5f);
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 3;
+        _player.transform.position = roomCenter.transform.position + Vector3.up * 1;
     }
 }

@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 public class ShopManager : MonoBehaviour
 {
-    public List<GameObject> items;
+    public List<GameObject> itemsToChooseFrom;
     public List<Transform> spawnAreas;
     private ObjectsManager _objectsManager;
     
@@ -13,12 +13,21 @@ public class ShopManager : MonoBehaviour
     void Start()
     {
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
-        items = _objectsManager.shopPool;
+        itemsToChooseFrom = _objectsManager.shopPool;
         
         for (int i = 0; i < 3; i++)
         {
             spawnAreas.Add(transform.GetChild(i).transform);
         }
+        
+        //de la vie max (remplit aussi la vie)
+        GameObject healMax = Instantiate(_objectsManager.healToken, spawnAreas[0].position, quaternion.identity);
+        healMax.GetComponent<Item>().isFromAShop = true;
+        //du soin (en plus grande quantité)
+        GameObject healObject = Instantiate(_objectsManager.healToken, spawnAreas[1].position, quaternion.identity);
+        healObject.GetComponent<Item>().isFromAShop = true;
+        //3 bienfaits différents
+        //Instantiate(_objectsManager.randomItem, spawnAreas[2].position, quaternion.identity);
         
         //choses 3 random items from a list of gameobjects
         //spawns them in 3 different transforms

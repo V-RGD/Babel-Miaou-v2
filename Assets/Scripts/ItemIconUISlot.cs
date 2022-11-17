@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 public class ItemIconUISlot : MonoBehaviour , IDropHandler
 {
+    int
     private ObjectsManager _objectsManager;
     public int boxIndex;
     private void Start()

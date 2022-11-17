@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         //caps health to the max amount
-        if (maxHealth < health)
+        if (health > maxHealth)
         {
             health = maxHealth;
         }

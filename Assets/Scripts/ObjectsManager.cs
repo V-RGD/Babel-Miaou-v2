@@ -1,96 +1,117 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ObjectsManager : MonoBehaviour
 {
-    public int itemAmount;
-    public GameObject objectTemplate;
-
-    public List<GameObject> itemObjectsInventory = new List<GameObject>(5);
-    public List<GameObject> itemList;
-    public ObjectTextData itemDataScriptable;
-    public Sprite[] objectSprites;
-
+    #region Lists
+    [Header("Lists")] [Space]
+    public List<int> itemObjectsInventory = new List<int>(5);
+    [SerializeField] private List<GameObject> itemList;
     //creates special pools
     [HideInInspector]public List<GameObject> shopPool;
     [HideInInspector]public List<GameObject> chestPool;
     [HideInInspector]public List<GameObject> specialChestPool;
-
-    public GameObject[] uiItemBoxes;
-    public GameObject objectMenu;
-    public GameObject uiItemPrefab;
+    #endregion
+    #region Prefabs
+    [Header("Prefabs")] [Space]
+    public GameObject objectTemplate; [Space]
+    public GameObject uiItemPrefab; [Space]
     public GameObject knittingBall;
     public GameObject eyeCollector;
-    public GameObject healToken;
-    public GameObject eyeToken;
-
-    private bool bloodBlade; //killing x enemies rewards y health
-    public bool foreignFriend; //a random enemy is killed when entering a room.
-    private bool sacredCross; //invincible time when hit
-    private bool bluSmash;
-    private bool innerPeace;
-    private bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
-    private bool strongGrasp;
-    private bool swiftArt;
-
-    private bool noHit; //actives when entering a room - player gets 2x damage until hit
-    public bool strangePact; //can pay with life instead of eyes
-    public bool catLuck;
-    public bool safetyBlessing; //when player hit by a projectile, chances are that it won't hit
-    private bool witherShield; //slows down enemies on hit
-
-    //attack
-    float glassCanonDamage;
-    float catWrathDamageMultiplier;
-    float assassinDamageMultiplier;
-    float killingSpreeDamage;
-    float tankPowerDamage;
-    float noHitSpeedRunDamageMultiplier;
-    float catNipDamage;
-
-    float catNipHpIncrease;
-    float catWrathDexterityIncrease;
-    float catNipDexIncrease;
-    float catNipSpeedIncrease;
-
+    public GameObject eyeToken; [Space]
+    public GameObject healItem;
+    public GameObject randomItem;
+    public GameObject maxHealthItem;
+    #endregion
+    #region Assignations
+    [Header("Assignations")] [Space]
+    [SerializeField] private Room _currentRoom;
+    [HideInInspector] public GameObject[] uiItemBoxes;
     private GameManager _gameManager;
+    private PlayerControls _playerControls;
+    private InputAction moveUp;
+    private InputAction moveDown;
+    private InputAction confirm;
     private UIManager _uiManager;
     private PlayerController _player;
-    private Room _currentRoom;
+    public GameObject objectMenu;
     public GameVariables gameVariables;
-    
-    public float catWrathTimer;
-    public float witherShieldTimer;
-    public float killingSpreeTimer;
-    public float sacredCrossTimer;
-    
-    public bool noHitStreak;
+    public ObjectTextData itemDataScriptable;
+    public Sprite[] objectSprites;
+    #endregion
+    #region Values
+    [Header("Values")] [Space]
+    public int itemAmount;
+    #endregion
+    #region Booleans
+    [HideInInspector] public bool bloodBlade; //killing x enemies rewards y health
+    [HideInInspector] public bool foreignFriend; //a random enemy is killed when entering a room.
+    [HideInInspector] public bool sacredCross; //invincible time when hit
+    [HideInInspector] public bool bluSmash;
+    [HideInInspector] public bool innerPeace;
+    [HideInInspector] public bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
+    [HideInInspector] public bool strongGrasp;
+    [HideInInspector] public bool swiftArt;
+    [HideInInspector] public bool strangePact; //can pay with life instead of eyes
+    [HideInInspector] public bool catLuck;
+    [HideInInspector] public bool safetyBlessing; //when player hit by a projectile, chances are that it won't hit
+    [HideInInspector] public bool noHit; //actives when entering a room - player gets 2x damage until hit
+    [HideInInspector] public bool witherShield; //slows down enemies on hit
+    #endregion
+    #region StatsIncrease
+    private float glassCanonDamage;
+    private float catWrathDamageMultiplier;
+    private float assassinDamageMultiplier;
+    private float killingSpreeDamage;
+    private float tankPowerDamage;
+    private float noHitSpeedRunDamageMultiplier;
+    private float catNipDamage;
+    private float catNipHpIncrease;
+    private float catWrathDexterityIncrease;
+    private float catNipDexIncrease;
+    private float catNipSpeedIncrease;
+    #endregion
+    #region Timers
+    [SerializeField] private float catWrathTimer;
+    [SerializeField] private float witherShieldTimer;
+    [SerializeField] private float killingSpreeTimer;
+    [SerializeField] private float sacredCrossTimer;
+    #endregion
+    #region ExtraValues
+    [HideInInspector] public bool noHitStreak;
     private int _bsbKillStreak;
     private bool _ffCanKill;
-    
+    #endregion
+    #region BoxMovement
+    public int currentBoxPos;
+    public float offsetDiff;
+    public Vector3 bonusBoxStartPos;
+    #endregion
     private void Awake()
     {
+        _playerControls = new PlayerControls();
         _player = GameObject.Find("Player").GetComponent<PlayerController>();
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     private void Start()
     {
+        bonusBoxStartPos = uiItemBoxes[5].transform.position;
         GameObject littleShit = Instantiate(gameVariables.eyeCollector);
         GameObject knitBall = Instantiate(gameVariables.knittingBall);
         eyeCollector = littleShit;
         knittingBall = knitBall;
         AssignObjectInfos();
         CreateItemPools();
+        UpdateStats();
 
         _player._playerAttacks.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
         _player._playerAttacks.attackStat = gameVariables.baseAttack;
     }
-    
     public void OnObjectEquip(GameObject item)
     {
         int id = item.GetComponent<ItemDragDrop>().objectID;
@@ -165,87 +186,87 @@ public class ObjectsManager : MonoBehaviour
     }
     void UpdateStats()
     {
-        //glass canon
-        int diff = (_gameManager.maxHealth - _gameManager.health) % 2; //rounds attack to int
-        switch (diff)
-        {
-            case 0 : glassCanonDamage = (_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage; break; 
-            case 1 : glassCanonDamage = Mathf.CeilToInt((_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage); break;
-        }
-        glassCanonDamage = 0;
-
-        //if took damage, multiplies attack by 50%, , diminishes attack cooldown
-        if (catWrathTimer > 0)
-        {
-            catWrathDamageMultiplier = gameVariables.catWrathDamageMultiplier; 
-            catWrathDexterityIncrease = gameVariables.catWrathDexterityIncrease;
-        }
-        else
-        {
-            catWrathDamageMultiplier = 1; 
-            catWrathDexterityIncrease = 0; 
-        }
-
-        
-        //killing spree
-        if (killingSpreeTimer > 0)
-        {
-            //if just killed an enemy, increases damage
-            killingSpreeDamage = gameVariables.killingSpreeDamage;
-        }
-        else
-        {
-            killingSpreeDamage = 0;
-        }
-
-        
-        //tank power
-        float tankPowerBonus;
-        if (_gameManager.health > gameVariables.tankPowerCeiling)
-        {
-            //if hp greater than base stat, increases damage
-            tankPowerBonus = tankPowerDamage * (_gameManager.health - gameVariables.tankPowerCeiling);
-        }
-        else
-        {
-            tankPowerBonus = 0;
-        }
-        
-        if (noHitStreak)
-        {
-            noHitSpeedRunDamageMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
-        }
-        else
-        {
-            noHitSpeedRunDamageMultiplier = 1;
-        }
-
-        float attackBonuses = glassCanonDamage + killingSpreeDamage + tankPowerBonus + catNipDamage;
-        float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier * assassinDamageMultiplier * catWrathDamageMultiplier;
-        _player._playerAttacks.attackStat = attack;
-        
-        //HP Max
-        _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + catNipHpIncrease + _gameManager.healthBonus);
-
-        //dexterity
-        float bonusDex = catWrathDexterityIncrease + catNipDexIncrease;
-        float dex = (gameVariables.baseDexterity + bonusDex);
-        _player._playerAttacks.dexterity = dex;
-
-        float speedBonus = catNipSpeedIncrease;
-        float speed = gameVariables.baseSpeed + speedBonus;
-        _player.maxSpeed = speed;
-
-        //Debug.Log("dex set to " + dex);
-        //Debug.Log("speed set to " + speed);
-        //Debug.Log("attack set to " + attack);
-        /*
-        Debug.Log("health set to " + _gameManager.maxHealth);
-        Debug.Log("dex set to " + dex);
-        Debug.Log("speed set to " + speed);
-        Debug.Log("attack set to " + attack);*/
+        // float tankPowerBonus = 0;
+        //
+        // //glass canon
+        // int diff = (_gameManager.maxHealth - _gameManager.health) % 2; //rounds attack to int
+        // switch (diff)
+        // {
+        //     case 0 : glassCanonDamage = (_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage; break; 
+        //     case 1 : glassCanonDamage = Mathf.CeilToInt((_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage); break;
+        // }
+        // glassCanonDamage = 0;
+        //
+        // //if took damage, multiplies attack by 50%, , diminishes attack cooldown
+        // if (catWrathTimer > 0)
+        // {
+        //     catWrathDamageMultiplier = gameVariables.catWrathDamageMultiplier; 
+        //     catWrathDexterityIncrease = gameVariables.catWrathDexterityIncrease;
+        // }
+        // else
+        // {
+        //     catWrathDamageMultiplier = 1; 
+        //     catWrathDexterityIncrease = 0; 
+        // }
+        //
+        //
+        // //killing spree
+        // if (killingSpreeTimer > 0)
+        // {
+        //     //if just killed an enemy, increases damage
+        //     killingSpreeDamage = gameVariables.killingSpreeDamage;
+        // }
+        // else
+        // {
+        //     killingSpreeDamage = 0;
+        // }
+        //
+        //
+        // //tank power
+        // if (_gameManager.health > gameVariables.tankPowerCeiling)
+        // {
+        //     //if hp greater than base stat, increases damage
+        //     tankPowerBonus = tankPowerDamage * (_gameManager.health - gameVariables.tankPowerCeiling);
+        // }
+        // else
+        // {
+        //     tankPowerBonus = 0;
+        // }
+        //
+        // if (noHitStreak)
+        // {
+        //     noHitSpeedRunDamageMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
+        // }
+        // else
+        // {
+        //     noHitSpeedRunDamageMultiplier = 1;
+        // }
+        //
+        // //float attackBonuses = glassCanonDamage + killingSpreeDamage + tankPowerBonus + catNipDamage;
+        // //float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier * assassinDamageMultiplier * catWrathDamageMultiplier;
+        // //_player._playerAttacks.attackStat = attack;
+        //
+        // //HP Max
+        // //_gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + catNipHpIncrease + _gameManager.healthBonus);
+        //
+        // //dexterity
+        // float bonusDex = catWrathDexterityIncrease + catNipDexIncrease;
+        // float dex = (gameVariables.baseDexterity + bonusDex);
+        // _player._playerAttacks.dexterity = dex;
+        //
+        // float speedBonus = catNipSpeedIncrease;
+        // float speed = gameVariables.baseSpeed + speedBonus;
+        // _player.maxSpeed = speed;
+        //
+        // //Debug.Log("dex set to " + dex);
+        // //Debug.Log("speed set to " + speed);
+        // //Debug.Log("attack set to " + attack);
+        // /*
+        // Debug.Log("health set to " + _gameManager.maxHealth);
+        // Debug.Log("dex set to " + dex);
+        // Debug.Log("speed set to " + speed);
+        // Debug.Log("attack set to " + attack);*/
     }
-
     public void OnEnemyKill()
     {
         if (bloodBlade)
@@ -266,7 +287,6 @@ public class ObjectsManager : MonoBehaviour
             killingSpreeTimer = gameVariables.killingSpreeLength;
         }
     }
-
     public void OnPlayerHit(int sourceDamage)
     {
         int damage = sourceDamage;
@@ -304,7 +324,6 @@ public class ObjectsManager : MonoBehaviour
         
         _gameManager.health -= damage;
     }
-    
     void CreateItemPools()
     {
         //chest pool = reserved chest + commom
@@ -347,16 +366,17 @@ public class ObjectsManager : MonoBehaviour
         //assigns object info depending on it's position on the list.
         for (int i = 0; i < itemList.Count; i++)
         {
-            itemList[i].GetComponent<Item>().objectID = i;
-            itemList[i].GetComponent<Item>().description = itemDataScriptable.descriptions[i];
-            itemList[i].GetComponent<Item>().itemName = itemDataScriptable.names[i];
-            itemList[i].GetComponent<Item>().rarity = itemDataScriptable.rarity[i];
-            switch (itemList[i].GetComponent<Item>().rarity)
+            Item item = itemList[i].GetComponent<Item>();
+            item.objectID = i;
+            item.description = itemDataScriptable.descriptions[i];
+            item.itemName = itemDataScriptable.names[i];
+            item.rarity = itemDataScriptable.rarity[i];
+            switch (item.rarity)
             {
-                case 1 : itemList[i].GetComponent<Item>().itemCost = 15; break;
-                case 2 : itemList[i].GetComponent<Item>().itemCost = 25; break;
-                case 3 : itemList[i].GetComponent<Item>().itemCost = 35; break;
-                case 4 : itemList[i].GetComponent<Item>().itemCost = 35; break;
+                case 1 : item.itemCost = 15; break;
+                case 2 : item.itemCost = 25; break;
+                case 3 : item.itemCost = 35; break;
+                case 4 : item.itemCost = 35; break;
             }
             itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
         }
@@ -366,9 +386,9 @@ public class ObjectsManager : MonoBehaviour
         //used to reload data from the object when added
         for (int i = 0; i < 6; i++)
         {
-            if (itemObjectsInventory[i] != null)
+            if (itemObjectsInventory[i] != 999)
             {
-                int id = itemObjectsInventory[i].GetComponent<ItemDragDrop>().objectID;
+                int id = itemObjectsInventory[i];
                 //update : box name, icon, description, rarity color
                 string name = itemDataScriptable.names[id];
                 Sprite icon = objectSprites[id];
@@ -398,4 +418,61 @@ public class ObjectsManager : MonoBehaviour
             }
         }
     }
+    void MoveExtraBox(int dir)
+    {
+        int pos = 0;
+        //if it goes beyond max
+        if (currentBoxPos + dir > 4)
+        {
+            pos = 0;
+        }
+        //if it goes under min
+        else if (currentBoxPos + dir < 0)
+        {
+            pos = 4;
+        }
+        else //alright
+        {
+            pos = currentBoxPos + dir;
+        }
+        
+        //moves box and indent
+        uiItemBoxes[5].transform.position = bonusBoxStartPos + Vector3.down * pos * offsetDiff;
+        currentBoxPos = pos;
+    }
+    void MoveBoxUp(InputAction.CallbackContext context)
+    {
+        MoveExtraBox(-1);
+    }
+    void MoveBoxDown(InputAction.CallbackContext context)
+    {
+        MoveExtraBox(1);
+    }
+    void ReplaceItem(InputAction.CallbackContext context)
+    {
+        //replaces item selected
+        
+    }
+    #region InputSystemRequirements
+    private void OnEnable()
+    {
+        moveDown = _playerControls.UI.MoveDown;
+        moveDown.Enable();
+        moveDown.performed += MoveBoxDown;
+
+        moveUp = _playerControls.UI.MoveUp;
+        moveUp.Enable();
+        moveUp.performed += MoveBoxUp;
+
+        confirm = _playerControls.UI.Confirm;
+        confirm.Enable();
+        confirm.performed += ReplaceItem;
+    }
+    private void OnDisable()
+    {
+        moveDown.Disable();
+        moveUp.Disable();
+        confirm.Disable();
+    }
+    #endregion
 }

@@ -17,33 +17,27 @@ public class PlayerController : MonoBehaviour
 
     #region Intern Values
     private float _frictionMultiplier = 1;
-    [HideInInspector] public float invincibleCounter;
-    [HideInInspector] public float invincibleTime;
     private float _speedFactor = 1;
-    [HideInInspector] public float dashCooldownTimer;
-    
-    //private bool _isInvincible;
-    //[HideInInspector]public bool isAttacking;
-    //private bool _isDashing;
-    
-    [HideInInspector] public float stunCounter;
     private int _dashesAvailable = 1;
     private int _dirCoef; //sprite direction
-
-    public Vector3 lastWalkedDir;
-    public Vector2 movementDir;
+    [HideInInspector] public float invincibleCounter;
+    [HideInInspector] public float invincibleTime;
+    [HideInInspector] public float dashCooldownTimer;
+    [HideInInspector] public float stunCounter;
+    [HideInInspector] public Vector3 lastWalkedDir;
+    [HideInInspector] public Vector2 movementDir;
     #endregion
 
     #region Components
     private Rigidbody _rb;
     private SpriteRenderer _spriteRenderer;
-    public PlayerControls playerControls;
+    private PlayerControls _playerControls;
     private InputAction _move;
     private InputAction _dash;
     private Animator _animator;
-    public PlayerAttacks _playerAttacks;
-    public int currentAnimatorState;
     private float _lockedTill;
+    [HideInInspector] public PlayerAttacks _playerAttacks;
+    [HideInInspector] public int currentAnimatorState;
     
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Dash = Animator.StringToHash("Dash");
@@ -98,7 +92,7 @@ public class PlayerController : MonoBehaviour
         
         _rb = GetComponent<Rigidbody>();
         _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
-        playerControls = new PlayerControls();
+        _playerControls = new PlayerControls();
         
         _animator = GetComponent<Animator>();
         _playerAttacks = GetComponent<PlayerAttacks>();
@@ -269,10 +263,10 @@ public class PlayerController : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
         {
-            _move = playerControls.Player.Move;
+            _move = _playerControls.Player.Move;
             _move.Enable();
 
-            _dash = playerControls.Player.Dash;
+            _dash = _playerControls.Player.Dash;
             _dash.Enable();
             _dash.performed += InputDash;
         }

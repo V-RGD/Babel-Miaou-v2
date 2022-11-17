@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour
     public GameObject loadingUI;
     public GameObject pauseMenu;
     public GameObject optionMenu;
+    public DrawItemBox drawMenu;
     public GameObject deathPanel;
     
     private GameManager _gameManager;
@@ -22,7 +23,6 @@ public class MenuManager : MonoBehaviour
     private bool _canPause = true;
     public bool canEscapeObjectMenu = true;
     private bool isInObjectMenu;
-
 
     private void Awake()
     {
@@ -43,6 +43,9 @@ public class MenuManager : MonoBehaviour
 
             if (isInObjectMenu)
             {
+                //resets every position
+                
+                //then closes menu
                 ObjectMenu();
                 return;
             }
@@ -118,7 +121,7 @@ public class MenuManager : MonoBehaviour
         }
     }
     #endregion
-    
+
     public void ObjectMenu()
     {
         if (isInObjectMenu && canEscapeObjectMenu)

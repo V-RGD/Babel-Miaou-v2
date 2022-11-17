@@ -46,7 +46,7 @@ public class Chest : MonoBehaviour
         else
         {
             //heal,eyes
-            GameObject heal = Instantiate(objectManager.healToken, transform.position + Vector3.left,
+            GameObject heal = Instantiate(objectManager.healItem, transform.position + Vector3.left,
                 quaternion.identity);
             heal.SetActive(true);
             yield return new WaitForSeconds(0.5f);

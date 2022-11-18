@@ -185,86 +185,86 @@ public class ObjectsManager : MonoBehaviour
     }
     void UpdateStats()
     {
-        // float tankPowerBonus = 0;
-        //
-        // //glass canon
-        // int diff = (_gameManager.maxHealth - _gameManager.health) % 2; //rounds attack to int
-        // switch (diff)
-        // {
-        //     case 0 : glassCanonDamage = (_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage; break; 
-        //     case 1 : glassCanonDamage = Mathf.CeilToInt((_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage); break;
-        // }
-        // glassCanonDamage = 0;
-        //
-        // //if took damage, multiplies attack by 50%, , diminishes attack cooldown
-        // if (catWrathTimer > 0)
-        // {
-        //     catWrathDamageMultiplier = gameVariables.catWrathDamageMultiplier; 
-        //     catWrathDexterityIncrease = gameVariables.catWrathDexterityIncrease;
-        // }
-        // else
-        // {
-        //     catWrathDamageMultiplier = 1; 
-        //     catWrathDexterityIncrease = 0; 
-        // }
-        //
-        //
-        // //killing spree
-        // if (killingSpreeTimer > 0)
-        // {
-        //     //if just killed an enemy, increases damage
-        //     killingSpreeDamage = gameVariables.killingSpreeDamage;
-        // }
-        // else
-        // {
-        //     killingSpreeDamage = 0;
-        // }
-        //
-        //
-        // //tank power
-        // if (_gameManager.health > gameVariables.tankPowerCeiling)
-        // {
-        //     //if hp greater than base stat, increases damage
-        //     tankPowerBonus = tankPowerDamage * (_gameManager.health - gameVariables.tankPowerCeiling);
-        // }
-        // else
-        // {
-        //     tankPowerBonus = 0;
-        // }
-        //
-        // if (noHitStreak)
-        // {
-        //     noHitSpeedRunDamageMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
-        // }
-        // else
-        // {
-        //     noHitSpeedRunDamageMultiplier = 1;
-        // }
-        //
-        // //float attackBonuses = glassCanonDamage + killingSpreeDamage + tankPowerBonus + catNipDamage;
-        // //float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier * assassinDamageMultiplier * catWrathDamageMultiplier;
-        // //_player._playerAttacks.attackStat = attack;
-        //
-        // //HP Max
-        // //_gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + catNipHpIncrease + _gameManager.healthBonus);
-        //
-        // //dexterity
-        // float bonusDex = catWrathDexterityIncrease + catNipDexIncrease;
-        // float dex = (gameVariables.baseDexterity + bonusDex);
-        // _player._playerAttacks.dexterity = dex;
-        //
-        // float speedBonus = catNipSpeedIncrease;
-        // float speed = gameVariables.baseSpeed + speedBonus;
-        // _player.maxSpeed = speed;
-        //
-        // //Debug.Log("dex set to " + dex);
-        // //Debug.Log("speed set to " + speed);
-        // //Debug.Log("attack set to " + attack);
-        // /*
-        // Debug.Log("health set to " + _gameManager.maxHealth);
-        // Debug.Log("dex set to " + dex);
-        // Debug.Log("speed set to " + speed);
-        // Debug.Log("attack set to " + attack);*/
+        float tankPowerBonus = 0;
+        
+        //glass canon
+        int diff = (_gameManager.maxHealth - _gameManager.health) % 2; //rounds attack to int
+        switch (diff)
+        {
+            case 0 : glassCanonDamage = (_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage; break; 
+            case 1 : glassCanonDamage = Mathf.CeilToInt((_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage); break;
+        }
+        glassCanonDamage = 0;
+        
+        //if took damage, multiplies attack by 50%, , diminishes attack cooldown
+        if (catWrathTimer > 0)
+        {
+            catWrathDamageMultiplier = gameVariables.catWrathDamageMultiplier; 
+            catWrathDexterityIncrease = gameVariables.catWrathDexterityIncrease;
+        }
+        else
+        {
+            catWrathDamageMultiplier = 1; 
+            catWrathDexterityIncrease = 0; 
+        }
+        
+        
+        //killing spree
+        if (killingSpreeTimer > 0)
+        {
+            //if just killed an enemy, increases damage
+            killingSpreeDamage = gameVariables.killingSpreeDamage;
+        }
+        else
+        {
+            killingSpreeDamage = 0;
+        }
+        
+        
+        //tank power
+        if (_gameManager.health > gameVariables.tankPowerCeiling)
+        {
+            //if hp greater than base stat, increases damage
+            tankPowerBonus = tankPowerDamage * (_gameManager.health - gameVariables.tankPowerCeiling);
+        }
+        else
+        {
+            tankPowerBonus = 0;
+        }
+        
+        if (noHitStreak)
+        {
+            noHitSpeedRunDamageMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
+        }
+        else
+        {
+            noHitSpeedRunDamageMultiplier = 1;
+        }
+        
+        float attackBonuses = glassCanonDamage + killingSpreeDamage + tankPowerBonus + catNipDamage;
+        float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier * assassinDamageMultiplier * catWrathDamageMultiplier;
+        _player._playerAttacks.attackStat = attack;
+        
+        //HP Max
+        _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + catNipHpIncrease + _gameManager.healthBonus);
+        
+        //dexterity
+        float bonusDex = catWrathDexterityIncrease + catNipDexIncrease;
+        float dex = (gameVariables.baseDexterity + bonusDex);
+        _player._playerAttacks.dexterity = dex;
+        
+        float speedBonus = catNipSpeedIncrease;
+        float speed = gameVariables.baseSpeed + speedBonus;
+        _player.maxSpeed = speed;
+        
+        //Debug.Log("dex set to " + dex);
+        //Debug.Log("speed set to " + speed);
+        //Debug.Log("attack set to " + attack);
+        /*
+        Debug.Log("health set to " + _gameManager.maxHealth);
+        Debug.Log("dex set to " + dex);
+        Debug.Log("speed set to " + speed);
+        Debug.Log("attack set to " + attack);*/
     }
     public void OnEnemyKill()
     {
@@ -481,6 +481,18 @@ public class ObjectsManager : MonoBehaviour
             uiItemBoxes[5].SetActive(false);
             canReplaceItem = false;
         }
+    }
+
+    void CheatItem(int id)
+    {
+        //replaces item selected
+        int oldItem = itemObjectsInventory[0];
+        OnObjectUnEquip(oldItem);
+        //adds new one
+        itemObjectsInventory[0] = id;
+        OnObjectEquip(id);
+        //destroys old item and empties 5th box
+        uiItemBoxes[5].SetActive(false);
     }
     #region InputSystemRequirements
     private void OnEnable()

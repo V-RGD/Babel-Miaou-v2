@@ -148,15 +148,10 @@ public class Item : MonoBehaviour
     public void AccessToItemMenu()
     {
         _menuManager.ObjectMenu();
-        //instantiates a new ui item in the canvas
-        GameObject newItem = Instantiate(_objectsManager.uiItemPrefab, _objectsManager.objectMenu.transform);
-        _objectsManager.itemObjectsInventory[5] = newItem;
         //puts it in the 6th box
-        _objectsManager.itemObjectsInventory[5].GetComponent<RectTransform>().transform.position = _objectsManager.uiItemBoxes[5].transform.position;
-        //updates it's id
-        _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().objectID = objectID;
-        _objectsManager.itemObjectsInventory[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
-        _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().boxAssociated = 5;
+        int newItem = objectID;
+        _objectsManager.itemObjectsInventory[5] = newItem;        //updates it's id
+        _objectsManager.uiItemBoxes[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
         _objectsManager.UiItemBoxesUpdate();
         Destroy(gameObject);
     }
@@ -168,15 +163,12 @@ public class Item : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             //assigns box object with a random item
-            Item item = shopManager.itemsToChooseFrom[Random.Range(0, shopManager.itemsToChooseFrom.Count)]
-                .GetComponent<Item>();
-            
-            int id = item.objectID;
+            int item = shopManager.itemsToChooseFrom[Random.Range(0, shopManager.itemsToChooseFrom.Count)];
             //update : box name, icon, description, rarity color
-            string name = _objectsManager.itemDataScriptable.names[id];
-            Sprite icon = _objectsManager.objectSprites[id];
-            string desc = _objectsManager.itemDataScriptable.descriptions[id];
-            int rarity = _objectsManager.itemDataScriptable.rarity[id];
+            string name = _objectsManager.itemDataScriptable.names[item];
+            Sprite icon = _objectsManager.objectSprites[item];
+            string desc = _objectsManager.itemDataScriptable.descriptions[item];
+            int rarity = _objectsManager.itemDataScriptable.rarity[item];
             Color color = Color.grey;
             
             switch (rarity)

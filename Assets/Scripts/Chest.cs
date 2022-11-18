@@ -36,8 +36,8 @@ public class Chest : MonoBehaviour
         int randLoot = Random.Range(0, 100);
         if (randLoot <= 15)
         {
-            GameObject item = Instantiate(objectManager.chestPool[Random.Range(0, objectManager.chestPool.Count)], transform.position,
-                quaternion.identity);
+            GameObject item = Instantiate(objectManager.objectTemplate, transform.position, quaternion.identity);
+            item.GetComponent<Item>().objectID = objectManager.chestPool[Random.Range(0, objectManager.chestPool.Count)];
             item.SetActive(true);
             float randDir = Random.Range(0, 1f);
             Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;

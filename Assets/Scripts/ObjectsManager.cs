@@ -9,11 +9,11 @@ public class ObjectsManager : MonoBehaviour
     #region Lists
     [Header("Lists")] [Space]
     public List<int> itemObjectsInventory = new List<int>(5);
-    [SerializeField] private List<GameObject> itemList;
+    [SerializeField] private List<int> itemList;
     //creates special pools
-    [HideInInspector]public List<GameObject> shopPool;
-    [HideInInspector]public List<GameObject> chestPool;
-    [HideInInspector]public List<GameObject> specialChestPool;
+    [HideInInspector]public List<int> shopPool;
+    [HideInInspector]public List<int> chestPool;
+    [HideInInspector]public List<int> specialChestPool;
     #endregion
     #region Prefabs
     [Header("Prefabs")] [Space]
@@ -29,7 +29,7 @@ public class ObjectsManager : MonoBehaviour
     #region Assignations
     [Header("Assignations")] [Space]
     [SerializeField] private Room _currentRoom;
-    [HideInInspector] public GameObject[] uiItemBoxes;
+    public GameObject[] uiItemBoxes;
     private GameManager _gameManager;
     private PlayerControls _playerControls;
     private InputAction moveUp;
@@ -89,6 +89,7 @@ public class ObjectsManager : MonoBehaviour
     public int currentBoxPos;
     public float offsetDiff;
     public Vector3 bonusBoxStartPos;
+    [HideInInspector]public bool canReplaceItem;
     #endregion
     private void Awake()
     {
@@ -112,12 +113,11 @@ public class ObjectsManager : MonoBehaviour
         _player.maxSpeed = gameVariables.baseSpeed;
         _player._playerAttacks.attackStat = gameVariables.baseAttack;
     }
-    public void OnObjectEquip(GameObject item)
+    public void OnObjectEquip(int item)
     {
-        int id = item.GetComponent<ItemDragDrop>().objectID;
-        Debug.Log("equiped Item#" + id);
+        Debug.Log("equiped Item#" + item);
         //check the ID of the object to add additional effects
-        switch (id)
+        switch (item)
         {
             case 0 : _uiManager.isMapFull = true; break; //sets map to full size
             case 1 : bloodBlade = true; break;
@@ -148,12 +148,11 @@ public class ObjectsManager : MonoBehaviour
         UiItemBoxesUpdate();
         UpdateStats();
     }
-    public void OnObjectUnEquip(GameObject item)
+    public void OnObjectUnEquip(int item)
     {
-        int id = item.GetComponent<ItemDragDrop>().objectID;
-        Debug.Log("unequiped Item#" + id);
+        Debug.Log("unequiped Item#" + item);
         //check the ID of the object to remove additional effects
-        switch (id)
+        switch (item)
         {
             case 0 : _uiManager.isMapFull = false; break; //sets map to normal size
             case 1 : bloodBlade = false; break;
@@ -326,6 +325,11 @@ public class ObjectsManager : MonoBehaviour
     }
     void CreateItemPools()
     {
+        for (int i = 0; i < 27; i++)
+        {
+            itemList.Add(i);
+        }
+        
         //chest pool = reserved chest + commom
         foreach (var id in itemDataScriptable.chestReservedItems)
         {
@@ -355,31 +359,36 @@ public class ObjectsManager : MonoBehaviour
     }
     void AssignObjectInfos()
     {
-        for (int i = 0; i < itemAmount; i++)
+        for (int i = 0; i < 5; i++)
         {
-            GameObject item = Instantiate(objectTemplate, transform);
-            item.name = "Item#" + i;
-            item.SetActive(false);
-            itemList.Add(item);
+            itemObjectsInventory[i] = 999;
         }
         
-        //assigns object info depending on it's position on the list.
-        for (int i = 0; i < itemList.Count; i++)
-        {
-            Item item = itemList[i].GetComponent<Item>();
-            item.objectID = i;
-            item.description = itemDataScriptable.descriptions[i];
-            item.itemName = itemDataScriptable.names[i];
-            item.rarity = itemDataScriptable.rarity[i];
-            switch (item.rarity)
-            {
-                case 1 : item.itemCost = 15; break;
-                case 2 : item.itemCost = 25; break;
-                case 3 : item.itemCost = 35; break;
-                case 4 : item.itemCost = 35; break;
-            }
-            itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
-        }
+        // for (int i = 0; i < itemAmount; i++)
+        // {
+        //     GameObject item = Instantiate(objectTemplate, transform);
+        //     item.name = "Item#" + i;
+        //     item.SetActive(false);
+        //     itemList.Add(item);
+        // }
+        //
+        // //assigns object info depending on it's position on the list.
+        // for (int i = 0; i < itemList.Count; i++)
+        // {
+        //     Item item = itemList[i].GetComponent<Item>();
+        //     item.objectID = i;
+        //     item.description = itemDataScriptable.descriptions[i];
+        //     item.itemName = itemDataScriptable.names[i];
+        //     item.rarity = itemDataScriptable.rarity[i];
+        //     switch (item.rarity)
+        //     {
+        //         case 1 : item.itemCost = 15; break;
+        //         case 2 : item.itemCost = 25; break;
+        //         case 3 : item.itemCost = 35; break;
+        //         case 4 : item.itemCost = 35; break;
+        //     }
+        //     itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
+        // }
     }
     public void UiItemBoxesUpdate()
     {
@@ -397,8 +406,9 @@ public class ObjectsManager : MonoBehaviour
                 Color color = Color.grey;
 
                 uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = name;
-                //uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = true;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
                 switch (rarity)
                 {
                     case 1 : color = Color.green; break;
@@ -414,7 +424,9 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
                 //uiItemBoxes[i].transform.GetChild(4).GetComponent<Image>().sprite = null;
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
-                uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+                uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.gray;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = null;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = false;
             }
         }
     }
@@ -442,16 +454,33 @@ public class ObjectsManager : MonoBehaviour
     }
     void MoveBoxUp(InputAction.CallbackContext context)
     {
-        MoveExtraBox(-1);
+        if (canReplaceItem)
+        {
+            MoveExtraBox(-1);
+        }
     }
     void MoveBoxDown(InputAction.CallbackContext context)
     {
-        MoveExtraBox(1);
+        if (canReplaceItem)
+        {
+            MoveExtraBox(1);
+        }
     }
     void ReplaceItem(InputAction.CallbackContext context)
     {
-        //replaces item selected
-        
+        if (canReplaceItem)
+        {
+            //replaces item selected
+            int oldItem = itemObjectsInventory[currentBoxPos];
+            OnObjectUnEquip(oldItem);
+            //adds new one
+            int newItem = itemObjectsInventory[5];
+            itemObjectsInventory[currentBoxPos] = newItem;
+            OnObjectEquip(newItem);
+            //destroys old item and empties 5th box
+            uiItemBoxes[5].SetActive(false);
+            canReplaceItem = false;
+        }
     }
     #region InputSystemRequirements
     private void OnEnable()

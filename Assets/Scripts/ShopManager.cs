@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 public class ShopManager : MonoBehaviour
 {
-    public List<GameObject> itemsToChooseFrom;
+    public List<int> itemsToChooseFrom;
     public List<Transform> spawnAreas;
     private ObjectsManager _objectsManager;
     

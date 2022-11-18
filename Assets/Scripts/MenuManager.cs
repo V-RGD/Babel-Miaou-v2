@@ -18,6 +18,7 @@ public class MenuManager : MonoBehaviour
     
     private GameManager _gameManager;
     private ObjectsManager _objectsManager;
+    private UIManager _uiManager;
 
     private bool _canActiveDeathPanel = true;
     private bool _canPause = true;
@@ -28,6 +29,7 @@ public class MenuManager : MonoBehaviour
     {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
     }
 
     private void Update()
@@ -41,15 +43,18 @@ public class MenuManager : MonoBehaviour
                 return;
             }
 
-            if (isInObjectMenu)
+            if (!_objectsManager.canReplaceItem)
             {
-                //resets every position
+                if (isInObjectMenu)
+                {
+                    //resets every position
                 
-                //then closes menu
-                ObjectMenu();
-                return;
+                    //then closes menu
+                    ObjectMenu();
+                    return;
+                }
+                PauseMenu();
             }
-            PauseMenu();
         }
 
         if (quitWarningActive && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.KeypadEnter)))
@@ -128,14 +133,15 @@ public class MenuManager : MonoBehaviour
         {
             isInObjectMenu = false;
             //deletes 6th box object
-            Destroy(_objectsManager.itemObjectsInventory[5]);
-            _objectsManager.itemObjectsInventory[5] = null;
+            _objectsManager.itemObjectsInventory[5] = 999;
             //disables menu
             _objectsManager.objectMenu.SetActive(false);
             //resume time
             Time.timeScale = 1;
             //can pause
             _canPause = true;
+            _objectsManager.canReplaceItem = false;
+            _uiManager.UpdateHUDIcons();
             return;
         }
         
@@ -148,6 +154,7 @@ public class MenuManager : MonoBehaviour
             Time.timeScale = 0;
             //can't pause
             _canPause = false;
+            _objectsManager.canReplaceItem = true;
             return;
         }
     }
@@ -170,6 +177,7 @@ public class MenuManager : MonoBehaviour
     public void DeathPanel()
     {
         deathPanel.SetActive(true);
+        
         Time.timeScale = 0;
     }
 

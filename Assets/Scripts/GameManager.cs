@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         //caps health to the max amount
-        if (maxHealth < health)
+        if (health > maxHealth)
         {
             health = maxHealth;
         }
@@ -66,11 +66,11 @@ public class GameManager : MonoBehaviour
                     //destroys catnip
                     for (int i = 0; i < 5; i++)
                     {
-                        GameObject item = _objectsManager.itemObjectsInventory[i];
-                        if (item.GetComponent<ItemDragDrop>().objectID == 22)
+                        int item = _objectsManager.itemObjectsInventory[i];
+                        if (item == 22)
                         {
-                            _objectsManager.itemObjectsInventory[i] = null;
-                            Destroy(item);
+                            //destroys item
+                            _objectsManager.itemObjectsInventory[i] = 999;
                         }
                     }
                     //adds health

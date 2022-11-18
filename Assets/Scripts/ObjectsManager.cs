@@ -1,102 +1,123 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ObjectsManager : MonoBehaviour
 {
-    public int itemAmount;
-    public GameObject objectTemplate;
-
-    public List<GameObject> itemObjectsInventory = new List<GameObject>(5);
-    public List<GameObject> itemList;
-    public ObjectTextData itemDataScriptable;
-    public Sprite[] objectSprites;
-
+    #region Lists
+    [Header("Lists")] [Space]
+    public List<int> itemObjectsInventory = new List<int>(5);
+    [SerializeField] private List<int> itemList;
     //creates special pools
-    [HideInInspector]public List<GameObject> shopPool;
-    [HideInInspector]public List<GameObject> chestPool;
-    [HideInInspector]public List<GameObject> specialChestPool;
-
-    public GameObject[] uiItemBoxes;
-    public GameObject objectMenu;
-    public GameObject uiItemPrefab;
+    [HideInInspector]public List<int> shopPool;
+    [HideInInspector]public List<int> chestPool;
+    [HideInInspector]public List<int> specialChestPool;
+    #endregion
+    #region Prefabs
+    [Header("Prefabs")] [Space]
+    public GameObject objectTemplate; [Space]
+    public GameObject uiItemPrefab; [Space]
     public GameObject knittingBall;
     public GameObject eyeCollector;
-    public GameObject healToken;
-    public GameObject eyeToken;
-
-    private bool bloodBlade; //killing x enemies rewards y health
-    public bool foreignFriend; //a random enemy is killed when entering a room.
-    private bool sacredCross; //invincible time when hit
-    private bool bluSmash;
-    private bool innerPeace;
-    private bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
-    private bool strongGrasp;
-    private bool swiftArt;
-
-    private bool noHit; //actives when entering a room - player gets 2x damage until hit
-    public bool strangePact; //can pay with life instead of eyes
-    public bool catLuck;
-    public bool safetyBlessing; //when player hit by a projectile, chances are that it won't hit
-    private bool witherShield; //slows down enemies on hit
-
-    //attack
-    float glassCanonDamage;
-    float catWrathDamageMultiplier;
-    float assassinDamageMultiplier;
-    float killingSpreeDamage;
-    float tankPowerDamage;
-    float noHitSpeedRunDamageMultiplier;
-    float catNipDamage;
-
-    float catNipHpIncrease;
-    float catWrathDexterityIncrease;
-    float catNipDexIncrease;
-    float catNipSpeedIncrease;
-
+    public GameObject eyeToken; [Space]
+    public GameObject healItem;
+    public GameObject randomItem;
+    public GameObject maxHealthItem;
+    #endregion
+    #region Assignations
+    [Header("Assignations")] [Space]
+    [SerializeField] private Room _currentRoom;
+    public GameObject[] uiItemBoxes;
     private GameManager _gameManager;
+    private PlayerControls _playerControls;
+    private InputAction moveUp;
+    private InputAction moveDown;
+    private InputAction confirm;
     private UIManager _uiManager;
     private PlayerController _player;
-    private Room _currentRoom;
+    public GameObject objectMenu;
     public GameVariables gameVariables;
-    
-    public float catWrathTimer;
-    public float witherShieldTimer;
-    public float killingSpreeTimer;
-    public float sacredCrossTimer;
-    
-    public bool noHitStreak;
+    public ObjectTextData itemDataScriptable;
+    public Sprite[] objectSprites;
+    #endregion
+    #region Values
+    [Header("Values")] [Space]
+    public int itemAmount;
+    #endregion
+    #region Booleans
+    [HideInInspector] public bool bloodBlade; //killing x enemies rewards y health
+    [HideInInspector] public bool foreignFriend; //a random enemy is killed when entering a room.
+    [HideInInspector] public bool sacredCross; //invincible time when hit
+    [HideInInspector] public bool bluSmash;
+    [HideInInspector] public bool innerPeace;
+    [HideInInspector] public bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
+    [HideInInspector] public bool strongGrasp;
+    [HideInInspector] public bool swiftArt;
+    [HideInInspector] public bool strangePact; //can pay with life instead of eyes
+    [HideInInspector] public bool catLuck;
+    [HideInInspector] public bool safetyBlessing; //when player hit by a projectile, chances are that it won't hit
+    [HideInInspector] public bool noHit; //actives when entering a room - player gets 2x damage until hit
+    [HideInInspector] public bool witherShield; //slows down enemies on hit
+    #endregion
+    #region StatsIncrease
+    private float glassCanonDamage;
+    private float catWrathDamageMultiplier;
+    private float assassinDamageMultiplier;
+    private float killingSpreeDamage;
+    private float tankPowerDamage;
+    private float noHitSpeedRunDamageMultiplier;
+    private float catNipDamage;
+    private float catNipHpIncrease;
+    private float catWrathDexterityIncrease;
+    private float catNipDexIncrease;
+    private float catNipSpeedIncrease;
+    #endregion
+    #region Timers
+    [SerializeField] private float catWrathTimer;
+    [SerializeField] private float witherShieldTimer;
+    [SerializeField] private float killingSpreeTimer;
+    [SerializeField] private float sacredCrossTimer;
+    #endregion
+    #region ExtraValues
+    [HideInInspector] public bool noHitStreak;
     private int _bsbKillStreak;
     private bool _ffCanKill;
-    
+    #endregion
+    #region BoxMovement
+    public int currentBoxPos;
+    public float offsetDiff;
+    public Vector3 bonusBoxStartPos;
+    [HideInInspector]public bool canReplaceItem;
+    #endregion
     private void Awake()
     {
+        _playerControls = new PlayerControls();
         _player = GameObject.Find("Player").GetComponent<PlayerController>();
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     private void Start()
     {
+        bonusBoxStartPos = uiItemBoxes[5].transform.position;
         GameObject littleShit = Instantiate(gameVariables.eyeCollector);
         GameObject knitBall = Instantiate(gameVariables.knittingBall);
         eyeCollector = littleShit;
         knittingBall = knitBall;
         AssignObjectInfos();
         CreateItemPools();
+        UpdateStats();
 
         _player._playerAttacks.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
         _player._playerAttacks.attackStat = gameVariables.baseAttack;
     }
-    
-    public void OnObjectEquip(GameObject item)
+    public void OnObjectEquip(int item)
     {
-        int id = item.GetComponent<ItemDragDrop>().objectID;
-        Debug.Log("equiped Item#" + id);
+        Debug.Log("equiped Item#" + item);
         //check the ID of the object to add additional effects
-        switch (id)
+        switch (item)
         {
             case 0 : _uiManager.isMapFull = true; break; //sets map to full size
             case 1 : bloodBlade = true; break;
@@ -127,12 +148,11 @@ public class ObjectsManager : MonoBehaviour
         UiItemBoxesUpdate();
         UpdateStats();
     }
-    public void OnObjectUnEquip(GameObject item)
+    public void OnObjectUnEquip(int item)
     {
-        int id = item.GetComponent<ItemDragDrop>().objectID;
-        Debug.Log("unequiped Item#" + id);
+        Debug.Log("unequiped Item#" + item);
         //check the ID of the object to remove additional effects
-        switch (id)
+        switch (item)
         {
             case 0 : _uiManager.isMapFull = false; break; //sets map to normal size
             case 1 : bloodBlade = false; break;
@@ -165,6 +185,8 @@ public class ObjectsManager : MonoBehaviour
     }
     void UpdateStats()
     {
+        float tankPowerBonus = 0;
+        
         //glass canon
         int diff = (_gameManager.maxHealth - _gameManager.health) % 2; //rounds attack to int
         switch (diff)
@@ -173,7 +195,7 @@ public class ObjectsManager : MonoBehaviour
             case 1 : glassCanonDamage = Mathf.CeilToInt((_gameManager.maxHealth - _gameManager.health) / gameVariables.glassCanonHealthNeeded * gameVariables.glassCanonDamage); break;
         }
         glassCanonDamage = 0;
-
+        
         //if took damage, multiplies attack by 50%, , diminishes attack cooldown
         if (catWrathTimer > 0)
         {
@@ -185,7 +207,7 @@ public class ObjectsManager : MonoBehaviour
             catWrathDamageMultiplier = 1; 
             catWrathDexterityIncrease = 0; 
         }
-
+        
         
         //killing spree
         if (killingSpreeTimer > 0)
@@ -197,10 +219,9 @@ public class ObjectsManager : MonoBehaviour
         {
             killingSpreeDamage = 0;
         }
-
+        
         
         //tank power
-        float tankPowerBonus;
         if (_gameManager.health > gameVariables.tankPowerCeiling)
         {
             //if hp greater than base stat, increases damage
@@ -219,23 +240,23 @@ public class ObjectsManager : MonoBehaviour
         {
             noHitSpeedRunDamageMultiplier = 1;
         }
-
+        
         float attackBonuses = glassCanonDamage + killingSpreeDamage + tankPowerBonus + catNipDamage;
         float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier * assassinDamageMultiplier * catWrathDamageMultiplier;
         _player._playerAttacks.attackStat = attack;
         
         //HP Max
         _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + catNipHpIncrease + _gameManager.healthBonus);
-
+        
         //dexterity
         float bonusDex = catWrathDexterityIncrease + catNipDexIncrease;
         float dex = (gameVariables.baseDexterity + bonusDex);
         _player._playerAttacks.dexterity = dex;
-
+        
         float speedBonus = catNipSpeedIncrease;
         float speed = gameVariables.baseSpeed + speedBonus;
         _player.maxSpeed = speed;
-
+        
         //Debug.Log("dex set to " + dex);
         //Debug.Log("speed set to " + speed);
         //Debug.Log("attack set to " + attack);
@@ -245,7 +266,6 @@ public class ObjectsManager : MonoBehaviour
         Debug.Log("speed set to " + speed);
         Debug.Log("attack set to " + attack);*/
     }
-
     public void OnEnemyKill()
     {
         if (bloodBlade)
@@ -266,7 +286,6 @@ public class ObjectsManager : MonoBehaviour
             killingSpreeTimer = gameVariables.killingSpreeLength;
         }
     }
-
     public void OnPlayerHit(int sourceDamage)
     {
         int damage = sourceDamage;
@@ -304,9 +323,13 @@ public class ObjectsManager : MonoBehaviour
         
         _gameManager.health -= damage;
     }
-    
     void CreateItemPools()
     {
+        for (int i = 0; i < 27; i++)
+        {
+            itemList.Add(i);
+        }
+        
         //chest pool = reserved chest + commom
         foreach (var id in itemDataScriptable.chestReservedItems)
         {
@@ -336,39 +359,45 @@ public class ObjectsManager : MonoBehaviour
     }
     void AssignObjectInfos()
     {
-        for (int i = 0; i < itemAmount; i++)
+        for (int i = 0; i < 5; i++)
         {
-            GameObject item = Instantiate(objectTemplate, transform);
-            item.name = "Item#" + i;
-            item.SetActive(false);
-            itemList.Add(item);
+            itemObjectsInventory[i] = 999;
         }
         
-        //assigns object info depending on it's position on the list.
-        for (int i = 0; i < itemList.Count; i++)
-        {
-            itemList[i].GetComponent<Item>().objectID = i;
-            itemList[i].GetComponent<Item>().description = itemDataScriptable.descriptions[i];
-            itemList[i].GetComponent<Item>().itemName = itemDataScriptable.names[i];
-            itemList[i].GetComponent<Item>().rarity = itemDataScriptable.rarity[i];
-            switch (itemList[i].GetComponent<Item>().rarity)
-            {
-                case 1 : itemList[i].GetComponent<Item>().itemCost = 15; break;
-                case 2 : itemList[i].GetComponent<Item>().itemCost = 25; break;
-                case 3 : itemList[i].GetComponent<Item>().itemCost = 35; break;
-                case 4 : itemList[i].GetComponent<Item>().itemCost = 35; break;
-            }
-            itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
-        }
+        // for (int i = 0; i < itemAmount; i++)
+        // {
+        //     GameObject item = Instantiate(objectTemplate, transform);
+        //     item.name = "Item#" + i;
+        //     item.SetActive(false);
+        //     itemList.Add(item);
+        // }
+        //
+        // //assigns object info depending on it's position on the list.
+        // for (int i = 0; i < itemList.Count; i++)
+        // {
+        //     Item item = itemList[i].GetComponent<Item>();
+        //     item.objectID = i;
+        //     item.description = itemDataScriptable.descriptions[i];
+        //     item.itemName = itemDataScriptable.names[i];
+        //     item.rarity = itemDataScriptable.rarity[i];
+        //     switch (item.rarity)
+        //     {
+        //         case 1 : item.itemCost = 15; break;
+        //         case 2 : item.itemCost = 25; break;
+        //         case 3 : item.itemCost = 35; break;
+        //         case 4 : item.itemCost = 35; break;
+        //     }
+        //     itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
+        // }
     }
     public void UiItemBoxesUpdate()
     {
         //used to reload data from the object when added
         for (int i = 0; i < 6; i++)
         {
-            if (itemObjectsInventory[i] != null)
+            if (itemObjectsInventory[i] != 999)
             {
-                int id = itemObjectsInventory[i].GetComponent<ItemDragDrop>().objectID;
+                int id = itemObjectsInventory[i];
                 //update : box name, icon, description, rarity color
                 string name = itemDataScriptable.names[id];
                 Sprite icon = objectSprites[id];
@@ -377,8 +406,9 @@ public class ObjectsManager : MonoBehaviour
                 Color color = Color.grey;
 
                 uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = name;
-                //uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = true;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
                 switch (rarity)
                 {
                     case 1 : color = Color.green; break;
@@ -394,8 +424,96 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
                 //uiItemBoxes[i].transform.GetChild(4).GetComponent<Image>().sprite = null;
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
-                uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+                uiItemBoxes[i].transform.GetChild(0).GetComponent<Image>().color = Color.gray;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = null;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = false;
             }
         }
     }
+    void MoveExtraBox(int dir)
+    {
+        int pos = 0;
+        //if it goes beyond max
+        if (currentBoxPos + dir > 4)
+        {
+            pos = 0;
+        }
+        //if it goes under min
+        else if (currentBoxPos + dir < 0)
+        {
+            pos = 4;
+        }
+        else //alright
+        {
+            pos = currentBoxPos + dir;
+        }
+        
+        //moves box and indent
+        uiItemBoxes[5].transform.position = bonusBoxStartPos + Vector3.down * pos * offsetDiff;
+        currentBoxPos = pos;
+    }
+    void MoveBoxUp(InputAction.CallbackContext context)
+    {
+        if (canReplaceItem)
+        {
+            MoveExtraBox(-1);
+        }
+    }
+    void MoveBoxDown(InputAction.CallbackContext context)
+    {
+        if (canReplaceItem)
+        {
+            MoveExtraBox(1);
+        }
+    }
+    void ReplaceItem(InputAction.CallbackContext context)
+    {
+        if (canReplaceItem)
+        {
+            //replaces item selected
+            int oldItem = itemObjectsInventory[currentBoxPos];
+            OnObjectUnEquip(oldItem);
+            //adds new one
+            int newItem = itemObjectsInventory[5];
+            itemObjectsInventory[currentBoxPos] = newItem;
+            OnObjectEquip(newItem);
+            //destroys old item and empties 5th box
+            uiItemBoxes[5].SetActive(false);
+            canReplaceItem = false;
+        }
+    }
+
+    void CheatItem(int id)
+    {
+        //replaces item selected
+        int oldItem = itemObjectsInventory[0];
+        OnObjectUnEquip(oldItem);
+        //adds new one
+        itemObjectsInventory[0] = id;
+        OnObjectEquip(id);
+        //destroys old item and empties 5th box
+        uiItemBoxes[5].SetActive(false);
+    }
+    #region InputSystemRequirements
+    private void OnEnable()
+    {
+        moveDown = _playerControls.UI.MoveDown;
+        moveDown.Enable();
+        moveDown.performed += MoveBoxDown;
+
+        moveUp = _playerControls.UI.MoveUp;
+        moveUp.Enable();
+        moveUp.performed += MoveBoxUp;
+
+        confirm = _playerControls.UI.Confirm;
+        confirm.Enable();
+        confirm.performed += ReplaceItem;
+    }
+    private void OnDisable()
+    {
+        moveDown.Disable();
+        moveUp.Disable();
+        confirm.Disable();
+    }
+    #endregion
 }

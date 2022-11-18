@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Item : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Item : MonoBehaviour
     private ObjectsManager _objectsManager;
     [HideInInspector]public InputAction collect;
     private GameManager gameManager;
+    public ShopManager shopManager;
+    private UIManager _uiManager;
 
     private GameObject player;
     private GameObject canvas;
@@ -27,12 +30,21 @@ public class Item : MonoBehaviour
     public string itemName;
     public int itemCost;
     public int rarity;
+    public ItemType itemType;
+    public enum ItemType
+    {
+        Heal,
+        MaxHealth,
+        Item,
+        RandomItem
+    }
 
     private void Awake()
     {
         playerControls = new PlayerControls();
         player = GameObject.Find("Player");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _menuManager = GameObject.Find("UIManager").GetComponent<MenuManager>();
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
@@ -45,6 +57,33 @@ public class Item : MonoBehaviour
     {
         ShopItem();
     }
+
+    void ItemEffect()
+    {
+        switch (itemType)
+        {
+            case ItemType.Heal : 
+                int healAmount = 4;
+                gameManager.health += healAmount;
+                _uiManager.HealthBar(gameManager.health);
+                break;
+            case ItemType.MaxHealth :
+                int maxHealthAmount = 2;
+                gameManager.maxHealth += maxHealthAmount;
+                Debug.Log("maxHealth increased from "+ (gameManager.maxHealth - maxHealthAmount) + "to " + gameManager.maxHealth);
+                gameManager.health += maxHealthAmount;
+                _uiManager.HealthBar(gameManager.health);
+                break;
+            case ItemType.Item :
+                AccessToItemMenu();
+                break;
+            case ItemType.RandomItem : 
+                RandomObjectDraw();
+                break;
+        }
+        Destroy(gameObject);
+    }
+    
 
     void ShopItem()
     {
@@ -83,9 +122,7 @@ public class Item : MonoBehaviour
             {
                 //does gameobject effect
                 gameManager.money -= itemCost;
-                //adds effect
-                //destroyed
-                Destroy(gameObject);
+                ItemEffect();
             }
             else if (gameManager.health - itemCost/2 >= 1 && _objectsManager.strangePact)
             {
@@ -94,6 +131,7 @@ public class Item : MonoBehaviour
                 gameManager.money = 0;
                 //new cost 
                 gameManager.health -= Mathf.CeilToInt(newCost/2);
+                ItemEffect();
             }
         }
     }
@@ -103,18 +141,48 @@ public class Item : MonoBehaviour
         if (other.CompareTag("Player") && !isFromAShop && canBeTaken)
         {
             canBeTaken = false;
-            _menuManager.ObjectMenu();
-            //instantiates a new ui item in the canvas
-            GameObject newItem = Instantiate(_objectsManager.uiItemPrefab, _objectsManager.objectMenu.transform);
-            _objectsManager.itemObjectsInventory[5] = newItem;
-            //puts it in the 6th box
-            _objectsManager.itemObjectsInventory[5].GetComponent<RectTransform>().transform.position = _objectsManager.uiItemBoxes[5].transform.position;
-            //updates it's id
-            _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().objectID = objectID;
-            _objectsManager.itemObjectsInventory[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
-            _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().boxAssociated = 5;
-            _objectsManager.UiItemBoxesUpdate();
-            Destroy(gameObject);
+            ItemEffect();
+        }
+    }
+    
+    public void AccessToItemMenu()
+    {
+        _menuManager.ObjectMenu();
+        //puts it in the 6th box
+        int newItem = objectID;
+        _objectsManager.itemObjectsInventory[5] = newItem;        //updates it's id
+        _objectsManager.uiItemBoxes[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
+        _objectsManager.UiItemBoxesUpdate();
+        Destroy(gameObject);
+    }
+    
+    void RandomObjectDraw()
+    {
+        _menuManager.drawMenu.gameObject.SetActive(true);
+        //actives a canvas to choose 3 objects from
+        for (int i = 0; i < 3; i++)
+        {
+            //assigns box object with a random item
+            int item = shopManager.itemsToChooseFrom[Random.Range(0, shopManager.itemsToChooseFrom.Count)];
+            //update : box name, icon, description, rarity color
+            string name = _objectsManager.itemDataScriptable.names[item];
+            Sprite icon = _objectsManager.objectSprites[item];
+            string desc = _objectsManager.itemDataScriptable.descriptions[item];
+            int rarity = _objectsManager.itemDataScriptable.rarity[item];
+            Color color = Color.grey;
+            
+            switch (rarity)
+            {
+                case 1 : color = Color.green; break;
+                case 2 : color = Color.blue; break;
+                case 3 : color = Color.magenta; break;
+                case 4 : color = Color.yellow; break;
+            }
+            _menuManager.drawMenu.items[i] = item;
+            _menuManager.drawMenu.boxVisuals[i].description.text = desc;
+            _menuManager.drawMenu.boxVisuals[i].name.text = name;
+            _menuManager.drawMenu.boxVisuals[i].rarity.color = color;
+            _menuManager.drawMenu.boxVisuals[i].icon.sprite = icon;
         }
     }
 

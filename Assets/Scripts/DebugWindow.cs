@@ -27,6 +27,7 @@ public class DebugWindow : MonoBehaviour
 
     private float _deltaTime;
     private PlayerController _pc;
+    private GameManager _gameManager;
     private GameObject _player;
     private Rigidbody _rb;
     private GameObject _cam;
@@ -37,6 +38,7 @@ public class DebugWindow : MonoBehaviour
 
     private void Awake()
     {
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _player = GameObject.Find("Player");
         _pc = _player.GetComponent<PlayerController>();
         _rb = _player.GetComponent<Rigidbody>();
@@ -95,7 +97,12 @@ public class DebugWindow : MonoBehaviour
             
             "Enemies Alive : " + _enemiesAlive +  "\n" +                       
             "Enemies Spawned : " + _enemiesSpawned + "\n" +                            
-            "Total Enemies : " + _enemiesTotal + "\n"                             
+            "Total Enemies : " + _enemiesTotal + "\n"  + "\n" +
+            
+            "Current Stats : " +  "\n" + "\n" +                       
+            "Attack : " + _pc._playerAttacks.attackStat + "\n" +                            
+            "Speed : " + _pc.maxSpeed + "\n"   +
+            "Dexterity : " + _pc._playerAttacks.dexterity + "\n"     
             ;
     }
 }

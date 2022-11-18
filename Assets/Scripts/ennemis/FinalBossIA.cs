@@ -24,7 +24,7 @@ public class FinalBossIA : MonoBehaviour
     private GameManager _gameManager;
     private GameObject leftHand;
     private GameObject rightHand;
-    public GameObject lightningEyePrefab;
+    public GameObject eyeChainPrefab;
     public GameObject wandererPrefab;
     public GameObject rockPrefab;
     public GameObject HLaser;
@@ -41,7 +41,7 @@ public class FinalBossIA : MonoBehaviour
     private bool _canAttack;
     public float health;
     private float _handRespawnTimer;
-    private float roomSize = 20;
+    private float roomSize = 40;
 
     #region M_Laser
 
@@ -85,11 +85,9 @@ public class FinalBossIA : MonoBehaviour
     #region EyeChain
 
     [Header("EyeChain")] [Header("EyeChain")]
-    public LineRenderer eyeChainLr;
     public List<GameObject> eyeList;
     public List<GameObject> bonusEyeList;
-    private bool _eyeChainActive;
-    [SerializeField] private GameObject eyePrefab;
+    public List<GameObject> externalList;
 
 #endregion
 
@@ -128,15 +126,20 @@ public class FinalBossIA : MonoBehaviour
         
         for (int i = 0; i < values.eyeNumber; i++)
         {
-            GameObject eye = Instantiate(eyePrefab);
+            GameObject eye = Instantiate(eyeChainPrefab);
+            eye.GetComponent<EyeChain>().ia = this;
             eye.SetActive(false);
             eyeList.Add(eye);
         }
         for (int i = 0; i < values.bonusEyes; i++)
         {
-            GameObject eye = Instantiate(eyePrefab);
+            GameObject eye = Instantiate(eyeChainPrefab);
             eye.SetActive(false);
             bonusEyeList.Add(eye);
+        }
+        for (int i = 0; i < externalList.Count; i++)
+        {
+            externalList[i].GetComponent<EyeChain>().ia = this;
         }
     }
     void Update()
@@ -253,90 +256,81 @@ public class FinalBossIA : MonoBehaviour
    #region EyeChain
     IEnumerator EyeChainAttack()
     {
-        //-----place les yeux
+        //-------------------------------------------------------------------------place les yeux
         
         List<int> eyeChainRows = new List<int>(values.eyeNumber);
         List<int> bonusEyeLines = new List<int>(values.bonusEyes);
         //creates a grid with x separations on each side, scaled to the terrain
-        float xMin = roomCenter.x - roomSize / 2;
-        float yMin = roomCenter.y - roomSize / 2;
+        Vector3 startPoint = roomCenter - new Vector3(roomSize / 2, 0, roomSize / 2);
         //creates a list of 10possible placements
-        List<int> possibleRows = new List<int>(values.eyeNumber);
+        List<int> possibleRows = new List<int>(0);
         for (int i = 0; i < values.eyeNumber; i++)
         {
             possibleRows.Add(i);
         }
-        //distribue les placements en faisant gaffe a ce qu'il y ait pas 2 yeux sur la même colonne
-        //active les yeux
+        
+        //-------------------------------------------------------------------distribue les placements en faisant gaffe a ce qu'il y ait pas 2 yeux sur la même colonne
         for (int i = 0; i < values.eyeNumber; i++)
         {
             //place l'oeil sur la ligne i, avec la position de la colonne aléatoire
             int row = possibleRows[Random.Range(0, possibleRows.Count)];
             possibleRows.Remove(row);
-            Vector3 placement = new Vector3(xMin, 0, yMin) + new Vector3(roomSize * row, 0, roomSize * i);
+            Vector3 placement = startPoint + new Vector3(i * roomSize/values.eyeNumber, 1, row * roomSize/values.eyeNumber);
             eyeList[i].transform.position = placement;
             eyeList[i].SetActive(true);
-            eyeChainRows[i] = row;
-            yield return new WaitForSeconds(values.eyeSpawnInterval);
+            eyeChainRows.Add(row);
+            yield return new WaitForSeconds(0.1f);
         }
-        
+
+        eyeList[4].GetComponent<EyeChain>().isbase = true;
         /*
-        
-        //ajoute quelques yeux en + pour varier le pattern
-        //pour ne pas avoir plusieurs fois la même ligne
-        List<int> possibleBonusLines = new List<int>(_eyeNumber);
-        for (int i = 0; i < values.eyeNumber; i++)
-        {
-            possibleBonusLines.Add(i);
-        }
-        for (int i = 0; i < _bonusEyes; i++)
-        {
-            //choisit une ligne au hasard
-            int bonusLine = possibleBonusLines[Random.Range(0, possibleBonusLines.Count)];
-            possibleBonusLines.Remove(bonusLine);
-            //check la colonne déja prise, puis spawn un oeil sur une random parmi celles pas prises
-            List<Vector3> possibleRowPositions = new List<Vector3>(_eyeNumber);
-            for (int j = 0; j < values.eyeNumber; j++)
-            {
-                Vector3 theoricalPos = new Vector3(xMin, 0, yMin) + new Vector3(roomSize * j, 0, roomSize * bonusLine);
-                //if (theoricalPos != eyePlacements[i])
-                {
-                    possibleRowPositions.Add(theoricalPos);
-                }
-            }
-
-            Vector3 bonusPlacement = possibleRowPositions[Random.Range(0, possibleRowPositions.Count)];
-            eyeList[i].transform.position = bonusPlacement;
-            eyeList[i].SetActive(true);
-            yield return new WaitForSeconds(values.eyeSpawnInterval);
-            
-        }*/
-        
+        // //ajoute quelques yeux en + pour varier le pattern
+        // //pour ne pas avoir plusieurs fois la même ligne
+        // List<int> possibleBonusLines = new List<int>(values.eyeNumber);
+        // for (int i = 0; i < values.eyeNumber; i++)
+        // {
+        //     possibleBonusLines.Add(i);
+        // }
+        // for (int i = 0; i < values.bonusEyes; i++)
+        // {
+        //     //choisit une ligne au hasard
+        //     int bonusLine = possibleBonusLines[Random.Range(0, possibleBonusLines.Count)];
+        //     possibleBonusLines.Remove(bonusLine);
+        //     //check la colonne déja prise, puis spawn un oeil sur une random parmi celles pas prises
+        //     List<Vector3> possibleRowPositions = new List<Vector3>(values.eyeNumber);
+        //     for (int j = 0; j < values.eyeNumber; j++)
+        //     {
+        //         Vector3 theoreticalPos = new Vector3(xMin, 0, yMin) + new Vector3(roomSize * j, 0, roomSize * bonusLine);
+        //         //if (theoricalPos != eyePlacements[i])
+        //         {
+        //             possibleRowPositions.Add(theoreticalPos);
+        //         }
+        //     }
+        //
+        //     Vector3 bonusPlacement = possibleRowPositions[Random.Range(0, possibleRowPositions.Count)];
+        //     eyeList[i].transform.position = bonusPlacement;
+        //     eyeList[i].SetActive(true);
+        //     yield return new WaitForSeconds(values.eyeSpawnInterval);
+        //     
+        // }*/
         //----attend un peu
-        yield return new WaitForSeconds(1);
-
-        //-----les relie avec le line renderer
-        
-        for (int i = 0; i < values.eyeNumber; i++)
+        foreach (var eye in eyeList)
         {
-            //relie tous les yeux avec le line renderer
-            eyeChainLr.material.color = Color.red;
-            eyeChainLr.SetPosition(i, eyeList[i].transform.position);
-            yield return new WaitForSeconds(0.5f);
+            StartCoroutine(eye.GetComponent<EyeChain>().CheckConnection());
         }
-        
-        //----check si le joueur se fait toucher pendant le temps d'activation
-        eyeChainLr.material.color = Color.magenta;
-        _eyeChainActive = true;
-        
-        yield return new WaitForSeconds(2);
-        _eyeChainActive = false;
+        foreach (var eye in externalList)
+        {
+            StartCoroutine(eye.GetComponent<EyeChain>().CheckConnection());
+        }
+        yield return new WaitForSeconds(4);
+
         StartCoroutine(SwitchState(IAStates.EyeChain));
     }
     void EyeChain()
     {
         if (_canAttack)
         {
+            _canAttack = false;
             StartCoroutine(EyeChainAttack());
         }
         //a bunch of eyes appear

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class EyeChain : MonoBehaviour
 {
@@ -11,8 +12,8 @@ public class EyeChain : MonoBehaviour
     private float range = 20;
     [HideInInspector]public FinalBossIA ia;
     private LayerMask playerLayerMask;
-    public GameObject LRprefab;
     public bool isExternal;
+    public GameObject laserVisual;
 
     private void Start()
     {
@@ -68,31 +69,24 @@ public class EyeChain : MonoBehaviour
             connectedToMe.Add(ia.eyeList[closestEye].GetComponent<EyeChain>());
         }
         
-        //connects each connected eye with a line
-        foreach (var eye in connectedToMe)
-        {
-            //draws a line
-        }
-        
         //---draws web
         List<GameObject> lrList = new List<GameObject>();
         foreach (var eye in connectedToMe)
         {
-            //draws a line
-            GameObject line = Instantiate(LRprefab, transform.position, Quaternion.identity);
-            line.GetComponent<LineRenderer>().SetPosition(0, transform.position);
-            line.GetComponent<LineRenderer>().SetPosition(1, eye.transform.position);  
-            line.GetComponent<LineRenderer>().material.color = Color.white;
-            lrList.Add(line);
+            GameObject laserFx = Instantiate(laserVisual, transform.position, Quaternion.identity);
+            laserFx.transform.LookAt(eye.transform.position);
+            laserFx.GetComponent<VisualEffect>().Stop();
+            lrList.Add(laserFx);
         }
         
         //waits for 2 sec
         yield return new WaitForSeconds(2);
         
         //---activates web ---checks if the player is going through connections -- activates vfx
-        foreach (var line in lrList)
+        foreach (var laser in lrList)
         {
-            line.GetComponent<LineRenderer>().material.color = Color.red;
+            laser.GetComponent<VisualEffect>().Stop();
+            laser.GetComponent<VisualEffect>().Play();
         }
         yield return new WaitForSeconds(2);
 
@@ -100,6 +94,10 @@ public class EyeChain : MonoBehaviour
         foreach (var line in lrList)
         {
             Destroy(line);
+        }
+        foreach (var eye in ia.eyeList)
+        {
+            eye.SetActive(false);
         }
         lrList.Clear();
         connectedToMe.Clear();

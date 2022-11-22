@@ -65,21 +65,19 @@ public class LaserVisuals : MonoBehaviour
             
                 _lineRenderer.SetPosition(0, transform.position);
                 _lineRenderer.SetPosition(1, hitPoint);
-                
-                //same as marksman laser but with a delay for each hand
-                if (_isLaserActive)
+            }
+            //same as marksman laser but with a delay for each hand
+            if (_isLaserActive)
+            {
+                //shoots laser
+                _laserMat.color = Color.red;
+                //check if player touches laser
+                if (Physics.Raycast(transform.position, _laserDir, 4, LayerMask.NameToLayer("Player")))
                 {
-                    //shoots laser
-                    _laserMat.color = Color.magenta;
-
-                    //check if player touches laser
-                    if (Physics.Raycast(transform.position, _laserDir, 4, values.playerLayerMask))
-                    {
-                        Debug.Log("hit player");
-                        //deals damage
-                        _gameManager.DealDamageToPlayer(values.m_laserDamage);
-                        //can touch laser twice
-                    }
+                    Debug.Log("hit player");
+                    //deals damage
+                    _gameManager.DealDamageToPlayer(values.m_laserDamage);
+                    //can touch laser twice
                 }
             }
         }
@@ -87,7 +85,6 @@ public class LaserVisuals : MonoBehaviour
     
     public IEnumerator ShootLaser()
     {
-        Debug.Log("laser");
         isLaserOn = true;
         //while charging, laser is in direction of player, and color is updated depending on the current charge
         _lineRenderer.enabled = true;
@@ -96,9 +93,8 @@ public class LaserVisuals : MonoBehaviour
 
         yield return new WaitForSeconds(values.m_laserWarmup);
         _isCharging = false;
-        _laserMat.color = Color.cyan;
         //waits a bit for the player to avoid the laser
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         //shoots laser
         _isLaserActive = true;
         //laser set inactive

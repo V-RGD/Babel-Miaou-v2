@@ -76,6 +76,7 @@ public class EyeChain : MonoBehaviour
             GameObject laserFx = Instantiate(laserVisual, transform.position, Quaternion.identity);
             laserFx.transform.LookAt(eye.transform.position);
             laserFx.GetComponent<VisualEffect>().Stop();
+            laserFx.transform.localScale = new Vector3(0.25f, .25f, 0.25f) * ((eye.transform.position - transform.position).magnitude / 10);
             lrList.Add(laserFx);
         }
         

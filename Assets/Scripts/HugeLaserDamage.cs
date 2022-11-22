@@ -4,6 +4,7 @@ public class HugeLaserDamage : MonoBehaviour
 {
     private GameManager _gameManager;
     public float damage;
+    private GameObject _player;
 
     private void Awake()
     {
@@ -12,6 +13,10 @@ public class HugeLaserDamage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //_gameManager.DealDamageToPlayer(damage);
+        //deals damage
+        if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0 && !_player.GetComponent<PlayerController>()._playerAttacks.isAttacking)
+        {
+            _gameManager.DealDamageToPlayer(damage);
+        }
     }
 }

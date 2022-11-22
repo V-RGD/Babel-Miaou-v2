@@ -104,7 +104,7 @@ public class Enemy : MonoBehaviour
         }
         
         //deals damage
-        if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0)
+        if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0 && !_player.GetComponent<PlayerController>()._playerAttacks.isAttacking)
         {
             _gameManager.DealDamageToPlayer(enemyTypeData.damage);
         }

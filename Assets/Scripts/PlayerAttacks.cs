@@ -15,6 +15,7 @@ public class PlayerAttacks : MonoBehaviour
     [HideInInspector] public bool isMasterSword;
     [HideInInspector] public bool canRepel;
     [HideInInspector] public bool noPet;
+    [HideInInspector] public bool isAttacking;
     private int _comboCounter;
     private Vector3 _attackDir;
     private InputAction _mouseHold;
@@ -112,6 +113,7 @@ public class PlayerAttacks : MonoBehaviour
     }
     IEnumerator AttackCoroutine()
     {
+        isAttacking = true;
         canInterruptAnimation = false;
         _pc.SwitchState(PlayerController.PlayerStates.Attack);;
         
@@ -229,6 +231,7 @@ public class PlayerAttacks : MonoBehaviour
         _rb.velocity = Vector3.zero;
         //restores speed
         _pc.canMove = true;
+        isAttacking = false;
     }
     void MouseHold(InputAction.CallbackContext context)
         {

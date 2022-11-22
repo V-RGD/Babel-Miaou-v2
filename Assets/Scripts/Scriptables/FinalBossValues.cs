@@ -16,6 +16,7 @@ public class FinalBossValues : ScriptableObject
 
     [Header("Claw")]
     public float clawWarmup;
+    public float clawCooldown;
     
     [Header("Circle")]
     public float circleLength;

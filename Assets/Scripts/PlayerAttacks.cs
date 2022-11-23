@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttacks : MonoBehaviour
 {
+    public static PlayerAttacks instance;
+    
     public float _comboCooldown = 1f; //max time allowed to combo
     public float _comboTimer;
     private float _attackMultiplier = 1;
@@ -81,6 +83,13 @@ public class PlayerAttacks : MonoBehaviour
     public AttackState currentAttackState;
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
         _attackAnchor = transform.GetChild(0).gameObject;
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
@@ -88,8 +97,9 @@ public class PlayerAttacks : MonoBehaviour
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _playerControls = new PlayerControls();
-        _pc = GetComponent<PlayerController>();
     }
+
+    private void Start() => _pc = PlayerController.instance;
 
     private void Update()
     {
@@ -126,14 +136,6 @@ public class PlayerAttacks : MonoBehaviour
         float startUpLength = 0;
         float activeLength = 0;
         float recoverLength = 0;
-        
-        /*
-        //if master sword, launches projectile
-        if (isMasterSword && _gameManager.health == _gameManager.maxHealth)
-        {
-            GameObject projo = Instantiate(masterSwordProjo, transform.position, quaternion.identity);
-            projo.GetComponent<Rigidbody>().AddForce(attackDir * 100);
-        }*/
         
         //-----------startup state
         //defines values, blocks walking

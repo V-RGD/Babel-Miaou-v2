@@ -1,11 +1,8 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BossHurtBoxes : MonoBehaviour
 {
-    public FinalBossIA ia;
     public bool isMain;
     public bool isActive;
     public int health = 30;
@@ -13,10 +10,7 @@ public class BossHurtBoxes : MonoBehaviour
     public float respawnTimer;
     private GameManager _gameManager;
     public GameObject visuals;
-    private void Start()
-    {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-    }
+    private void Start() => _gameManager = GameManager.instance;
 
     private void OnTriggerEnter(Collider other)
     {

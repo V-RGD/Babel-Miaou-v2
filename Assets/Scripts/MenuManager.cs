@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
+    public static MenuManager instance;
+    
     public bool isLoading;
     public bool quitWarningActive;
     public bool gameIsPaused;
@@ -27,9 +31,19 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+    }
+
+    private void Start()
+    {
+        _gameManager = GameManager.instance;
+        _objectsManager = ObjectsManager.instance;
+        _uiManager = UIManager.instance;
     }
 
     private void Update()

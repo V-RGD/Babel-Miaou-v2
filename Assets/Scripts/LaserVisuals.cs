@@ -72,9 +72,8 @@ public class LaserVisuals : MonoBehaviour
                 //shoots laser
                 _laserMat.color = Color.red;
                 //check if player touches laser
-                if (Physics.Raycast(transform.position, _laserDir, 4, LayerMask.NameToLayer("Player")))
+                if (Physics.Raycast(transform.position, _laserDir, 4000, values.playerLayerMask))
                 {
-                    Debug.Log("hit player");
                     //deals damage
                     _gameManager.DealDamageToPlayer(values.m_laserDamage);
                     //can touch laser twice

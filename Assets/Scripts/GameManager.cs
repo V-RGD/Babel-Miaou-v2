@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+    
     private GameObject player;
     public GameObject[] items;
     private GameVariables _gameVariables;
@@ -24,17 +26,24 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
         player = GameObject.Find("Player");
-        _objectsManager = GetComponent<ObjectsManager>();
-        _gameVariables = GetComponent<ObjectsManager>().gameVariables;
-        _playerController = player.GetComponent<PlayerController>();
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
-        _playerAttacks = player.GetComponent<PlayerAttacks>();
     }
 
     void Start()
     {
+        _objectsManager = ObjectsManager.instance;
+        _gameVariables = _objectsManager.gameVariables;
+        _playerController = PlayerController.instance;
+        _uiManager = UIManager.instance;
+        _playerAttacks = PlayerAttacks.instance;
         health = maxHealth;
         _uiManager.HealthBar(health);
     }

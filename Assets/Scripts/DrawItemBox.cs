@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class DrawItemBox : MonoBehaviour
 {
-    public int[] items = new int[3];
-    public DrawBoxVisuals[] boxVisuals = new DrawBoxVisuals[3];
+    public int[] items = new int[2];
+    public DrawBoxVisuals[] boxVisuals = new DrawBoxVisuals[2];
     
     private MenuManager _menuManager;
     private ObjectsManager _objectsManager;
@@ -33,14 +33,6 @@ public class DrawItemBox : MonoBehaviour
         _menuManager.drawMenu.gameObject.SetActive(false);
         //UpdateItemBox(2);
     }
-    public void OnDrawBoxClick3()
-    {
-        //uses item as if it was collected normally
-        AccessToItemMenu(items[2]);
-        //disables menu
-        _menuManager.drawMenu.gameObject.SetActive(false);
-        //UpdateItemBox(3);
-    }
 
     void UpdateItemBox(int item)
     {
@@ -57,10 +49,9 @@ public class DrawItemBox : MonoBehaviour
     
     public void AccessToItemMenu(int id)
     {
-        Debug.Log(id);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
-        _objectsManager.itemObjectsInventory[5] = id;        //updates it's id
+        _objectsManager.itemObjectsInventory[3] = id;        //updates it's id
         //_objectsManager.uiItemBoxes[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[id];
         _objectsManager.UiItemBoxesUpdate();
         //Destroy(gameObject);

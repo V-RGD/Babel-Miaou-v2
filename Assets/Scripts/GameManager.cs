@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
                 if (canRes <= _gameVariables.catLuckResRate)
                 {
                     //destroys catnip
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         int item = _objectsManager.itemObjectsInventory[i];
                         if (item == 22)

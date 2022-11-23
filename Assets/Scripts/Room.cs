@@ -35,23 +35,22 @@ public class Room : MonoBehaviour
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
-    void Awake()
+    
+
+    private void Start()
     {
-        // component assignations
+        //component assignations
         _player = GameObject.Find("Player");
-        _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+        _lm = LevelManager.instance;
+        _dunGen = DunGen.instance;
+        _objectsManager = ObjectsManager.instance;
         enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
         _roomInfo = GetComponent<RoomInfo>();
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
-    }
-
-    private void Start()
-    {
+        
         RoomType();
         //PropsSpawn();
         DoorSpawn();
@@ -74,6 +73,7 @@ public class Room : MonoBehaviour
         if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType == 1)
         {
             _canActivateEnemies = false;
+            DoorLock();
             StartCoroutine(ActivateAllEnemies());
         }
         
@@ -262,6 +262,13 @@ public class Room : MonoBehaviour
         foreach (var door in doorsObjects)
         {
             door.SetActive(false);
+        }
+    }
+    void DoorLock()
+    {
+        foreach (var door in doorsObjects)
+        {
+            door.SetActive(true);
         }
     }
 

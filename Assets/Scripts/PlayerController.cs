@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance;
+    
     #region Movement Values
     [Header("Movement")]
     public float maxSpeed;
@@ -63,6 +65,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
+
     void MovingAnimations()
     {
         var state = GetMovingAnimation();
@@ -88,6 +91,13 @@ public class PlayerController : MonoBehaviour
     }
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
         canMove = true;
         
         _rb = GetComponent<Rigidbody>();
@@ -95,7 +105,7 @@ public class PlayerController : MonoBehaviour
         _playerControls = new PlayerControls();
         
         _animator = GetComponent<Animator>();
-        _playerAttacks = GetComponent<PlayerAttacks>();
+        _playerAttacks = PlayerAttacks.instance;
         currentState = PlayerStates.Run;
     }
     void FixedUpdate()

@@ -7,6 +7,7 @@ public class ShopManager : MonoBehaviour
     public List<Transform> spawnAreas;
     private ObjectsManager _objectsManager;
     
+    
     // Start is called before the first frame update
     void Start()
     {

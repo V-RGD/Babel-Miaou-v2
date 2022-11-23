@@ -861,6 +861,7 @@ GameObject:
   - component: {fileID: 60553341}
   - component: {fileID: 60553345}
   - component: {fileID: 60553346}
+  - component: {fileID: 60553347}
   m_Layer: 0
   m_Name: LeftHand
   m_TagString: Untagged
@@ -879,7 +880,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 6, y: 6, z: 6}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &60553342
 MeshRenderer:
@@ -1060,6 +1061,24 @@ MonoBehaviour:
   _laserMat: {fileID: 0}
   isLaserOn: 0
   values: {fileID: 0}
+--- !u!114 &60553347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60553340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe7df34a9a28c08498ca1641890d0f95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isMain: 0
+  isActive: 0
+  health: 30
+  respawnCooldown: 30
+  respawnTimer: 0
+  visuals: {fileID: 0}
 --- !u!1 &66292425
 GameObject:
   m_ObjectHideFlags: 0
@@ -10508,7 +10527,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 434821809}
-  m_LocalRotation: {x: 0.21038643, y: 0, z: 0, w: 0.9776184}
+  m_LocalRotation: {x: 0.21038643, y: -0, z: -0, w: 0.9776184}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
@@ -19706,6 +19725,7 @@ GameObject:
   - component: {fileID: 1150679440}
   - component: {fileID: 1150679439}
   - component: {fileID: 1150679441}
+  - component: {fileID: 1150679442}
   m_Layer: 0
   m_Name: Script
   m_TagString: Untagged
@@ -19725,9 +19745,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36db1c4e2a091454780db066ac10c00d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxHealth: 200
+  _health: 200
   handAttackCount: 0
   values: {fileID: 11400000, guid: 91a95b89130e0db44837bdab9a0e4590, type: 2}
-  healthBar: {fileID: 0}
+  healthBar: {fileID: 364574356}
   wandererPrefab: {fileID: 1939700266231145097, guid: d59e3074c1113ed4eb64e4d84780b109,
     type: 3}
   clawHitbox_L: {fileID: 1895468357}
@@ -19876,6 +19898,19 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!65 &1150679442
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150679438}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 15, y: 15, z: 15}
+  m_Center: {x: 0, y: 5, z: 0}
 --- !u!1 &1156723686 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 252159430993309912, guid: 14e5f291d1a0bea48acd71d7542907c1,
@@ -20026,6 +20061,7 @@ GameObject:
   - component: {fileID: 1182769195}
   - component: {fileID: 1182769199}
   - component: {fileID: 1182769200}
+  - component: {fileID: 1182769201}
   m_Layer: 0
   m_Name: RightHand
   m_TagString: Untagged
@@ -20044,7 +20080,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 6, y: 6, z: 6}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1182769196
 MeshRenderer:
@@ -20225,6 +20261,24 @@ MonoBehaviour:
   _laserMat: {fileID: 0}
   isLaserOn: 0
   values: {fileID: 0}
+--- !u!114 &1182769201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182769194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe7df34a9a28c08498ca1641890d0f95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isMain: 0
+  isActive: 0
+  health: 30
+  respawnCooldown: 30
+  respawnTimer: 0
+  visuals: {fileID: 0}
 --- !u!1 &1183921281
 GameObject:
   m_ObjectHideFlags: 0
@@ -33257,6 +33311,7 @@ MonoBehaviour:
   - {fileID: 7886117131615728332, guid: 5b7a4c8444a6afe4bb38c26350bf7243, type: 3}
   - {fileID: 7886117131615728332, guid: b25ea912517af5b46be87280283f5bd5, type: 3}
   _cmShake: {fileID: 0}
+  _playerAttacks: {fileID: 0}
   money: 100
   maxHealth: 20
   health: 0

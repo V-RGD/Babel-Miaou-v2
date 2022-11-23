@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class ObjectsManager : MonoBehaviour
 {
+    public static ObjectsManager instance;
+    
     #region Lists
     [Header("Lists")] [Space]
     public List<int> itemObjectsInventory = new List<int>(5);
@@ -93,13 +95,21 @@ public class ObjectsManager : MonoBehaviour
     #endregion
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
         _playerControls = new PlayerControls();
-        _player = GameObject.Find("Player").GetComponent<PlayerController>();
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     private void Start()
     {
+        _player = PlayerController.instance;
+        _uiManager = UIManager.instance;
+        _gameManager = GameManager.instance;
+        
         bonusBoxStartPos = uiItemBoxes[5].transform.position;
         GameObject littleShit = Instantiate(gameVariables.eyeCollector);
         GameObject knitBall = Instantiate(gameVariables.knittingBall);
@@ -293,7 +303,7 @@ public class ObjectsManager : MonoBehaviour
         //on hit - cat wrath - sacred cross - inner peace - wither shield - no hit
         if (sacredCross)
         {
-            _player.GetComponent<PlayerController>().invincibleCounter = gameVariables.sacredCrossLength;
+            PlayerController.instance.invincibleCounter = gameVariables.sacredCrossLength;
         }
         if (innerPeace)
         {
@@ -363,32 +373,6 @@ public class ObjectsManager : MonoBehaviour
         {
             itemObjectsInventory[i] = 999;
         }
-        
-        // for (int i = 0; i < itemAmount; i++)
-        // {
-        //     GameObject item = Instantiate(objectTemplate, transform);
-        //     item.name = "Item#" + i;
-        //     item.SetActive(false);
-        //     itemList.Add(item);
-        // }
-        //
-        // //assigns object info depending on it's position on the list.
-        // for (int i = 0; i < itemList.Count; i++)
-        // {
-        //     Item item = itemList[i].GetComponent<Item>();
-        //     item.objectID = i;
-        //     item.description = itemDataScriptable.descriptions[i];
-        //     item.itemName = itemDataScriptable.names[i];
-        //     item.rarity = itemDataScriptable.rarity[i];
-        //     switch (item.rarity)
-        //     {
-        //         case 1 : item.itemCost = 15; break;
-        //         case 2 : item.itemCost = 25; break;
-        //         case 3 : item.itemCost = 35; break;
-        //         case 4 : item.itemCost = 35; break;
-        //     }
-        //     itemList[i].transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = objectSprites[i];
-        // }
     }
     public void UiItemBoxesUpdate()
     {

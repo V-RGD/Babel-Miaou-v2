@@ -7,10 +7,12 @@ using Random = UnityEngine.Random;
 
 public class FinalBossIA : MonoBehaviour
 {
+    public static FinalBossIA instance;
+    
     #region Global Values
     [Header("Values")] 
-    private float _maxHealth;
-    private float _health;
+    public float _maxHealth = 200;
+    public float _health;
     private float _handRespawnTimer;
     private float _roomSize = 20;
     public int handAttackCount;
@@ -86,6 +88,13 @@ public class FinalBossIA : MonoBehaviour
     #endregion
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
         _laserVisuals_L = transform.GetChild(0).GetComponent<LaserVisuals>();
         _laserVisuals_R = transform.GetChild(1).GetComponent<LaserVisuals>();
         _laserVisuals_L.values = values;
@@ -93,11 +102,12 @@ public class FinalBossIA : MonoBehaviour
         H_LaserLr = GetComponent<LineRenderer>();
         _H_LaserMat = H_LaserLr.material;
         _player = GameObject.Find("Player");
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
     void Start()
     {
+        _gameManager = GameManager.instance;
+
         handAttackCount = 0;
         _navMeshSurface.BuildNavMesh();
         
@@ -380,8 +390,37 @@ public class FinalBossIA : MonoBehaviour
         }
     }
 
-    void UpdateHealth()
+    void TakeDamage(float damageDealt) //when enemy takes hit
     {
-        healthBar.sizeDelta = new Vector2(530 * _health / _maxHealth, 50);
+        //clamps damage to an int (security)
+        int damage = Mathf.CeilToInt(damageDealt);
+        //applies damage
+        _health -= damage;
+        // _gameManager._cmShake.ShakeCamera(5, .1f);
+        //
+        // switch (_gameManager._playerAttacks.comboState)
+        // {
+        //     case PlayerAttacks.ComboState.SimpleAttack:
+        //         _gameManager._cmShake.ShakeCamera(2, .1f);
+        //         break;
+        //     case PlayerAttacks.ComboState.ReverseAttack:
+        //         _gameManager._cmShake.ShakeCamera(2, .1f);
+        //         break;
+        //     case PlayerAttacks.ComboState.SpinAttack:
+        //         _gameManager._cmShake.ShakeCamera(2, .1f);
+        //         break;
+        // }
+        Debug.Log(damage);
+        healthBar.sizeDelta = new Vector2(1323.4f * _health / _maxHealth, 12.95f);
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        //if player hit
+        if (other.CompareTag("PlayerAttack"))
+        {
+            Debug.Log("detected");
+            TakeDamage(other.GetComponent<ObjectDamage>().damage);
+        }
     }
 }

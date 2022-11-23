@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    public static LevelManager instance;
+    
     //manages all prefab instanciations
     //updates infos regarding the level progression
     [Header("Generic Prefabs")]
@@ -28,7 +30,14 @@ public class LevelManager : MonoBehaviour
 
     private void Awake()
     {
-        _dunGen = GetComponent<DunGen>();
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
+        _dunGen = DunGen.instance;
     }
 
     public void LoadNextLevel()

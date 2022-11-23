@@ -30,19 +30,19 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        _gameManager = GameManager.instance;
+        _uiManager = UIManager.instance;
+        _rb = GetComponent<Rigidbody>();
+        _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         spawnZone = transform.GetChild(0).gameObject;
         _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
-        isActive = false;
-        _spriteRenderer.enabled = false;
         spawnZone.SetActive(false);
         health = enemyTypeData.maxHealth;
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        _rb = GetComponent<Rigidbody>();
+        _spriteRenderer.enabled = false;
+        isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
-        _agent = GetComponent<NavMeshAgent>();
 
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
@@ -54,7 +54,7 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if ((startSpawning && canInitiateSpawning ) || Input.GetKeyDown(KeyCode.T))
+        if (startSpawning && canInitiateSpawning)
         {
             GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>().BuildNavMesh();
             canInitiateSpawning = false;
@@ -104,7 +104,7 @@ public class Enemy : MonoBehaviour
         }
         
         //deals damage
-        if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0 && !_player.GetComponent<PlayerController>()._playerAttacks.isAttacking)
+        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking)
         {
             _gameManager.DealDamageToPlayer(enemyTypeData.damage);
         }

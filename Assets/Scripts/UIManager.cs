@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager instance;
+    
     private GameManager gameManager;
     private PlayerController _playerController;
     
@@ -34,11 +36,22 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
-        _playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
         playerControls = new PlayerControls();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mouseClick = playerControls.Menus.MouseClick;
+    }
+
+    private void Start()
+    {
+        _objectsManager = ObjectsManager.instance;
+        _playerController = PlayerController.instance;
+        gameManager = GameManager.instance;
     }
 
     void Update()

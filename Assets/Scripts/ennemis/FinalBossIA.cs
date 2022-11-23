@@ -123,7 +123,8 @@ public class FinalBossIA : MonoBehaviour
     }
     void Update()
     {
-        _playerDist = (_player.transform.position - roomCenter).magnitude;
+        _playerDist = (_player.transform.position - transform.position).magnitude;
+        Debug.Log(_playerDist);
         H_LaserCheck();
         CircleManagement();
     }
@@ -238,11 +239,13 @@ public class FinalBossIA : MonoBehaviour
         _H_LaserWarning.SetActive(false);
         //laser 
         H_LaserActive = true;
+        H_LaserVfx.gameObject.SetActive(true);
         H_LaserVfx.Play();
         yield return new WaitForSeconds(2);
         H_LaserActive = false;
         rockPrefab.SetActive(false);
         yield return new WaitForSeconds(values.m_laserCooldown);
+        H_LaserVfx.gameObject.SetActive(false);
         StartCoroutine(ChooseNextAttack());    
     }
     IEnumerator ChooseNextAttack()
@@ -268,11 +271,8 @@ public class FinalBossIA : MonoBehaviour
 
         yield return new WaitForSeconds(attackCooldown);
 
-        float meleeRange = 15;
+        float meleeRange = 25;
         float handsAvailable = 2;
-        StartCoroutine(H_Laser());
-        yield break;
-        
         
         //---------------------checks before if it must shoot the Huge Laser
         if (healthRatio is < 0.66f and > 0.33f && _canActiveFirstLaser)
@@ -293,7 +293,7 @@ public class FinalBossIA : MonoBehaviour
         if (handAttackCount < 4 && handsAvailable != 0)
         {
             //checks distance
-            if (_playerDist > meleeRange)
+            if (_playerDist < meleeRange)
             {
                 //plays either spawn or claw
                 int randomizeAttack = Random.Range(0, 2);

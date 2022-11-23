@@ -14,9 +14,6 @@ public class PlayerAttacks : MonoBehaviour
     private float _attackMultiplier = 1;
     private bool _isMouseHolding;
     public float smashGauge;
-    [HideInInspector] public bool isMasterSword;
-    [HideInInspector] public bool canRepel;
-    [HideInInspector] public bool noPet;
     [HideInInspector] public bool isAttacking;
     private int _comboCounter;
     private Vector3 _attackDir;

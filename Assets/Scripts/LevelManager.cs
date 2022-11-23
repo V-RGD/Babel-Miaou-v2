@@ -11,7 +11,6 @@ public class LevelManager : MonoBehaviour
     [Header("Generic Prefabs")]
     public GameObject[] basicEnemies;
     public GameObject[] miniBosses;
-    public GameObject finalBoss;
     public GameObject chest; 
     public GameObject shop;
     public GameObject door;
@@ -20,7 +19,7 @@ public class LevelManager : MonoBehaviour
     public float populationGrowthFactor = 0.5f; //used for enemy population increase over time -- enemyspawnfactor
 
     public float roomSize;
-    public int[] spawnMatrixUnlock = new int[5]; //--- spawnMatrixUnlock -- serves to tweak the number of rooms needed to unlock new enemies
+    public int[] spawnMatrixUnlock = new int[4]; //--- spawnMatrixUnlock -- serves to tweak the number of rooms needed to unlock new enemies
     public List<GameObject> roomList;
     public GameObject entrance;
     public GameObject exit;

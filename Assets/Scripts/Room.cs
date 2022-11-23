@@ -35,23 +35,22 @@ public class Room : MonoBehaviour
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
-    void Awake()
+    
+
+    private void Start()
     {
-        // component assignations
+        //component assignations
         _player = GameObject.Find("Player");
-        _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+        _lm = LevelManager.instance;
+        _dunGen = DunGen.instance;
+        _objectsManager = ObjectsManager.instance;
         enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
         _roomInfo = GetComponent<RoomInfo>();
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
-    }
-
-    private void Start()
-    {
+        
         RoomType();
         //PropsSpawn();
         DoorSpawn();
@@ -74,54 +73,12 @@ public class Room : MonoBehaviour
         if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType == 1)
         {
             _canActivateEnemies = false;
+            DoorLock();
             StartCoroutine(ActivateAllEnemies());
         }
         
         CheckPlayerPresence();
     }
-
-    #region AutoWalk
-    /*
-    void EntryWalk()
-    {
-        //place player accordingly to last door taken
-        if (currentRoom == 0)
-        {
-            playerSpawnPoint = transform.position;
-            Debug.Log("this is the first room");
-        }
-        
-        else
-        {
-            Debug.Log("this is the" + currentRoom + "room");
-            //player.transform.position = _dunGen.enterPos;
-        }
-    }
-    
-    void ExitWalk()
-    {
-        if (lastDoorPos == 1)
-        {
-            exitPoint = transform.position + Vector3.left * 30;
-            enterPoint = transform.position + Vector3.right * 30;
-        }
-        if (lastDoorPos == 2)
-        {
-            exitPoint = transform.position + Vector3.forward * 30;
-            enterPoint = transform.position + Vector3.back * 30;
-        }
-        if (lastDoorPos == 3)
-        {
-            exitPoint = transform.position + Vector3.right * 30;
-            enterPoint = transform.position + Vector3.left * 30;
-        }
-
-        //_dunGen.enterPos = enterPoint;
-        StartCoroutine(WalkToPoint());
-    }
-    */
-    #endregion
-    
     void EnemyGeneration()
     {
         //decides the number of enemies to spawn : base population + difficulty increase + 20% uncertainty
@@ -261,11 +218,6 @@ public class Room : MonoBehaviour
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
             yield return new WaitForSeconds(0.5f);
         }
-
-        if (_objectsManager.foreignFriend)
-        {
-            StartCoroutine(ForeignFriend());
-        }
     }
 
     void DoorSpawn()
@@ -299,7 +251,7 @@ public class Room : MonoBehaviour
                 }
                 GameObject door = Instantiate(doorPrefab, spawnPoint + roomCenter.position, Quaternion.Euler(rotation));
                 door.transform.parent = gameObject.transform;
-                door.SetActive(true);
+                door.SetActive(false);
                 doorsObjects.Add(door);
             }
         }
@@ -310,6 +262,13 @@ public class Room : MonoBehaviour
         foreach (var door in doorsObjects)
         {
             door.SetActive(false);
+        }
+    }
+    void DoorLock()
+    {
+        foreach (var door in doorsObjects)
+        {
+            door.SetActive(true);
         }
     }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class LaserVisuals : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class LaserVisuals : MonoBehaviour
     public FinalBossValues values;
     private GameManager _gameManager;
     private GameObject _player;
+    public VisualEffect _laserVfx;
 
     private void Awake()
     {
@@ -70,7 +72,7 @@ public class LaserVisuals : MonoBehaviour
             if (_isLaserActive)
             {
                 //shoots laser
-                _laserMat.color = Color.red;
+                _lineRenderer.enabled = false;
                 //check if player touches laser
                 if (Physics.Raycast(transform.position, _laserDir, 4000, values.playerLayerMask))
                 {
@@ -95,10 +97,14 @@ public class LaserVisuals : MonoBehaviour
         //waits a bit for the player to avoid the laser
         yield return new WaitForSeconds(0.2f);
         //shoots laser
+        _laserVfx.gameObject.SetActive(true);
+        _laserVfx.Play();
         _isLaserActive = true;
+        _laserVfx.gameObject.transform.LookAt(_player.transform);
         //laser set inactive
         yield return new WaitForSeconds(values.m_laserLength);
         _isLaserActive = false;
+        _laserVfx.gameObject.SetActive(false);
         isLaserOn = false;
         _lineRenderer.enabled = false;
     }

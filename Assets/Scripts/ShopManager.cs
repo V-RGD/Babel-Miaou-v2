@@ -12,7 +12,7 @@ public class ShopManager : MonoBehaviour
     void Start()
     {
         _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
-        itemsToChooseFrom = _objectsManager.shopPool;
+        itemsToChooseFrom = _objectsManager.itemList;
         
         for (int i = 0; i < 3; i++)
         {

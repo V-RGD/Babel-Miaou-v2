@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.VFX;
 using Random = UnityEngine.Random;
 
 public class FinalBossIA : MonoBehaviour
@@ -73,18 +74,12 @@ public class FinalBossIA : MonoBehaviour
     #region H_Laser
     [Header("H_Laser")]
     public GameObject _H_LaserWarning;
-    public GameObject H_LaserObject;
-    public GameObject H_Laser_Scope;
+    public VisualEffect H_LaserVfx;
     public GameObject rockPrefab;
     public GameObject rockWarning;
-    private LineRenderer H_LaserLr;
-    private Material _H_LaserMat;
-    private float H_LaserTimer;
     private bool H_LaserActive;
-    private bool _canShootH_Laser;
-    private bool _H_LaserCharging;
-    private float _H_LaserTimer;
-    private Vector3 _H_LaserDir;
+    public bool _canActiveFirstLaser;
+    public bool _canActiveSecondLaser;
     #endregion
     private void Awake()
     {
@@ -99,8 +94,6 @@ public class FinalBossIA : MonoBehaviour
         _laserVisuals_R = transform.GetChild(1).GetComponent<LaserVisuals>();
         _laserVisuals_L.values = values;
         _laserVisuals_R.values = values;
-        H_LaserLr = GetComponent<LineRenderer>();
-        _H_LaserMat = H_LaserLr.material;
         _player = GameObject.Find("Player");
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
@@ -109,8 +102,11 @@ public class FinalBossIA : MonoBehaviour
         _gameManager = GameManager.instance;
 
         handAttackCount = 0;
+        _canActiveFirstLaser = true;
+        _canActiveSecondLaser = true;
         _navMeshSurface.BuildNavMesh();
-        
+        H_LaserVfx.Stop();
+
         for (int i = 0; i < values.eyeNumber; i++)
         {
             GameObject eye = Instantiate(eyeChainPrefab);
@@ -128,9 +124,8 @@ public class FinalBossIA : MonoBehaviour
     void Update()
     {
         _playerDist = (_player.transform.position - roomCenter).magnitude;
-        H_LaserVisuals();
+        H_LaserCheck();
         CircleManagement();
-        Debug.DrawRay(transform.position, _playerDir * 10000, Color.blue);
     }
     IEnumerator M_Laser()
     {
@@ -163,7 +158,7 @@ public class FinalBossIA : MonoBehaviour
         for (int i = 0; i < values.wandererSpawnAmount; i++)
         {
             //some wanderer appears next to the player
-            Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 0, Random.Range(-_roomSize, _roomSize)) + Vector3.up * 5;
+            Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 0, Random.Range(-_roomSize, _roomSize)) + Vector3.up * 0.8f;
             GameObject enemySpawning = Instantiate(wandererPrefab, spawnLocation, Quaternion.identity);
             enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(true);
@@ -228,7 +223,7 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator H_Laser()
     {
-        Vector3 rockSpawnPoint = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 0, Random.Range(-_roomSize, _roomSize));
+        Vector3 rockSpawnPoint = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 4, Random.Range(-_roomSize, _roomSize));
         //rock warning
         rockWarning.SetActive(true);
         rockWarning.transform.position = rockSpawnPoint;
@@ -236,18 +231,16 @@ public class FinalBossIA : MonoBehaviour
         //rock
         rockWarning.SetActive(false);
         rockPrefab.SetActive(true);
-        rockPrefab.transform.position = rockSpawnPoint + Vector3.up * 10;
+        rockPrefab.transform.position = rockSpawnPoint;
         //laser warning
         _H_LaserWarning.SetActive(true);
         yield return new WaitForSeconds(2);
         _H_LaserWarning.SetActive(false);
         //laser 
-        H_LaserLr.enabled = true;
-        H_LaserTimer = 0;
         H_LaserActive = true;
-        yield return new WaitForSeconds(1);
+        H_LaserVfx.Play();
+        yield return new WaitForSeconds(2);
         H_LaserActive = false;
-        H_LaserLr.enabled = false;
         rockPrefab.SetActive(false);
         yield return new WaitForSeconds(values.m_laserCooldown);
         StartCoroutine(ChooseNextAttack());    
@@ -257,12 +250,12 @@ public class FinalBossIA : MonoBehaviour
         float attackCooldown;
         //determines attack cooldown
         float healthRatio = _health / _maxHealth;
-        if (healthRatio > _maxHealth * 0.66f)
+        if (healthRatio > 0.66f)
         {
             //if first phase
             attackCooldown = 3;
         }
-        else if (healthRatio > _maxHealth * 0.33f)
+        else if (healthRatio > 0.33f)
         {
             //secondPhase
             attackCooldown = 2.5f;
@@ -277,14 +270,25 @@ public class FinalBossIA : MonoBehaviour
 
         float meleeRange = 15;
         float handsAvailable = 2;
-
-        if (_canShootH_Laser)
-        {
-            _canShootH_Laser = false;
-            StartCoroutine(H_Laser());
-            //shoots laser in priority
-        }
+        StartCoroutine(H_Laser());
+        yield break;
         
+        
+        //---------------------checks before if it must shoot the Huge Laser
+        if (healthRatio is < 0.66f and > 0.33f && _canActiveFirstLaser)
+        {
+            //if first phase
+            _canActiveFirstLaser = false;
+            StartCoroutine(H_Laser());
+            yield break;
+        }
+        if (healthRatio < 0.33f && _canActiveSecondLaser)
+        {
+            //secondPhase
+            _canActiveSecondLaser = false;
+            StartCoroutine(H_Laser());
+            yield break;
+        }
         //if attack counter inferior to the required amount to play body attacks, and at least one hand is available, plays hand attack
         if (handAttackCount < 4 && handsAvailable != 0)
         {
@@ -308,7 +312,6 @@ public class FinalBossIA : MonoBehaviour
                 //spams lasers
                 StartCoroutine(M_Laser());
             }
-
             //adds one to the counter
             handAttackCount++;
         }
@@ -329,42 +332,20 @@ public class FinalBossIA : MonoBehaviour
             }
         }
     }
-    void H_LaserVisuals()
+    void H_LaserCheck()
     {
         if (H_LaserActive)
         {
-            H_LaserTimer += Time.deltaTime;
-            H_LaserObject.transform.rotation = Quaternion.Euler(0, -70 * (1 + -2 * H_LaserTimer), 0);
-            //updates position
-            _H_LaserDir = (H_Laser_Scope.transform.position - transform.position).normalized;
-            _H_LaserMat.color = Color.magenta;
-                
-            //updates laser position
-            Vector3 hitPoint;
+            //checks if players is in safe zone
             RaycastHit hit;
-            H_Laser_Scope.transform.position =
-                new Vector3(H_Laser_Scope.transform.position.x, _player.transform.position.y , H_Laser_Scope.transform.position.z);
-            
-            //check if a wall is in between laser
-            if (Physics.Raycast(H_LaserObject.transform.position, _H_LaserDir, out hit, 1000, values.wallLayerMask))
+            if (Physics.Raycast(transform.position, _player.transform.position - transform.position, out hit,4000))
             {
-                hitPoint = hit.point;
-            }
-            else
-            {
-                hitPoint = transform.position + _H_LaserDir.normalized * 200;
-            }
-            
-            H_LaserLr.SetPosition(0, transform.position);
-            H_LaserLr.SetPosition(1, hitPoint);
-
-            //check if player touches laser
-            if (Physics.Raycast(H_LaserObject.transform.position, _H_LaserDir, (hitPoint - H_LaserObject.transform.position).magnitude, values.playerLayerMask))
-            {
-                //deals damage
-                _gameManager.DealDamageToPlayer(values.m_laserDamage);
-                //can't touch laser twice
-            }
+                if (hit.collider.gameObject.CompareTag("Player"))
+                {
+                    //deals damage
+                    _gameManager.DealDamageToPlayer(values.hugeLaserDamage);
+                }
+            } 
         }
     }
     void CircleManagement()
@@ -389,7 +370,6 @@ public class FinalBossIA : MonoBehaviour
             }
         }
     }
-
     void TakeDamage(float damageDealt) //when enemy takes hit
     {
         //clamps damage to an int (security)
@@ -397,16 +377,13 @@ public class FinalBossIA : MonoBehaviour
         //applies damage
         _health -= damage;
         _gameManager._cmShake.ShakeCamera(4, .1f);
-        Debug.Log(damage);
         healthBar.sizeDelta = new Vector2(1323.4f * _health / _maxHealth, 12.95f);
     }
-    
     private void OnTriggerEnter(Collider other)
     {
         //if player hit
         if (other.CompareTag("PlayerAttack"))
         {
-            Debug.Log("detected");
             TakeDamage(other.GetComponent<ObjectDamage>().damage);
         }
     }

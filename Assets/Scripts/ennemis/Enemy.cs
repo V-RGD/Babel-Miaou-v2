@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 public class Enemy : MonoBehaviour
 {
@@ -16,13 +17,13 @@ public class Enemy : MonoBehaviour
 
     private GameObject _player;
     public GameObject healthSlider;
-    private GameObject spawnZone;
     public BoxCollider mainCollider;
     private Rigidbody _rb;
 
     private GameManager _gameManager;
     private UIManager _uiManager;
-    private SpriteRenderer _spriteRenderer;
+    public GameObject sprite;
+    public VisualEffect spawnVfx;
     public EnemyType enemyTypeData;
     private NavMeshAgent _agent;
 
@@ -35,11 +36,8 @@ public class Enemy : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
-        spawnZone = transform.GetChild(0).gameObject;
-        _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
-        spawnZone.SetActive(false);
         health = enemyTypeData.maxHealth;
-        _spriteRenderer.enabled = false;
+        sprite.SetActive(false);
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
@@ -71,18 +69,17 @@ public class Enemy : MonoBehaviour
 
     IEnumerator EnemyApparition()
     {
-        _spriteRenderer.enabled = false;
-        //spawn zone appears
-        spawnZone.SetActive(true);
+        sprite.SetActive(false);
         //vfx plays
+        spawnVfx.Play();
+        yield return new WaitForSeconds(1);
+        sprite.SetActive(true);
         yield return new WaitForSeconds(2);
         //then enemy spawns
-        spawnZone.SetActive(false);
         _agent.enabled = true;
         _rb.useGravity = true;
         mainCollider.enabled = true;
         isActive = true;
-        _spriteRenderer.enabled = true;
     }
     
     private void OnTriggerEnter(Collider other)

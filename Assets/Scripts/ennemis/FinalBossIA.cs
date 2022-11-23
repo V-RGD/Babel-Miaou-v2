@@ -396,20 +396,7 @@ public class FinalBossIA : MonoBehaviour
         int damage = Mathf.CeilToInt(damageDealt);
         //applies damage
         _health -= damage;
-        // _gameManager._cmShake.ShakeCamera(5, .1f);
-        //
-        // switch (_gameManager._playerAttacks.comboState)
-        // {
-        //     case PlayerAttacks.ComboState.SimpleAttack:
-        //         _gameManager._cmShake.ShakeCamera(2, .1f);
-        //         break;
-        //     case PlayerAttacks.ComboState.ReverseAttack:
-        //         _gameManager._cmShake.ShakeCamera(2, .1f);
-        //         break;
-        //     case PlayerAttacks.ComboState.SpinAttack:
-        //         _gameManager._cmShake.ShakeCamera(2, .1f);
-        //         break;
-        // }
+        _gameManager._cmShake.ShakeCamera(4, .1f);
         Debug.Log(damage);
         healthBar.sizeDelta = new Vector2(1323.4f * _health / _maxHealth, 12.95f);
     }

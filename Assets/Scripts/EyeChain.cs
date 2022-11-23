@@ -13,6 +13,7 @@ public class EyeChain : MonoBehaviour
     [HideInInspector]public FinalBossIA ia;
     private LayerMask playerLayerMask;
     public bool isExternal;
+    private bool _isActive;
     public GameObject laserVisual;
 
     private void Start()
@@ -21,6 +22,21 @@ public class EyeChain : MonoBehaviour
         if (isExternal)
         {
             range = 0;
+        }
+    }
+
+    private void Update()
+    {
+        if (_isActive)
+        {
+            foreach (var eye in connectedToMe)
+            {
+                if (Physics.Raycast(transform.position, eye.transform.position - transform.position, (eye.transform.position - transform.position).magnitude, playerLayerMask))
+                {
+                    //detects player collision
+                    GameManager.instance.DealDamageToPlayer(ia.values.eyesDamage);
+                }
+            }
         }
     }
 
@@ -89,8 +105,10 @@ public class EyeChain : MonoBehaviour
             laser.GetComponent<VisualEffect>().Stop();
             laser.GetComponent<VisualEffect>().Play();
         }
-        yield return new WaitForSeconds(2);
 
+        _isActive = true;
+        yield return new WaitForSeconds(2);
+        _isActive = false;
         //resets all values for next attack
         foreach (var line in lrList)
         {

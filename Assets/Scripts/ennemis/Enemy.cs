@@ -71,6 +71,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator EnemyApparition()
     {
+        _spriteRenderer.enabled = false;
         //spawn zone appears
         spawnZone.SetActive(true);
         //vfx plays

@@ -33,7 +33,8 @@ public class Chest : MonoBehaviour
     IEnumerator ChestLoot()
     {
         //spawns a random item between items, spells, or loot
-        int randLoot = Random.Range(0, 100);
+        int randLoot = 10;
+        //int randLoot = Random.Range(0, 100);
         if (randLoot <= 15)
         {
             GameObject item = Instantiate(objectManager.objectTemplate, transform.position, quaternion.identity);

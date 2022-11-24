@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
     public int health;
     public int healthBonus;
 
-    public int currentRoom;
+    public int playerRoom;
     public bool isDead;
     private bool isFreezed;
 
@@ -118,22 +119,30 @@ public class GameManager : MonoBehaviour
         if (enemy.health - damage <= 0)
         {
             _objectsManager.OnEnemyKill();
+            enemy.Death();
         }
-        //applies damage
-        enemy.health -= damage;
-        _cmShake.ShakeCamera(5, .1f);
-        
-        switch (_playerAttacks.comboState)
+        else
         {
-            case PlayerAttacks.ComboState.SimpleAttack:
-                _cmShake.ShakeCamera(2, .1f);
-                break;
-            case PlayerAttacks.ComboState.ReverseAttack:
-                _cmShake.ShakeCamera(2, .1f);
-                break;
-            case PlayerAttacks.ComboState.SpinAttack:
-                _cmShake.ShakeCamera(2, .1f);
-                break;
+            //applies damage
+            if (_objectsManager.killingSpreeTimer > 0)
+            {
+                damage++;
+            }
+            enemy.health -= damage;
+            _cmShake.ShakeCamera(5, .1f);
+            switch (_playerAttacks.comboState)
+            {
+                case PlayerAttacks.ComboState.SimpleAttack:
+                    _cmShake.ShakeCamera(2, .1f);
+                    break;
+                case PlayerAttacks.ComboState.ReverseAttack:
+                    _cmShake.ShakeCamera(2, .1f);
+                    break;
+                case PlayerAttacks.ComboState.SpinAttack:
+                    _cmShake.ShakeCamera(2, .1f);
+                    break;
+            }
+            enemy.SliderUpdate();
         }
     }
     

@@ -17,6 +17,7 @@ public class Room : MonoBehaviour
     private LevelManager _lm;
     private UIManager _uiManager;
     private DunGen _dunGen;
+    private GameManager _gameManager;
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
     [SerializeField]private Transform roomCenter;
@@ -27,6 +28,7 @@ public class Room : MonoBehaviour
 
     //values
     private GameObject _player;
+    [SerializeField]private GameObject visuals;
     [SerializeField]private GameObject empty;
     [HideInInspector]public GameObject enemyGroup;
     private int _enemiesRemaining;
@@ -35,25 +37,26 @@ public class Room : MonoBehaviour
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
-    
 
-    private void Start()
+    private IEnumerator Start()
     {
         //component assignations
         _player = GameObject.Find("Player");
         _lm = LevelManager.instance;
         _dunGen = DunGen.instance;
         _objectsManager = ObjectsManager.instance;
+        _gameManager = GameManager.instance;
         enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
         _roomInfo = GetComponent<RoomInfo>();
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
-        
+
+        DoorSpawn();
+        yield return new WaitUntil(()=> _dunGen.finishedGeneration);
         RoomType();
         //PropsSpawn();
-        DoorSpawn();
     }
 
     void Update()
@@ -78,6 +81,7 @@ public class Room : MonoBehaviour
         }
         
         CheckPlayerPresence();
+        //ActiveEffects();
     }
     void EnemyGeneration()
     {
@@ -190,6 +194,7 @@ public class Room : MonoBehaviour
 
     void CheckPlayerPresence()
     {
+        _gameManager.playerRoom = currentRoom;
         var position = roomCenter.position;
         var roomDetectionXMax = position.x + _lm.roomSize * RoomDetectZoneSize;
         var roomDetectionXMin = position.x - _lm.roomSize * RoomDetectZoneSize;
@@ -213,9 +218,10 @@ public class Room : MonoBehaviour
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
-            enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().enabled = true;
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-            enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
+            Enemy enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>();
+            enemy.enabled = true;
+            enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -272,16 +278,21 @@ public class Room : MonoBehaviour
         }
     }
 
-    IEnumerator ForeignFriend()
-    {
-        yield return new WaitForSeconds(2);
-        int rand = Random.Range(0, enemyGroup.transform.childCount);
-        Destroy(enemyGroup.transform.GetChild(rand));
-    }
-
     IEnumerator PlacePlayerAtSpawnPoint()
     {
         yield return new WaitForSeconds(0.5f);
         _player.transform.position = roomCenter.transform.position + Vector3.up * 1;
+    }
+
+    void ActiveEffects()
+    {
+        if (_gameManager.playerRoom == currentRoom || _gameManager.playerRoom == currentRoom + 1 || _gameManager.playerRoom == currentRoom - 1)
+        {
+            visuals.SetActive(true);
+        }
+        else
+        {
+            visuals.SetActive(false);
+        }
     }
 }

@@ -161,11 +161,11 @@ public class FinalBossIA : MonoBehaviour
             //some wanderer appears next to the player
             Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 0, Random.Range(-_roomSize, _roomSize)) + Vector3.up * 0.8f;
             GameObject enemySpawning = Instantiate(wandererPrefab, spawnLocation, Quaternion.identity);
-            enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(true);
-            enemySpawning.GetComponent<Enemy>().enabled = true;
-            enemySpawning.GetComponent<EnemyDamage>().enabled = true;
-            enemySpawning.GetComponent<Enemy>().startSpawning = true;
+            Enemy enemy = enemySpawning.GetComponent<Enemy>();
+            enemy.room = gameObject;
+            enemy.enabled = true;
+            enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(values.wandererSpawnInterval);
         }
         yield return new WaitForSeconds(2);

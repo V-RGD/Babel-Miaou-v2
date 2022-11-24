@@ -13,11 +13,13 @@ public class PlayerAttacks : MonoBehaviour
     public float _comboTimer;
     private float _attackMultiplier = 1;
     private bool _isMouseHolding;
+    private bool _rightMouseHolding;
     public float smashGauge;
     [HideInInspector] public bool isAttacking;
     private int _comboCounter;
     private Vector3 _attackDir;
     private InputAction _mouseHold;
+    private InputAction _rightClick;
     private PlayerControls _playerControls;
 
     #region Attack Values
@@ -102,8 +104,8 @@ public class PlayerAttacks : MonoBehaviour
     {
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
         {
-            AttackManagement();
             Timer();
+            RightClickAttackManagement();
         }
     }
 
@@ -232,14 +234,14 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = true;
         isAttacking = false;
     }
-    void MouseHold(InputAction.CallbackContext context)
-        {
-            _isMouseHolding = true;
-        }
-    void MouseReleased(InputAction.CallbackContext context)
-        {
-            _isMouseHolding = false;
-        }
+    void RightMouseHold(InputAction.CallbackContext context)
+    {
+        _rightMouseHolding = true;
+    }
+    void RightMouseReleased(InputAction.CallbackContext context)
+    {
+        _rightMouseHolding = false;
+    }
     #region Timer
 
     private void Timer()
@@ -253,86 +255,96 @@ public class PlayerAttacks : MonoBehaviour
             }
         }
     #endregion
-    /*
-    IEnumerator Smash()
-        {
-            SwitchState(PlayerController.PlayerStates.Attack);
-            //determines attack length, damage, hitbox, force to add
-            GameObject hitbox = _smashHitBox;
-            float damage = attackStat * smashDamageMultiplier;
-            float cooldown = smashCooldown;
-            float force = smashForce;
-
-            //determine ou l'attaque va se faire
-            _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
-            //stops combo
-            _comboCounter = 0;
-            //stops movement
-            canMove = false;
-            //add current damage stat to weapon
-            hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
-            //adds force to simulate inertia
-            _rb.velocity = Vector3.zero;
-            Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
-            //_rb.AddForce(pushedDir * force, ForceMode.Impulse);
-            //warmup
-            yield return new WaitForSeconds(smashWarmup);
-            //actives weapon
-            hitbox.SetActive(true);
-            //stops player
-            _rb.velocity = Vector3.zero;
-            //plays animation
-            
-            //waits cooldown depending on the attack used
-            yield return new WaitForSeconds(cooldown);
-            //restores speed
-            canMove = true;
-            //disables hitbox
-            hitbox.SetActive(false);
-            SwitchState(PlayerController.PlayerStates.Run);
-        }*/
-    private void AttackManagement()
+    
+    // IEnumerator Smash()
+    //     {
+    //         SwitchState(PlayerController.PlayerStates.Attack);
+    //         //determines attack length, damage, hitbox, force to add
+    //         GameObject hitbox = _smashHitBox;
+    //         float damage = attackStat * smashDamageMultiplier;
+    //         float cooldown = smashCooldown;
+    //         float force = smashForce;
+    //
+    //         //determine ou l'attaque va se faire
+    //         _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
+    //         //stops combo
+    //         _comboCounter = 0;
+    //         //stops movement
+    //         canMove = false;
+    //         //add current damage stat to weapon
+    //         hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
+    //         //adds force to simulate inertia
+    //         _rb.velocity = Vector3.zero;
+    //         Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
+    //         //_rb.AddForce(pushedDir * force, ForceMode.Impulse);
+    //         //warmup
+    //         yield return new WaitForSeconds(smashWarmup);
+    //         //actives weapon
+    //         hitbox.SetActive(true);
+    //         //stops player
+    //         _rb.velocity = Vector3.zero;
+    //         //plays animation
+    //         
+    //         //waits cooldown depending on the attack used
+    //         yield return new WaitForSeconds(cooldown);
+    //         //restores speed
+    //         canMove = true;
+    //         //disables hitbox
+    //         hitbox.SetActive(false);
+    //         SwitchState(PlayerController.PlayerStates.Run);
+    //     }
+        private void NormalAttackManagement(InputAction.CallbackContext context)
          {
-             if (_isMouseHolding)
+             if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
              {
-                 _pc.canMove = false;
-                 _rb.velocity = Vector3.zero;
-                 //charges smash gauge
-                 smashGauge += Time.deltaTime;
-             }
-             else
-             {
-                 //if initial input
-                 if (smashGauge > 0)
-                 {
-                     //on release, if a little bit hold, attacks
-                     if (smashGauge <= 0.3)
-                     {
-                         _pc.canMove = true;
-                         StopAllCoroutines();
-                         StartCoroutine(AttackCoroutine());
-                     }
-                     //if too long, smash or pass (lol)
-                     else 
-                     {
-                         if (smashGauge == 1)
-                         {
-                             //StartCoroutine(Smash());
-                         }
-                         else
-                         {
-                             _pc.canMove = true;
-                         }
-                     }
-                 }
-                 smashGauge = 0;
-             }
-
-             if (smashGauge >= 1)
-             {
-                 smashGauge = 1;
+                 _pc.canMove = true;
+                 StopAllCoroutines();
+                 StartCoroutine(AttackCoroutine());
              }
          }
+    
+    private void RightClickAttackManagement()
+    {
+        if (_rightMouseHolding)
+        {
+            _pc.canMove = false;
+            _rb.velocity = Vector3.zero;
+            //charges smash gauge
+            smashGauge += Time.deltaTime;
+        }
+        else
+        {
+            //if initial input
+            if (smashGauge > 0)
+            {
+                //on release, if a little bit hold, attacks
+                if (smashGauge <= 0.3)
+                {
+                    _pc.canMove = true;
+                    StopAllCoroutines();
+                    StartCoroutine(AttackCoroutine());
+                }
+                //if too long, smash
+                else 
+                {
+                    if (smashGauge == 1)
+                    {
+                        //StartCoroutine(Smash());
+                    }
+                    else
+                    {
+                        _pc.canMove = true;
+                    }
+                }
+            }
+            smashGauge = 0;
+        }
+
+        if (smashGauge >= 1)
+        {
+            smashGauge = 1;
+        }
+    }
 
     int GetAttackAnimation(Vector3 playerDir)
     {
@@ -378,7 +390,6 @@ public class PlayerAttacks : MonoBehaviour
             ComboState.SpinAttack => Spin_Attack,
             _ => Idle
         };
-        Debug.Log(comboState);
         return state;
     }
 
@@ -386,13 +397,18 @@ public class PlayerAttacks : MonoBehaviour
     private void OnEnable()
     {
         _mouseHold = _playerControls.Player.AttackHold;
-        _mouseHold.started += MouseHold;
-        _mouseHold.canceled += MouseReleased;
+        _mouseHold.performed += NormalAttackManagement;
         _mouseHold.Enable();
+        
+        _rightClick = _playerControls.Player.RightClick;
+        _rightClick.started += RightMouseHold;
+        _rightClick.canceled += RightMouseReleased;
+        _rightClick.Enable();
     }
     private void OnDisable()
     {
         _mouseHold.Disable();
+        _rightClick.Disable();
     }
     #endregion
 

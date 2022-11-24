@@ -56,7 +56,7 @@ public class ObjectsManager : MonoBehaviour
     private float noHitSpeedRunDamageMultiplier;
     #endregion
     #region Timers
-    [SerializeField] private float killingSpreeTimer;
+    [HideInInspector] public float killingSpreeTimer;
     [SerializeField] private float sacredCrossTimer;
     [HideInInspector] public bool noHitStreak;
     #endregion
@@ -108,7 +108,7 @@ public class ObjectsManager : MonoBehaviour
             case 6 : noHit = true; break;
         }
         UiItemBoxesUpdate();
-        UpdateStats();
+        //UpdateStats();
     }
     public void OnObjectUnEquip(int item)
     {
@@ -125,21 +125,11 @@ public class ObjectsManager : MonoBehaviour
             case 6 : noHit = false; break;
         }
         UiItemBoxesUpdate();
-        UpdateStats();
+        //UpdateStats();
     }
     void UpdateStats()
     {
         //killing spree
-        if (killingSpreeTimer > 0)
-        {
-            //if just killed an enemy, increases damage
-            killingSpreeDamage = gameVariables.killingSpreeDamage;
-        }
-        else
-        {
-            killingSpreeDamage = 0;
-        }
-
         if (noHitStreak)
         {
             noHitSpeedRunDamageMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;

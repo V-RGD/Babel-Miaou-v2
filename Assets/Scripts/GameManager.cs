@@ -124,9 +124,12 @@ public class GameManager : MonoBehaviour
         else
         {
             //applies damage
+            if (_objectsManager.killingSpreeTimer > 0)
+            {
+                damage++;
+            }
             enemy.health -= damage;
             _cmShake.ShakeCamera(5, .1f);
-        
             switch (_playerAttacks.comboState)
             {
                 case PlayerAttacks.ComboState.SimpleAttack:

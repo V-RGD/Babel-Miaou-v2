@@ -9,8 +9,6 @@ using UnityEngine.VFX;
 public class Enemy : MonoBehaviour
 {
     public float health;
-    public bool startSpawning;
-    private bool canInitiateSpawning = true;
     public bool isActive;
     private bool _isTank;
     private float _stunCounter;
@@ -18,6 +16,7 @@ public class Enemy : MonoBehaviour
     private GameObject _player;
     public GameObject healthSlider;
     public BoxCollider mainCollider;
+    public BoxCollider supportCollider;
     private Rigidbody _rb;
 
     private GameManager _gameManager;
@@ -41,6 +40,7 @@ public class Enemy : MonoBehaviour
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
+        supportCollider.enabled = false;
 
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
@@ -50,24 +50,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (startSpawning && canInitiateSpawning)
-        {
-            GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>().BuildNavMesh();
-            canInitiateSpawning = false;
-            StartCoroutine(EnemyApparition());
-        }
-        
-        if (health <= 0)
-        {
-            //dies
-            Death();
-        }
-        SliderUpdate();
-    }
-
-    IEnumerator EnemyApparition()
+    public IEnumerator EnemyApparition()
     {
         sprite.SetActive(false);
         //vfx plays
@@ -79,7 +62,9 @@ public class Enemy : MonoBehaviour
         _agent.enabled = true;
         _rb.useGravity = true;
         mainCollider.enabled = true;
+        supportCollider.enabled = true;
         isActive = true;
+        
     }
     
     private void OnTriggerEnter(Collider other)
@@ -108,14 +93,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void TakeDamage(float damageTaken)
-    {
-        //receives damage and applies object effects accordingly
-        health -= damageTaken;
-        //_stunCounter = enemyTypeData.stunLenght;
-    }
-
-    void Death()
+    public void Death()
     {
         for (int i = 0; i < enemyTypeData.eyesDropped; i++)
         {
@@ -124,7 +102,7 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
     
-    void SliderUpdate()
+   public void SliderUpdate()
     {
         if (health >= enemyTypeData.maxHealth)
         {

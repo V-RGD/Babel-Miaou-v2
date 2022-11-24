@@ -21,6 +21,8 @@ public class DunGen : MonoBehaviour
     private readonly int[,] _roomNumberMap = new int[100, 100];
     private int _roomToSpawnNumber = 1;
     public int dungeonSize;
+    [SerializeField]private bool spawnBranches;
+    [HideInInspector]public bool finishedGeneration;
 
     //components
     private NavMeshSurface _navMeshSurface;
@@ -108,79 +110,82 @@ public class DunGen : MonoBehaviour
         }
         dungeonSize -= 1;
 
-        
-        #region Branches
-        //adds multiple branches
-        for (int a = 0; a < 100; a++)
+
+        if (spawnBranches)
         {
-            for (int b = 0; b < 100; b++)
+            #region Branches
+            //adds multiple branches
+            for (int a = 0; a < 100; a++)
             {
-                //checks if the location has a room prepared
-                if (_map[a, b] == 1)
+                for (int b = 0; b < 100; b++)
                 {
-                    int randBranch = Random.Range(0, 100);
-                    if (randBranch > branchProba)
+                    //checks if the location has a room prepared
+                    if (_map[a, b] == 1)
                     {
-                        //for each exit, check if a room is prepared
-                        List<int> potentialDirections = new List<int>();
-                        if (_map[a + 1, b] == 0)
+                        int randBranch = Random.Range(0, 100);
+                        if (randBranch > branchProba)
                         {
-                            potentialDirections.Add(0);
-                        }
+                            //for each exit, check if a room is prepared
+                            List<int> potentialDirections = new List<int>();
+                            if (_map[a + 1, b] == 0)
+                            {
+                                potentialDirections.Add(0);
+                            }
         
-                        if (_map[a, b + 1] == 0)
-                        {
-                            potentialDirections.Add(1);
-                        }
+                            if (_map[a, b + 1] == 0)
+                            {
+                                potentialDirections.Add(1);
+                            }
         
-                        if (_map[a - 1, b] == 0)
-                        {
-                            potentialDirections.Add(2);
-                        }
+                            if (_map[a - 1, b] == 0)
+                            {
+                                potentialDirections.Add(2);
+                            }
         
-                        if (_map[a, b - 1] == 0)
-                        {
-                            potentialDirections.Add(3);
-                        }
+                            if (_map[a, b - 1] == 0)
+                            {
+                                potentialDirections.Add(3);
+                            }
                         
-                        int branchOffsetX = 0;
-                        int branchOffsetY = 0;
+                            int branchOffsetX = 0;
+                            int branchOffsetY = 0;
         
-                        //adds a random one where available
-                        int randDir = potentialDirections[Random.Range(0, potentialDirections.Count)];
-                        switch (randDir)
-                        {
-                            case 0:
-                                _map[a + 1, b] = 1;
-                                _roomNumberMap[a + 1, b] = 999; 
-                                branchOffsetX = 1;
-                                break;
-                            case 1:
-                                _map[a, b + 1] = 1;
-                                branchOffsetY = 1;
-                                _roomNumberMap[a, b + 1] = 999;
-                                break;
-                            case 2:
-                                _map[a - 1, b] = 1;
-                                branchOffsetX = -1;
-                                _roomNumberMap[a - 1, b] = 999; 
-                                break;
-                            case 3:
-                                _map[a, b - 1] = 1;
-                                branchOffsetY = -1;
-                                _roomNumberMap[a, b - 1] = 999;
-                                break;
+                            //adds a random one where available
+                            int randDir = potentialDirections[Random.Range(0, potentialDirections.Count)];
+                            switch (randDir)
+                            {
+                                case 0:
+                                    _map[a + 1, b] = 1;
+                                    _roomNumberMap[a + 1, b] = 999; 
+                                    branchOffsetX = 1;
+                                    break;
+                                case 1:
+                                    _map[a, b + 1] = 1;
+                                    branchOffsetY = 1;
+                                    _roomNumberMap[a, b + 1] = 999;
+                                    break;
+                                case 2:
+                                    _map[a - 1, b] = 1;
+                                    branchOffsetX = -1;
+                                    _roomNumberMap[a - 1, b] = 999; 
+                                    break;
+                                case 3:
+                                    _map[a, b - 1] = 1;
+                                    branchOffsetY = -1;
+                                    _roomNumberMap[a, b - 1] = 999;
+                                    break;
+                            }
+        
+                            yield return new WaitForSeconds(0.01f);
+                            //GameObject roomChecker = Instantiate(branchCheck, new Vector3((a + branchOffsetX) * offset, 0, (b + branchOffsetY) * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(90, 0, 0));
+                            //roomChecker.SetActive(true);
                         }
-        
-                        yield return new WaitForSeconds(0.01f);
-                        //GameObject roomChecker = Instantiate(branchCheck, new Vector3((a + branchOffsetX) * offset, 0, (b + branchOffsetY) * offset) - new Vector3(5000, 0, 5000), Quaternion.Euler(90, 0, 0));
-                        //roomChecker.SetActive(true);
                     }
                 }
             }
+            #endregion
+            
         }
-        #endregion
-        
         
         #region instanciation
         //pour chaque salle définie, checker quelles sont les salles ajdacentes avec le systeme de tableau
@@ -251,7 +256,7 @@ public class DunGen : MonoBehaviour
         #endregion
         _navMeshSurface.BuildNavMesh();
         roomList.transform.Rotate(0, 45, 0);
-        
+        finishedGeneration = true;
     }
     #endregion
 }

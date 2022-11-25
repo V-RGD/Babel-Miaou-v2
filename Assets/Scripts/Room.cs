@@ -65,7 +65,12 @@ public class Room : MonoBehaviour
         if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 || Input.GetKeyDown(KeyCode.O))
         {
             _canChestSpawn = false;
-            chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+            //randomize chest spawn
+            int randChest = Random.Range(0, 100);
+            if (randChest < 15)
+            {
+                chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+            }
             DoorUnlock();
             if (roomType == 4)
             {
@@ -281,7 +286,7 @@ public class Room : MonoBehaviour
     IEnumerator PlacePlayerAtSpawnPoint()
     {
         yield return new WaitForSeconds(0.5f);
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 1;
+        _player.transform.position = roomCenter.transform.position + Vector3.up * 1.65f;
     }
 
     void ActiveEffects()

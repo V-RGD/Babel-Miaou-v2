@@ -15,7 +15,7 @@ public class GameVariables : ScriptableObject
     public float sacredCrossLength;
     public float noHitSpeedRunDamageMultiplier;
     public GameObject eyeCollector;
-    public float eyeCollectorCollectCeil;
+    public int eyeCollectorCollectCeil;
     public float catLuckResRate;
     public float catLuckResHp;
     public float killingSpreeLength;

@@ -254,9 +254,10 @@ public class DunGen : MonoBehaviour
             }
         }
         #endregion
-        _navMeshSurface.BuildNavMesh();
         roomList.transform.Rotate(0, 45, 0);
         finishedGeneration = true;
+        yield return new WaitUntil(() => finishedGeneration);
+        _navMeshSurface.BuildNavMesh();
     }
     #endregion
 }

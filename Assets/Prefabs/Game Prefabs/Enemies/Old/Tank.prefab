@@ -652,16 +652,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1146335262129589963}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9386125659fbb264692d28dc48617014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   health: 0
-  startSpawning: 0
   isActive: 0
   healthSlider: {fileID: 1146335260314898665}
   mainCollider: {fileID: 8342602100238776305}
+  supportCollider: {fileID: 0}
+  sprite: {fileID: 0}
+  spawnVfx: {fileID: 0}
   enemyTypeData: {fileID: 11400000, guid: 6fcf8dae56c3dfb4a93266ad4adb5bb9, type: 2}
   room: {fileID: 0}
 --- !u!114 &2895680658260073924
@@ -690,6 +692,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTank: 1
+  _animator: {fileID: 0}
+  currentAnimatorState: 0
 --- !u!1 &1146335262193248619
 GameObject:
   m_ObjectHideFlags: 0

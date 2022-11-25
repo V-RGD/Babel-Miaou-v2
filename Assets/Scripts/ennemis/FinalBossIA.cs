@@ -48,8 +48,9 @@ public class FinalBossIA : MonoBehaviour
     [Header("Claw")]
     public GameObject clawHitbox_L;
     public GameObject clawHitbox_R;
-    public GameObject clawWarning_L;
-    public GameObject clawWarning_R;
+    public VisualEffect clawFxL;
+    public VisualEffect clawFxR;
+    public GameObject clawWarning;
     #endregion
 
     #region Circle
@@ -100,6 +101,7 @@ public class FinalBossIA : MonoBehaviour
     void Start()
     {
         _gameManager = GameManager.instance;
+        healthBar.transform.parent.gameObject.SetActive(true);
 
         handAttackCount = 0;
         _canActiveFirstLaser = true;
@@ -140,17 +142,24 @@ public class FinalBossIA : MonoBehaviour
     IEnumerator ClawScratch()
     {
         //a warning sprite appears
-        clawWarning_L.SetActive(true);
-        clawWarning_R.SetActive(true);
+        clawWarning.SetActive(true);
         //both hand scratch the air
         yield return new WaitForSeconds(values.clawWarmup);
-        clawWarning_L.SetActive(false);
-        clawWarning_R.SetActive(false);
+        clawWarning.SetActive(false);
+        //left claw
         clawHitbox_L.SetActive(true);
-        clawHitbox_R.SetActive(true);
+        clawFxL.gameObject.SetActive(true);
+        clawFxL.Play();
         yield return new WaitForSeconds(0.5f);
+        //right claw
         clawHitbox_L.SetActive(false);
+        clawHitbox_R.SetActive(true);
+        clawFxR.gameObject.SetActive(true);
+        clawFxR.Play();
+        yield return new WaitForSeconds(0.5f);
         clawHitbox_R.SetActive(false);
+        clawFxL.gameObject.SetActive(false);
+        clawFxR.gameObject.SetActive(false);
         yield return new WaitForSeconds(2);
         StartCoroutine(ChooseNextAttack());
     }
@@ -202,7 +211,7 @@ public class FinalBossIA : MonoBehaviour
             //place l'oeil sur la ligne i, avec la position de la colonne aléatoire
             int row = possibleRows[Random.Range(0, possibleRows.Count)];
             possibleRows.Remove(row);
-            Vector3 placement = startPoint + new Vector3(i * _roomSize/values.eyeNumber, 1, row * _roomSize/values.eyeNumber);
+            Vector3 placement = startPoint + new Vector3(i * _roomSize * 2/values.eyeNumber, 1, row * _roomSize * 2/values.eyeNumber);
             eyeList[i].transform.position = placement;
             eyeList[i].SetActive(true);
             eyeChainRows.Add(row);
@@ -235,7 +244,7 @@ public class FinalBossIA : MonoBehaviour
         rockPrefab.transform.position = rockSpawnPoint;
         //laser warning
         _H_LaserWarning.SetActive(true);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(4);
         _H_LaserWarning.SetActive(false);
         //laser 
         H_LaserActive = true;
@@ -344,6 +353,7 @@ public class FinalBossIA : MonoBehaviour
                 {
                     //deals damage
                     _gameManager.DealDamageToPlayer(values.hugeLaserDamage);
+                    PlayerController.instance.invincibleCounter = 2;
                 }
             } 
         }

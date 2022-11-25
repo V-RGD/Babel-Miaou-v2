@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -12,14 +13,18 @@ public class Chest : MonoBehaviour
     private InputAction _collect;
     private GameObject _player;
     public GameObject messagePrompt;
-    public ObjectsManager objectManager;
+    private ObjectsManager objectManager;
 
     private void Awake()
     {
         _playerControls = new PlayerControls();
         _player = GameObject.Find("Player");
-        objectManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         _collect = _playerControls.Player.Collect;
+    }
+
+    private void Start()
+    {
+        objectManager = ObjectsManager.instance;
     }
 
     void Collect(InputAction.CallbackContext context)
@@ -33,8 +38,7 @@ public class Chest : MonoBehaviour
     IEnumerator ChestLoot()
     {
         //spawns a random item between items, spells, or loot
-        int randLoot = 10;
-        //int randLoot = Random.Range(0, 100);
+        int randLoot = Random.Range(0, 100);
         if (randLoot <= 15)
         {
             GameObject item = Instantiate(objectManager.objectTemplate, transform.position, quaternion.identity);

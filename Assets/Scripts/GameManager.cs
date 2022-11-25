@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private Room _room;
     public CinemachineShake _cmShake;
     [HideInInspector]public PlayerAttacks _playerAttacks;
+    public List<Transform> eyesInGame;
 
     public int money;
     public int maxHealth = 3;

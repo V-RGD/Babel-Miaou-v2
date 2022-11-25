@@ -164,7 +164,7 @@ public class Room : MonoBehaviour
         {
             case 0 : //start room
                 _lm.entrance.transform.position = roomCenter.position;
-                StartCoroutine(PlacePlayerAtSpawnPoint());
+                PlacePlayerAtSpawnPoint();
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -283,9 +283,8 @@ public class Room : MonoBehaviour
         }
     }
 
-    IEnumerator PlacePlayerAtSpawnPoint()
+    void PlacePlayerAtSpawnPoint()
     {
-        yield return new WaitForSeconds(0.5f);
         _player.transform.position = roomCenter.transform.position + Vector3.up * 1.65f;
     }
 

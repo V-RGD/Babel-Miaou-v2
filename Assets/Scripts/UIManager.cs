@@ -23,6 +23,8 @@ public class UIManager : MonoBehaviour
     public Sprite emptyHeart;
     public Image panel;
     public Image smashSlider;
+    public Animator hurtPanel;
+    public RectTransform lowHpPanel;
 
     [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
@@ -59,6 +61,23 @@ public class UIManager : MonoBehaviour
         SmashGauge();
     }
     //Barre de vie joueur 
+    public void HurtPanels()
+    {
+        //launches hurt anim
+        hurtPanel.SetTrigger("RedOut");
+        //updates low hp panel scale
+        float health = gameManager.health;
+        float maxHealth = gameManager.maxHealth;
+        if (health/maxHealth < 0.5f)
+        {
+            float panelScale = 1 + (3 * (health/maxHealth));
+            lowHpPanel.localScale = new Vector3(panelScale, panelScale, 1);
+        }
+        else
+        {
+            lowHpPanel.localScale = new Vector3(4, 4, 1);
+        }
+    }
     public void HealthBar(int health)
     {
         //gerer si le coeur est actif

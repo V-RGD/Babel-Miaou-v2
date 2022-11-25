@@ -114,6 +114,9 @@ public class GameManager : MonoBehaviour
     
     public void DealDamageToEnemy(float damageDealt, Enemy enemy) //when enemy takes hit
     {
+        //plays vfx
+        enemy.splashFX.gameObject.SetActive(true);
+        enemy.splashFX.Play();
         //clamps damage to an int (security)
         int damage = Mathf.CeilToInt(damageDealt);
         //applies killing effects
@@ -145,19 +148,5 @@ public class GameManager : MonoBehaviour
             }
             enemy.SliderUpdate();
         }
-    }
-    
-    public void DealDamageToEnemy(float damageDealt, Enemy enemy, float shakeValue, float shakeAmount) //when enemy takes hit
-    {
-        //clamps damage to an int (security)
-        int damage = Mathf.CeilToInt(damageDealt);
-        //applies killing effects
-        if (enemy.health - damage <= 0)
-        {
-            _objectsManager.OnEnemyKill();
-        }
-        //applies damage
-        enemy.health -= damage;
-        _cmShake.ShakeCamera(5, .1f);
     }
 }

@@ -11,6 +11,7 @@ public class FinalBossIA : MonoBehaviour
     public static FinalBossIA instance;
     
     #region Global Values
+
     [Header("Values")] 
     public float _maxHealth = 200;
     public float _health;
@@ -28,6 +29,7 @@ public class FinalBossIA : MonoBehaviour
     private GameObject leftHand;
     private GameObject rightHand;
     public RectTransform healthBar;
+    public ParticleSystem splashFX;
     #endregion
     
     #region M_Laser
@@ -382,6 +384,9 @@ public class FinalBossIA : MonoBehaviour
     }
     void TakeDamage(float damageDealt) //when enemy takes hit
     {
+        splashFX.gameObject.SetActive(true);
+        splashFX.Play();
+        
         //clamps damage to an int (security)
         int damage = Mathf.CeilToInt(damageDealt);
         //applies damage

@@ -25,6 +25,7 @@ public class Enemy : MonoBehaviour
     public VisualEffect spawnVfx;
     public EnemyType enemyTypeData;
     private NavMeshAgent _agent;
+    public ParticleSystem splashFX;
 
     [HideInInspector]public GameObject room;
 
@@ -37,6 +38,7 @@ public class Enemy : MonoBehaviour
         _player = GameObject.Find("Player");
         health = enemyTypeData.maxHealth;
         sprite.SetActive(false);
+        healthSlider.SetActive(false);
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
@@ -104,6 +106,7 @@ public class Enemy : MonoBehaviour
     
    public void SliderUpdate()
     {
+        healthSlider.SetActive(true);
         if (health >= enemyTypeData.maxHealth)
         {
             healthSlider.SetActive(false);

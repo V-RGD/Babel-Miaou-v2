@@ -87,7 +87,7 @@ public class ObjectsManager : MonoBehaviour
         GameObject littleShit = Instantiate(gameVariables.eyeCollector);
         eyeCollector = littleShit;
         AssignObjectInfos();
-        UpdateStats();
+        //UpdateStats();
 
         _player._playerAttacks.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;

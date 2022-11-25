@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
             _uiManager.HealthBar(health);
             _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
-            _cmShake.ShakeCamera(2, .1f);
+            _cmShake.ShakeCamera(8, .1f);
         }
     }
     

@@ -16,7 +16,7 @@ public class TpToBoss : MonoBehaviour
         //if finds player, tp to boss room
         if (other.CompareTag("Player"))
         {
-            SceneManager.LoadScene("BossRoom");
+            SceneManager.LoadScene("BossScene");
         }
     }
 }

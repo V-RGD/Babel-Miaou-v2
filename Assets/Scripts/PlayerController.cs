@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private float _speedFactor = 1;
     private int _dashesAvailable = 1;
     private int _dirCoef; //sprite direction
-    [HideInInspector] public float invincibleCounter;
+    public float invincibleCounter;
     [HideInInspector] public float invincibleTime;
     [HideInInspector] public float dashCooldownTimer;
     [HideInInspector] public float stunCounter;
@@ -264,14 +264,20 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         _dashesAvailable++;
         dashCooldownTimer = dashCooldownLenght;
+
+        if (invincibleCounter < dashLenght + 0.2f)
+        {
+            invincibleCounter = dashLenght + 0.2f;
+        }
+        
         SwitchState(PlayerStates.Run);
     }
     #endregion
     void JostickDir()
-        {
-            Vector2 inputDir = _move.ReadValue<Vector2>();
-            movementDir = new Vector2(inputDir.x, inputDir.y);
-        }
+    {
+        Vector2 inputDir = _move.ReadValue<Vector2>();
+        movementDir = new Vector2(inputDir.x, inputDir.y);
+    }
     
     #region InputSystemRequirements
     private void OnEnable()

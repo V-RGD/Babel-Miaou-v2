@@ -128,7 +128,6 @@ public class FinalBossIA : MonoBehaviour
     void Update()
     {
         _playerDist = (_player.transform.position - transform.position).magnitude;
-        Debug.Log(_playerDist);
         H_LaserCheck();
         CircleManagement();
     }
@@ -170,7 +169,7 @@ public class FinalBossIA : MonoBehaviour
         for (int i = 0; i < values.wandererSpawnAmount; i++)
         {
             //some wanderer appears next to the player
-            Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 0, Random.Range(-_roomSize, _roomSize)) + Vector3.up * 0.8f;
+            Vector3 spawnLocation = roomCenter + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 0, Random.Range(-_roomSize/2, _roomSize/2)) + Vector3.up * 0.8f;
             GameObject enemySpawning = Instantiate(wandererPrefab, spawnLocation, Quaternion.identity);
             enemySpawning.SetActive(true);
             Enemy enemy = enemySpawning.GetComponent<Enemy>();
@@ -235,7 +234,7 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator H_Laser()
     {
-        Vector3 rockSpawnPoint = roomCenter + new Vector3(Random.Range(-_roomSize, _roomSize), 4, Random.Range(-_roomSize, _roomSize));
+        Vector3 rockSpawnPoint = roomCenter + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 4, Random.Range(-_roomSize/2, _roomSize/2));
         //rock warning
         rockWarning.SetActive(true);
         rockWarning.transform.position = rockSpawnPoint;

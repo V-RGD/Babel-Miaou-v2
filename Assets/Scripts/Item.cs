@@ -42,14 +42,19 @@ public class Item : MonoBehaviour
     private void Awake()
     {
         playerControls = new PlayerControls();
+        canvas = GameObject.Find("UI Canvas");
         player = GameObject.Find("Player");
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        _menuManager = GameObject.Find("UIManager").GetComponent<MenuManager>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+    }
+
+    private void Start()
+    {
+        
+        gameManager = GameManager.instance;
+        _uiManager = UIManager.instance;
+        _menuManager = MenuManager.instance;
+        _objectsManager = ObjectsManager.instance;
         costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
         costPrompt.SetActive(false);
-        canvas = GameObject.Find("UI Canvas");
     }
 
 
@@ -138,11 +143,13 @@ public class Item : MonoBehaviour
     
     public void AccessToItemMenu()
     {
+        _objectsManager.uiItemBoxes[3].SetActive(false);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
         int newItem = objectID;
-        _objectsManager.itemObjectsInventory[3] = newItem;        //updates it's id
-        _objectsManager.uiItemBoxes[3].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
+        _objectsManager.itemObjectsInventory[3] = newItem;
+        //updates it's id
+        _objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
         _objectsManager.UiItemBoxesUpdate();
         Destroy(gameObject);
     }

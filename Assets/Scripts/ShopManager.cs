@@ -11,7 +11,7 @@ public class ShopManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+        _objectsManager = ObjectsManager.instance;
         itemsToChooseFrom = _objectsManager.itemList;
         
         for (int i = 0; i < 3; i++)

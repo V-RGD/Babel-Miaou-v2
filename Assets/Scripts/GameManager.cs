@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private Room _room;
     public CinemachineShake _cmShake;
     [HideInInspector]public PlayerAttacks _playerAttacks;
+    public List<Transform> eyesInGame;
 
     public int money;
     public int maxHealth = 3;
@@ -65,6 +66,11 @@ public class GameManager : MonoBehaviour
             health = maxHealth;
         }
 
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            DealDamageToPlayer(1);
+        }
+
         //ded
         if (health <= 0)
         {
@@ -106,57 +112,32 @@ public class GameManager : MonoBehaviour
             _playerController.invincibleCounter = _playerController.invincibleTime;
             //sets health bar
             _uiManager.HealthBar(health);
+            _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
-            _cmShake.ShakeCamera(2, .1f);
+            _cmShake.ShakeCamera(8, .1f);
         }
     }
     
     public void DealDamageToEnemy(float damageDealt, Enemy enemy) //when enemy takes hit
     {
+        //plays vfx
+        enemy.splashFX.gameObject.SetActive(true);
+        enemy.splashFX.Play();
         //clamps damage to an int (security)
         int damage = Mathf.CeilToInt(damageDealt);
+        //applies damage
+        if (_objectsManager.killingSpreeTimer > 0)
+        {
+            damage++;
+        }
+        enemy.health -= damage;
+        _cmShake.ShakeCamera(5, .1f);
         //applies killing effects
-        if (enemy.health - damage <= 0)
+        if (enemy.health <= 0)
         {
             _objectsManager.OnEnemyKill();
             enemy.Death();
         }
-        else
-        {
-            //applies damage
-            if (_objectsManager.killingSpreeTimer > 0)
-            {
-                damage++;
-            }
-            enemy.health -= damage;
-            _cmShake.ShakeCamera(5, .1f);
-            switch (_playerAttacks.comboState)
-            {
-                case PlayerAttacks.ComboState.SimpleAttack:
-                    _cmShake.ShakeCamera(2, .1f);
-                    break;
-                case PlayerAttacks.ComboState.ReverseAttack:
-                    _cmShake.ShakeCamera(2, .1f);
-                    break;
-                case PlayerAttacks.ComboState.SpinAttack:
-                    _cmShake.ShakeCamera(2, .1f);
-                    break;
-            }
-            enemy.SliderUpdate();
-        }
-    }
-    
-    public void DealDamageToEnemy(float damageDealt, Enemy enemy, float shakeValue, float shakeAmount) //when enemy takes hit
-    {
-        //clamps damage to an int (security)
-        int damage = Mathf.CeilToInt(damageDealt);
-        //applies killing effects
-        if (enemy.health - damage <= 0)
-        {
-            _objectsManager.OnEnemyKill();
-        }
-        //applies damage
-        enemy.health -= damage;
-        _cmShake.ShakeCamera(5, .1f);
+        enemy.SliderUpdate();
     }
 }

@@ -65,15 +65,20 @@ public class Room : MonoBehaviour
         if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 || Input.GetKeyDown(KeyCode.O))
         {
             _canChestSpawn = false;
-            chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
             DoorUnlock();
             if (roomType == 4)
             {
                 _lm.exit.SetActive(true);
             }
+            //randomize chest spawn
+            int randChest = Random.Range(0, 100);
+            if (randChest < 15)
+            {
+                chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+            }
         }
 
-        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType == 1)
+        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType is 1 or 4)
         {
             _canActivateEnemies = false;
             DoorLock();
@@ -159,7 +164,7 @@ public class Room : MonoBehaviour
         {
             case 0 : //start room
                 _lm.entrance.transform.position = roomCenter.position;
-                StartCoroutine(PlacePlayerAtSpawnPoint());
+                PlacePlayerAtSpawnPoint();
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -173,7 +178,8 @@ public class Room : MonoBehaviour
                 break;
             case 4 : //mini-boss room
                 MiniBossSpawn();
-                _lm.exit.transform.position = roomCenter.position;
+                GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position + Vector3.up, Quaternion.identity);
+                _lm.exit = exitPrefab;
                 _lm.exit.SetActive(false);
                 break;
             case 5 : //final boss room
@@ -184,7 +190,7 @@ public class Room : MonoBehaviour
     void MiniBossSpawn()
     {
         GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], enemyGroup.transform);
-        bossSpawning.transform.position = roomCenter.position;
+        bossSpawning.transform.position = roomCenter.position + Vector3.up * 3;
     }
 
     void ShopSpawn()
@@ -278,10 +284,9 @@ public class Room : MonoBehaviour
         }
     }
 
-    IEnumerator PlacePlayerAtSpawnPoint()
+    void PlacePlayerAtSpawnPoint()
     {
-        yield return new WaitForSeconds(0.5f);
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 1;
+        _player.transform.position = roomCenter.transform.position + Vector3.up * 1.65f;
     }
 
     void ActiveEffects()

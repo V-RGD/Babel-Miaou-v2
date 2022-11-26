@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.VFX;
 
 public class PlayerAttacks : MonoBehaviour
 {
@@ -61,7 +62,13 @@ public class PlayerAttacks : MonoBehaviour
     private static readonly int SecondAttack_Back = Animator.StringToHash("SecondAttack_Back");
     private static readonly int SecondAttack_Front = Animator.StringToHash("SecondAttack_Front");
     private static readonly int Spin_Attack = Animator.StringToHash("Spin_Attack");
-    
+    private static readonly int Smash_Attack = Animator.StringToHash("Smash_Attack");
+
+    public VisualEffect normalSlashFX;
+    public VisualEffect reverseSlashFX;
+    public VisualEffect spinSlashFX;
+    public VisualEffect smashSlashFX;
+
     public bool canInterruptAnimation;
     public enum AttackState
     {
@@ -234,9 +241,94 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = true;
         isAttacking = false;
     }
+    
+    IEnumerator SmashCoroutine()
+    {
+        isAttacking = true;
+        canInterruptAnimation = false;
+        _pc.SwitchState(PlayerController.PlayerStates.Attack);;
+        
+        //values assignation
+        GameObject hitbox = null;
+        Vector3 attackDir = Vector3.zero;
+        int damage = 0;
+        float cooldown = 0;
+        float force = 0;
+        float startUpLength = 0;
+        float activeLength = 0;
+        float recoverLength = 0;
+        
+        //-----------startup state
+        //defines values, blocks walking
+        SetAttackState(AttackState.Startup);
+        _pc.SwitchState(PlayerController.PlayerStates.Attack);
+        
+        if (_pc.movementDir != Vector2.zero)
+        {
+            attackDir = new Vector3(_pc.movementDir.x, 0, _pc.movementDir.y);
+        }
+        else
+        {
+            attackDir = new Vector3(_pc.lastWalkedDir.x, 0, _pc.lastWalkedDir.y);
+            force = 0;
+        }
+        
+        cooldown = smashCooldown; 
+        damage = Mathf.CeilToInt(attackStat * smashDamageMultiplier);
+        hitbox = _smashHitBox; 
+        force = smashForce;
+        startUpLength = attackParameters.smashStartupLength;
+        activeLength = attackParameters.smashActiveLength;
+        recoverLength = attackParameters.smashRecoverLength;
+        //3rd anim
+        comboState = ComboState.SimpleAttack;
+        PlayAnimation(attackDir);
+        comboState = ComboState.Default;
+        
+        //determine ou l'attaque va se faire
+        _attackAnchor.transform.LookAt(transform.position + attackDir);
+        //stops movement
+        _pc.canMove = false;
+        //add current damage stat to weapon
+        hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
+        //adds force to simulate inertia
+        _rb.velocity = Vector3.zero;
+        _rb.AddForce(attackDir * force, ForceMode.Impulse);
+        yield return new WaitForSeconds(startUpLength);
+
+        //-----------active state
+        //can touch enemies, hitbox active, is invincible
+        _rb.velocity = Vector3.zero;
+        SetAttackState(AttackState.Active);
+        hitbox.SetActive(true);
+        _pc.invincibleCounter = activeLength;
+        // _rb.AddForce(attackDir * force, ForceMode.Impulse);
+        yield return new WaitForSeconds(activeLength);
+
+        //------------recovery state
+        SetAttackState(AttackState.Recovery);
+        //hitbox inactive, not invincible
+        hitbox.SetActive(false);
+        yield return new WaitForSeconds(recoverLength);
+
+        //-----------can attack again
+        SetAttackState(AttackState.Default);
+        //comboState = ComboState.Default;
+        //can walk again
+        _pc.SwitchState(PlayerController.PlayerStates.Run);
+        //waits cooldown depending on the attack used
+        _rb.velocity = Vector3.zero;
+        //restores speed
+        _pc.canMove = true;
+        isAttacking = false;
+    }
+
     void RightMouseHold(InputAction.CallbackContext context)
     {
-        _rightMouseHolding = true;
+        if (currentAttackState == AttackState.Default)
+        {
+            _rightMouseHolding = true;
+        }
     }
     void RightMouseReleased(InputAction.CallbackContext context)
     {
@@ -255,59 +347,21 @@ public class PlayerAttacks : MonoBehaviour
             }
         }
     #endregion
-    
-    // IEnumerator Smash()
-    //     {
-    //         SwitchState(PlayerController.PlayerStates.Attack);
-    //         //determines attack length, damage, hitbox, force to add
-    //         GameObject hitbox = _smashHitBox;
-    //         float damage = attackStat * smashDamageMultiplier;
-    //         float cooldown = smashCooldown;
-    //         float force = smashForce;
-    //
-    //         //determine ou l'attaque va se faire
-    //         _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
-    //         //stops combo
-    //         _comboCounter = 0;
-    //         //stops movement
-    //         canMove = false;
-    //         //add current damage stat to weapon
-    //         hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
-    //         //adds force to simulate inertia
-    //         _rb.velocity = Vector3.zero;
-    //         Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
-    //         //_rb.AddForce(pushedDir * force, ForceMode.Impulse);
-    //         //warmup
-    //         yield return new WaitForSeconds(smashWarmup);
-    //         //actives weapon
-    //         hitbox.SetActive(true);
-    //         //stops player
-    //         _rb.velocity = Vector3.zero;
-    //         //plays animation
-    //         
-    //         //waits cooldown depending on the attack used
-    //         yield return new WaitForSeconds(cooldown);
-    //         //restores speed
-    //         canMove = true;
-    //         //disables hitbox
-    //         hitbox.SetActive(false);
-    //         SwitchState(PlayerController.PlayerStates.Run);
-    //     }
-        private void NormalAttackManagement(InputAction.CallbackContext context)
-         {
-             if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
-             {
-                 _pc.canMove = true;
-                 StopAllCoroutines();
-                 StartCoroutine(AttackCoroutine());
-             }
-         }
+    private void NormalAttackManagement(InputAction.CallbackContext context)
+    {
+        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
+        {
+            _pc.canMove = true;
+            StopAllCoroutines();
+            StartCoroutine(AttackCoroutine());
+        }
+    }
     
     private void RightClickAttackManagement()
     {
         if (_rightMouseHolding)
         {
-            _pc.canMove = false;
+            _pc.currentState = PlayerController.PlayerStates.Attack;
             _rb.velocity = Vector3.zero;
             //charges smash gauge
             smashGauge += Time.deltaTime;
@@ -317,24 +371,14 @@ public class PlayerAttacks : MonoBehaviour
             //if initial input
             if (smashGauge > 0)
             {
-                //on release, if a little bit hold, attacks
-                if (smashGauge <= 0.3)
+                
+                if (smashGauge >= 1)
+                {
+                    StartCoroutine(SmashCoroutine());
+                }
+                else
                 {
                     _pc.canMove = true;
-                    StopAllCoroutines();
-                    StartCoroutine(AttackCoroutine());
-                }
-                //if too long, smash
-                else 
-                {
-                    if (smashGauge == 1)
-                    {
-                        //StartCoroutine(Smash());
-                    }
-                    else
-                    {
-                        _pc.canMove = true;
-                    }
                 }
             }
             smashGauge = 0;

@@ -8455,6 +8455,7 @@ MonoBehaviour:
   roomList: {fileID: 622257111}
   dungeonSize: 0
   spawnBranches: 0
+  finishedGeneration: 0
 --- !u!114 &1774056478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12235,7 +12236,7 @@ MonoBehaviour:
   maxHealth: 10
   health: 0
   healthBonus: 0
-  currentRoom: 0
+  playerRoom: 0
   isDead: 0
 --- !u!4 &230173574124167565
 Transform:
@@ -14405,8 +14406,8 @@ MonoBehaviour:
   dexterity: 0
   slashCooldown: 0.4
   pickCooldown: 0.7
-  smashCooldown: 2
-  smashWarmup: 1
+  smashCooldown: 1
+  smashWarmup: 0.2
   smashForce: 10
   slashForce: 15
   pickForce: 10

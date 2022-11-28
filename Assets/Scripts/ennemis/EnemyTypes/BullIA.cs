@@ -160,7 +160,7 @@ public class BullIA : MonoBehaviour
         if (_isDashing)
         {
             _speedFactor = 0;
-            _rb.AddForce(dashFactor * attackDir * enemyTypeData.dashForce);
+            _rb.AddForce(attackDir * (dashFactor * enemyTypeData.dashForce));
         }
     }
     private void OnTriggerEnter(Collider other)
@@ -178,7 +178,7 @@ public class BullIA : MonoBehaviour
 
     void WallCheck()
     {
-        if (Physics.Raycast(transform.position, attackDir, 4, wallLayerMask))
+        if (Physics.Raycast(transform.position, attackDir, 6, wallLayerMask))
         {
             _isTouchingWall = true;
         }

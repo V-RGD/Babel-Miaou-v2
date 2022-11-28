@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Profiling;
 
 public class DebugWindow : MonoBehaviour
@@ -28,6 +24,7 @@ public class DebugWindow : MonoBehaviour
     private float _deltaTime;
     private PlayerController _pc;
     private GameManager _gameManager;
+    private ObjectsManager _objectsManager;
     private GameObject _player;
     private Rigidbody _rb;
     private GameObject _cam;
@@ -38,9 +35,10 @@ public class DebugWindow : MonoBehaviour
 
     private void Awake()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _gameManager = GameManager.instance;
+        _objectsManager = ObjectsManager.instance;
         _player = GameObject.Find("Player");
-        _pc = _player.GetComponent<PlayerController>();
+        _pc = PlayerController.instance;
         _rb = _player.GetComponent<Rigidbody>();
         _cam = GameObject.Find("Camera");
         _uiPanel = transform.GetChild(0).gameObject;
@@ -102,7 +100,15 @@ public class DebugWindow : MonoBehaviour
             "Current Stats : " +  "\n" + "\n" +                       
             "Attack : " + _pc._playerAttacks.attackStat + "\n" +                            
             "Speed : " + _pc.maxSpeed + "\n"   +
-            "Dexterity : " + _pc._playerAttacks.dexterity + "\n"     
-            ;
+            "Dexterity : " + _pc._playerAttacks.dexterity + "\n" +   
+            
+            "Current Objects : " +  "\n" + "\n" +                       
+            "Killing Spree : "+ _objectsManager.killingSpree + " : " + _objectsManager.killingSpreeTimer + "\n" +                            
+            "sacred Cross : "+ _objectsManager.sacredCross + " : " + _objectsManager.sacredCrossTimer + "\n" +                            
+            "Stinky Fish : " + _objectsManager.stinkyFish + "\n" +
+            "Eye collector : " + _objectsManager.eyeCollector.activeInHierarchy + "\n"  +
+            "Cat's luck : " + _objectsManager.catLuck + "\n"  +
+            "Earthquake : " + _objectsManager.earthQuake + "\n" +
+            "No hit : " + _objectsManager.noHit + " : " + _objectsManager.noHitStreak + "\n";
     }
 }

@@ -23,11 +23,12 @@ public class MenuManager : MonoBehaviour
     private GameManager _gameManager;
     private ObjectsManager _objectsManager;
     private UIManager _uiManager;
-
+    private CheatManager _cheatManager;
     private bool _canActiveDeathPanel = true;
     private bool _canPause = true;
     public bool canEscapeObjectMenu = true;
     private bool isInObjectMenu;
+    private bool isInCommandLine;
 
     private void Awake()
     {
@@ -44,10 +45,30 @@ public class MenuManager : MonoBehaviour
         _gameManager = GameManager.instance;
         _objectsManager = ObjectsManager.instance;
         _uiManager = UIManager.instance;
+        _cheatManager = CheatManager.instance;
     }
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Quote))
+        {
+            //freezes game
+            if (!isInCommandLine)
+            {
+                _cheatManager.OpenCommandLine();
+            }
+            else
+            {
+                _cheatManager.CloseCommandLine();
+            }
+        }
+
+        if (isInCommandLine && Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            _cheatManager.CloseCommandLine();
+        }
+        
+        
         //escape shortcut
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -57,7 +78,17 @@ public class MenuManager : MonoBehaviour
                 return;
             }
 
-            if (!_objectsManager.canReplaceItem)
+            bool slotsFilled = true;
+            foreach (var slot in _objectsManager.itemObjectsInventory)
+            {
+                if (slot == 999)
+                {
+                    slotsFilled = false;
+                    break;
+                }
+            }
+
+            if (!_objectsManager.canReplaceItem || (_objectsManager.canReplaceItem && slotsFilled) )
             {
                 if (isInObjectMenu)
                 {

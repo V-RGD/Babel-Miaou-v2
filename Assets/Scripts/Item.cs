@@ -70,6 +70,11 @@ public class Item : MonoBehaviour
             case ItemType.Heal : 
                 int healAmount = 4;
                 gameManager.health += healAmount;
+                //caps health to the max amount
+                if (gameManager.health > gameManager.maxHealth)
+                {
+                    gameManager.health = gameManager.maxHealth;
+                }
                 _uiManager.HealthBar(gameManager.health);
                 break;
             case ItemType.MaxHealth :
@@ -143,7 +148,7 @@ public class Item : MonoBehaviour
     
     public void AccessToItemMenu()
     {
-        _objectsManager.uiItemBoxes[3].SetActive(false);
+        _objectsManager.uiItemBoxes[3].SetActive(true);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
         int newItem = objectID;

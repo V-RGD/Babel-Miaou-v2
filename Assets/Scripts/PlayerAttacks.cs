@@ -44,7 +44,7 @@ public class PlayerAttacks : MonoBehaviour
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _pickHitBox;
-    public GameObject masterSwordProjo;
+    public GameObject poisonCloud;
 
     #endregion
     
@@ -301,6 +301,12 @@ public class PlayerAttacks : MonoBehaviour
         _rb.velocity = Vector3.zero;
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
+
+        if (ObjectsManager.instance.stinkyFish)
+        {
+            Instantiate(poisonCloud, transform.position, Quaternion.identity);
+        }
+        
         _pc.invincibleCounter = activeLength;
         // _rb.AddForce(attackDir * force, ForceMode.Impulse);
         yield return new WaitForSeconds(activeLength);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -57,7 +58,7 @@ public class ObjectsManager : MonoBehaviour
     #endregion
     #region Timers
     [HideInInspector] public float killingSpreeTimer;
-    [SerializeField] private float sacredCrossTimer;
+    [HideInInspector] public float sacredCrossTimer;
     [HideInInspector] public bool noHitStreak;
     #endregion
     #region BoxMovement
@@ -93,6 +94,15 @@ public class ObjectsManager : MonoBehaviour
         _player.maxSpeed = gameVariables.baseSpeed;
         _player._playerAttacks.attackStat = gameVariables.baseAttack;
     }
+
+    private void Update()
+    {
+        if (sacredCrossTimer > 0)
+        {
+            sacredCrossTimer -= Time.deltaTime;
+        }
+    }
+
     public void OnObjectEquip(int item)
     {
         Debug.Log("equiped Item#" + item);
@@ -170,6 +180,11 @@ public class ObjectsManager : MonoBehaviour
         {
             _player.dashCooldownTimer = 0;
             killingSpreeTimer = gameVariables.killingSpreeLength;
+        }
+
+        if (sacredCross)
+        {
+            sacredCrossTimer = gameVariables.sacredCrossLength;
         }
     }
     public void OnPlayerHit(int sourceDamage)
@@ -273,6 +288,17 @@ public class ObjectsManager : MonoBehaviour
             uiItemBoxes[3].SetActive(false);
             canReplaceItem = false;
         }
+    }
+    
+    public void ReplaceItem(int box , int item)
+    {
+        //replaces item selected
+        int oldItem = itemObjectsInventory[currentBoxPos];
+        OnObjectUnEquip(oldItem);
+        //adds new one
+        int newItem = item;
+        itemObjectsInventory[box] = newItem;
+        OnObjectEquip(newItem);
     }
 
     #region InputSystemRequirements

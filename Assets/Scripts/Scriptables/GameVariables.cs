@@ -20,4 +20,9 @@ public class GameVariables : ScriptableObject
     public float catLuckResHp;
     public float killingSpreeLength;
     public float killingSpreeDamage;
+
+    public float poisonDamage;
+    public float poisonLenght;
+    public float poisonCooldown;
+    public float poisonCloudLength;
 }

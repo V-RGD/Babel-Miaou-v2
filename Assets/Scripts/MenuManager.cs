@@ -68,10 +68,15 @@ public class MenuManager : MonoBehaviour
             _cheatManager.CloseCommandLine();
         }
         
-        
         //escape shortcut
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (isInCommandLine)
+            {
+                _cheatManager.CloseCommandLine();
+                return;
+            }
+            
             if (isInOptions)
             {
                 SettingsMenu();

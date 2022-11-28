@@ -299,6 +299,7 @@ public class ObjectsManager : MonoBehaviour
         int newItem = item;
         itemObjectsInventory[box] = newItem;
         OnObjectEquip(newItem);
+        _uiManager.UpdateHUDIcons();
     }
 
     #region InputSystemRequirements

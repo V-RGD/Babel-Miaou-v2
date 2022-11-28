@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,6 +40,7 @@ public class CheatManager : MonoBehaviour
         inputPanel.SetActive(true);
         //let player type
         canEnterCommand = true;
+        field.Select();
     }
     
     public void CloseCommandLine()
@@ -56,23 +58,32 @@ public class CheatManager : MonoBehaviour
         {
             string command = field.text;
             string[] split = command.Split(' ');
+            List<string> inputs = new List<string>();
+            for (int i = 0; i < split.Length; i++)
+            {
+                inputs.Add(split[i]);
+            }
+            //security
+            inputs.Add(String.Empty);
+            inputs.Add(String.Empty);
+            inputs.Add(String.Empty);
             string firstInput = String.Empty;
             string secondInput = String.Empty;
             string thirdInput = String.Empty;
-            if (split[0] != null)
+            if (inputs[0] != String.Empty)
             {
                 firstInput = split[0];
             }
-            if (split[1] != null)
+            if (inputs[1] != String.Empty)
             {
                 secondInput = split[1];
             }
-            if (split[2] != null)
+            if (inputs[2] != String.Empty)
             {
                 thirdInput = split[2];
             }
 
-            if (firstInput != null)
+            if (firstInput != String.Empty)
             {
                 //first range
                 switch (firstInput)
@@ -83,7 +94,10 @@ public class CheatManager : MonoBehaviour
                         //then asks for desired object
                         int item = Convert.ToInt32(thirdInput);
                         //then adds item to inventory
-                        _objectsManager.ReplaceItem(box, item);
+                        if (box <= _objectsManager.itemObjectsInventory.Count && item <= 6)
+                        {
+                            _objectsManager.ReplaceItem(box, item);
+                        }
                         break;
                     
                     case "health" : 
@@ -111,19 +125,36 @@ public class CheatManager : MonoBehaviour
                         switch (secondInput)
                         {
                             case "boss" :
-                                SceneManager.LoadScene("BossRoom");
+                                SceneManager.LoadScene("BossScene");
                                 break;
                             case "room" :
                                 int room = Convert.ToInt32(thirdInput);
-                                PlayerController.instance.gameObject.transform.position = 
-                                LevelManager.instance.roomList[room].transform.position;
-                            break; 
+                                if (room <= LevelManager.instance.roomList.Count)
+                                {
+                                    PlayerController.instance.gameObject.transform.position = 
+                                        LevelManager.instance.roomList[room].transform.position;
+                                }
+                                break; 
+                        } 
+                        break;
+                    
+                    case "load" : 
+                        switch (secondInput)
+                        {
+                            case "main" :
+                                SceneManager.LoadScene("MainScene");
+                                break;
+                            case "boss" :
+                                SceneManager.LoadScene("BossScene");
+                                break; 
+                            case "menu" :
+                                SceneManager.LoadScene("MainMenu");
+                                break; 
                         } 
                         break;
                 }
             }
-            
-            Debug.Log("invalid command");
+            field.text = String.Empty;
             CloseCommandLine();
         }
     }

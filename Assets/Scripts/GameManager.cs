@@ -60,49 +60,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        //caps health to the max amount
-        if (health > maxHealth)
-        {
-            health = maxHealth;
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            DealDamageToPlayer(1);
-        }
-
-        //ded
-        if (health <= 0)
-        {
-            if (_objectsManager.catLuck)
-            {
-                int canRes = Random.Range(0, 100);
-                if (canRes <= _gameVariables.catLuckResRate)
-                {
-                    //destroys catnip
-                    for (int i = 0; i < 3; i++)
-                    {
-                        int item = _objectsManager.itemObjectsInventory[i];
-                        if (item == 22)
-                        {
-                            //destroys item
-                            _objectsManager.itemObjectsInventory[i] = 999;
-                        }
-                    }
-                    //adds health
-                    health = Mathf.CeilToInt(_gameVariables.catLuckResHp);
-                }
-            }
-            else
-            {
-                isDead = true;
-            }
-        }
+        
     }
     
     public void DealDamageToPlayer(float damageDealt) //when player takes hit
     {
-        if (_playerController.invincibleCounter < 0)
+        if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0)
         {
             //clamps damage to an int (security)
             int damage = Mathf.CeilToInt(damageDealt);
@@ -115,6 +78,30 @@ public class GameManager : MonoBehaviour
             _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
             _cmShake.ShakeCamera(8, .1f);
+            
+            //ded
+            if (health <= 0)
+            {
+                if (_objectsManager.catLuck)
+                {
+                    //destroys catnip
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (_objectsManager.itemObjectsInventory[i] == 4)
+                        {
+                            //destroys item
+                            _objectsManager.itemObjectsInventory[i] = 999;
+                        }
+                    }
+                    //adds health
+                    health = Mathf.CeilToInt(_gameVariables.catLuckResHp);
+                    _uiManager.HealthBar(health);
+                }
+                else
+                {
+                    isDead = true;
+                }
+            }
         }
     }
     
@@ -132,6 +119,20 @@ public class GameManager : MonoBehaviour
         }
         enemy.health -= damage;
         _cmShake.ShakeCamera(5, .1f);
+        //applies killing effects
+        if (enemy.health <= 0)
+        {
+            _objectsManager.OnEnemyKill();
+            enemy.Death();
+        }
+        enemy.SliderUpdate();
+    }
+    
+    public void DealDamageToEnemy(float damageDealt, Enemy enemy, bool doShake) //when enemy takes hit
+    {
+        //clamps damage to an int (security)
+        int damage = Mathf.CeilToInt(damageDealt);
+        enemy.health -= damage;
         //applies killing effects
         if (enemy.health <= 0)
         {

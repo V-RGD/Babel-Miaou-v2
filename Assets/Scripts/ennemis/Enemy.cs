@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
@@ -12,6 +13,8 @@ public class Enemy : MonoBehaviour
     public bool isActive;
     private bool _isTank;
     private float _stunCounter;
+    private float _poisonCounter;
+    private bool _canTakePoisonDamage = true;
 
     private GameObject _player;
     public GameObject healthSlider;
@@ -50,6 +53,26 @@ public class Enemy : MonoBehaviour
             HaunterIA ia = GetComponent<HaunterIA>();
             _isTank = ia.isTank;
         }
+    }
+
+    private void Update()
+    {
+        if (_poisonCounter > 0 && health > 0)
+        {
+            _poisonCounter -= Time.deltaTime;
+            if (_canTakePoisonDamage)
+            {
+                StartCoroutine(ResetPoisonCounter());
+            }
+        }
+    }
+
+    IEnumerator ResetPoisonCounter()
+    {
+        _canTakePoisonDamage = false;
+        _gameManager.DealDamageToEnemy(ObjectsManager.instance.gameVariables.poisonDamage, this, false);
+        yield return new WaitForSeconds(ObjectsManager.instance.gameVariables.poisonCooldown);
+        _canTakePoisonDamage = true;
     }
 
     public IEnumerator EnemyApparition()
@@ -93,6 +116,12 @@ public class Enemy : MonoBehaviour
         {
             _gameManager.DealDamageToPlayer(enemyTypeData.damage);
         }
+
+        if (other.CompareTag("Poison"))
+        {
+            //gets poisonned
+            _poisonCounter = ObjectsManager.instance.gameVariables.poisonLenght;
+        }
     }
 
     public void Death()
@@ -106,14 +135,16 @@ public class Enemy : MonoBehaviour
     
    public void SliderUpdate()
     {
-        healthSlider.SetActive(true);
         if (health >= enemyTypeData.maxHealth)
         {
             healthSlider.SetActive(false);
         }
         else
         {
-            healthSlider.SetActive(true);
+            if (!healthSlider.activeInHierarchy)
+            {
+                healthSlider.SetActive(true);
+            }
             healthSlider.GetComponent<Slider>().value = health / enemyTypeData.maxHealth;
         }
     }

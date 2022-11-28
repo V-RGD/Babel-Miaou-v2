@@ -220,7 +220,10 @@ public class Room : MonoBehaviour
 
     IEnumerator ActivateAllEnemies()
     {
-        _objectsManager.noHitStreak = true;
+        if (_objectsManager.noHit)
+        {
+            _objectsManager.noHitStreak = true;
+        }
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);

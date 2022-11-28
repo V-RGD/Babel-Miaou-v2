@@ -17,6 +17,7 @@ public class Room : MonoBehaviour
     private LevelManager _lm;
     private UIManager _uiManager;
     private DunGen _dunGen;
+    private GameManager _gameManager;
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
     [SerializeField]private Transform roomCenter;
@@ -27,6 +28,7 @@ public class Room : MonoBehaviour
 
     //values
     private GameObject _player;
+    [SerializeField]private GameObject visuals;
     [SerializeField]private GameObject empty;
     [HideInInspector]public GameObject enemyGroup;
     private int _enemiesRemaining;
@@ -35,26 +37,26 @@ public class Room : MonoBehaviour
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
-    void Awake()
+
+    private IEnumerator Start()
     {
-        // component assignations
+        //component assignations
         _player = GameObject.Find("Player");
-        _lm = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        _dunGen = GameObject.Find("LevelManager").GetComponent<DunGen>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+        _lm = LevelManager.instance;
+        _dunGen = DunGen.instance;
+        _objectsManager = ObjectsManager.instance;
+        _gameManager = GameManager.instance;
         enemyGroup = transform.GetChild(0).gameObject;
         chest = _lm.chest;
         doorPrefab = _lm.door;
         _roomInfo = GetComponent<RoomInfo>();
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
-    }
 
-    private void Start()
-    {
+        DoorSpawn();
+        yield return new WaitUntil(()=> _dunGen.finishedGeneration);
         RoomType();
         //PropsSpawn();
-        DoorSpawn();
     }
 
     void Update()
@@ -63,65 +65,29 @@ public class Room : MonoBehaviour
         if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 || Input.GetKeyDown(KeyCode.O))
         {
             _canChestSpawn = false;
-            chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
             DoorUnlock();
             if (roomType == 4)
             {
                 _lm.exit.SetActive(true);
             }
+            //randomize chest spawn
+            int randChest = Random.Range(0, 100);
+            if (randChest < 15)
+            {
+                chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+            }
         }
 
-        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType == 1)
+        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType is 1 or 4)
         {
             _canActivateEnemies = false;
+            DoorLock();
             StartCoroutine(ActivateAllEnemies());
         }
         
         CheckPlayerPresence();
+        //ActiveEffects();
     }
-
-    #region AutoWalk
-    /*
-    void EntryWalk()
-    {
-        //place player accordingly to last door taken
-        if (currentRoom == 0)
-        {
-            playerSpawnPoint = transform.position;
-            Debug.Log("this is the first room");
-        }
-        
-        else
-        {
-            Debug.Log("this is the" + currentRoom + "room");
-            //player.transform.position = _dunGen.enterPos;
-        }
-    }
-    
-    void ExitWalk()
-    {
-        if (lastDoorPos == 1)
-        {
-            exitPoint = transform.position + Vector3.left * 30;
-            enterPoint = transform.position + Vector3.right * 30;
-        }
-        if (lastDoorPos == 2)
-        {
-            exitPoint = transform.position + Vector3.forward * 30;
-            enterPoint = transform.position + Vector3.back * 30;
-        }
-        if (lastDoorPos == 3)
-        {
-            exitPoint = transform.position + Vector3.right * 30;
-            enterPoint = transform.position + Vector3.left * 30;
-        }
-
-        //_dunGen.enterPos = enterPoint;
-        StartCoroutine(WalkToPoint());
-    }
-    */
-    #endregion
-    
     void EnemyGeneration()
     {
         //decides the number of enemies to spawn : base population + difficulty increase + 20% uncertainty
@@ -198,7 +164,7 @@ public class Room : MonoBehaviour
         {
             case 0 : //start room
                 _lm.entrance.transform.position = roomCenter.position;
-                StartCoroutine(PlacePlayerAtSpawnPoint());
+                PlacePlayerAtSpawnPoint();
                 break;
             case 1 : //normal room
                 EnemyGeneration();
@@ -212,7 +178,8 @@ public class Room : MonoBehaviour
                 break;
             case 4 : //mini-boss room
                 MiniBossSpawn();
-                _lm.exit.transform.position = roomCenter.position;
+                GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position + Vector3.up, Quaternion.identity);
+                _lm.exit = exitPrefab;
                 _lm.exit.SetActive(false);
                 break;
             case 5 : //final boss room
@@ -223,7 +190,7 @@ public class Room : MonoBehaviour
     void MiniBossSpawn()
     {
         GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], enemyGroup.transform);
-        bossSpawning.transform.position = roomCenter.position;
+        bossSpawning.transform.position = roomCenter.position + Vector3.up * 3;
     }
 
     void ShopSpawn()
@@ -233,6 +200,7 @@ public class Room : MonoBehaviour
 
     void CheckPlayerPresence()
     {
+        _gameManager.playerRoom = currentRoom;
         var position = roomCenter.position;
         var roomDetectionXMax = position.x + _lm.roomSize * RoomDetectZoneSize;
         var roomDetectionXMin = position.x - _lm.roomSize * RoomDetectZoneSize;
@@ -256,15 +224,11 @@ public class Room : MonoBehaviour
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
-            enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().enabled = true;
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-            enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>().startSpawning = true;
+            Enemy enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>();
+            enemy.enabled = true;
+            enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
-        }
-
-        if (_objectsManager.foreignFriend)
-        {
-            StartCoroutine(ForeignFriend());
         }
     }
 
@@ -299,7 +263,7 @@ public class Room : MonoBehaviour
                 }
                 GameObject door = Instantiate(doorPrefab, spawnPoint + roomCenter.position, Quaternion.Euler(rotation));
                 door.transform.parent = gameObject.transform;
-                door.SetActive(true);
+                door.SetActive(false);
                 doorsObjects.Add(door);
             }
         }
@@ -312,17 +276,28 @@ public class Room : MonoBehaviour
             door.SetActive(false);
         }
     }
-
-    IEnumerator ForeignFriend()
+    void DoorLock()
     {
-        yield return new WaitForSeconds(2);
-        int rand = Random.Range(0, enemyGroup.transform.childCount);
-        Destroy(enemyGroup.transform.GetChild(rand));
+        foreach (var door in doorsObjects)
+        {
+            door.SetActive(true);
+        }
     }
 
-    IEnumerator PlacePlayerAtSpawnPoint()
+    void PlacePlayerAtSpawnPoint()
     {
-        yield return new WaitForSeconds(0.5f);
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 1;
+        _player.transform.position = roomCenter.transform.position + Vector3.up * 1.65f;
+    }
+
+    void ActiveEffects()
+    {
+        if (_gameManager.playerRoom == currentRoom || _gameManager.playerRoom == currentRoom + 1 || _gameManager.playerRoom == currentRoom - 1)
+        {
+            visuals.SetActive(true);
+        }
+        else
+        {
+            visuals.SetActive(false);
+        }
     }
 }

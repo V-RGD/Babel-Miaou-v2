@@ -42,14 +42,19 @@ public class Item : MonoBehaviour
     private void Awake()
     {
         playerControls = new PlayerControls();
+        canvas = GameObject.Find("UI Canvas");
         player = GameObject.Find("Player");
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        _menuManager = GameObject.Find("UIManager").GetComponent<MenuManager>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
+    }
+
+    private void Start()
+    {
+        
+        gameManager = GameManager.instance;
+        _uiManager = UIManager.instance;
+        _menuManager = MenuManager.instance;
+        _objectsManager = ObjectsManager.instance;
         costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
         costPrompt.SetActive(false);
-        canvas = GameObject.Find("UI Canvas");
     }
 
 
@@ -124,15 +129,6 @@ public class Item : MonoBehaviour
                 gameManager.money -= itemCost;
                 ItemEffect();
             }
-            else if (gameManager.health - itemCost/2 >= 1 && _objectsManager.strangePact)
-            {
-                //reduces cost by all money available
-                float newCost = itemCost - gameManager.money;
-                gameManager.money = 0;
-                //new cost 
-                gameManager.health -= Mathf.CeilToInt(newCost/2);
-                ItemEffect();
-            }
         }
     }
     
@@ -147,11 +143,13 @@ public class Item : MonoBehaviour
     
     public void AccessToItemMenu()
     {
+        _objectsManager.uiItemBoxes[3].SetActive(false);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
         int newItem = objectID;
-        _objectsManager.itemObjectsInventory[5] = newItem;        //updates it's id
-        _objectsManager.uiItemBoxes[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
+        _objectsManager.itemObjectsInventory[3] = newItem;
+        //updates it's id
+        _objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
         _objectsManager.UiItemBoxesUpdate();
         Destroy(gameObject);
     }
@@ -159,29 +157,19 @@ public class Item : MonoBehaviour
     void RandomObjectDraw()
     {
         _menuManager.drawMenu.gameObject.SetActive(true);
-        //actives a canvas to choose 3 objects from
-        for (int i = 0; i < 3; i++)
+        //actives a canvas to choose 2 objects from
+        for (int i = 0; i < 2; i++)
         {
             //assigns box object with a random item
             int item = shopManager.itemsToChooseFrom[Random.Range(0, shopManager.itemsToChooseFrom.Count)];
-            //update : box name, icon, description, rarity color
+            //update : box name, icon, description
             string name = _objectsManager.itemDataScriptable.names[item];
             Sprite icon = _objectsManager.objectSprites[item];
             string desc = _objectsManager.itemDataScriptable.descriptions[item];
-            int rarity = _objectsManager.itemDataScriptable.rarity[item];
-            Color color = Color.grey;
-            
-            switch (rarity)
-            {
-                case 1 : color = Color.green; break;
-                case 2 : color = Color.blue; break;
-                case 3 : color = Color.magenta; break;
-                case 4 : color = Color.yellow; break;
-            }
+
             _menuManager.drawMenu.items[i] = item;
             _menuManager.drawMenu.boxVisuals[i].description.text = desc;
             _menuManager.drawMenu.boxVisuals[i].name.text = name;
-            _menuManager.drawMenu.boxVisuals[i].rarity.color = color;
             _menuManager.drawMenu.boxVisuals[i].icon.sprite = icon;
         }
     }

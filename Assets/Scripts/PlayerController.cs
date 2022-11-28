@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private float _speedFactor = 1;
     private int _dashesAvailable = 1;
     private int _dirCoef; //sprite direction
-    [HideInInspector] public float invincibleCounter;
+    public float invincibleCounter;
     [HideInInspector] public float invincibleTime;
     [HideInInspector] public float dashCooldownTimer;
     [HideInInspector] public float stunCounter;
@@ -50,6 +50,25 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     public PlayerStates currentState;
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+
+        instance = this;
+        
+        canMove = true;
+        
+        _rb = GetComponent<Rigidbody>();
+        _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        _playerControls = new PlayerControls();
+        
+        _animator = GetComponent<Animator>();
+        _playerAttacks = PlayerAttacks.instance;
+        currentState = PlayerStates.Run;
+    }
     void Behaviour(PlayerStates state)
     {
         switch (state)
@@ -65,7 +84,6 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
     void MovingAnimations()
     {
         var state = GetMovingAnimation();
@@ -88,25 +106,6 @@ public class PlayerController : MonoBehaviour
         Run, 
         Attack,
         Dash,
-    }
-    private void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(this);
-        }
-
-        instance = this;
-        
-        canMove = true;
-        
-        _rb = GetComponent<Rigidbody>();
-        _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
-        _playerControls = new PlayerControls();
-        
-        _animator = GetComponent<Animator>();
-        _playerAttacks = PlayerAttacks.instance;
-        currentState = PlayerStates.Run;
     }
     void FixedUpdate()
     {
@@ -215,7 +214,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
     void Friction()
     {
         //deceleration
@@ -235,9 +233,14 @@ public class PlayerController : MonoBehaviour
 
     void InputDash(InputAction.CallbackContext context)
     {
-        if (currentState == PlayerStates.Run && _dashesAvailable > 0 && dashCooldownTimer <= 0)
+        if ((currentState == PlayerStates.Run && _dashesAvailable > 0 && dashCooldownTimer <= 0))
         {
             _dashesAvailable--;
+            StartCoroutine(DashSequence());
+        }
+        else if (ObjectsManager.instance.killingSpreeTimer > 0) //uses killing spree timer
+        {
+            ObjectsManager.instance.killingSpreeTimer = 0;
             StartCoroutine(DashSequence());
         }
     }
@@ -261,14 +264,20 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         _dashesAvailable++;
         dashCooldownTimer = dashCooldownLenght;
+
+        if (invincibleCounter < dashLenght + 0.2f)
+        {
+            invincibleCounter = dashLenght + 0.2f;
+        }
+        
         SwitchState(PlayerStates.Run);
     }
     #endregion
     void JostickDir()
-        {
-            Vector2 inputDir = _move.ReadValue<Vector2>();
-            movementDir = new Vector2(inputDir.x, inputDir.y);
-        }
+    {
+        Vector2 inputDir = _move.ReadValue<Vector2>();
+        movementDir = new Vector2(inputDir.x, inputDir.y);
+    }
     
     #region InputSystemRequirements
     private void OnEnable()
@@ -286,44 +295,6 @@ public class PlayerController : MonoBehaviour
         _dash.Disable();
     }
     #endregion
-    /*
-    IEnumerator Smash()
-        {
-            SwitchState(PlayerStates.Attack);
-            //determines attack length, damage, hitbox, force to add
-            GameObject hitbox = _smashHitBox;
-            float damage = attackStat * smashDamageMultiplier;
-            float cooldown = smashCooldown;
-            float force = smashForce;
-
-            //determine ou l'attaque va se faire
-            _attackAnchor.transform.LookAt(transform.position + new Vector3(movementDir.x, 0, movementDir.y));
-            //stops combo
-            _comboCounter = 0;
-            //stops movement
-            canMove = false;
-            //add current damage stat to weapon
-            hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
-            //adds force to simulate inertia
-            _rb.velocity = Vector3.zero;
-            Vector3 pushedDir = new Vector3(movementDir.x, 0, movementDir.y);
-            //_rb.AddForce(pushedDir * force, ForceMode.Impulse);
-            //warmup
-            yield return new WaitForSeconds(smashWarmup);
-            //actives weapon
-            hitbox.SetActive(true);
-            //stops player
-            _rb.velocity = Vector3.zero;
-            //plays animation
-            
-            //waits cooldown depending on the attack used
-            yield return new WaitForSeconds(cooldown);
-            //restores speed
-            canMove = true;
-            //disables hitbox
-            hitbox.SetActive(false);
-            SwitchState(PlayerStates.Run);
-        }*/
 }
 
 

@@ -147,7 +147,7 @@ public class MenuManager : MonoBehaviour
         {
             isInObjectMenu = false;
             //deletes 6th box object
-            _objectsManager.itemObjectsInventory[5] = 999;
+            _objectsManager.itemObjectsInventory[3] = 999;
             //disables menu
             _objectsManager.objectMenu.SetActive(false);
             //resume time

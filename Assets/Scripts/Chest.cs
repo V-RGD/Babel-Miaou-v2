@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -12,14 +13,18 @@ public class Chest : MonoBehaviour
     private InputAction _collect;
     private GameObject _player;
     public GameObject messagePrompt;
-    public ObjectsManager objectManager;
+    private ObjectsManager objectManager;
 
     private void Awake()
     {
         _playerControls = new PlayerControls();
         _player = GameObject.Find("Player");
-        objectManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         _collect = _playerControls.Player.Collect;
+    }
+
+    private void Start()
+    {
+        objectManager = ObjectsManager.instance;
     }
 
     void Collect(InputAction.CallbackContext context)
@@ -37,7 +42,7 @@ public class Chest : MonoBehaviour
         if (randLoot <= 15)
         {
             GameObject item = Instantiate(objectManager.objectTemplate, transform.position, quaternion.identity);
-            item.GetComponent<Item>().objectID = objectManager.chestPool[Random.Range(0, objectManager.chestPool.Count)];
+            item.GetComponent<Item>().objectID = objectManager.itemList[Random.Range(0, objectManager.itemList.Count)];
             item.SetActive(true);
             float randDir = Random.Range(0, 1f);
             Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;

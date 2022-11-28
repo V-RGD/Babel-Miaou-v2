@@ -23,11 +23,11 @@ public class UIManager : MonoBehaviour
     public Sprite emptyHeart;
     public Image panel;
     public Image smashSlider;
+    public Animator hurtPanel;
+    public RectTransform lowHpPanel;
 
     [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
-    [HideInInspector] public bool isMapHighlight;
-    [HideInInspector] public bool isMapFull;
 
     public float transitionLenght;
     private float _panelAlpha;
@@ -61,6 +61,23 @@ public class UIManager : MonoBehaviour
         SmashGauge();
     }
     //Barre de vie joueur 
+    public void HurtPanels()
+    {
+        //launches hurt anim
+        hurtPanel.SetTrigger("RedOut");
+        //updates low hp panel scale
+        float health = gameManager.health;
+        float maxHealth = gameManager.maxHealth;
+        if (health/maxHealth < 0.5f)
+        {
+            float panelScale = 1 + (3 * (health/maxHealth));
+            lowHpPanel.localScale = new Vector3(panelScale, panelScale, 1);
+        }
+        else
+        {
+            lowHpPanel.localScale = new Vector3(4, 4, 1);
+        }
+    }
     public void HealthBar(int health)
     {
         //gerer si le coeur est actif
@@ -171,30 +188,19 @@ public class UIManager : MonoBehaviour
     public void UpdateHUDIcons()
     {
         //used to reload data from the object when added
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             if (_objectsManager.itemObjectsInventory[i] != 999)
             {
                 int id = _objectsManager.itemObjectsInventory[i];
                 //update : box name, icon, description, rarity color
                 Sprite icon = _objectsManager.objectSprites[id];
-                int rarity = _objectsManager.itemDataScriptable.rarity[id];
-                Color color = Color.grey;
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().enabled = true;
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().sprite = icon;
-                switch (rarity)
-                {
-                    case 1 : color = Color.green; break;
-                    case 2 : color = Color.blue; break;
-                    case 3 : color = Color.magenta; break;
-                    case 4 : color = Color.yellow; break;
-                }
-                itemBoxHUD[i].transform.GetChild(1).GetComponent<Image>().color = color;
             }
             else
             {
                 //shows empty box
-                itemBoxHUD[i].transform.GetChild(1).GetComponent<Image>().color = Color.gray;
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().sprite = null;
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().enabled = false;
             }

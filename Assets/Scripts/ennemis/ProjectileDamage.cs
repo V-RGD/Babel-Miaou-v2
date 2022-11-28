@@ -28,26 +28,8 @@ public class ProjectileDamage : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (_objectsManager.safetyBlessing)
-            {
-                //checks if safety blessing is equipped, then calculates if projectile can touch
-                int rand = Random.Range(0, 100);
-                if (rand > Mathf.CeilToInt(1/_objectsManager.gameVariables.safetyBlessingRate * 100))
-                {
-                    gameManager.DealDamageToPlayer(damage);
-                    Destroy(gameObject);
-                }
-                else
-                {
-                    //destroys it without damage
-                    Destroy(gameObject);
-                }
-            }
-            else
-            {
-                gameManager.DealDamageToPlayer(damage);
-                Destroy(gameObject);
-            }
+            gameManager.DealDamageToPlayer(damage);
+            Destroy(gameObject);
         }
 
         if (other.CompareTag("Wall"))

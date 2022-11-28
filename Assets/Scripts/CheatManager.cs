@@ -15,6 +15,7 @@ public class CheatManager : MonoBehaviour
     public GameObject inputPanel;
     public bool canEnterCommand;
     private string _consoleCommand;
+    private string previousCommand;
 
     private void Awake()
     {
@@ -31,6 +32,17 @@ public class CheatManager : MonoBehaviour
         _gameManager = GameManager.instance;
         _uiManager = UIManager.instance;
         _objectsManager = ObjectsManager.instance;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            if (previousCommand != String.Empty)
+            {
+                field.text = previousCommand;
+            }
+        }
     }
 
     public void OpenCommandLine()
@@ -154,6 +166,8 @@ public class CheatManager : MonoBehaviour
                         break;
                 }
             }
+
+            previousCommand = field.text;
             field.text = String.Empty;
             CloseCommandLine();
         }

@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         enemy.splashFX.gameObject.SetActive(true);
         enemy.splashFX.Play();
         //clamps damage to an int (security)
-        int damage = Mathf.CeilToInt(damageDealt);
+        float damage = damageDealt;
         //applies damage
         if (_objectsManager.killingSpreeTimer > 0)
         {

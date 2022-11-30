@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
@@ -136,7 +134,7 @@ public class PlayerAttacks : MonoBehaviour
         //values assignation
         GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
-        int damage = 0;
+        float damage = 0;
         float cooldown = 0;
         float force = 0;
         float startUpLength = 0;
@@ -196,7 +194,7 @@ public class PlayerAttacks : MonoBehaviour
                 break;
             case ComboState.ReverseAttack : 
                 cooldown = spinCooldown * dexterity; 
-                damage = Mathf.FloorToInt(attackStat * spinDamageMultiplier)/5;
+                damage = attackStat * spinDamageMultiplier/5;
                 hitbox = _spinHitBox; 
                 force = spinForce;
                 startUpLength = attackParameters.spinStartupLength;
@@ -208,6 +206,7 @@ public class PlayerAttacks : MonoBehaviour
                 PlayAnimation(attackDir);
                 break;
         }
+        Debug.Log(damage);
         
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);

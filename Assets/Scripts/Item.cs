@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -166,7 +168,7 @@ public class Item : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             //assigns box object with a random item
-            int item = shopManager.itemsToChooseFrom[Random.Range(0, shopManager.itemsToChooseFrom.Count)];
+            int item = _objectsManager.itemObjectsInventory[Random.Range(0, _objectsManager.itemObjectsInventory.Count)];
             //update : box name, icon, description
             string name = _objectsManager.itemDataScriptable.names[item];
             Sprite icon = _objectsManager.objectSprites[item];

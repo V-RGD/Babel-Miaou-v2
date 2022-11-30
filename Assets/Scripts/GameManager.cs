@@ -90,7 +90,10 @@ public class GameManager : MonoBehaviour
                         if (_objectsManager.itemObjectsInventory[i] == 4)
                         {
                             //destroys item
+                            _objectsManager.OnObjectUnEquip(4);
+                            //adds new one
                             _objectsManager.itemObjectsInventory[i] = 999;
+                            _uiManager.UpdateHUDIcons();
                         }
                     }
                     //adds health

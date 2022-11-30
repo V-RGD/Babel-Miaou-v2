@@ -90,7 +90,10 @@ public class GameManager : MonoBehaviour
                         if (_objectsManager.itemObjectsInventory[i] == 4)
                         {
                             //destroys item
+                            _objectsManager.OnObjectUnEquip(4);
+                            //adds new one
                             _objectsManager.itemObjectsInventory[i] = 999;
+                            _uiManager.UpdateHUDIcons();
                         }
                     }
                     //adds health
@@ -111,7 +114,7 @@ public class GameManager : MonoBehaviour
         enemy.splashFX.gameObject.SetActive(true);
         enemy.splashFX.Play();
         //clamps damage to an int (security)
-        int damage = Mathf.CeilToInt(damageDealt);
+        float damage = damageDealt;
         //applies damage
         if (_objectsManager.killingSpreeTimer > 0)
         {

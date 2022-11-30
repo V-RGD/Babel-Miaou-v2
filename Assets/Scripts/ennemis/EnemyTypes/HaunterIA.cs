@@ -142,6 +142,7 @@ public class HaunterIA : MonoBehaviour
             //determine où l'attaque va se faire
             _attackAnchor.transform.LookAt(_player.transform.position);
             //actives weapon
+            _enemyTrigger.canTouchPlayer = true;
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             _rb.velocity = Vector3.zero;
             Vector3 pushedDir = playerDir;
@@ -150,11 +151,13 @@ public class HaunterIA : MonoBehaviour
             //attack duration : time when the player can actually be hit
             yield return new WaitForSeconds(0.4f);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
+            _enemyTrigger.canTouchPlayer = false;
             //waits cooldown depending on the attack used
             yield return new WaitForSeconds(enemyTypeData.attackCooldown - 0.4f);
             _rb.velocity = Vector3.zero;
+            _animator.CrossFade(Idle, 0, 0);
+            currentAnimatorState = Idle;
             //disables hitbox
-            _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
             _isAttacking = false;
     }
 

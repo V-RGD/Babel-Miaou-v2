@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using Unity.AI.Navigation;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -23,19 +20,17 @@ public class Enemy : MonoBehaviour
     private Rigidbody _rb;
 
     private GameManager _gameManager;
-    private UIManager _uiManager;
     public GameObject sprite;
     public VisualEffect spawnVfx;
     public EnemyType enemyTypeData;
     private NavMeshAgent _agent;
     public ParticleSystem splashFX;
+    public bool canTouchPlayer;
 
     [HideInInspector]public GameObject room;
-
     void Start()
     {
         _gameManager = GameManager.instance;
-        _uiManager = UIManager.instance;
         _rb = GetComponent<Rigidbody>();
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
@@ -89,7 +84,6 @@ public class Enemy : MonoBehaviour
         mainCollider.enabled = true;
         supportCollider.enabled = true;
         isActive = true;
-        
     }
     
     private void OnTriggerEnter(Collider other)
@@ -107,19 +101,19 @@ public class Enemy : MonoBehaviour
                 //receives damage
                 _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
             }
-            _rb.AddForce((_player.transform.position - transform.position) * -20, ForceMode.Impulse);
+            _rb.AddForce((_player.transform.position - transform.position) * -12, ForceMode.Impulse);
             _stunCounter = 1;
         }
         
         //deals damage
-        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking)
+        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking && canTouchPlayer)
         {
             _gameManager.DealDamageToPlayer(enemyTypeData.damage);
         }
 
         if (other.CompareTag("Poison"))
         {
-            //gets poisonned
+            //gets poisoned
             _poisonCounter = ObjectsManager.instance.gameVariables.poisonLenght;
         }
     }
@@ -128,7 +122,7 @@ public class Enemy : MonoBehaviour
     {
         for (int i = 0; i < enemyTypeData.eyesDropped; i++)
         {
-            Instantiate(enemyTypeData.eyeToken, transform.position, quaternion.identity);
+            Instantiate(enemyTypeData.eyeToken, transform.position, Quaternion.identity);
         }
         Destroy(gameObject);
     }

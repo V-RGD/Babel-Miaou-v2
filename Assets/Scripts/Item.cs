@@ -21,7 +21,7 @@ public class Item : MonoBehaviour
     private GameObject canvas;
     public GameObject costPrompt;
 
-    [HideInInspector]public bool isFromAShop;
+    public bool isFromAShop;
     private bool isPlayerInRange;
     private bool canBeTaken = true;
     private float grabDist = 5;
@@ -164,11 +164,18 @@ public class Item : MonoBehaviour
     void RandomObjectDraw()
     {
         _menuManager.drawMenu.gameObject.SetActive(true);
+        List<int> doNotChooseTheSameObjectList = new List<int>();
+        for (int i = 0; i < _objectsManager.itemList.Count; i++)
+        {
+            //add every possible item to the list
+            doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
+        }
         //actives a canvas to choose 2 objects from
         for (int i = 0; i < 2; i++)
         {
             //assigns box object with a random item
-            int item = _objectsManager.itemObjectsInventory[Random.Range(0, _objectsManager.itemObjectsInventory.Count)];
+            int item = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
+            doNotChooseTheSameObjectList.Remove(item);
             //update : box name, icon, description
             string name = _objectsManager.itemDataScriptable.names[item];
             Sprite icon = _objectsManager.objectSprites[item];

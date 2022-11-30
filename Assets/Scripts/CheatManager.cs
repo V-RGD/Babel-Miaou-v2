@@ -106,7 +106,7 @@ public class CheatManager : MonoBehaviour
                         //then asks for desired object
                         int item = Convert.ToInt32(thirdInput);
                         //then adds item to inventory
-                        if (box <= _objectsManager.itemObjectsInventory.Count && item <= 6)
+                        if (box <= _objectsManager.itemObjectsInventory.Count - 1 && item <= 6)
                         {
                             _objectsManager.ReplaceItem(box, item);
                         }

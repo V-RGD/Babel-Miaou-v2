@@ -27,23 +27,23 @@ public class PlayerAttacks : MonoBehaviour
 
     [Header("Attacks")] 
     public float attackStat = 1;
-    public float pickDamageMultiplier = 1.5f;
+    public float spinDamageMultiplier = 1.5f;
     public float smashDamageMultiplier = 5;
     public float dexterity;
 
     public float slashCooldown = 0.4f;
-    public float pickCooldown = 0.7f;
+    public float spinCooldown = 0.7f;
     public float smashCooldown = 2;
     public float smashWarmup = 1;
 
     public float smashForce = 10;
     public float slashForce = 15;
-    public float pickForce = 50;
+    public float spinForce = 8;
 
     private GameObject _attackAnchor;
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
-    private GameObject _pickHitBox;
+    private GameObject _spinHitBox;
     public GameObject poisonCloud;
 
     #endregion
@@ -98,7 +98,7 @@ public class PlayerAttacks : MonoBehaviour
         
         _attackAnchor = transform.GetChild(0).gameObject;
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
-        _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
+        _spinHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
@@ -170,7 +170,7 @@ public class PlayerAttacks : MonoBehaviour
         {
             case ComboState.Default : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.CeilToInt(attackStat);
+                damage = Mathf.FloorToInt(attackStat);
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
@@ -183,7 +183,7 @@ public class PlayerAttacks : MonoBehaviour
                 break;
             case ComboState.SimpleAttack : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.CeilToInt(attackStat);
+                damage = Mathf.FloorToInt(attackStat);
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
@@ -195,13 +195,13 @@ public class PlayerAttacks : MonoBehaviour
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
-                cooldown = pickCooldown * dexterity; 
-                damage = Mathf.CeilToInt(attackStat * pickDamageMultiplier);
-                hitbox = _pickHitBox; 
-                force = pickForce;
-                startUpLength = attackParameters.pickStartupLength;
-                activeLength = attackParameters.pickActiveLength;
-                recoverLength = attackParameters.pickRecoverLength;
+                cooldown = spinCooldown * dexterity; 
+                damage = Mathf.FloorToInt(attackStat * spinDamageMultiplier)/5;
+                hitbox = _spinHitBox; 
+                force = spinForce;
+                startUpLength = attackParameters.spinStartupLength;
+                activeLength = attackParameters.spinActiveLength;
+                recoverLength = attackParameters.spinRecoverLength;
                 //3rd anim
                 StartCoroutine(SpinSlashes());                
                 comboState = ComboState.SpinAttack;
@@ -224,7 +224,11 @@ public class PlayerAttacks : MonoBehaviour
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
         _pc.invincibleCounter = activeLength;
-        _rb.AddForce(attackDir * force, ForceMode.Impulse);
+
+        if (_pc.movementDir != Vector2.zero)
+        {
+            _rb.AddForce(attackDir * force, ForceMode.Impulse);
+        }
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
@@ -334,22 +338,27 @@ public class PlayerAttacks : MonoBehaviour
 
     IEnumerator SpinSlashes()
     {
-        float interval = 0.25f;
-        Debug.Log("spin");
+        float interval = attackParameters.spinActiveLength/4;
         spinSlashFX.Play();
+        _spinHitBox.SetActive(true);
         yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
-        Debug.Log("spin");
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
-        Debug.Log("spin");
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
-        Debug.Log("spin");
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
     }

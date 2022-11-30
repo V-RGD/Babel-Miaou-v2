@@ -101,7 +101,7 @@ public class Enemy : MonoBehaviour
                 //receives damage
                 _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
             }
-            _rb.AddForce((_player.transform.position - transform.position) * -20, ForceMode.Impulse);
+            _rb.AddForce((_player.transform.position - transform.position) * -12, ForceMode.Impulse);
             _stunCounter = 1;
         }
         

@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
@@ -27,23 +25,23 @@ public class PlayerAttacks : MonoBehaviour
 
     [Header("Attacks")] 
     public float attackStat = 1;
-    public float pickDamageMultiplier = 1.5f;
+    public float spinDamageMultiplier = 1.5f;
     public float smashDamageMultiplier = 5;
     public float dexterity;
 
     public float slashCooldown = 0.4f;
-    public float pickCooldown = 0.7f;
+    public float spinCooldown = 0.7f;
     public float smashCooldown = 2;
     public float smashWarmup = 1;
 
     public float smashForce = 10;
     public float slashForce = 15;
-    public float pickForce = 50;
+    public float spinForce = 8;
 
     private GameObject _attackAnchor;
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
-    private GameObject _pickHitBox;
+    private GameObject _spinHitBox;
     public GameObject poisonCloud;
 
     #endregion
@@ -98,7 +96,7 @@ public class PlayerAttacks : MonoBehaviour
         
         _attackAnchor = transform.GetChild(0).gameObject;
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
-        _pickHitBox = _attackAnchor.transform.GetChild(1).gameObject;
+        _spinHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
@@ -136,7 +134,7 @@ public class PlayerAttacks : MonoBehaviour
         //values assignation
         GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
-        int damage = 0;
+        float damage = 0;
         float cooldown = 0;
         float force = 0;
         float startUpLength = 0;
@@ -170,41 +168,45 @@ public class PlayerAttacks : MonoBehaviour
         {
             case ComboState.Default : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.CeilToInt(attackStat);
+                damage = Mathf.FloorToInt(attackStat);
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
+                normalSlashFX.Play();
                 //1st anim
                 comboState = ComboState.SimpleAttack;
                 PlayAnimation(attackDir);
                 break;
             case ComboState.SimpleAttack : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.CeilToInt(attackStat);
+                damage = Mathf.FloorToInt(attackStat);
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 //2nd anim
+                reverseSlashFX.Play();
                 comboState = ComboState.ReverseAttack;
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
-                cooldown = pickCooldown * dexterity; 
-                damage = Mathf.CeilToInt(attackStat * pickDamageMultiplier);
-                hitbox = _pickHitBox; 
-                force = pickForce;
-                startUpLength = attackParameters.pickStartupLength;
-                activeLength = attackParameters.pickActiveLength;
-                recoverLength = attackParameters.pickRecoverLength;
+                cooldown = spinCooldown * dexterity; 
+                damage = attackStat * spinDamageMultiplier/5;
+                hitbox = _spinHitBox; 
+                force = spinForce;
+                startUpLength = attackParameters.spinStartupLength;
+                activeLength = attackParameters.spinActiveLength;
+                recoverLength = attackParameters.spinRecoverLength;
                 //3rd anim
+                StartCoroutine(SpinSlashes());                
                 comboState = ComboState.SpinAttack;
                 PlayAnimation(attackDir);
                 break;
         }
+        Debug.Log(damage);
         
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);
@@ -221,7 +223,11 @@ public class PlayerAttacks : MonoBehaviour
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
         _pc.invincibleCounter = activeLength;
-        _rb.AddForce(attackDir * force, ForceMode.Impulse);
+
+        if (_pc.movementDir != Vector2.zero)
+        {
+            _rb.AddForce(attackDir * force, ForceMode.Impulse);
+        }
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
@@ -327,6 +333,33 @@ public class PlayerAttacks : MonoBehaviour
         //restores speed
         _pc.canMove = true;
         isAttacking = false;
+    }
+
+    IEnumerator SpinSlashes()
+    {
+        float interval = attackParameters.spinActiveLength/4;
+        spinSlashFX.Play();
+        _spinHitBox.SetActive(true);
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
     }
 
     void RightMouseHold(InputAction.CallbackContext context)

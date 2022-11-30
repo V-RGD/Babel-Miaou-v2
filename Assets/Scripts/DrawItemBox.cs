@@ -34,26 +34,15 @@ public class DrawItemBox : MonoBehaviour
         //UpdateItemBox(2);
     }
 
-    void UpdateItemBox(int item)
-    {
-        // //assigns variables
-        // _menuManager.ObjectMenu();
-        // //puts it in the 6th box
-        // _objectsManager.itemObjectsInventory[5] = item;
-        // //updates visuals
-        // _objectsManager.itemObjectsInventory[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[items[item].objectID];
-        // _objectsManager.itemObjectsInventory[5].GetComponent<ItemDragDrop>().boxAssociated = 5;
-        // _objectsManager.UiItemBoxesUpdate();
-        // Destroy(gameObject);
-    }
-    
     public void AccessToItemMenu(int id)
     {
+        _objectsManager.uiItemBoxes[3].SetActive(true);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
-        _objectsManager.itemObjectsInventory[3] = id;        //updates it's id
-        //_objectsManager.uiItemBoxes[5].GetComponent<Image>().sprite = _objectsManager.objectSprites[id];
+        int newItem = id;
+        _objectsManager.itemObjectsInventory[3] = newItem;
+        //updates it's id
+        _objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = _objectsManager.objectSprites[id];
         _objectsManager.UiItemBoxesUpdate();
-        //Destroy(gameObject);
     }
 }

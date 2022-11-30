@@ -50,7 +50,7 @@ public class BullIA : MonoBehaviour
     {
         _agent.speed = enemyTypeData.speed * _speedFactor;
         _playerDist = (_player.transform.position - transform.position).magnitude;
-        playerDir = (_player.transform.position - transform.position);
+        playerDir = (_player.transform.position - transform.position).normalized;
 
         if (_isHit)
         {

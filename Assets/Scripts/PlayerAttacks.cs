@@ -176,6 +176,7 @@ public class PlayerAttacks : MonoBehaviour
                 startUpLength = attackParameters.attackStartupLength;
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
+                normalSlashFX.Play();
                 //1st anim
                 comboState = ComboState.SimpleAttack;
                 PlayAnimation(attackDir);
@@ -189,6 +190,7 @@ public class PlayerAttacks : MonoBehaviour
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 //2nd anim
+                reverseSlashFX.Play();
                 comboState = ComboState.ReverseAttack;
                 PlayAnimation(attackDir);
                 break;
@@ -201,6 +203,7 @@ public class PlayerAttacks : MonoBehaviour
                 activeLength = attackParameters.pickActiveLength;
                 recoverLength = attackParameters.pickRecoverLength;
                 //3rd anim
+                StartCoroutine(SpinSlashes());                
                 comboState = ComboState.SpinAttack;
                 PlayAnimation(attackDir);
                 break;
@@ -327,6 +330,28 @@ public class PlayerAttacks : MonoBehaviour
         //restores speed
         _pc.canMove = true;
         isAttacking = false;
+    }
+
+    IEnumerator SpinSlashes()
+    {
+        float interval = 0.25f;
+        Debug.Log("spin");
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        spinSlashFX.Stop();
+        Debug.Log("spin");
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        spinSlashFX.Stop();
+        Debug.Log("spin");
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        spinSlashFX.Stop();
+        Debug.Log("spin");
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
     }
 
     void RightMouseHold(InputAction.CallbackContext context)

@@ -118,7 +118,7 @@ public class CheatManager : MonoBehaviour
                         //increases cap
                         if (_gameManager.health > _gameManager.maxHealth)
                         { 
-                            _gameManager.maxHealth = _gameManager.health;
+                            //_gameManager.maxHealth = _gameManager.health;
                         }
                         _uiManager.HealthBar(_gameManager.health);
                         break;
@@ -162,6 +162,35 @@ public class CheatManager : MonoBehaviour
                             case "menu" :
                                 SceneManager.LoadScene("MainMenu");
                                 break; 
+                        } 
+                        break;
+                    case "summon" : 
+                        switch (secondInput)
+                        {
+                            case "wanderer" :
+                                GameObject wanderer = Instantiate(LevelManager.instance.basicEnemies[0]);
+                                wanderer.transform.position = PlayerController.instance.gameObject.transform.position +
+                                                              Vector3.up;
+                                wanderer.GetComponent<Enemy>().StartCoroutine(wanderer.GetComponent<Enemy>().EnemyApparition());
+                                break;
+                            case "bull" :
+                                GameObject bull = Instantiate(LevelManager.instance.basicEnemies[1]);
+                                bull.transform.position = PlayerController.instance.gameObject.transform.position +
+                                                          Vector3.up;
+                                bull.GetComponent<Enemy>().StartCoroutine(bull.GetComponent<Enemy>().EnemyApparition());
+                                break; 
+                            case "shooter" :
+                                GameObject shooter = Instantiate(LevelManager.instance.basicEnemies[2]);
+                                shooter.transform.position = PlayerController.instance.gameObject.transform.position +
+                                                             Vector3.up;
+                                shooter.GetComponent<Enemy>().StartCoroutine(shooter.GetComponent<Enemy>().EnemyApparition());
+                                break; 
+                            case "mk" :
+                                GameObject mk = Instantiate(LevelManager.instance.basicEnemies[3]);
+                                mk.transform.position = PlayerController.instance.gameObject.transform.position +
+                                                        Vector3.up;
+                                mk.GetComponent<Enemy>().StartCoroutine(mk.GetComponent<Enemy>().EnemyApparition());
+                                break;
                         } 
                         break;
                 }

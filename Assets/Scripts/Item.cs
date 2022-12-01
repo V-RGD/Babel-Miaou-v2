@@ -82,7 +82,6 @@ public class Item : MonoBehaviour
             case ItemType.MaxHealth :
                 int maxHealthAmount = 2;
                 gameManager.maxHealth += maxHealthAmount;
-                Debug.Log("maxHealth increased from "+ (gameManager.maxHealth - maxHealthAmount) + "to " + gameManager.maxHealth);
                 gameManager.health += maxHealthAmount;
                 _uiManager.HealthBar(gameManager.health);
                 break;
@@ -102,9 +101,6 @@ public class Item : MonoBehaviour
         //check whether the item is from the shop or not
         if (isFromAShop)
         {
-            //can collect just with a press
-            itemCost = 0;
-
             if (isPlayerInRange)
             {
                 costPrompt.SetActive(true);
@@ -125,10 +121,14 @@ public class Item : MonoBehaviour
                 isPlayerInRange = false;
             }
         }
+        else
+        {
+            costPrompt.SetActive(false);
+        }
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && isFromAShop)
+        if (isPlayerInRange && isFromAShop && !_menuManager.gameIsPaused)
         {
             if (gameManager.money >= itemCost)
             {

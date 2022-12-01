@@ -50,7 +50,7 @@ public class BullIA : MonoBehaviour
     {
         _agent.speed = enemyTypeData.speed * _speedFactor;
         _playerDist = (_player.transform.position - transform.position).magnitude;
-        playerDir = (_player.transform.position - transform.position);
+        playerDir = (_player.transform.position - transform.position).normalized;
 
         if (_isHit)
         {
@@ -59,6 +59,7 @@ public class BullIA : MonoBehaviour
         }
         
         StunProcess();
+        WallCheck();
     }
 
     private void FixedUpdate()
@@ -66,7 +67,6 @@ public class BullIA : MonoBehaviour
         _stunCounter -= Time.deltaTime;
         ForceManagement();
         MaxSpeed();
-        WallCheck();
         Friction();
 
         if (_stunCounter < 0 && !_isDashing && _enemyTrigger.isActive)
@@ -126,15 +126,17 @@ public class BullIA : MonoBehaviour
     {
         //stops movement
         _rb.velocity = Vector3.zero;
-        dashFactor = -0.1f;
+        dashFactor = -0.2f;
         //adds force to character
         _isDashing = true;
+        _enemyTrigger.canTouchPlayer = true;
         //waits for the attack to start
         yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
         dashFactor = 1;
         //fonce jusuqu'a toucher un mur
         yield return new WaitUntil(() => _isTouchingWall);
         _isDashing = false;
+        _enemyTrigger.canTouchPlayer = false;
         //stops
         _rb.velocity = Vector3.zero;
         //recoil
@@ -160,7 +162,7 @@ public class BullIA : MonoBehaviour
         if (_isDashing)
         {
             _speedFactor = 0;
-            _rb.AddForce(dashFactor * attackDir * enemyTypeData.dashForce);
+            _rb.AddForce(attackDir * (dashFactor * 10 * enemyTypeData.dashForce));
         }
     }
     private void OnTriggerEnter(Collider other)
@@ -172,13 +174,22 @@ public class BullIA : MonoBehaviour
                 //bumps the player
                 _player.GetComponent<PlayerController>().stunCounter = 1.5f;
                 _player.GetComponent<Rigidbody>().AddForce(playerDir * enemyTypeData.bumpForce);
+                
+            }
+        }
+        
+        if (other.CompareTag("Wall"))
+        {
+            if (_isDashing)
+            {
+                _isTouchingWall = true;
             }
         }
     }
 
     void WallCheck()
     {
-        if (Physics.Raycast(transform.position, attackDir, 4, wallLayerMask))
+        if (Physics.Raycast(transform.position, attackDir, 6, wallLayerMask))
         {
             _isTouchingWall = true;
         }

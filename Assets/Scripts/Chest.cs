@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -41,7 +43,8 @@ public class Chest : MonoBehaviour
         int randLoot = Random.Range(0, 100);
         if (randLoot <= 15)
         {
-            GameObject item = Instantiate(objectManager.objectTemplate, transform.position, quaternion.identity);
+            GameObject item = Instantiate(objectManager.objectTemplate, transform.position, Quaternion.identity);
+            //checks which items are already equipped and remove them from the possible items
             item.GetComponent<Item>().objectID = objectManager.itemList[Random.Range(0, objectManager.itemList.Count)];
             item.SetActive(true);
             float randDir = Random.Range(0, 1f);

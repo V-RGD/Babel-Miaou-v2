@@ -7,9 +7,9 @@ public class AttackParameters : ScriptableObject
     public float attackActiveLength;
     public float attackRecoverLength;
     
-    public float pickStartupLength;
-    public float pickActiveLength;
-    public float pickRecoverLength;
+    public float spinStartupLength = 0.2f;
+    public float spinActiveLength = 0.8f;
+    public float spinRecoverLength = 0.1f;
     
     public float smashStartupLength;
     public float smashActiveLength;

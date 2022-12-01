@@ -130,12 +130,12 @@ public class Room : MonoBehaviour
             //instantiates it as a child to track down how many are left
             GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyToSpawn], enemyGroup.transform);
             enemySpawning.transform.position = spawnPoint;
+            enemySpawning.transform.Rotate(0, -45, 0);
             enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(false);
             Debug.Log("enemy spawned");
         }
     }
-    
     void RoomType()
     {
         if (currentRoom == 999)
@@ -220,7 +220,10 @@ public class Room : MonoBehaviour
 
     IEnumerator ActivateAllEnemies()
     {
-        _objectsManager.noHitStreak = true;
+        if (_objectsManager.noHit)
+        {
+            _objectsManager.noHitStreak = true;
+        }
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);

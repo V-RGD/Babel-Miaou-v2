@@ -206,7 +206,6 @@ public class PlayerAttacks : MonoBehaviour
                 PlayAnimation(attackDir);
                 break;
         }
-        Debug.Log(damage);
         
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);

@@ -104,11 +104,27 @@ public class CheatManager : MonoBehaviour
                         //if object, asks for desired box
                         int box = Convert.ToInt32(secondInput);
                         //then asks for desired object
-                        int item = Convert.ToInt32(thirdInput);
+                        string item = thirdInput;
                         //then adds item to inventory
-                        if (box <= _objectsManager.itemObjectsInventory.Count - 1 && item <= 6)
+                        if (box <= _objectsManager.itemObjectsInventory.Count - 1)
                         {
-                            _objectsManager.ReplaceItem(box, item);
+                            switch (item)
+                            {
+                                case "KillingSpree" : _objectsManager.ReplaceItem(box, 0);
+                                    break;
+                                case "SacredCross" : _objectsManager.ReplaceItem(box, 1);
+                                    break;
+                                case "StinkyFish" : _objectsManager.ReplaceItem(box, 2);
+                                    break;
+                                case "EyeCollector" : _objectsManager.ReplaceItem(box, 3);
+                                    break;
+                                case "CatLuck" : _objectsManager.ReplaceItem(box, 4);
+                                    break;
+                                case "EarthQuake" : _objectsManager.ReplaceItem(box, 5);
+                                    break;
+                                case "NoHit" : _objectsManager.ReplaceItem(box, 6);
+                                    break;
+                            }
                         }
                         break;
                     

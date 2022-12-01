@@ -8598,11 +8598,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1565165419813755923, guid: 67bb42976821bfa4abc026bf7d5f7a7d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7294989189091147427, guid: 67bb42976821bfa4abc026bf7d5f7a7d,
         type: 3}
       propertyPath: m_Name
@@ -12466,6 +12461,7 @@ GameObject:
   - component: {fileID: 1774056476}
   - component: {fileID: 1774056477}
   - component: {fileID: 1774056478}
+  - component: {fileID: 1774056479}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -12557,6 +12553,21 @@ MonoBehaviour:
     type: 3}
   exit: {fileID: 3214483467737570068, guid: 6642675a588ccf143a02637e25acb3a5, type: 3}
   currentLevel: 0
+--- !u!114 &1774056479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774056474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6758c41290396004f9ac4bd081a64fb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stage: 0
+  roomNumber: 0
+  difficulty: 0
 --- !u!1 &1797163779
 GameObject:
   m_ObjectHideFlags: 0
@@ -13908,7 +13919,7 @@ PrefabInstance:
     - target: {fileID: 2723524113068832724, guid: 1a2192257610a4c40bd0c7e6d5a77d3c,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a2192257610a4c40bd0c7e6d5a77d3c, type: 3}

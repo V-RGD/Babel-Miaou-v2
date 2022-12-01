@@ -237,7 +237,6 @@ public class Room : MonoBehaviour
 
     void DoorSpawn()
     {
-        
         for (int i = 0; i < 4; i++)
         {
             //checks if there is supposed to be doors on each corner

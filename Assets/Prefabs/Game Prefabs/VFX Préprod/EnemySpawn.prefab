@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81514752}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -4.92, y: 0, z: -4.36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -67,18 +67,24 @@ VisualEffect:
         m_Overridden: 1
       - m_Value: 36
         m_Name: Scale_Distortion
-        m_Overridden: 0
+        m_Overridden: 1
       - m_Value: 1
         m_Name: Smoke_Speed
-        m_Overridden: 0
+        m_Overridden: 1
       - m_Value: 0
         m_Name: Smoke_Distortion
-        m_Overridden: 0
+        m_Overridden: 1
+      - m_Value: 0
+        m_Name: Add
+        m_Overridden: 1
+      - m_Value: 6.5
+        m_Name: Multiply
+        m_Overridden: 1
     m_Vector2f:
       m_Array:
       - m_Value: {x: 1, y: 1}
         m_Name: Smoke_size
-        m_Overridden: 0
+        m_Overridden: 1
       - m_Value: {x: 10, y: 12}
         m_Name: Random_Velocity
         m_Overridden: 1
@@ -87,18 +93,21 @@ VisualEffect:
       - m_Value: {x: 1, y: 12, z: 1}
         m_Name: Size_smoke
         m_Overridden: 1
+      - m_Value: {x: 1, y: 12, z: 1}
+        m_Name: Size_Cylinder
+        m_Overridden: 1
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 0.9999999, y: 0.52581465, z: 0.19339618, w: 1}
+      - m_Value: {x: 3.4039214, y: 0.48636335, z: 0, w: 1}
         m_Name: Main_Color
         m_Overridden: 1
       - m_Value: {x: 0, y: 0, z: 0, w: 0}
         m_Name: Smoke_Color
-        m_Overridden: 0
-      - m_Value: {x: 36.75834, y: 2.5179713, z: 0, w: 1}
+        m_Overridden: 1
+      - m_Value: {x: 3.4039214, y: 0.48636335, z: 0, w: 1}
         m_Name: Particule_Color
         m_Overridden: 1
-      - m_Value: {x: 5.992157, y: 2.752562, z: 1.2235293, w: 1}
+      - m_Value: {x: 6.6415095, y: 0.15663935, z: 0.72217983, w: 1}
         m_Name: Top_Color
         m_Overridden: 1
     m_Uint:
@@ -171,6 +180,68 @@ VisualEffect:
           m_RotationOrder: 4
         m_Name: Curve_Switch_Color
         m_Overridden: 1
+      - m_Value:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0.0082760565
+            outSlope: 0.0082760565
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.5275902
+          - serializedVersion: 3
+            time: 0.2701374
+            value: 0.0053250045
+            inSlope: -0.0013252638
+            outSlope: 3.215695
+            tangentMode: 1
+            weightedMode: 0
+            inWeight: 0.35738918
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.32762626
+            value: 1.0009243
+            inSlope: 11.445104
+            outSlope: 0.13162646
+            tangentMode: 1
+            weightedMode: 0
+            inWeight: 0.025014326
+            outWeight: 0.55509096
+          - serializedVersion: 3
+            time: 0.6422292
+            value: 0.9954055
+            inSlope: -0.019352898
+            outSlope: -1.621083
+            tangentMode: 1
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.1937971
+          - serializedVersion: 3
+            time: 0.9125014
+            value: 0.0048910445
+            inSlope: -3.714811
+            outSlope: 0.041025862
+            tangentMode: 1
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 1
+          - serializedVersion: 3
+            time: 1.0021598
+            value: 0.0047400263
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        m_Name: Curve_Switch_Color_Eye
+        m_Overridden: 1
     m_Gradient:
       m_Array: []
     m_NamedObject:
@@ -216,7 +287,7 @@ VFXRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 12
+  m_SortingOrder: 0
 --- !u!1 &1948735071
 GameObject:
   m_ObjectHideFlags: 0

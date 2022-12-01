@@ -39,7 +39,7 @@ public class LittleShit : MonoBehaviour
     void Direction()
     {
         //si oeil, va vers l'oeil
-        if (_gameManager.eyesInGame.Count > 0)
+        if (_gameManager.eyesInGame.Count > 0 && (_gameManager.eyesInGame[0].position - transform.position).magnitude < 35)
         {
             agent.SetDestination(_gameManager.eyesInGame[0].position);
             agent.stoppingDistance = 0.1f;
@@ -64,7 +64,7 @@ public class LittleShit : MonoBehaviour
     void TpToPlayer()
     {
         //teleports to player if too far away
-        if ((_player.transform.position - transform.position).magnitude > 60 && _gameManager.eyesInGame.Count > 0)
+        if ((_player.transform.position - transform.position).magnitude > 50 && _gameManager.eyesInGame.Count > 0)
         {
             transform.position = new Vector3(_player.transform.position.x, transform.position.y,
                 _player.transform.position.z);

@@ -56,15 +56,12 @@ public class FinalBossIA : MonoBehaviour
     #endregion
 
     #region Circle
-    [Header("Circle")]
-    public GameObject circleSprite;
+
+    [Header("Circle")] 
+    public List<CircleAttack> circleAttacks;
     private float _playerDist;
-    private float _circleMaxDist;
-    private float _circleMinDist;
-    private float _circleTimer;
-    private bool _circleActive;
-    private Vector3 _circleCenter;
     public Vector3 roomCenter;
+    private int _circleNumber = 1;
     #endregion
 
     #region EyeChain
@@ -110,7 +107,8 @@ public class FinalBossIA : MonoBehaviour
         _canActiveSecondLaser = true;
         _navMeshSurface.BuildNavMesh();
         H_LaserVfx.Stop();
-
+        _circleNumber = 1;
+    
         for (int i = 0; i < values.eyeNumber; i++)
         {
             GameObject eye = Instantiate(eyeChainPrefab);
@@ -129,7 +127,6 @@ public class FinalBossIA : MonoBehaviour
     {
         _playerDist = (_player.transform.position - transform.position).magnitude;
         H_LaserCheck();
-        CircleManagement();
     }
     IEnumerator M_Laser()
     {
@@ -184,12 +181,12 @@ public class FinalBossIA : MonoBehaviour
     IEnumerator CircleTrap()
     {
         //manages circle appearance and dissapearance
-        _circleActive = true;
-        _circleTimer = values.circleLength;
-        circleSprite.SetActive(true);
+        for (int i = 0; i < _circleNumber; i++)
+        {
+            circleAttacks[i].StartCoroutine(circleAttacks[i].CircleActivation());
+            yield return new WaitForSeconds(2.5f);
+        }
         yield return new WaitForSeconds(values.circleLength);
-        circleSprite.SetActive(false);
-        _circleActive = false;
         StartCoroutine(ChooseNextAttack());
     }
     IEnumerator EyeChain()
@@ -280,6 +277,8 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
+        StartCoroutine(EyeChain());
+        yield break;
 
         float meleeRange = 25;
         float handsAvailable = 2;
@@ -290,6 +289,7 @@ public class FinalBossIA : MonoBehaviour
             //if first phase
             _canActiveFirstLaser = false;
             StartCoroutine(H_Laser());
+            _circleNumber = 2;
             yield break;
         }
         if (healthRatio < 0.33f && _canActiveSecondLaser)
@@ -297,6 +297,7 @@ public class FinalBossIA : MonoBehaviour
             //secondPhase
             _canActiveSecondLaser = false;
             StartCoroutine(H_Laser());
+            _circleNumber = 3;
             yield break;
         }
         //if attack counter inferior to the required amount to play body attacks, and at least one hand is available, plays hand attack
@@ -357,28 +358,6 @@ public class FinalBossIA : MonoBehaviour
                     PlayerController.instance.invincibleCounter = 2;
                 }
             } 
-        }
-    }
-    void CircleManagement()
-    {
-        if (_circleActive)
-        {
-            //manages circle diminution
-            _circleTimer -= Time.deltaTime;
-
-            //circle size and detection
-            float circleDist = values.circleOriginalSize * _circleTimer / values.circleLength;
-            _circleMaxDist = 4*circleDist + values.circlePosInterval;
-            _circleMinDist = 4*circleDist - values.circlePosInterval;
-
-            //circle size diminishes over time
-            circleSprite.transform.localScale = new Vector3(circleDist, circleDist, transform.localScale.z);
-
-            //manages playerhitbox check
-            if (_playerDist > _circleMinDist && _playerDist < _circleMaxDist && _circleActive)
-            {
-                _gameManager.DealDamageToPlayer(values.circleDamage);
-            }
         }
     }
     void TakeDamage(float damageDealt) //when enemy takes hit

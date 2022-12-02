@@ -49,12 +49,12 @@ public class HaunterIA : MonoBehaviour
         _attackAnchor = transform.GetChild(1).gameObject;
         _enemyTrigger = GetComponent<Enemy>();
         enemyTypeData = _enemyTrigger.enemyTypeData;
-        GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
+        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
 
     private void Update()
     {
-        _agent.speed = enemyTypeData.speed * _speedFactor;
+        _agent.speed = _enemyTrigger.speed * _speedFactor  * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position).normalized;
 
@@ -136,7 +136,7 @@ public class HaunterIA : MonoBehaviour
             //determines attack length, damage, hitbox, force to add
             //stops movement
             //add current damage stat to weapon
-            _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>().damage = enemyTypeData.damage;
+            _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>().damage = _enemyTrigger.damage;
             //warmup
             yield return new WaitForSeconds(enemyTypeData.shootWarmup);
             //determine où l'attaque va se faire

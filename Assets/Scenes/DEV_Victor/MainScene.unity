@@ -1030,7 +1030,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 101862749}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1676,7 +1676,7 @@ GameObject:
   - component: {fileID: 311798744}
   - component: {fileID: 311798746}
   - component: {fileID: 311798745}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ConsoleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8195,7 +8195,7 @@ GameObject:
   m_Component:
   - component: {fileID: 699999363}
   - component: {fileID: 699999364}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: InputConsole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8370,7 +8370,7 @@ GameObject:
   - component: {fileID: 736412605}
   - component: {fileID: 736412604}
   - component: {fileID: 736412603}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9190,7 +9190,7 @@ GameObject:
   - component: {fileID: 1041970161}
   - component: {fileID: 1041970163}
   - component: {fileID: 1041970162}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9995,7 +9995,7 @@ GameObject:
   - component: {fileID: 1242588285}
   - component: {fileID: 1242588284}
   - component: {fileID: 1242588283}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: InputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11751,7 +11751,7 @@ GameObject:
   - component: {fileID: 1640131371}
   - component: {fileID: 1640131373}
   - component: {fileID: 1640131372}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DebugText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12261,7 +12261,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1752328408}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12461,7 +12461,6 @@ GameObject:
   - component: {fileID: 1774056476}
   - component: {fileID: 1774056477}
   - component: {fileID: 1774056478}
-  - component: {fileID: 1774056479}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -12498,8 +12497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35db3a8a39226d240a50d4a879c8275f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldenPathLength: 7
-  branchProba: 80
+  goldenPathLength: 10
   rooms:
   - {fileID: 384253802}
   - {fileID: 384253801}
@@ -12516,11 +12514,8 @@ MonoBehaviour:
   - {fileID: 384253790}
   - {fileID: 384253789}
   - {fileID: 384253788}
-  goldenPathCheck: {fileID: 0}
-  branchCheck: {fileID: 0}
   roomList: {fileID: 622257111}
   dungeonSize: 0
-  spawnBranches: 0
   finishedGeneration: 0
 --- !u!114 &1774056478
 MonoBehaviour:
@@ -12538,36 +12533,46 @@ MonoBehaviour:
   - {fileID: 1939700266231145097, guid: d59e3074c1113ed4eb64e4d84780b109, type: 3}
   - {fileID: 9140140783102714226, guid: 2cea58f8943a7f24683e811fddef9e7a, type: 3}
   - {fileID: 6630231365920386385, guid: 90e711319d09e104196e6f7a32b37e98, type: 3}
+  - {fileID: 1939700266231145097, guid: 9b7d04a797a7fb846a6cc5cae5d8cb52, type: 3}
   - {fileID: 550309420291840642, guid: 64340925e224a91499b0c4dff7945b69, type: 3}
   miniBosses:
   - {fileID: 576605590472807740, guid: fe32efc9682c8034eb95fcdf4a670730, type: 3}
   chest: {fileID: 2986764650583149982, guid: 83116e66c63ba10458bc0fc8e616e1ab, type: 3}
   shop: {fileID: 2723524113068832724, guid: 1a2192257610a4c40bd0c7e6d5a77d3c, type: 3}
   door: {fileID: 8730130470922712479, guid: 35050417973351340aad014f4729c5e4, type: 3}
-  minEnemies: 3
-  populationGrowthFactor: 0.5
   roomSize: 50
-  spawnMatrixUnlock: 000000000300000005000000070000000c000000
   roomList: []
   entrance: {fileID: 1466252842052502633, guid: 14cc2ce7cd259094ba8359dc2f2b94df,
     type: 3}
   exit: {fileID: 3214483467737570068, guid: 6642675a588ccf143a02637e25acb3a5, type: 3}
   currentLevel: 0
---- !u!114 &1774056479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1774056474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6758c41290396004f9ac4bd081a64fb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stage: 0
-  roomNumber: 0
-  difficulty: 0
+  roomSpawnAmountMatrix: 030000000400000005000000040000000500000006000000050000000600000007000000
+  matrices:
+  - spawnMatrix: 460000003c000000320000002d000000140000000a000000000000000000000000000000
+    enemyValues:
+    - {x: 4, y: 1, z: 1, w: 1}
+    - {x: 5, y: 2, z: 1, w: 1}
+    - {x: 0, y: 0, z: 0, w: 0}
+  - spawnMatrix: 0f00000014000000190000000f0000000f0000001400000019000000190000001e000000
+    enemyValues:
+    - {x: 8, y: 3, z: 0.5, w: 2}
+    - {x: 9, y: 4, z: 0.5, w: 2}
+    - {x: 10, y: 5, z: 0.5, w: 2}
+  - spawnMatrix: 0f00000014000000190000000f0000000f00000014000000140000000a0000000a000000
+    enemyValues:
+    - {x: 3, y: 1, z: 1.25, w: 1}
+    - {x: 4, y: 1, z: 1.25, w: 1}
+    - {x: 4, y: 2, z: 1.25, w: 2}
+  - spawnMatrix: 000000000000000000000000190000001e0000001e000000230000002800000028000000
+    enemyValues:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 5, y: 2, z: 1, w: 2}
+    - {x: 6, y: 2, z: 1.25, w: 2}
+  - spawnMatrix: 00000000000000000000000000000000140000001400000014000000190000001e000000
+    enemyValues:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 2, y: 2, z: 1, w: 2}
+    - {x: 3, y: 3, z: 2, w: 3}
 --- !u!1 &1797163779
 GameObject:
   m_ObjectHideFlags: 0
@@ -13690,7 +13695,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1998757249}
   - component: {fileID: 1998757250}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15130,7 +15135,7 @@ Canvas:
   m_GameObject: {fileID: 230173572970956631}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -15212,7 +15217,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 32
 --- !u!1 &230173572970956631
 GameObject:
   m_ObjectHideFlags: 0
@@ -15608,6 +15613,7 @@ MonoBehaviour:
   healthBonus: 0
   playerRoom: 0
   isDead: 0
+  currentLevel: 0
 --- !u!4 &230173574124167565
 Transform:
   m_ObjectHideFlags: 0
@@ -15815,7 +15821,7 @@ GameObject:
   - component: {fileID: 3477765674750637529}
   - component: {fileID: 3477765674750637528}
   - component: {fileID: 3477765674750637479}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (19)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15834,7 +15840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -15842,7 +15848,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15920,7 +15926,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -15928,7 +15934,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15949,7 +15955,7 @@ GameObject:
   - component: {fileID: 3477765674867485574}
   - component: {fileID: 3477765674867485575}
   - component: {fileID: 3477765674867485688}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (15)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15967,7 +15973,7 @@ GameObject:
   - component: {fileID: 3477765674877333073}
   - component: {fileID: 3477765674877333072}
   - component: {fileID: 3477765674877333039}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (13)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15986,7 +15992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -15994,7 +16000,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16072,7 +16078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16080,7 +16086,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16101,7 +16107,7 @@ GameObject:
   - component: {fileID: 3477765674907862570}
   - component: {fileID: 3477765674907862571}
   - component: {fileID: 3477765674907862612}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16120,7 +16126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16128,7 +16134,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16149,7 +16155,7 @@ GameObject:
   - component: {fileID: 3477765675046504820}
   - component: {fileID: 3477765675046504821}
   - component: {fileID: 3477765675046504714}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16196,7 +16202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16204,7 +16210,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16225,7 +16231,7 @@ GameObject:
   - component: {fileID: 3477765675174636632}
   - component: {fileID: 3477765675174636633}
   - component: {fileID: 3477765675174636582}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16299,7 +16305,7 @@ GameObject:
   - component: {fileID: 3477765675226339257}
   - component: {fileID: 3477765675226339256}
   - component: {fileID: 3477765675226339271}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16318,7 +16324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16326,7 +16332,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16375,7 +16381,7 @@ GameObject:
   - component: {fileID: 3477765675233935039}
   - component: {fileID: 3477765675233935038}
   - component: {fileID: 3477765675233935041}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (11)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16394,7 +16400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16402,7 +16408,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16424,7 +16430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16432,7 +16438,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16453,7 +16459,7 @@ GameObject:
   - component: {fileID: 3477765675265530586}
   - component: {fileID: 3477765675265530587}
   - component: {fileID: 3477765675265530532}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (14)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16499,7 +16505,7 @@ GameObject:
   - component: {fileID: 3477765675329540063}
   - component: {fileID: 3477765675329540062}
   - component: {fileID: 3477765675329540001}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16518,7 +16524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16526,7 +16532,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16575,7 +16581,7 @@ GameObject:
   - component: {fileID: 3477765675468711397}
   - component: {fileID: 3477765675468711396}
   - component: {fileID: 3477765675468711323}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (18)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16594,7 +16600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16602,7 +16608,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16680,7 +16686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16688,7 +16694,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16709,7 +16715,7 @@ GameObject:
   - component: {fileID: 3477765675500737082}
   - component: {fileID: 3477765675500737083}
   - component: {fileID: 3477765675500737092}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16756,7 +16762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16764,7 +16770,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16785,7 +16791,7 @@ GameObject:
   - component: {fileID: 3477765675627122688}
   - component: {fileID: 3477765675627122689}
   - component: {fileID: 3477765675627122814}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16832,7 +16838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16840,7 +16846,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16861,7 +16867,7 @@ GameObject:
   - component: {fileID: 3477765675629815992}
   - component: {fileID: 3477765675629815993}
   - component: {fileID: 3477765675629816006}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (16)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16907,7 +16913,7 @@ GameObject:
   - component: {fileID: 3477765675633462825}
   - component: {fileID: 3477765675633462824}
   - component: {fileID: 3477765675633462871}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16926,7 +16932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16934,7 +16940,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16956,7 +16962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -16964,7 +16970,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16985,7 +16991,7 @@ GameObject:
   - component: {fileID: 3477765675698011462}
   - component: {fileID: 3477765675698011463}
   - component: {fileID: 3477765675698011448}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17031,7 +17037,7 @@ GameObject:
   - component: {fileID: 3477765676083936637}
   - component: {fileID: 3477765676083936636}
   - component: {fileID: 3477765676083936515}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (17)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17050,7 +17056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -17058,7 +17064,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17108,7 +17114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -17116,7 +17122,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17137,7 +17143,7 @@ GameObject:
   - component: {fileID: 3477765676127590850}
   - component: {fileID: 3477765676127590851}
   - component: {fileID: 3477765676127590844}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17212,7 +17218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -17220,7 +17226,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17241,7 +17247,7 @@ GameObject:
   - component: {fileID: 3477765676297107622}
   - component: {fileID: 3477765676297107623}
   - component: {fileID: 3477765676297107672}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17287,7 +17293,7 @@ GameObject:
   - component: {fileID: 3477765676564027709}
   - component: {fileID: 3477765676564027708}
   - component: {fileID: 3477765676564027715}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HeartUIPrefab (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17306,7 +17312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: b42213eb9e7d682418d4a753bb383b23, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -17314,7 +17320,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -430162708, guid: 4a73ba14fba323543a87bd7e000aafa5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 51a6e4b461d969d419330c72b184876c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17334,7 +17340,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5723451785032428551}
   - component: {fileID: 5723451785032428552}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DebugWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17773,10 +17779,10 @@ Camera:
   field of view: 60
   orthographic: 1
   orthographic size: 11
-  m_Depth: -1
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2147483647
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -17871,7 +17877,7 @@ MonoBehaviour:
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 2147483647
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1

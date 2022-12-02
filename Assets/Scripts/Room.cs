@@ -62,7 +62,7 @@ public class Room : MonoBehaviour
     void Update()
     {
         _enemiesRemaining = enemyGroup.transform.childCount; //check how many enemies are still in the room
-        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 || Input.GetKeyDown(KeyCode.O))
+        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
         {
             _canChestSpawn = false;
             DoorUnlock();
@@ -88,54 +88,89 @@ public class Room : MonoBehaviour
         CheckPlayerPresence();
         //ActiveEffects();
     }
+
     void EnemyGeneration()
     {
-        //decides the number of enemies to spawn : base population + difficulty increase + 20% uncertainty
-        int enemyPopulation = Mathf.RoundToInt((_lm.minEnemies + currentRoom * _lm.populationGrowthFactor) * Random.Range(1f, 1.2f));
-
-        _enemiesRemaining = enemyPopulation;
-        //for each enemy, randomizes which to spawn
-        for (var i = 0; i < enemyPopulation; i++)
+        //determine etage
+        int stage = _gameManager.currentLevel;
+        int difficulty;
+        //determine niveau de difficulté
+        if (currentRoom < 3)
         {
+            difficulty = 0;
+        }
+        else if (currentRoom < 5)
+        {
+            difficulty = 3;
+        }
+        else
+        {
+            difficulty = 6;
+        }
+        //determine le nombre d'ennemis devant spawn
+        int enemyNumber = _lm.roomSpawnAmountMatrix[difficulty + stage];
+        //pour chaque ennemi
+        for (int i = 0; i < enemyNumber; i++)
+        {
+            //determine les pourcentages d'apparition pour chacun
+            GameObject enemySpawning;
+            int enemyTypeRandomizer = Random.Range(0, 100);
+            int enemyType;
+            //determines les plafonds d'apparition pour les ennemis
+            int wandererCeil = _lm.matrices[0].spawnMatrix[difficulty + stage];
+            int bullCeil = _lm.matrices[1].spawnMatrix[difficulty + stage];
+            int shooterCeil = _lm.matrices[2].spawnMatrix[difficulty + stage];
+            int tankCeil = _lm.matrices[3].spawnMatrix[difficulty + stage];
+            
+            if (enemyTypeRandomizer < wandererCeil)
+            {
+                //wanderer
+                enemyType = 0;
+            }
+            else if (enemyTypeRandomizer < wandererCeil + bullCeil)
+            {
+                //bull
+                enemyType = 1;
+            }
+            else if (enemyTypeRandomizer < wandererCeil + bullCeil + shooterCeil)
+            {
+                //shooter
+                enemyType = 2;
+            }
+            else if (enemyTypeRandomizer < wandererCeil + bullCeil + shooterCeil + tankCeil)
+            {
+                //tank
+                enemyType = 3;
+            }
+            else
+            {
+                //marksman
+                enemyType = 4;
+            }
+            enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
+            
+            //determines position
             //calculates a random position where the enemy will spawn
             float randPosX = Random.Range(-15, 15);
             float randPosY = Random.Range(-15, 15);
             var spawnPoint = roomCenter.position + new Vector3(randPosX, 3, randPosY);
-
-            //check which enemy is available
-            List<int> enemiesAvailable = new List<int>(5);
-
-            if (currentRoom >= _lm.spawnMatrixUnlock[0])
-            {
-                enemiesAvailable.Add(0);
-            }
-            if (currentRoom >= _lm.spawnMatrixUnlock[1])
-            {
-                enemiesAvailable.Add(1);
-            }
-            if (currentRoom >= _lm.spawnMatrixUnlock[2])
-            {
-                enemiesAvailable.Add(2);
-            }
-            if (currentRoom >= _lm.spawnMatrixUnlock[3])
-            {
-                enemiesAvailable.Add(3);
-            }
-            if (currentRoom >= _lm.spawnMatrixUnlock[4])
-            {
-                enemiesAvailable.Add(4);
-            }
-            //take a random one for a list of available enemies
-            int enemyToSpawn = enemiesAvailable[Random.Range(0, enemiesAvailable.Count)];
-            //instantiates it as a child to track down how many are left
-            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyToSpawn], enemyGroup.transform);
+            
+            //spawns enemy
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.transform.Rotate(0, -45, 0);
             enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(false);
+            
+            //sets variables
+            enemySpawning.GetComponent<Enemy>().health = _lm.matrices[enemyType].enemyValues[stage].x;
+            enemySpawning.GetComponent<Enemy>().damage = _lm.matrices[enemyType].enemyValues[stage].y;
+            enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
+        
             Debug.Log("enemy spawned");
         }
     }
+    
     void RoomType()
     {
         if (currentRoom == 999)

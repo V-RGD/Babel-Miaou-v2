@@ -61,7 +61,7 @@ public class MarksManIA : MonoBehaviour
 
         _wallLayerMask = LayerMask.GetMask("Wall");
         _playerLayerMask = LayerMask.GetMask("Player");
-        GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
+        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
 
     private void Start()
@@ -72,7 +72,7 @@ public class MarksManIA : MonoBehaviour
 
     private void Update()
     {
-        _agent.speed = enemyTypeData.speed * _speedFactor;
+        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         _playerDir = _player.transform.position - transform.position;
 

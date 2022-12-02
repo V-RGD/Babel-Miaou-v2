@@ -113,7 +113,7 @@ public class ObjectsManager : MonoBehaviour
             case 0 : killingSpree = true; break;
             case 1 : sacredCross = true; break;
             case 2 : stinkyFish = true; break;
-            case 3 : eyeCollector.SetActive(true); break;
+            case 3 : eyeCollector.SetActive(true); eyeCollector.transform.position = _player.transform.position; break;
             case 4 : catLuck = true; break;
             case 5 : earthQuake = true; break;
             case 6 : noHit = true; break;

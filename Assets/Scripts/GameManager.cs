@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     public int playerRoom;
     public bool isDead;
     private bool isFreezed;
+    public int currentLevel;
 
     private void Awake()
     {
@@ -113,6 +114,8 @@ public class GameManager : MonoBehaviour
         //plays vfx
         enemy.splashFX.gameObject.SetActive(true);
         enemy.splashFX.Play();
+        enemy.hitFX.gameObject.SetActive(true);
+        enemy.hitFX.Play();
         //clamps damage to an int (security)
         float damage = damageDealt;
         //applies damage

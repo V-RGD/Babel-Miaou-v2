@@ -7,6 +7,10 @@ using UnityEngine.VFX;
 public class Enemy : MonoBehaviour
 {
     public float health;
+    public float maxHealth;
+    public float speed;
+    public float eyesLooted;
+    public float damage;
     public bool isActive;
     private bool _isTank;
     private float _stunCounter;
@@ -25,6 +29,7 @@ public class Enemy : MonoBehaviour
     public EnemyType enemyTypeData;
     private NavMeshAgent _agent;
     public ParticleSystem splashFX;
+    public ParticleSystem hitFX;
     public bool canTouchPlayer;
 
     [HideInInspector]public GameObject room;
@@ -33,14 +38,16 @@ public class Enemy : MonoBehaviour
         _gameManager = GameManager.instance;
         _rb = GetComponent<Rigidbody>();
         _agent = GetComponent<NavMeshAgent>();
+        _agent.speed = speed;
+        maxHealth = health;
         _player = GameObject.Find("Player");
-        health = enemyTypeData.maxHealth;
         sprite.SetActive(false);
         healthSlider.SetActive(false);
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
         supportCollider.enabled = false;
+        hitFX.Stop();
 
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
@@ -108,7 +115,7 @@ public class Enemy : MonoBehaviour
         //deals damage
         if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking && canTouchPlayer)
         {
-            _gameManager.DealDamageToPlayer(enemyTypeData.damage);
+            _gameManager.DealDamageToPlayer(damage);
         }
 
         if (other.CompareTag("Poison"))
@@ -120,7 +127,7 @@ public class Enemy : MonoBehaviour
 
     public void Death()
     {
-        for (int i = 0; i < enemyTypeData.eyesDropped; i++)
+        for (int i = 0; i < eyesLooted; i++)
         {
             Instantiate(enemyTypeData.eyeToken, transform.position, Quaternion.identity);
         }
@@ -129,7 +136,7 @@ public class Enemy : MonoBehaviour
     
    public void SliderUpdate()
     {
-        if (health >= enemyTypeData.maxHealth)
+        if (health >= maxHealth)
         {
             healthSlider.SetActive(false);
         }
@@ -139,7 +146,7 @@ public class Enemy : MonoBehaviour
             {
                 healthSlider.SetActive(true);
             }
-            healthSlider.GetComponent<Slider>().value = health / enemyTypeData.maxHealth;
+            healthSlider.GetComponent<Slider>().value = health / maxHealth;
         }
     }
 }

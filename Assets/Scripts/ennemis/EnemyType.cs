@@ -4,13 +4,9 @@ public class EnemyType : ScriptableObject
 {
     //tweak values
     [Header("Enemy Stats")]
-    public float speed;
-    public int maxHealth;
-    public int damage;
     public float attackRange;
     public float attackCooldown;
-    public int eyesDropped;
-
+    public float enemySpeed;
     //values
     [Header("Special Stats")]
     public int dashForce;

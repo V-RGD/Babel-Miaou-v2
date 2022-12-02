@@ -49,12 +49,12 @@ public class TurretIA : MonoBehaviour
         enemyTypeData = _enemyTrigger.enemyTypeData;
 
         wallLayerMask = LayerMask.GetMask("Wall");
-        GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
+        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
 
     private void Update()
     {
-        _agent.speed = enemyTypeData.speed * _speedFactor;
+        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = _player.transform.position - transform.position;
         
@@ -97,7 +97,7 @@ public class TurretIA : MonoBehaviour
             }
             //recule
             _speedFactor = 0;
-            _rb.AddForce(_fleeDir.normalized * enemyTypeData.speed, ForceMode.VelocityChange);
+            _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
         }
         //if the enemy is in range, and not too far
         if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)

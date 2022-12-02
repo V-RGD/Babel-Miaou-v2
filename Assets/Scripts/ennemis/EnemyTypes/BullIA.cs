@@ -43,12 +43,12 @@ public class BullIA : MonoBehaviour
         enemyTypeData = _enemyTrigger.enemyTypeData;
 
         wallLayerMask = LayerMask.GetMask("Wall");
-        GetComponent<EnemyDamage>().damage = enemyTypeData.damage;
+        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
 
     private void Update()
     {
-        _agent.speed = enemyTypeData.speed * _speedFactor;
+        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position).normalized;
 

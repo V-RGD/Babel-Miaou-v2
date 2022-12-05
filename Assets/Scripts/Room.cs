@@ -93,61 +93,71 @@ public class Room : MonoBehaviour
     {
         //determine etage
         int stage = _gameManager.currentLevel;
+        int stageBonus = 0;
         int difficulty;
         //determine niveau de difficulté
+        switch (stage)
+        {
+            case 0 :
+                stageBonus = 0;
+                break;
+            case  1 : 
+                stageBonus = 3;
+                break;
+            case  2 : 
+                stageBonus = 6;
+                break;
+        }
         if (currentRoom < 3)
         {
             difficulty = 0;
         }
         else if (currentRoom < 5)
         {
-            difficulty = 3;
+            difficulty = 1;
         }
         else
         {
-            difficulty = 6;
+            difficulty = 2;
         }
         //determine le nombre d'ennemis devant spawn
-        int enemyNumber = _lm.roomSpawnAmountMatrix[difficulty + stage];
+        int enemyNumber = _lm.roomSpawnAmountMatrix[difficulty + stageBonus];
         //pour chaque ennemi
         for (int i = 0; i < enemyNumber; i++)
         {
             //determine les pourcentages d'apparition pour chacun
-            GameObject enemySpawning;
-            int enemyTypeRandomizer = Random.Range(0, 100);
-            int enemyType;
+            int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis
             int wandererCeil = _lm.matrices[0].spawnMatrix[difficulty + stage];
             int bullCeil = _lm.matrices[1].spawnMatrix[difficulty + stage];
             int shooterCeil = _lm.matrices[2].spawnMatrix[difficulty + stage];
             int tankCeil = _lm.matrices[3].spawnMatrix[difficulty + stage];
+            int mkCeil = _lm.matrices[4].spawnMatrix[difficulty + stage];
             
-            if (enemyTypeRandomizer < wandererCeil)
+            List<int> randomEnemyType = new List<int>();
+            //adds every enemy type
+            List<int> possibleEnemies = new List<int>() {0, 1, 2, 3, 4};
+            //adds every enemy probas
+            List<int> enemyProbas = new List<int>();
+            enemyProbas.Add(wandererCeil);
+            enemyProbas.Add(bullCeil);
+            enemyProbas.Add(shooterCeil);
+            enemyProbas.Add(tankCeil);
+            enemyProbas.Add(mkCeil);
+            
+            //pour chaque type d'ennemi diff de 0
+            //pour le nombre de probas
+            for (int j = 0; j < possibleEnemies.Count; j++)
             {
-                //wanderer
-                enemyType = 0;
+                for (int k = 0; k < enemyProbas[possibleEnemies[j]]; k++)
+                {
+                    randomEnemyType.Add(possibleEnemies[j]);
+                    Debug.Log(possibleEnemies[j]);
+                }
             }
-            else if (enemyTypeRandomizer < wandererCeil + bullCeil)
-            {
-                //bull
-                enemyType = 1;
-            }
-            else if (enemyTypeRandomizer < wandererCeil + bullCeil + shooterCeil)
-            {
-                //shooter
-                enemyType = 2;
-            }
-            else if (enemyTypeRandomizer < wandererCeil + bullCeil + shooterCeil + tankCeil)
-            {
-                //tank
-                enemyType = 3;
-            }
-            else
-            {
-                //marksman
-                enemyType = 4;
-            }
-            enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
+
+            int enemyType = randomEnemyType[rand];
+            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
             
             //determines position
             //calculates a random position where the enemy will spawn
@@ -167,7 +177,7 @@ public class Room : MonoBehaviour
             enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
             enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
         
-            Debug.Log("enemy spawned");
+            //Debug.Log("enemy spawned");
         }
     }
     

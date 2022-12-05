@@ -9,24 +9,12 @@ public class MarksManIA : MonoBehaviour
 {
     private Vector3 _playerDir;
     private Vector3 _attackDir;
-    private Vector3 _fleeDir;
     private Vector3 _laserPos;
-    private LayerMask _wallLayerMask;
     private LayerMask _playerLayerMask;
 
     //values
-    private float _stunCounter;
-    private float _playerDist;
-    private float _speedFactor;
-    private bool _canShootProjectile = true;
-    private bool _canDash = true;
-    private bool _isStunned;
     private bool _isDashing;
     private bool _isHit;
-    private bool _isTouchingWall;
-    private bool _isVulnerable;
-    private float _desiredRange = 20f;
-    private bool isRunningAway;
     private float _laserTimer;
     private float rotationSpeed = 5f;
     private bool _isCharging;
@@ -40,26 +28,23 @@ public class MarksManIA : MonoBehaviour
     private float _playerPosDelay = 0.0f;
 
     //components
-    private NavMeshAgent _agent;
     private GameObject _player;
     private GameManager _gameManager;
-    private Rigidbody _rb;
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
     private LineRenderer _lineRenderer;
+    public ParticleSystem laserFx;
 
     private void Awake()
     {
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _agent = GetComponent<NavMeshAgent>();
+        laserFx.Stop();
+        _gameManager = GameManager.instance;
         _player = GameObject.Find("Player");
-        _rb = GetComponent<Rigidbody>();
         _enemyTrigger = GetComponent<Enemy>();
         _lineRenderer = GetComponent<LineRenderer>();
         laserMaterial = _lineRenderer.material;
         enemyTypeData = _enemyTrigger.enemyTypeData;
 
-        _wallLayerMask = LayerMask.GetMask("Wall");
         _playerLayerMask = LayerMask.GetMask("Player");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
@@ -72,32 +57,17 @@ public class MarksManIA : MonoBehaviour
 
     private void Update()
     {
-        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
-        _playerDist = (_player.transform.position - transform.position).magnitude;
-        _playerDir = _player.transform.position - transform.position;
-
-        if (_isHit)
-        {
-            //resets stun counter
-            _stunCounter = enemyTypeData.stunLenght;
-        }
-
-        StunProcess();
     }
 
     private void FixedUpdate()
     {
-        _stunCounter -= Time.deltaTime;
         
-        if (!_isStunned && _enemyTrigger.isActive)
+        if (_enemyTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
             MarksMan();
         }
-        
-        MaxSpeed();
-        FleeDir();
         LaserCollision();
 
         if (_isCharging)
@@ -109,42 +79,8 @@ public class MarksManIA : MonoBehaviour
     void MarksMan()
     {
         //calculates the distance between object and player
-        _playerDist = (_player.transform.position - transform.position).magnitude;
 
-        //move
         if (_canShootLaser)
-        {
-            //if the enemy is too close, walks away
-            if (_playerDist < _desiredRange)
-            {
-                //recule
-                _speedFactor = 0;
-                _rb.AddForce(_fleeDir.normalized * 10, ForceMode.Acceleration);
-            }
-
-            //if the enemy is in range, and not too far
-            if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
-            {
-                //stays immobile
-                _speedFactor = 0;
-                _agent.SetDestination(transform.position);
-            }
-
-            //if the enemy is too far, gets closer
-            if (_playerDist > enemyTypeData.attackRange)
-            {
-                //avance
-                _speedFactor = 1;
-                _agent.SetDestination(_player.transform.position);
-            }
-        }
-        else
-        {
-            _rb.velocity = Vector3.zero;
-        }
-
-
-        if (_canShootLaser && _playerDist < enemyTypeData.attackRange)
         {
             _canShootLaser = false;
             StartCoroutine(LaserAttack());
@@ -175,7 +111,7 @@ public class MarksManIA : MonoBehaviour
         RaycastHit hit;
             
         //check if a wall is in between laser
-        if (Physics.Raycast(transform.position, _attackDir, out hit, 1000, _wallLayerMask))
+        if (Physics.Raycast(transform.position, _attackDir, out hit, 1000, _playerLayerMask))
         {
             hitPoint = hit.point;
         }
@@ -200,6 +136,9 @@ public class MarksManIA : MonoBehaviour
         _laserTimer = 0;
         laserMaterial.color = Color.cyan;
         //waits a bit for the player to avoid the laser
+        _lineRenderer.enabled = false;
+        laserFx.transform.parent.LookAt(_player.transform);
+        laserFx.Play();
         yield return new WaitForSeconds(0.5f);
         
         //shoots laser
@@ -207,8 +146,8 @@ public class MarksManIA : MonoBehaviour
         
         //laser set inactive
         yield return new WaitForSeconds(_laserLength);
+        laserFx.Stop();
         _canLaserTouchPlayer = false;
-        _lineRenderer.enabled = false;
         
         //can shoot again
         yield return new WaitForSeconds(enemyTypeData.attackCooldown);
@@ -222,7 +161,7 @@ public class MarksManIA : MonoBehaviour
         Vector3 playerPos = _player.transform.position;
 
         yield return _waitInstance;
-
+        _playerDir = playerPos - transform.position;
         _laserPos = playerPos;
     }
     
@@ -232,71 +171,15 @@ public class MarksManIA : MonoBehaviour
         {
             //shoots laser
             laserMaterial.color = Color.magenta;
-
+            RaycastHit hit;
             //check if player touches laser
-            if (Physics.Raycast(transform.position, _attackDir, 4, _playerLayerMask))
+            if (Physics.Raycast(transform.position, _attackDir, 1000, _playerLayerMask))
             {
                 Debug.Log("hit player");
                 //deals damage
-                _gameManager.health -= enemyTypeData.projectileDamage;
+                _gameManager.DealDamageToPlayer(_enemyTrigger.damage);
                 //can touch laser twice
             }
-        }
-    }
-
-    void StunProcess()
-    {
-        //when stunned
-        if (_stunCounter > 0)
-        {
-            _isStunned = true;
-            //is vulnerable
-            _isVulnerable = true;
-            _speedFactor = 0;
-        }
-        else
-        {
-            _isStunned = false;
-            //can't be touched
-            _isVulnerable = false;
-        }
-    }
-    
-    void MaxSpeed()
-    {
-        //cap x speed
-        if(_rb.velocity.x > enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
-        }
-        if(_rb.velocity.x < -enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(-enemyTypeData.maxSpeed, _rb.velocity.y, _rb.velocity.z);
-        }
-            
-        //cap x speed
-        if(_rb.velocity.z > enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, enemyTypeData.maxSpeed);
-        }
-        if(_rb.velocity.z < -enemyTypeData.maxSpeed)
-        {
-            _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -enemyTypeData.maxSpeed);
-        }
-    }
-
-    void FleeDir()
-    {
-        if (Physics.Raycast(transform.position, -_playerDir, 4, _wallLayerMask))
-        {
-            Debug.Log("hit wall");
-            //else, turns a bit
-            _fleeDir = Quaternion.Euler(0, 45, 0) * -_playerDir;
-        }
-        else
-        {
-            //if there isn't a wall in flee direction, simply run away from player
-            _fleeDir = -_playerDir;
         }
     }
 }

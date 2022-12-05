@@ -123,7 +123,13 @@ public class GameManager : MonoBehaviour
         {
             damage++;
         }
+        //if no hit, doubles damage
+        if (_objectsManager.noHitStreak)
+        {
+            damage *= 2;
+        }
         enemy.health -= damage;
+        Debug.Log(damage);
         _cmShake.ShakeCamera(5, .1f);
         //applies killing effects
         if (enemy.health <= 0)

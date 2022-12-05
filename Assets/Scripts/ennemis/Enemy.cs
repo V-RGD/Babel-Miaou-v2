@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour
         _rb.useGravity = false;
         mainCollider.enabled = false;
         supportCollider.enabled = false;
-        hitFX.Stop();
+        hitFX.gameObject.SetActive(false);
 
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
@@ -107,6 +107,11 @@ public class Enemy : MonoBehaviour
             {
                 //receives damage
                 _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
+            }
+
+            if (!hitFX.gameObject.activeInHierarchy)
+            {
+                hitFX.gameObject.SetActive(true);
             }
             _rb.AddForce((_player.transform.position - transform.position).normalized * -75, ForceMode.Impulse);
             _stunCounter = 1;

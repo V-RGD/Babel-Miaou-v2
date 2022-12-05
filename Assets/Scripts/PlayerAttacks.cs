@@ -168,7 +168,7 @@ public class PlayerAttacks : MonoBehaviour
         {
             case ComboState.Default : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.FloorToInt(attackStat);
+                damage = attackStat;
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
@@ -181,7 +181,7 @@ public class PlayerAttacks : MonoBehaviour
                 break;
             case ComboState.SimpleAttack : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.FloorToInt(attackStat);
+                damage = attackStat;
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
@@ -193,8 +193,7 @@ public class PlayerAttacks : MonoBehaviour
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
-                cooldown = spinCooldown * dexterity; 
-                damage = attackStat * spinDamageMultiplier/5;
+                damage = attackStat * spinDamageMultiplier / 5;
                 hitbox = _spinHitBox; 
                 force = spinForce;
                 startUpLength = attackParameters.spinStartupLength;
@@ -212,7 +211,7 @@ public class PlayerAttacks : MonoBehaviour
         //stops movement
         _pc.canMove = false;
         //add current damage stat to weapon
-        hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
+        hitbox.GetComponent<ObjectDamage>().damage = (damage);
         //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
         yield return new WaitForSeconds(startUpLength);
@@ -247,6 +246,33 @@ public class PlayerAttacks : MonoBehaviour
         isAttacking = false;
     }
     
+    IEnumerator SpinSlashes()
+    {
+        yield return new WaitForSeconds(attackParameters.spinStartupLength);
+        float interval = attackParameters.spinActiveLength/4;
+        spinSlashFX.Play();
+        _spinHitBox.SetActive(true);
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        _spinHitBox.SetActive(false);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+    }
+    
     IEnumerator SmashCoroutine()
     {
         isAttacking = true;
@@ -256,7 +282,7 @@ public class PlayerAttacks : MonoBehaviour
         //values assignation
         GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
-        int damage = 0;
+        float damage = 0;
         float cooldown = 0;
         float force = 0;
         float startUpLength = 0;
@@ -279,7 +305,7 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         cooldown = smashCooldown; 
-        damage = Mathf.CeilToInt(attackStat * smashDamageMultiplier);
+        damage = (attackStat * smashDamageMultiplier);
         hitbox = _smashHitBox; 
         force = smashForce;
         startUpLength = attackParameters.smashStartupLength;
@@ -295,7 +321,7 @@ public class PlayerAttacks : MonoBehaviour
         //stops movement
         _pc.canMove = false;
         //add current damage stat to weapon
-        hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
+        hitbox.GetComponent<ObjectDamage>().damage = damage;
         //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
         _rb.AddForce(attackDir * force, ForceMode.Impulse);
@@ -332,33 +358,6 @@ public class PlayerAttacks : MonoBehaviour
         //restores speed
         _pc.canMove = true;
         isAttacking = false;
-    }
-
-    IEnumerator SpinSlashes()
-    {
-        float interval = attackParameters.spinActiveLength/4;
-        spinSlashFX.Play();
-        _spinHitBox.SetActive(true);
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
     }
 
     void RightMouseHold(InputAction.CallbackContext context)

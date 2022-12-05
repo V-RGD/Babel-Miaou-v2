@@ -202,7 +202,7 @@ public class CheatManager : MonoBehaviour
                                 shooter.GetComponent<Enemy>().StartCoroutine(shooter.GetComponent<Enemy>().EnemyApparition());
                                 break; 
                             case "mk" :
-                                GameObject mk = Instantiate(LevelManager.instance.basicEnemies[3]);
+                                GameObject mk = Instantiate(LevelManager.instance.basicEnemies[4]);
                                 mk.transform.position = PlayerController.instance.gameObject.transform.position +
                                                         Vector3.up;
                                 mk.GetComponent<Enemy>().StartCoroutine(mk.GetComponent<Enemy>().EnemyApparition());

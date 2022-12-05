@@ -20,7 +20,7 @@ public class MarksManIA : MonoBehaviour
     private bool _isCharging;
     private bool _canShootLaser = true;
     private bool _canLaserTouchPlayer;
-    private float _laserLength = 1;
+    private float _laserLength = 0.5f;
     
     public Gradient laserGradient;
     public Material laserMaterial;

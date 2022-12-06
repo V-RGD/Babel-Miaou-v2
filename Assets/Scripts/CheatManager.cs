@@ -9,6 +9,7 @@ public class CheatManager : MonoBehaviour
     public static CheatManager instance;
 
     private GameManager _gameManager;
+    private GameScore _gameScore;
     private ObjectsManager _objectsManager;
     private UIManager _uiManager;
     public TMP_InputField field;
@@ -30,6 +31,7 @@ public class CheatManager : MonoBehaviour
     private void Start()
     {
         _gameManager = GameManager.instance;
+        _gameScore = GameScore.instance;
         _uiManager = UIManager.instance;
         _objectsManager = ObjectsManager.instance;
     }
@@ -206,6 +208,17 @@ public class CheatManager : MonoBehaviour
                                 mk.transform.position = PlayerController.instance.gameObject.transform.position +
                                                         Vector3.up;
                                 mk.GetComponent<Enemy>().StartCoroutine(mk.GetComponent<Enemy>().EnemyApparition());
+                                break;
+                        } 
+                        break;
+                    case "score" : 
+                        switch (secondInput)
+                        {
+                            case "set" :
+                                _gameScore.SetPlayerScore(Convert.ToInt32(thirdInput));
+                                break;
+                            case "update" :
+                                _gameScore.UpdateBoard();
                                 break;
                         } 
                         break;

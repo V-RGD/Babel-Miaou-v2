@@ -53,8 +53,8 @@ public class Room : MonoBehaviour
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
 
-        DoorSpawn();
         yield return new WaitUntil(()=> _dunGen.finishedGeneration);
+        DoorSpawn();
         RoomType();
         //PropsSpawn();
     }

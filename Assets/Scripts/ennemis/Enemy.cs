@@ -20,7 +20,6 @@ public class Enemy : MonoBehaviour
     private GameObject _player;
     public GameObject healthSlider;
     public BoxCollider mainCollider;
-    public BoxCollider supportCollider;
     private Rigidbody _rb;
 
     private GameManager _gameManager;
@@ -46,7 +45,6 @@ public class Enemy : MonoBehaviour
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
-        supportCollider.enabled = false;
         hitFX.gameObject.SetActive(false);
 
         //check if the associated ia is a haunter with tank specs
@@ -89,7 +87,6 @@ public class Enemy : MonoBehaviour
         _agent.enabled = true;
         _rb.useGravity = true;
         mainCollider.enabled = true;
-        supportCollider.enabled = true;
         isActive = true;
     }
     
@@ -113,7 +110,7 @@ public class Enemy : MonoBehaviour
             {
                 hitFX.gameObject.SetActive(true);
             }
-            _rb.AddForce((_player.transform.position - transform.position).normalized * -75, ForceMode.Impulse);
+            _rb.AddForce((_player.transform.position - transform.position).normalized * -PlayerAttacks.instance.bumpForce, ForceMode.Impulse);
             _stunCounter = 1;
         }
         

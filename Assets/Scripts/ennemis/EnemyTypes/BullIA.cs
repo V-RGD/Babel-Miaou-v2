@@ -152,7 +152,7 @@ public class BullIA : MonoBehaviour
         currentAnimatorState = Attack;
         //stops movement
         _rb.velocity = Vector3.zero;
-        dashFactor = -0.2f;
+        dashFactor = -0.1f;
         //adds force to character
         _isDashing = true;
         _enemyTrigger.canTouchPlayer = true;

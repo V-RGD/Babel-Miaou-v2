@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,6 +23,7 @@ public class PlayerAttacks : MonoBehaviour
     #region Attack Values
 
     [Header("Attacks")] 
+    public float bumpForce = 20;
     public float attackStat = 1;
     public float spinDamageMultiplier = 1.5f;
     public float smashDamageMultiplier = 5;
@@ -31,10 +31,10 @@ public class PlayerAttacks : MonoBehaviour
 
     public float slashCooldown = 0.4f;
     public float spinCooldown = 0.7f;
-    public float smashCooldown = 2;
-    public float smashWarmup = 1;
+    public float smashCooldown = 1;
+    public float smashWarmup = 0.2f;
 
-    public float smashForce = 10;
+    public float smashForce = 15;
     public float slashForce = 15;
     public float spinForce = 8;
 

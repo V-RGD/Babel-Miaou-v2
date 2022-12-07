@@ -26,9 +26,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6327029574963269729}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -353.77, y: 15.38, z: -153.93}
-  m_LocalScale: {x: 0.05, y: 0.04810714, z: 0.048107162}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.10000001, y: 0.10000001, z: 0.10000001}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6327029575265765932}
   - {fileID: 6327029575395954979}
@@ -50,7 +50,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -4899,7 +4899,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2000
   m_RenderMode: 1
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -4955,14 +4955,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6327029575265765931}
-  m_LocalRotation: {x: -0.00016500773, y: 0.9957054, z: 0.09257905, w: -0.000015342319}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.396375, y: 4.396609, z: 2.1895561}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.37634045, y: 0.37634045, z: 0.37634045}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6327029574963269732}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &6327029575265765934
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4978,7 +4978,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -9769,8 +9769,8 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_RenderMode: 0
+  m_SortingOrder: -1
+  m_RenderMode: 4
   m_MeshDistribution: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -9781,7 +9781,7 @@ ParticleSystemRenderer:
   m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
-  m_RenderAlignment: 0
+  m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
@@ -9791,7 +9791,7 @@ ParticleSystemRenderer:
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
   m_VertexStreams: 00010304
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
@@ -9825,14 +9825,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6327029575395954978}
-  m_LocalRotation: {x: -0.00010582947, y: 0.6386067, z: 0.7695333, w: -0.00012752667}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -0.000015416315, y: 0.046513315, z: 0.0024787495}
-  m_LocalScale: {x: 0.33818242, y: 0.5671715, z: 0.33820024}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.36607665, y: 0.36607665, z: 0.36607665}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6327029574963269732}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!198 &6327029575395954981
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -9848,7 +9848,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -10085,7 +10085,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.87
+      scalar: 0.17
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -14639,8 +14639,8 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_RenderMode: 0
+  m_SortingOrder: -1
+  m_RenderMode: 4
   m_MeshDistribution: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -14651,7 +14651,7 @@ ParticleSystemRenderer:
   m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
-  m_RenderAlignment: 0
+  m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
@@ -14661,7 +14661,7 @@ ParticleSystemRenderer:
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
   m_VertexStreams: 00010304
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}

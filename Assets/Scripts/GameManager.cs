@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public CinemachineShake _cmShake;
     [HideInInspector]public PlayerAttacks _playerAttacks;
     public List<Transform> eyesInGame;
+    private EnemyHitFx _enemyHitFx;
 
     public int money;
     public int maxHealth = 3;
@@ -38,6 +39,7 @@ public class GameManager : MonoBehaviour
         
         player = GameObject.Find("Player");
         _cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
+        _enemyHitFx = GetComponent<EnemyHitFx>();
     }
 
     void Start()
@@ -114,8 +116,9 @@ public class GameManager : MonoBehaviour
         //plays vfx
         enemy.splashFX.gameObject.SetActive(true);
         enemy.splashFX.Play();
-        enemy.hitFX.gameObject.SetActive(true);
-        enemy.hitFX.Play();
+        //enemy.hitFX.gameObject.SetActive(true);
+        //enemy.hitFX.Play();
+        _enemyHitFx.StartCoroutine(_enemyHitFx.PlaceNewVfx(enemy.transform.position));
         //clamps damage to an int (security)
         float damage = damageDealt;
         //applies damage

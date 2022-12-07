@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
@@ -171,9 +170,9 @@ public class DunGen : MonoBehaviour
             }
         }
         #endregion
-        roomList.transform.Rotate(0, 45, 0);
         finishedGeneration = true;
         yield return new WaitUntil(() => finishedGeneration);
+        roomList.transform.Rotate(0, 45, 0);
         _navMeshSurface.BuildNavMesh();
     }
     #endregion

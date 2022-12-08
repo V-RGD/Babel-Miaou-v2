@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -5,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class TurretIA : MonoBehaviour
+public class ShooterIA : MonoBehaviour
 {
     //public int enemyType;
     
@@ -29,6 +30,7 @@ public class TurretIA : MonoBehaviour
     private float attackCooldownWhenRunningAway = 4;
     private bool isRunningAway;
     private float attackCooldown;
+    private float _roomDist;
     private Vector3 _fleeDir;
     public bool isBigShooter;
 
@@ -39,6 +41,7 @@ public class TurretIA : MonoBehaviour
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
+    private Transform _roomCenter;
 
     private void Awake()
     {
@@ -50,6 +53,11 @@ public class TurretIA : MonoBehaviour
 
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+    }
+
+    private void Start()
+    {
+        _roomCenter = _enemyTrigger.room.GetComponent<Room>().roomCenter;
     }
 
     private void Update()
@@ -85,37 +93,51 @@ public class TurretIA : MonoBehaviour
     void Shooter()
     {
         //calculates the distance between object and player
-        _projectileDir = _player.transform.position - transform.position;
+        var position = transform.position;
+        _projectileDir = _player.transform.position - position;
+        _roomDist = (_roomCenter.position - position).magnitude;
 
-        //if the enemy is too close, walks away
-        if (_playerDist < _desiredRange)
+        if (_roomDist > 25)
         {
-            //increases cooldown if is normal version
-            if (!isBigShooter)
+            //if the enemy is too far, gets closer
+            if (_playerDist > enemyTypeData.attackRange)
             {
-                attackCooldown = attackCooldownWhenRunningAway;
+                //avance
+                _speedFactor = 1;
+                _agent.SetDestination(_player.transform.position);
             }
-            //recule
-            _speedFactor = 0;
-            _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
         }
-        //if the enemy is in range, and not too far
-        if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
+        else
         {
-            //attaque et agit normalement
-            _speedFactor = 0;
-            attackCooldown = enemyTypeData.attackCooldown;
-            _agent.SetDestination(transform.position);
+            //if the enemy is too close, walks away
+            if (_playerDist < _desiredRange)
+            {
+                //increases cooldown if is normal version
+                if (!isBigShooter)
+                {
+                    attackCooldown = attackCooldownWhenRunningAway;
+                }
+                //recule
+                _speedFactor = 0;
+                _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
+            }
+            //if the enemy is in range, and not too far
+            if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
+            {
+                //attaque et agit normalement
+                _speedFactor = 0;
+                attackCooldown = enemyTypeData.attackCooldown;
+                _agent.SetDestination(transform.position);
+            }
+            //if the enemy is too far, gets closer
+            if (_playerDist > enemyTypeData.attackRange)
+            {
+                //avance
+                _speedFactor = 1;
+                _agent.SetDestination(_player.transform.position);
+            }
         }
-        //if the enemy is too far, gets closer
-        if (_playerDist > enemyTypeData.attackRange)
-        {
-            //avance
-            _speedFactor = 1;
-            _agent.SetDestination(_player.transform.position);
-        }
-        
-            
+
         if (_canShootProjectile && _playerDist < enemyTypeData.attackRange)
         {
             _canShootProjectile = false;

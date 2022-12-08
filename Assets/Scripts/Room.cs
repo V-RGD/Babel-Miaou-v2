@@ -20,7 +20,7 @@ public class Room : MonoBehaviour
     private GameManager _gameManager;
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
-    [SerializeField]private Transform roomCenter;
+    public Transform roomCenter;
 
     //room info
     public int roomType;

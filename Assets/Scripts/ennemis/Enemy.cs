@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
     public ParticleSystem splashFX;
     public ParticleSystem hitFX;
     public bool canTouchPlayer;
+    public bool isFlippingSprite;
 
     [HideInInspector]public GameObject room;
     void Start()
@@ -65,6 +66,7 @@ public class Enemy : MonoBehaviour
                 StartCoroutine(ResetPoisonCounter());
             }
         }
+        FlipSprite();
     }
 
     IEnumerator ResetPoisonCounter()
@@ -82,7 +84,7 @@ public class Enemy : MonoBehaviour
         spawnVfx.Play();
         yield return new WaitForSeconds(1);
         sprite.SetActive(true);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         //then enemy spawns
         _agent.enabled = true;
         _rb.useGravity = true;
@@ -115,7 +117,7 @@ public class Enemy : MonoBehaviour
         }
         
         //deals damage
-        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking && canTouchPlayer)
+        if (other.CompareTag("Player") && canTouchPlayer)
         {
             _gameManager.DealDamageToPlayer(damage);
         }
@@ -127,11 +129,32 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private float _flipCounter;
+    private float turnSpeed = 10;
+
+    public void FlipSprite()
+    {
+        Vector3 playerDir = _player.transform.position - transform.position;
+        if (!isFlippingSprite)
+        {
+            if (playerDir.x > 0 && _flipCounter < 1)
+            {
+                _flipCounter += Time.deltaTime * turnSpeed;
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+            }
+            if (playerDir.x < 0 && _flipCounter > -1)
+            {
+                _flipCounter -= Time.deltaTime * turnSpeed;
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+            }
+        }
+    }
+
     public void Death()
     {
         for (int i = 0; i < eyesLooted; i++)
         {
-            Instantiate(enemyTypeData.eyeToken, transform.position, Quaternion.identity);
+            Instantiate(enemyTypeData.eyeToken, new Vector3(transform.position.x, _player.transform.position.y, transform.position.z), Quaternion.identity);
         }
         Destroy(gameObject);
     }

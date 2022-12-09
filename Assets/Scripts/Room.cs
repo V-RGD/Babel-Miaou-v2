@@ -163,7 +163,7 @@ public class Room : MonoBehaviour
             //calculates a random position where the enemy will spawn
             float randPosX = Random.Range(-15, 15);
             float randPosY = Random.Range(-15, 15);
-            var spawnPoint = roomCenter.position + new Vector3(randPosX, 3, randPosY);
+            var spawnPoint = roomCenter.position + new Vector3(randPosX, 1, randPosY);
             
             //spawns enemy
             enemySpawning.transform.position = spawnPoint;

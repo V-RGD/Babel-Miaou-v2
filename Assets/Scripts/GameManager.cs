@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     public int maxHealth = 3;
     public int health;
     public int healthBonus;
+    public float enemyHitShakeIntensity = 3;
 
     public int playerRoom;
     public bool isDead;
@@ -65,10 +66,9 @@ public class GameManager : MonoBehaviour
     {
         
     }
-    
     public void DealDamageToPlayer(float damageDealt) //when player takes hit
     {
-        if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0)
+        if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0 && !_playerController.isDashing)
         {
             //clamps damage to an int (security)
             int damage = Mathf.CeilToInt(damageDealt);
@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
             _uiManager.HealthBar(health);
             _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
-            _cmShake.ShakeCamera(8, .1f);
+            _cmShake.ShakeCamera(7, .1f);
             
             //ded
             if (health <= 0)
@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
         }
         enemy.health -= damage;
         Debug.Log(damage);
-        _cmShake.ShakeCamera(5, .1f);
+        _cmShake.ShakeCamera(enemyHitShakeIntensity, .1f);
         //applies killing effects
         if (enemy.health <= 0)
         {

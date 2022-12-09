@@ -15,13 +15,11 @@ public class ShooterIA : MonoBehaviour
     private LayerMask wallLayerMask;
     
     //values
-    private float _stunCounter;
     private float _playerDist;
     private float _speedFactor;
     private Vector3 _projectileDir;
     private bool _canShootProjectile = true;
     private bool _canDash = true;
-    private bool _isStunned;
     private bool _isDashing;
     private bool _isHit;
     private bool _isTouchingWall;
@@ -62,26 +60,22 @@ public class ShooterIA : MonoBehaviour
         _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = _player.transform.position - transform.position;
-        
-        if (_isHit)
-        {
-            //resets stun counter
-            _stunCounter = enemyTypeData.stunLenght;
-        }
-
-        StunProcess();
         FleeDir();
     }
 
     private void FixedUpdate()
     {
-        _stunCounter -= Time.deltaTime;
-        
-        if (!_isStunned && _enemyTrigger.isActive)
+        if (_enemyTrigger.stunCounter <= 0 && _enemyTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
             Shooter();
+        }
+        else
+        {
+            _agent.speed = 0;
+            _speedFactor = 0;
+            _rb.velocity = Vector3.zero;
         }
         
         MaxSpeed();
@@ -193,24 +187,6 @@ public class ShooterIA : MonoBehaviour
         _canShootProjectile = true;
     }
 
-    void StunProcess()
-    {
-        //when stunned
-        if (_stunCounter > 0)
-        {
-            _isStunned = true;
-            //is vulnerable
-            _isVulnerable = true;
-            _speedFactor = 0;
-        }
-        else
-        {
-            _isStunned = false;
-            //can't be touched
-            _isVulnerable = false;
-        }
-    }
-    
     void MaxSpeed()
     {
         //cap x speed
@@ -242,7 +218,6 @@ public class ShooterIA : MonoBehaviour
             //else, turns a bit
             Vector3 wallDir = transform.position - hit.point;
             _fleeDir = wallDir;
-            Debug.Log("touches wall");
         }
         else
         {

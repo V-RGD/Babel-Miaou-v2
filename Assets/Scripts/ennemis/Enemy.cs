@@ -13,8 +13,10 @@ public class Enemy : MonoBehaviour
     public float damage;
     public bool isActive;
     private bool _isTank;
-    private float _stunCounter;
+    public float stunCounter;
     private float _poisonCounter;
+    private float _flipCounter;
+    private float _turnSpeed = 10;
     private bool _canTakePoisonDamage = true;
 
     private GameObject _player;
@@ -58,6 +60,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        stunCounter -= Time.deltaTime;
         if (_poisonCounter > 0 && health > 0)
         {
             _poisonCounter -= Time.deltaTime;
@@ -113,7 +116,7 @@ public class Enemy : MonoBehaviour
                 hitFX.gameObject.SetActive(true);
             }
             _rb.AddForce((_player.transform.position - transform.position).normalized * -PlayerAttacks.instance.bumpForce, ForceMode.Impulse);
-            _stunCounter = 1;
+            stunCounter = 1;
         }
         
         //deals damage
@@ -129,9 +132,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private float _flipCounter;
-    private float turnSpeed = 10;
-
     public void FlipSprite()
     {
         Vector3 playerDir = _player.transform.position - transform.position;
@@ -139,12 +139,12 @@ public class Enemy : MonoBehaviour
         {
             if (playerDir.x > 0 && _flipCounter < 1)
             {
-                _flipCounter += Time.deltaTime * turnSpeed;
+                _flipCounter += Time.deltaTime * _turnSpeed;
                 sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
             }
             if (playerDir.x < 0 && _flipCounter > -1)
             {
-                _flipCounter -= Time.deltaTime * turnSpeed;
+                _flipCounter -= Time.deltaTime * _turnSpeed;
                 sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
             }
         }

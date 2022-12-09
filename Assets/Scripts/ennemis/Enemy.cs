@@ -82,7 +82,7 @@ public class Enemy : MonoBehaviour
         spawnVfx.Play();
         yield return new WaitForSeconds(1);
         sprite.SetActive(true);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         //then enemy spawns
         _agent.enabled = true;
         _rb.useGravity = true;
@@ -131,7 +131,7 @@ public class Enemy : MonoBehaviour
     {
         for (int i = 0; i < eyesLooted; i++)
         {
-            Instantiate(enemyTypeData.eyeToken, transform.position, Quaternion.identity);
+            Instantiate(enemyTypeData.eyeToken, new Vector3(transform.position.x, _player.transform.position.y, transform.position.z), Quaternion.identity);
         }
         Destroy(gameObject);
     }

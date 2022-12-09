@@ -9,6 +9,7 @@ public class CheatManager : MonoBehaviour
     public static CheatManager instance;
 
     private GameManager _gameManager;
+    private LevelManager _lm;
     private GameScore _gameScore;
     private ObjectsManager _objectsManager;
     private UIManager _uiManager;
@@ -34,6 +35,7 @@ public class CheatManager : MonoBehaviour
         _gameScore = GameScore.instance;
         _uiManager = UIManager.instance;
         _objectsManager = ObjectsManager.instance;
+        _lm = LevelManager.instance;
     }
 
     private void Update()
@@ -182,34 +184,44 @@ public class CheatManager : MonoBehaviour
                                 break; 
                         } 
                         break;
-                    case "summon" : 
+                    case "spawn" :
+                        GameObject enemySpawning = LevelManager.instance.basicEnemies[0];
+                        int enemyType = 0;
                         switch (secondInput)
                         {
                             case "wanderer" :
-                                GameObject wanderer = Instantiate(LevelManager.instance.basicEnemies[0]);
-                                wanderer.transform.position = PlayerController.instance.gameObject.transform.position +
-                                                              Vector3.up;
-                                wanderer.GetComponent<Enemy>().StartCoroutine(wanderer.GetComponent<Enemy>().EnemyApparition());
+                                enemySpawning = Instantiate(LevelManager.instance.basicEnemies[0]);
+                                enemyType = 0;
                                 break;
                             case "bull" :
-                                GameObject bull = Instantiate(LevelManager.instance.basicEnemies[1]);
-                                bull.transform.position = PlayerController.instance.gameObject.transform.position +
-                                                          Vector3.up;
-                                bull.GetComponent<Enemy>().StartCoroutine(bull.GetComponent<Enemy>().EnemyApparition());
+                                enemySpawning = Instantiate(LevelManager.instance.basicEnemies[1]);
+                                enemyType = 1;
                                 break; 
                             case "shooter" :
-                                GameObject shooter = Instantiate(LevelManager.instance.basicEnemies[2]);
-                                shooter.transform.position = PlayerController.instance.gameObject.transform.position +
-                                                             Vector3.up;
-                                shooter.GetComponent<Enemy>().StartCoroutine(shooter.GetComponent<Enemy>().EnemyApparition());
+                                enemySpawning = Instantiate(LevelManager.instance.basicEnemies[2]);
+                                enemyType = 2;
                                 break; 
-                            case "mk" :
-                                GameObject mk = Instantiate(LevelManager.instance.basicEnemies[4]);
-                                mk.transform.position = PlayerController.instance.gameObject.transform.position +
-                                                        Vector3.up;
-                                mk.GetComponent<Enemy>().StartCoroutine(mk.GetComponent<Enemy>().EnemyApparition());
+                            case "tank" :
+                                enemySpawning = Instantiate(LevelManager.instance.basicEnemies[3]);
+                                enemyType = 3;
                                 break;
-                        } 
+                            case "mk" :
+                                enemySpawning = Instantiate(LevelManager.instance.basicEnemies[4]);
+                                enemyType = 4;
+                                break;
+                        }
+                        enemySpawning.transform.position = PlayerController.instance.gameObject.transform.position -
+                                                           Vector3.up * 0.9f;
+                        //spawns enemy
+                        Enemy component = enemySpawning.GetComponent<Enemy>();
+                        component.room = gameObject;
+                        component.StartCoroutine(component.EnemyApparition());
+                        
+                        //sets variables
+                        component.health = _lm.matrices[enemyType].enemyValues[1].x;
+                        component.damage = _lm.matrices[enemyType].enemyValues[1].y;
+                        component.speed = _lm.matrices[enemyType].enemyValues[1].z;
+                        component.eyesLooted = _lm.matrices[enemyType].enemyValues[1].w;
                         break;
                     case "score" : 
                         switch (secondInput)

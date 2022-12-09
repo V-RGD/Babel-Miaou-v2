@@ -7,6 +7,7 @@ public class BurnMarks : MonoBehaviour
     //for burn marks on the floor
     private PlayerAttacks _playerAttacks;
     private GameObject _player;
+    private Transform _gameManager;
     
     [SerializeField]private GameObject semiBurntVfx;
     [SerializeField]private GameObject reverseBurntVfx;
@@ -31,24 +32,28 @@ public class BurnMarks : MonoBehaviour
     private void Start()
     {
         _playerAttacks = PlayerAttacks.instance;
+        _gameManager = GameObject.Find("GameManager").transform;
         _player = GameObject.Find("Player");
         
         for (int i = 0; i < _semiBurntAmount; i++)
         {
             GameObject semi = Instantiate(semiBurntVfx, Vector3.back * 1000, Quaternion.identity);
             _semiBurntList.Add(semi.GetComponent<ParticleSystem>());
+            semi.transform.parent = _gameManager.transform;
         }
         
         for (int i = 0; i < _reverseBurntAmount; i++)
         {
             GameObject reverse = Instantiate(reverseBurntVfx, Vector3.back * 1000, Quaternion.identity);
             _reverseBurntList.Add(reverse.GetComponent<ParticleSystem>());
+            reverse.transform.parent = _gameManager.transform;
         }
         
         for (int i = 0; i < _fullBurntAmount; i++)
         {
             GameObject full = Instantiate(fullBurntVfx, Vector3.back * 1000, Quaternion.identity);
             _fullBurntList.Add(full.GetComponent<ParticleSystem>());
+            full.transform.parent = _gameManager.transform;
         }
     }
 

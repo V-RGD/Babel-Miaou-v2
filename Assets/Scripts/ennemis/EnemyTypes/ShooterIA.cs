@@ -30,7 +30,6 @@ public class ShooterIA : MonoBehaviour
     private float attackCooldownWhenRunningAway = 4;
     private bool isRunningAway;
     private float attackCooldown;
-    private float _roomDist;
     private Vector3 _fleeDir;
     public bool isBigShooter;
 
@@ -41,7 +40,6 @@ public class ShooterIA : MonoBehaviour
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
-    private Transform _roomCenter;
 
     private void Awake()
     {
@@ -57,7 +55,6 @@ public class ShooterIA : MonoBehaviour
 
     private void Start()
     {
-        _roomCenter = _enemyTrigger.room.GetComponent<Room>().roomCenter;
     }
 
     private void Update()
@@ -95,49 +92,34 @@ public class ShooterIA : MonoBehaviour
         //calculates the distance between object and player
         var position = transform.position;
         _projectileDir = _player.transform.position - position;
-        _roomDist = (_roomCenter.position - position).magnitude;
 
-        if (_roomDist > 25)
+        //if the enemy is too close, walks away
+        if (_playerDist < _desiredRange)
         {
-            //if the enemy is too far, gets closer
-            if (_playerDist > enemyTypeData.attackRange)
+            //increases cooldown if is normal version
+            if (!isBigShooter)
             {
-                //avance
-                _speedFactor = 1;
-                _agent.SetDestination(_player.transform.position);
+                attackCooldown = attackCooldownWhenRunningAway;
             }
+            //recule
+            _speedFactor = 0;
+            _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
         }
-        else
+        //if the enemy is in range, and not too far
+        if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
         {
-            //if the enemy is too close, walks away
-            if (_playerDist < _desiredRange)
-            {
-                //increases cooldown if is normal version
-                if (!isBigShooter)
-                {
-                    attackCooldown = attackCooldownWhenRunningAway;
-                }
-                //recule
-                _speedFactor = 0;
-                _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
-            }
-            //if the enemy is in range, and not too far
-            if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
-            {
-                //attaque et agit normalement
-                _speedFactor = 0;
-                attackCooldown = enemyTypeData.attackCooldown;
-                _agent.SetDestination(transform.position);
-            }
-            //if the enemy is too far, gets closer
-            if (_playerDist > enemyTypeData.attackRange)
-            {
-                //avance
-                _speedFactor = 1;
-                _agent.SetDestination(_player.transform.position);
-            }
+            //attaque et agit normalement
+            _speedFactor = 0;
+            attackCooldown = enemyTypeData.attackCooldown;
+            _agent.SetDestination(transform.position);
         }
-
+        //if the enemy is too far, gets closer
+        if (_playerDist > enemyTypeData.attackRange)
+        {
+            //avance
+            _speedFactor = 1;
+            _agent.SetDestination(_player.transform.position);
+        }
         if (_canShootProjectile && _playerDist < enemyTypeData.attackRange)
         {
             _canShootProjectile = false;

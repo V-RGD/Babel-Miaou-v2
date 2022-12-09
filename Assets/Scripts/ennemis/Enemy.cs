@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
     public ParticleSystem splashFX;
     public ParticleSystem hitFX;
     public bool canTouchPlayer;
+    public bool isFlippingSprite;
 
     [HideInInspector]public GameObject room;
     void Start()
@@ -65,6 +66,7 @@ public class Enemy : MonoBehaviour
                 StartCoroutine(ResetPoisonCounter());
             }
         }
+        FlipSprite();
     }
 
     IEnumerator ResetPoisonCounter()
@@ -115,7 +117,7 @@ public class Enemy : MonoBehaviour
         }
         
         //deals damage
-        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking && canTouchPlayer)
+        if (other.CompareTag("Player") && canTouchPlayer)
         {
             _gameManager.DealDamageToPlayer(damage);
         }
@@ -124,6 +126,27 @@ public class Enemy : MonoBehaviour
         {
             //gets poisoned
             _poisonCounter = ObjectsManager.instance.gameVariables.poisonLenght;
+        }
+    }
+
+    private float _flipCounter;
+    private float turnSpeed = 10;
+
+    public void FlipSprite()
+    {
+        Vector3 playerDir = _player.transform.position - transform.position;
+        if (!isFlippingSprite)
+        {
+            if (playerDir.x > 0 && _flipCounter < 1)
+            {
+                _flipCounter += Time.deltaTime * turnSpeed;
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+            }
+            if (playerDir.x < 0 && _flipCounter > -1)
+            {
+                _flipCounter -= Time.deltaTime * turnSpeed;
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+            }
         }
     }
 

@@ -145,7 +145,6 @@ public class BullIA : MonoBehaviour
             _agent.SetDestination(_player.transform.position);
         }
     }
-
     IEnumerator Dash()
     {
         _animator.CrossFade(Attack, 0, 0);

@@ -22,6 +22,7 @@ public class EnemyHitFx : MonoBehaviour
         for (int i = 0; i < _hitFxAmount; i++)
         {
             GameObject fx = Instantiate(hitFx, Vector3.back * 1000, Quaternion.identity);
+            fx.transform.parent = gameObject.transform;
             _hitFxList.Add(fx.GetComponent<ParticleSystem>());
         }
     }

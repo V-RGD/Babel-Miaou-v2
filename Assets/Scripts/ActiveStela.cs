@@ -6,7 +6,7 @@ public class ActiveStela : MonoBehaviour
     private PlayerControls playerControls;
     private MenuManager _menuManager;
     [HideInInspector]public InputAction collect;
-    private Room room;
+    public Room room;
     private UIManager _uiManager;
 
     private GameObject player;
@@ -16,6 +16,21 @@ public class ActiveStela : MonoBehaviour
     private bool isPlayerInRange;
     private bool isActive;
     private float activeDist = 5;
+    private bool canActive;
+    
+    private void Awake()
+    {
+        playerControls = new PlayerControls();
+        canvas = GameObject.Find("UI Canvas");
+        player = GameObject.Find("Player");
+    }
+
+    private void Start()
+    {
+        
+        _uiManager = UIManager.instance;
+        _menuManager = MenuManager.instance;
+    }
     
     void ShopItem()
     {
@@ -41,9 +56,11 @@ public class ActiveStela : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && !_menuManager.gameIsPaused)
+        if (isPlayerInRange && !_menuManager.gameIsPaused && canActive)
         {
+            canActive = false;
             //actives stela
+            room.isStelaActive = true;
         }
     }
 

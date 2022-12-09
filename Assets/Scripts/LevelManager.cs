@@ -14,6 +14,7 @@ public class LevelManager : MonoBehaviour
     public GameObject chest; 
     public GameObject shop;
     public GameObject door;
+    public GameObject stela;
     
     public float roomSize;
     public List<GameObject> roomList;

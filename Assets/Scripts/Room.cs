@@ -32,9 +32,9 @@ public class Room : MonoBehaviour
     [SerializeField]private GameObject visuals;
     [SerializeField]private GameObject empty;
     [HideInInspector]public GameObject enemyGroup;
+    [HideInInspector]public bool isStelaActive;
     private int _enemiesRemaining;
     private bool _canChestSpawn = true;
-    private bool _canSpawnStela;
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
@@ -221,7 +221,8 @@ public class Room : MonoBehaviour
                 ShopSpawn();
                 break;
             case 4 : //mini-boss room
-                _canSpawnStela = true;
+                GameObject stela = Instantiate(_lm.stela, roomCenter.position + Vector3.up, Quaternion.identity);
+                stela.GetComponent<ActiveStela>().room = this;
                 GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position + Vector3.up, Quaternion.identity);
                 _lm.exit = exitPrefab;
                 _lm.exit.SetActive(false);

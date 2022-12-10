@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -20,7 +21,7 @@ public class Room : MonoBehaviour
     private GameManager _gameManager;
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
-    [SerializeField]private Transform roomCenter;
+    public Transform roomCenter;
 
     //room info
     public int roomType;
@@ -31,9 +32,9 @@ public class Room : MonoBehaviour
     [SerializeField]private GameObject visuals;
     [SerializeField]private GameObject empty;
     [HideInInspector]public GameObject enemyGroup;
+    [HideInInspector]public bool isStelaActive;
     private int _enemiesRemaining;
     private bool _canChestSpawn = true;
-    private bool _canSpawnStela;
     private bool _canActivateEnemies = true;
     private bool _hasPlayerEnteredRoom;
     private const float RoomDetectZoneSize = 0.4f; //gave up finding a name --- the percentage of the room which detects the player if it's close from the center
@@ -93,67 +94,77 @@ public class Room : MonoBehaviour
     {
         //determine etage
         int stage = _gameManager.currentLevel;
+        int stageBonus = 0;
         int difficulty;
         //determine niveau de difficulté
+        switch (stage)
+        {
+            case 0 :
+                stageBonus = 0;
+                break;
+            case  1 : 
+                stageBonus = 3;
+                break;
+            case  2 : 
+                stageBonus = 6;
+                break;
+        }
         if (currentRoom < 3)
         {
             difficulty = 0;
         }
         else if (currentRoom < 5)
         {
-            difficulty = 3;
+            difficulty = 1;
         }
         else
         {
-            difficulty = 6;
+            difficulty = 2;
         }
         //determine le nombre d'ennemis devant spawn
-        int enemyNumber = _lm.roomSpawnAmountMatrix[difficulty + stage];
+        int enemyNumber = _lm.roomSpawnAmountMatrix[difficulty + stageBonus];
         //pour chaque ennemi
         for (int i = 0; i < enemyNumber; i++)
         {
             //determine les pourcentages d'apparition pour chacun
-            GameObject enemySpawning;
-            int enemyTypeRandomizer = Random.Range(0, 100);
-            int enemyType;
+            int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis
             int wandererCeil = _lm.matrices[0].spawnMatrix[difficulty + stage];
             int bullCeil = _lm.matrices[1].spawnMatrix[difficulty + stage];
             int shooterCeil = _lm.matrices[2].spawnMatrix[difficulty + stage];
             int tankCeil = _lm.matrices[3].spawnMatrix[difficulty + stage];
+            int mkCeil = _lm.matrices[4].spawnMatrix[difficulty + stage];
             
-            if (enemyTypeRandomizer < wandererCeil)
+            List<int> randomEnemyType = new List<int>();
+            //adds every enemy type
+            List<int> possibleEnemies = new List<int>() {0, 1, 2, 3, 4};
+            //adds every enemy probas
+            List<int> enemyProbas = new List<int>();
+            enemyProbas.Add(wandererCeil);
+            enemyProbas.Add(bullCeil);
+            enemyProbas.Add(shooterCeil);
+            enemyProbas.Add(tankCeil);
+            enemyProbas.Add(mkCeil);
+            
+            //pour chaque type d'ennemi diff de 0
+            //pour le nombre de probas
+            for (int j = 0; j < possibleEnemies.Count; j++)
             {
-                //wanderer
-                enemyType = 0;
+                for (int k = 0; k < enemyProbas[possibleEnemies[j]]; k++)
+                {
+                    randomEnemyType.Add(possibleEnemies[j]);
+                    Debug.Log(possibleEnemies[j]);
+                }
             }
-            else if (enemyTypeRandomizer < wandererCeil + bullCeil)
-            {
-                //bull
-                enemyType = 1;
-            }
-            else if (enemyTypeRandomizer < wandererCeil + bullCeil + shooterCeil)
-            {
-                //shooter
-                enemyType = 2;
-            }
-            else if (enemyTypeRandomizer < wandererCeil + bullCeil + shooterCeil + tankCeil)
-            {
-                //tank
-                enemyType = 3;
-            }
-            else
-            {
-                //marksman
-                enemyType = 4;
-            }
-            enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
+
+            int enemyType = randomEnemyType[rand];
+            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
             
             //determines position
             //calculates a random position where the enemy will spawn
             float randPosX = Random.Range(-15, 15);
             float randPosY = Random.Range(-15, 15);
-            var spawnPoint = roomCenter.position + new Vector3(randPosX, 3, randPosY);
+            var spawnPoint = roomCenter.position + new Vector3(randPosX, 1, randPosY);
             
             //spawns enemy
             enemySpawning.transform.position = spawnPoint;
@@ -167,7 +178,7 @@ public class Room : MonoBehaviour
             enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
             enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
         
-            Debug.Log("enemy spawned");
+            //Debug.Log("enemy spawned");
         }
     }
     
@@ -205,14 +216,13 @@ public class Room : MonoBehaviour
                 EnemyGeneration();
                 break;
             case 2 : //special room
-                EnemyGeneration();
-                _canSpawnStela = true;
                 break;
             case 3 : //shop room
                 ShopSpawn();
                 break;
             case 4 : //mini-boss room
-                MiniBossSpawn();
+                GameObject stela = Instantiate(_lm.stela, roomCenter.position + Vector3.up, Quaternion.identity);
+                stela.GetComponent<ActiveStela>().room = this;
                 GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position + Vector3.up, Quaternion.identity);
                 _lm.exit = exitPrefab;
                 _lm.exit.SetActive(false);
@@ -222,10 +232,82 @@ public class Room : MonoBehaviour
         }
     }
 
-    void MiniBossSpawn()
+    void StelaSpawn()
     {
-        GameObject bossSpawning = Instantiate(_lm.miniBosses[Random.Range(0, _lm.miniBosses.Length)], enemyGroup.transform);
-        bossSpawning.transform.position = roomCenter.position + Vector3.up * 3;
+        //determine etage
+        int stage = _gameManager.currentLevel;
+        int stageBonus = 0;
+        int enemyNumber = 0;
+        //determine le nombre d'ennemis devant spawn
+        switch (stage)
+        {
+            case 0:
+                enemyNumber = 5;
+                stageBonus = 0;
+                break;
+            case 1:
+                enemyNumber = 6;
+                stageBonus = 5;
+                break;
+        }
+
+        //pour chaque ennemi
+        for (int i = 0; i < enemyNumber; i++)
+        {
+            //determine les pourcentages d'apparition pour chacun
+            int rand = Random.Range(0, 100);
+            //determines les plafonds d'apparition pour les ennemis
+            int wandererCeil = _lm.stelaMatrices[0].spawnMatrix[stage];
+            int bullCeil = _lm.stelaMatrices[1].spawnMatrix[stage];
+            int shooterCeil = _lm.stelaMatrices[2].spawnMatrix[stage];
+            int tankCeil = _lm.stelaMatrices[3].spawnMatrix[stage];
+            int mkCeil = _lm.stelaMatrices[4].spawnMatrix[stage];
+
+            List<int> randomEnemyType = new List<int>();
+            //adds every enemy type
+            List<int> possibleEnemies = new List<int>() { 0, 1, 2, 3, 4 };
+            //adds every enemy probas
+            List<int> enemyProbas = new List<int>();
+            enemyProbas.Add(wandererCeil);
+            enemyProbas.Add(bullCeil);
+            enemyProbas.Add(shooterCeil);
+            enemyProbas.Add(tankCeil);
+            enemyProbas.Add(mkCeil);
+
+            //pour chaque type d'ennemi diff de 0
+            //pour le nombre de probas
+            for (int j = 0; j < possibleEnemies.Count; j++)
+            {
+                for (int k = 0; k < enemyProbas[possibleEnemies[j]]; k++)
+                {
+                    randomEnemyType.Add(possibleEnemies[j]);
+                    Debug.Log(possibleEnemies[j]);
+                }
+            }
+
+            int enemyType = randomEnemyType[rand];
+            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
+
+            //determines position
+            //calculates a random position where the enemy will spawn
+            float randPosX = Random.Range(-15, 15);
+            float randPosY = Random.Range(-15, 15);
+            var spawnPoint = roomCenter.position + new Vector3(randPosX, 1, randPosY);
+
+            //spawns enemy
+            enemySpawning.transform.position = spawnPoint;
+            enemySpawning.transform.Rotate(0, -45, 0);
+            enemySpawning.GetComponent<Enemy>().room = gameObject;
+            enemySpawning.SetActive(false);
+
+            //sets variables
+            enemySpawning.GetComponent<Enemy>().health = _lm.stelaMatrices[enemyType].enemyValues[stage].x;
+            enemySpawning.GetComponent<Enemy>().damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
+            enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
+
+            Debug.Log("enemy spawned by stela");
+        }
     }
 
     void ShopSpawn()

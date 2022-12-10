@@ -54,7 +54,6 @@ public class ObjectsManager : MonoBehaviour
     #endregion
     #region StatsIncrease
     private float killingSpreeDamage;
-    private float noHitSpeedRunDamageMultiplier;
     #endregion
     #region Timers
     [HideInInspector] public float killingSpreeTimer;
@@ -141,44 +140,36 @@ public class ObjectsManager : MonoBehaviour
             case 6 : noHit = false; break;
         }
         UiItemBoxesUpdate();
-        //UpdateStats();
+        UpdateStats();
     }
     void UpdateStats()
     {
-        //killing spree
-        if (noHitStreak)
-        {
-            noHitSpeedRunDamageMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
-        }
-        else
-        {
-            noHitSpeedRunDamageMultiplier = 1;
-        }
+        // //killing spree
+        // float noHitMultiplier;
+        // if (noHitStreak)
+        // {
+        //     noHitMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
+        // }
+        // else
+        // {
+        //     noHitMultiplier = 1;
+        // }
+        //
+        // float attackBonuses = killingSpreeDamage;
+        // float attack = (gameVariables.baseAttack + attackBonuses) * noHitMultiplier;
+        // _player._playerAttacks.attackStat = attack;
         
-        float attackBonuses = killingSpreeDamage;
-        float attack = (gameVariables.baseAttack + attackBonuses) * noHitSpeedRunDamageMultiplier;
-        _player._playerAttacks.attackStat = attack;
+        // //HP Max
+        // _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + _gameManager.healthBonus);
         
-        //HP Max
-        _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + _gameManager.healthBonus);
+        // //dexterity
+        // float bonusDex = 0;
+        // float dex = (gameVariables.baseDexterity + bonusDex);
+        // _player._playerAttacks.dexterity = dex;
         
-        //dexterity
-        float bonusDex = 0;
-        float dex = (gameVariables.baseDexterity + bonusDex);
-        _player._playerAttacks.dexterity = dex;
-        
-        float speedBonus = 0;
-        float speed = gameVariables.baseSpeed + speedBonus;
-        _player.maxSpeed = speed;
-        
-        //Debug.Log("dex set to " + dex);
-        //Debug.Log("speed set to " + speed);
-        //Debug.Log("attack set to " + attack);
-        /*
-        Debug.Log("health set to " + _gameManager.maxHealth);
-        Debug.Log("dex set to " + dex);
-        Debug.Log("speed set to " + speed);
-        Debug.Log("attack set to " + attack);*/
+        // float speedBonus = 0;
+        // float speed = gameVariables.baseSpeed + speedBonus;
+        // _player.maxSpeed = speed;
     }
     public void OnEnemyKill()
     {

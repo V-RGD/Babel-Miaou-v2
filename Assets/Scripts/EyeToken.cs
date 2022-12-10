@@ -8,8 +8,9 @@ public class EyeToken : MonoBehaviour
     private GameManager _gameManager;
     public Rigidbody rb;
 
-    private float pickupDist = 6;
-    private float collectSpeed = 6;
+    private float _pickupDist = 6;
+    private float _collectSpeed = 6;
+    private bool _canMoveToPlayer;
     
     void Start()
     {
@@ -21,6 +22,14 @@ public class EyeToken : MonoBehaviour
             _gameManager.eyesInGame.Add(gameObject.transform);
             //sort list
             _gameManager.eyesInGame = _gameManager.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
+        }
+    }
+
+    private void Update()
+    {
+        if ((player.transform.position - transform.position).magnitude < _pickupDist)
+        {
+            GoToPlayer();
         }
     }
 
@@ -41,5 +50,10 @@ public class EyeToken : MonoBehaviour
             _gameManager.eyesInGame.Remove(transform);
             Destroy(gameObject);
         }
+    }
+
+    void GoToPlayer()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 0.1f);
     }
 }

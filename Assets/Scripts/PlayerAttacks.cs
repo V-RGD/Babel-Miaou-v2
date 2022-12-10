@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,6 +23,7 @@ public class PlayerAttacks : MonoBehaviour
     #region Attack Values
 
     [Header("Attacks")] 
+    public float bumpForce = 20;
     public float attackStat = 1;
     public float spinDamageMultiplier = 1.5f;
     public float smashDamageMultiplier = 5;
@@ -31,14 +31,14 @@ public class PlayerAttacks : MonoBehaviour
 
     public float slashCooldown = 0.4f;
     public float spinCooldown = 0.7f;
-    public float smashCooldown = 2;
-    public float smashWarmup = 1;
+    public float smashCooldown = 1;
+    public float smashWarmup = 0.2f;
 
-    public float smashForce = 10;
+    public float smashForce = 15;
     public float slashForce = 15;
     public float spinForce = 8;
 
-    private GameObject _attackAnchor;
+    public GameObject _attackAnchor;
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _spinHitBox;
@@ -66,6 +66,8 @@ public class PlayerAttacks : MonoBehaviour
     public VisualEffect reverseSlashFX;
     public VisualEffect spinSlashFX;
     public VisualEffect smashSlashFX;
+
+    public BurnMarks burnMarks;
 
     public bool canInterruptAnimation;
     public enum AttackState
@@ -98,13 +100,12 @@ public class PlayerAttacks : MonoBehaviour
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _spinHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
+        burnMarks = GetComponent<BurnMarks>();
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _playerControls = new PlayerControls();
     }
-
     private void Start() => _pc = PlayerController.instance;
-
     private void Update()
     {
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
@@ -113,7 +114,6 @@ public class PlayerAttacks : MonoBehaviour
             RightClickAttackManagement();
         }
     }
-
     void PlayAnimation(Vector3 playerDirection)
     {
         int state = GetAttackAnimation(playerDirection);
@@ -164,24 +164,29 @@ public class PlayerAttacks : MonoBehaviour
             comboState = ComboState.Default;
         }
         
+        //determine ou l'attaque va se faire
+        _attackAnchor.transform.LookAt(transform.position + attackDir);
+        burnMarks.attackDir = attackDir;
+        
         switch (comboState)
         {
             case ComboState.Default : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.FloorToInt(attackStat);
+                damage = attackStat;
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 normalSlashFX.Play();
+                burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(0));
                 //1st anim
                 comboState = ComboState.SimpleAttack;
                 PlayAnimation(attackDir);
                 break;
             case ComboState.SimpleAttack : 
                 cooldown = slashCooldown * dexterity; 
-                damage = Mathf.FloorToInt(attackStat);
+                damage = attackStat;
                 hitbox = _slashHitBox; 
                 force = slashForce;
                 startUpLength = attackParameters.attackStartupLength;
@@ -189,12 +194,12 @@ public class PlayerAttacks : MonoBehaviour
                 recoverLength = attackParameters.attackRecoverLength;
                 //2nd anim
                 reverseSlashFX.Play();
+                burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(1));
                 comboState = ComboState.ReverseAttack;
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
-                cooldown = spinCooldown * dexterity; 
-                damage = attackStat * spinDamageMultiplier/5;
+                damage = attackStat * spinDamageMultiplier / 5;
                 hitbox = _spinHitBox; 
                 force = spinForce;
                 startUpLength = attackParameters.spinStartupLength;
@@ -207,12 +212,10 @@ public class PlayerAttacks : MonoBehaviour
                 break;
         }
         
-        //determine ou l'attaque va se faire
-        _attackAnchor.transform.LookAt(transform.position + attackDir);
         //stops movement
         _pc.canMove = false;
         //add current damage stat to weapon
-        hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
+        hitbox.GetComponent<ObjectDamage>().damage = (damage);
         //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
         yield return new WaitForSeconds(startUpLength);
@@ -221,7 +224,7 @@ public class PlayerAttacks : MonoBehaviour
         //can touch enemies, hitbox active, is invincible
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
-        _pc.invincibleCounter = activeLength;
+        //_pc.invincibleCounter = activeLength;
 
         if (_pc.movementDir != Vector2.zero)
         {
@@ -246,7 +249,37 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = true;
         isAttacking = false;
     }
-    
+    IEnumerator SpinSlashes()
+    {
+        yield return new WaitForSeconds(attackParameters.spinStartupLength);
+        float interval = attackParameters.spinActiveLength/4;
+        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        spinSlashFX.Play();
+        _spinHitBox.SetActive(true);
+        yield return new WaitForSeconds(interval);
+        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        _spinHitBox.SetActive(false);
+        _spinHitBox.SetActive(true);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+        yield return new WaitForSeconds(interval);
+        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        _spinHitBox.SetActive(false);
+        spinSlashFX.Stop();
+        spinSlashFX.Play();
+    }
     IEnumerator SmashCoroutine()
     {
         isAttacking = true;
@@ -256,7 +289,7 @@ public class PlayerAttacks : MonoBehaviour
         //values assignation
         GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
-        int damage = 0;
+        float damage = 0;
         float cooldown = 0;
         float force = 0;
         float startUpLength = 0;
@@ -279,7 +312,7 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         cooldown = smashCooldown; 
-        damage = Mathf.CeilToInt(attackStat * smashDamageMultiplier);
+        damage = (attackStat * smashDamageMultiplier);
         hitbox = _smashHitBox; 
         force = smashForce;
         startUpLength = attackParameters.smashStartupLength;
@@ -295,7 +328,7 @@ public class PlayerAttacks : MonoBehaviour
         //stops movement
         _pc.canMove = false;
         //add current damage stat to weapon
-        hitbox.GetComponent<ObjectDamage>().damage = Mathf.CeilToInt(damage);
+        hitbox.GetComponent<ObjectDamage>().damage = damage;
         //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
         _rb.AddForce(attackDir * force, ForceMode.Impulse);
@@ -312,7 +345,7 @@ public class PlayerAttacks : MonoBehaviour
             Instantiate(poisonCloud, transform.position, Quaternion.identity);
         }
         
-        _pc.invincibleCounter = activeLength;
+        //_pc.invincibleCounter = activeLength;
         // _rb.AddForce(attackDir * force, ForceMode.Impulse);
         yield return new WaitForSeconds(activeLength);
 
@@ -333,34 +366,6 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = true;
         isAttacking = false;
     }
-
-    IEnumerator SpinSlashes()
-    {
-        float interval = attackParameters.spinActiveLength/4;
-        spinSlashFX.Play();
-        _spinHitBox.SetActive(true);
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-        yield return new WaitForSeconds(interval);
-        _spinHitBox.SetActive(false);
-        _spinHitBox.SetActive(true);
-        spinSlashFX.Stop();
-        spinSlashFX.Play();
-    }
-
     void RightMouseHold(InputAction.CallbackContext context)
     {
         if (currentAttackState == AttackState.Default)
@@ -373,7 +378,6 @@ public class PlayerAttacks : MonoBehaviour
         _rightMouseHolding = false;
     }
     #region Timer
-
     private void Timer()
         {
             _comboTimer -= Time.deltaTime;
@@ -394,7 +398,6 @@ public class PlayerAttacks : MonoBehaviour
             StartCoroutine(AttackCoroutine());
         }
     }
-    
     private void RightClickAttackManagement()
     {
         if (_rightMouseHolding)
@@ -427,7 +430,6 @@ public class PlayerAttacks : MonoBehaviour
             smashGauge = 1;
         }
     }
-
     int GetAttackAnimation(Vector3 playerDir)
     {
         //Debug.Log("attack anim" + comboState);
@@ -461,7 +463,6 @@ public class PlayerAttacks : MonoBehaviour
         }
         return state;
     }
-    
     int GetAttackAnimationNoDir()
     {
         //Debug.Log("attack anim" + comboState);
@@ -474,7 +475,6 @@ public class PlayerAttacks : MonoBehaviour
         };
         return state;
     }
-
     #region InputSystemRequirements
     private void OnEnable()
     {

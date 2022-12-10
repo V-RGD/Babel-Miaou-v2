@@ -277,8 +277,6 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
-        StartCoroutine(EyeChain());
-        yield break;
 
         float meleeRange = 25;
         float handsAvailable = 2;

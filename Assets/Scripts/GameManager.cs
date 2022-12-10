@@ -16,11 +16,13 @@ public class GameManager : MonoBehaviour
     public CinemachineShake _cmShake;
     [HideInInspector]public PlayerAttacks _playerAttacks;
     public List<Transform> eyesInGame;
+    private EnemyHitFx _enemyHitFx;
 
     public int money;
     public int maxHealth = 3;
     public int health;
     public int healthBonus;
+    public float enemyHitShakeIntensity = 3;
 
     public int playerRoom;
     public bool isDead;
@@ -38,6 +40,7 @@ public class GameManager : MonoBehaviour
         
         player = GameObject.Find("Player");
         _cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
+        _enemyHitFx = GetComponent<EnemyHitFx>();
     }
 
     void Start()
@@ -63,10 +66,9 @@ public class GameManager : MonoBehaviour
     {
         
     }
-    
     public void DealDamageToPlayer(float damageDealt) //when player takes hit
     {
-        if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0)
+        if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0 && !_playerController.isDashing)
         {
             //clamps damage to an int (security)
             int damage = Mathf.CeilToInt(damageDealt);
@@ -78,7 +80,7 @@ public class GameManager : MonoBehaviour
             _uiManager.HealthBar(health);
             _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
-            _cmShake.ShakeCamera(8, .1f);
+            _cmShake.ShakeCamera(7, .1f);
             
             //ded
             if (health <= 0)
@@ -114,8 +116,9 @@ public class GameManager : MonoBehaviour
         //plays vfx
         enemy.splashFX.gameObject.SetActive(true);
         enemy.splashFX.Play();
-        enemy.hitFX.gameObject.SetActive(true);
-        enemy.hitFX.Play();
+        //enemy.hitFX.gameObject.SetActive(true);
+        //enemy.hitFX.Play();
+        _enemyHitFx.StartCoroutine(_enemyHitFx.PlaceNewVfx(enemy.transform.position));
         //clamps damage to an int (security)
         float damage = damageDealt;
         //applies damage
@@ -123,8 +126,14 @@ public class GameManager : MonoBehaviour
         {
             damage++;
         }
+        //if no hit, doubles damage
+        if (_objectsManager.noHitStreak)
+        {
+            damage *= 2;
+        }
         enemy.health -= damage;
-        _cmShake.ShakeCamera(5, .1f);
+        Debug.Log(damage);
+        _cmShake.ShakeCamera(enemyHitShakeIntensity, .1f);
         //applies killing effects
         if (enemy.health <= 0)
         {

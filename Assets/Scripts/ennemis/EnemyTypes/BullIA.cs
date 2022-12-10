@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 public class BullIA : MonoBehaviour
 {
@@ -34,6 +35,14 @@ public class BullIA : MonoBehaviour
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
     
+    [SerializeField]private Animator _animator;
+    public GameObject _sprite;
+    public int currentAnimatorState;
+    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Attack = Animator.StringToHash("Attack");
+    private static readonly int Stun = Animator.StringToHash("Stun");
+    public GameObject dashFx;
+    
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -44,6 +53,21 @@ public class BullIA : MonoBehaviour
 
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+    }
+    
+    void GetAnimation()
+    {
+        if (_isAttacking)
+        {
+            return;
+        }
+        else
+        {
+            if (Idle == currentAnimatorState) return;
+            _animator.CrossFade(Idle, 0, 0);
+            currentAnimatorState = Idle;
+        }
+        
     }
 
     private void Update()
@@ -57,7 +81,7 @@ public class BullIA : MonoBehaviour
             //resets stun counter
             _stunCounter = enemyTypeData.stunLenght;
         }
-        
+
         StunProcess();
         WallCheck();
     }
@@ -121,17 +145,20 @@ public class BullIA : MonoBehaviour
             _agent.SetDestination(_player.transform.position);
         }
     }
-
     IEnumerator Dash()
     {
+        _animator.CrossFade(Attack, 0, 0);
+        currentAnimatorState = Attack;
         //stops movement
         _rb.velocity = Vector3.zero;
-        dashFactor = -0.2f;
+        dashFactor = -0.1f;
         //adds force to character
         _isDashing = true;
         _enemyTrigger.canTouchPlayer = true;
         //waits for the attack to start
         yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
+        _sprite.SetActive(false);
+        dashFx.gameObject.SetActive(true);
         dashFactor = 1;
         //fonce jusuqu'a toucher un mur
         yield return new WaitUntil(() => _isTouchingWall);
@@ -145,6 +172,10 @@ public class BullIA : MonoBehaviour
         _stunCounter = enemyTypeData.stunLenght;
         //can dash again when not stun
         _canDash = true;
+        _sprite.SetActive(true);
+        dashFx.gameObject.SetActive(false);
+        _animator.CrossFade(Idle, 0, 0);
+        currentAnimatorState = Idle;
     }
 
     void StunProcess()
@@ -172,9 +203,8 @@ public class BullIA : MonoBehaviour
             if (_isDashing)
             {
                 //bumps the player
-                _player.GetComponent<PlayerController>().stunCounter = 1.5f;
+                PlayerController.instance.stunCounter = 1.5f;
                 _player.GetComponent<Rigidbody>().AddForce(playerDir * enemyTypeData.bumpForce);
-                
             }
         }
         

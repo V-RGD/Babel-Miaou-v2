@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
@@ -100,7 +99,7 @@ public class DunGen : MonoBehaviour
             _roomNumberMap[tblX, tblY] = _roomToSpawnNumber; //used to track room ID for the golden path
             _roomToSpawnNumber++;
             dungeonSize = _roomToSpawnNumber;
-            yield return new WaitForSeconds(0.01f);
+            //yield return new WaitForSeconds(0.01f);
         }
         dungeonSize -= 1;
 
@@ -166,14 +165,14 @@ public class DunGen : MonoBehaviour
                         roomSpawning.transform.parent = roomList.transform;
                         roomSpawning.SetActive(true);
                     }
-                    yield return new WaitForSeconds(0.01f);
+                    //yield return new WaitForSeconds(0.01f);
                 }
             }
         }
         #endregion
-        roomList.transform.Rotate(0, 45, 0);
         finishedGeneration = true;
         yield return new WaitUntil(() => finishedGeneration);
+        roomList.transform.Rotate(0, 45, 0);
         _navMeshSurface.BuildNavMesh();
     }
     #endregion

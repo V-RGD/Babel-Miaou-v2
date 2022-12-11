@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5855979421817110367
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5855979421817110360}
+  - component: {fileID: 5855979421817110361}
+  - component: {fileID: 5855979421817110363}
+  - component: {fileID: 5855979421817110362}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5855979421817110360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5855979421817110361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbaf35ff94f042048a1f9e9ea23cd98a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 7886117131615728332, guid: 65f6615d253592644a42bfc175252e87, type: 3}
+  - {fileID: 7886117131615728332, guid: d8efa16c12196074b8623f2c532f28cb, type: 3}
+  - {fileID: 7886117131615728332, guid: 5b7a4c8444a6afe4bb38c26350bf7243, type: 3}
+  - {fileID: 7886117131615728332, guid: b25ea912517af5b46be87280283f5bd5, type: 3}
+  _cmShake: {fileID: 0}
+  _playerAttacks: {fileID: 0}
+  eyesInGame: []
+  money: 0
+  maxHealth: 10
+  health: 0
+  healthBonus: 0
+  enemyHitShakeIntensity: 3
+  playerRoom: 0
+  isDead: 0
+  currentLevel: 0
+--- !u!114 &5855979421817110363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68c04eba6b6f834cb35895c518827cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemObjectsInventory: 00000000000000000000000000000000
+  itemList: 00000000010000000200000003000000040000000500000006000000
+  objectTemplate: {fileID: 8831286099785496761, guid: 80690f80272269e41b8cac8ae652cd3c,
+    type: 3}
+  uiItemPrefab: {fileID: 7826557181551841645, guid: 974657974ae229f4489784919c782c27,
+    type: 3}
+  eyeCollector: {fileID: 7869526609446283328, guid: 3896f767567373945850b48efb360abe,
+    type: 3}
+  eyeToken: {fileID: 252159430993309912, guid: 2c5e1f53132f7af4ca93a0f5eef6409d, type: 3}
+  healItem: {fileID: 8831286099785496761, guid: 11a7e8859b0495b4ca76c6a176ea89d2,
+    type: 3}
+  randomItem: {fileID: 8831286099785496761, guid: e19e5981338bd934c92e62ac0315ec4c,
+    type: 3}
+  maxHealthItem: {fileID: 8831286099785496761, guid: 755894a6e8623b34cad91d9c23afbcd7,
+    type: 3}
+  _currentRoom: {fileID: 0}
+  uiItemBoxes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  objectMenu: {fileID: 0}
+  gameVariables: {fileID: 11400000, guid: a6869fa261ad67b49935f92e4c73cace, type: 2}
+  itemDataScriptable: {fileID: 11400000, guid: 3465fd8e40509ae40b433baa8030ea78, type: 2}
+  objectSprites:
+  - {fileID: -1689196591, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: -1143918757, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: 723263868, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: -1906783119, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: -1065118073, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: 1829918292, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: -801784743, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  itemAmount: 25
+  sacredCross: 0
+  killingSpree: 0
+  noHit: 0
+  catLuck: 0
+  stinkyFish: 0
+  earthQuake: 0
+  killingSpreeTimer: 0
+  sacredCrossTimer: 0
+  noHitStreak: 0
+  currentBoxPos: 0
+  offsetDiff: 170
+  bonusBoxStartPos: {x: 0, y: 0, z: 0}
+  canReplaceItem: 0
+--- !u!114 &5855979421817110362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 470d7647ac507194ba9afa86b6fd66c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitFx: {fileID: 6327029574963269729, guid: 89baeeb4eeb3e3646a42f2262bba47fb, type: 3}
+  _hitFxList: []
+  _hitFxAmount: 100
+  duration: 1.5
+  _hitFxCounter: 0

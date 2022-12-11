@@ -10,10 +10,11 @@ public class LevelManager : MonoBehaviour
     //updates infos regarding the level progression
     [Header("Generic Prefabs")]
     public GameObject[] basicEnemies;
-    public GameObject[] miniBosses;
+    //public GameObject[] miniBosses;
     public GameObject chest; 
     public GameObject shop;
     public GameObject door;
+    public GameObject stela;
     
     public float roomSize;
     public List<GameObject> roomList;
@@ -30,8 +31,17 @@ public class LevelManager : MonoBehaviour
         //stats depending on the stage, and difficulty
         public List<Vector4> enemyValues = new List<Vector4>(4);
     }
+    
+    [Serializable]public class EnemyStelaMatrix
+    {
+        //what probability does this enemy have to spawn
+        public List<int> spawnMatrix = new List<int>(2);
+        //stats depending on the stage, and difficulty
+        public List<Vector3> enemyValues = new List<Vector3>(4);
+    }
 
     public List<EnemyMatrix> matrices;
+    public List<EnemyStelaMatrix> stelaMatrices;
 
     private DunGen _dunGen;
 

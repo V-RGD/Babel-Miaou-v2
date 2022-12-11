@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     public float dashLenght;
     public float dashCooldownLenght;
     [HideInInspector] public bool canMove = true;
+    [HideInInspector] public bool isDashing;
+    
     #endregion
 
     #region Intern Values
@@ -248,6 +250,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator DashSequence()
     {
         SwitchState(PlayerStates.Dash);
+        isDashing = true;
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
         //applies dash force
@@ -262,12 +265,13 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(dashLenght);
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = true;
+        isDashing = false;
         _dashesAvailable++;
         dashCooldownTimer = dashCooldownLenght;
 
         if (invincibleCounter < dashLenght + 0.2f)
         {
-            invincibleCounter = dashLenght + 0.2f;
+            //invincibleCounter = dashLenght + 0.2f;
         }
         
         SwitchState(PlayerStates.Run);

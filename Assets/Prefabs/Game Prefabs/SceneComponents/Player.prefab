@@ -119,7 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1565165419920850761}
   - component: {fileID: 1565165419920850760}
-  m_Layer: 12
+  m_Layer: 14
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 4f2803e048d288e4182a4c49fc1b4991, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -181,7 +181,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: e2e060e200eeb364696f756647408056, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -430,9 +430,8 @@ MonoBehaviour:
     type: 3}
   fullBurntVfx: {fileID: 2385086565315174769, guid: d17d6af91c15dd842a6bcba3fb5f63b7,
     type: 3}
-  semiBurntAmount: 20
-  reverseBurntAmount: 20
-  fullBurntAmount: 20
+  attackDir: {x: 0, y: 0, z: 0}
+  offset: 0
   duration: 3
 --- !u!1 &7353462990282828062
 GameObject:
@@ -1120,10 +1119,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerRun
       objectReference: {fileID: 0}
-    - target: {fileID: 7175155874105186353, guid: 20fcec8d0c256fd4e995f573748a1d6b,
+    - target: {fileID: 7175155874105186352, guid: 20fcec8d0c256fd4e995f573748a1d6b,
         type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7175155874105186355, guid: 20fcec8d0c256fd4e995f573748a1d6b,
         type: 3}

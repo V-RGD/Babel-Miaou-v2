@@ -224,7 +224,7 @@ public class PlayerAttacks : MonoBehaviour
         //can touch enemies, hitbox active, is invincible
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
-        _pc.invincibleCounter = activeLength;
+        //_pc.invincibleCounter = activeLength;
 
         if (_pc.movementDir != Vector2.zero)
         {
@@ -345,7 +345,7 @@ public class PlayerAttacks : MonoBehaviour
             Instantiate(poisonCloud, transform.position, Quaternion.identity);
         }
         
-        _pc.invincibleCounter = activeLength;
+        //_pc.invincibleCounter = activeLength;
         // _rb.AddForce(attackDir * force, ForceMode.Impulse);
         yield return new WaitForSeconds(activeLength);
 

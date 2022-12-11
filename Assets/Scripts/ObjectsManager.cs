@@ -229,7 +229,7 @@ public class ObjectsManager : MonoBehaviour
                 //shows empty box
                 uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
-                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = null;
+                uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = objectSprites[^1];
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = false;
             }
         }

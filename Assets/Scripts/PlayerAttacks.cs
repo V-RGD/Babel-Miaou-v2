@@ -60,7 +60,7 @@ public class PlayerAttacks : MonoBehaviour
     private static readonly int SecondAttack_Back = Animator.StringToHash("SecondAttack_Back");
     private static readonly int SecondAttack_Front = Animator.StringToHash("SecondAttack_Front");
     private static readonly int Spin_Attack = Animator.StringToHash("Spin_Attack");
-    private static readonly int Smash_Attack = Animator.StringToHash("Smash_Attack");
+    private static readonly int Smash = Animator.StringToHash("Smash");
 
     public VisualEffect normalSlashFX;
     public VisualEffect reverseSlashFX;
@@ -111,7 +111,7 @@ public class PlayerAttacks : MonoBehaviour
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
         {
             Timer();
-            RightClickAttackManagement();
+            //RightClickAttackManagement();
         }
     }
     void PlayAnimation(Vector3 playerDirection)
@@ -319,7 +319,7 @@ public class PlayerAttacks : MonoBehaviour
         activeLength = attackParameters.smashActiveLength;
         recoverLength = attackParameters.smashRecoverLength;
         //3rd anim
-        comboState = ComboState.SimpleAttack;
+        comboState = ComboState.SmashAttack;
         PlayAnimation(attackDir);
         comboState = ComboState.Default;
         
@@ -331,7 +331,10 @@ public class PlayerAttacks : MonoBehaviour
         hitbox.GetComponent<ObjectDamage>().damage = damage;
         //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
-        _rb.AddForce(attackDir * force, ForceMode.Impulse);
+        if (_pc.movementDir != Vector2.zero)
+        {
+            _rb.AddForce(attackDir * force, ForceMode.Impulse);
+        }
         yield return new WaitForSeconds(startUpLength);
 
         //-----------active state
@@ -346,7 +349,6 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         //_pc.invincibleCounter = activeLength;
-        // _rb.AddForce(attackDir * force, ForceMode.Impulse);
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
@@ -398,6 +400,17 @@ public class PlayerAttacks : MonoBehaviour
             StartCoroutine(AttackCoroutine());
         }
     }
+
+    private void SmashAttackManagement(InputAction.CallbackContext context)
+    {
+        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
+        {
+            _pc.canMove = true;
+            StopAllCoroutines();
+            StartCoroutine(SmashCoroutine());
+        }
+    }
+    
     private void RightClickAttackManagement()
     {
         if (_rightMouseHolding)
@@ -412,7 +425,6 @@ public class PlayerAttacks : MonoBehaviour
             //if initial input
             if (smashGauge > 0)
             {
-                
                 if (smashGauge >= 1)
                 {
                     StartCoroutine(SmashCoroutine());
@@ -447,6 +459,7 @@ public class PlayerAttacks : MonoBehaviour
                 ComboState.SimpleAttack => playerDir.z >= 0 ? Attack_Back : Attack_Front,
                 ComboState.ReverseAttack => playerDir.z >= 0 ? SecondAttack_Back : SecondAttack_Front,
                 ComboState.SpinAttack => Spin_Attack,
+                ComboState.SmashAttack => Smash,
                 _ => state
             };
         }
@@ -458,6 +471,7 @@ public class PlayerAttacks : MonoBehaviour
                 ComboState.SimpleAttack => Attack_Side,
                 ComboState.ReverseAttack => SecondAttack_Side,
                 ComboState.SpinAttack => Spin_Attack,
+                ComboState.SmashAttack => Smash,
                 _ => state
             };
         }
@@ -483,6 +497,7 @@ public class PlayerAttacks : MonoBehaviour
         _mouseHold.Enable();
         
         _rightClick = _playerControls.Player.RightClick;
+        _rightClick.performed += SmashAttackManagement;
         _rightClick.started += RightMouseHold;
         _rightClick.canceled += RightMouseReleased;
         _rightClick.Enable();

@@ -141,6 +141,7 @@ public class CheatManager : MonoBehaviour
                             //_gameManager.maxHealth = _gameManager.health;
                         }
                         _uiManager.HealthBar(_gameManager.health);
+                        _uiManager.HurtPanels();
                         break;
                     
                     case "damage" :

@@ -12,8 +12,8 @@ public class Launch_VFX : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            fx.Play();
-            pc.Play();
+            //fx.Play();
+            //pc.Play();
         }
     }
 }

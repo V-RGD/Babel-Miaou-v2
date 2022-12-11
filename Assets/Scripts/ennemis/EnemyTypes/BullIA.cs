@@ -57,8 +57,20 @@ public class BullIA : MonoBehaviour
     
     void GetAnimation()
     {
-        if (_isAttacking)
+        if (_isDashing)
         {
+            return;
+        }
+
+        if (_stunCounter > 0)
+        {
+            if (currentAnimatorState != Stun)
+            {
+                if (Stun == currentAnimatorState) return;
+                _animator.CrossFade(Stun, 0, 0);
+                currentAnimatorState = Stun;
+                Debug.Log("changed to stun");
+            }
             return;
         }
         else
@@ -66,6 +78,7 @@ public class BullIA : MonoBehaviour
             if (Idle == currentAnimatorState) return;
             _animator.CrossFade(Idle, 0, 0);
             currentAnimatorState = Idle;
+            Debug.Log("changed to idle");
         }
         
     }
@@ -75,12 +88,6 @@ public class BullIA : MonoBehaviour
         _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position).normalized;
-
-        if (_isHit)
-        {
-            //resets stun counter
-            _stunCounter = enemyTypeData.stunLenght;
-        }
 
         StunProcess();
         WallCheck();
@@ -162,6 +169,9 @@ public class BullIA : MonoBehaviour
         dashFactor = 1;
         //fonce jusuqu'a toucher un mur
         yield return new WaitUntil(() => _isTouchingWall);
+        _sprite.SetActive(true);
+        _animator.CrossFade(Stun, 0, 0);
+        currentAnimatorState = Stun;
         _isDashing = false;
         _enemyTrigger.canTouchPlayer = false;
         //stops
@@ -171,11 +181,11 @@ public class BullIA : MonoBehaviour
         //stuns for a bit
         _stunCounter = enemyTypeData.stunLenght;
         //can dash again when not stun
-        _canDash = true;
-        _sprite.SetActive(true);
         dashFx.gameObject.SetActive(false);
         _animator.CrossFade(Idle, 0, 0);
         currentAnimatorState = Idle;
+        yield return new WaitForSeconds(enemyTypeData.stunLenght);
+        _canDash = true;
     }
 
     void StunProcess()

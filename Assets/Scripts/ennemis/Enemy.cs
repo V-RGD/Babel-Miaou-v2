@@ -69,7 +69,24 @@ public class Enemy : MonoBehaviour
                 StartCoroutine(ResetPoisonCounter());
             }
         }
-        FlipSprite();
+
+        if (canTouchPlayer)
+        {
+            FlipSprite();
+        }
+        else
+        {
+            if (_flipCounter < 1 && _flipCounter > 0)
+            {
+                _flipCounter = 1;
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+            }
+            if (_flipCounter > -1 && _flipCounter < 0)
+            {
+                _flipCounter = -1;
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+            }
+        }
     }
 
     IEnumerator ResetPoisonCounter()

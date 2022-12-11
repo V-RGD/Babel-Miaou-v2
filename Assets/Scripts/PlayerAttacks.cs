@@ -66,6 +66,8 @@ public class PlayerAttacks : MonoBehaviour
     public VisualEffect reverseSlashFX;
     public VisualEffect spinSlashFX;
     public VisualEffect smashSlashFX;
+    public VisualEffect smashWaveFX;
+    public ParticleSystem smashBurstFX;
 
     public BurnMarks burnMarks;
 
@@ -283,9 +285,19 @@ public class PlayerAttacks : MonoBehaviour
     IEnumerator SmashCoroutine()
     {
         isAttacking = true;
-        canInterruptAnimation = false;
-        _pc.SwitchState(PlayerController.PlayerStates.Attack);;
         
+        //-----------can attack again
+        
+        comboState = ComboState.Default;
+        _animator.CrossFade(Idle, 0, 0);
+        SetAttackState(AttackState.Default);
+        //comboState = ComboState.Default;
+        //can walk again
+        _pc.SwitchState(PlayerController.PlayerStates.Run);
+
+        canInterruptAnimation = false;
+        _pc.SwitchState(PlayerController.PlayerStates.Attack);
+
         //values assignation
         GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
@@ -319,6 +331,7 @@ public class PlayerAttacks : MonoBehaviour
         activeLength = attackParameters.smashActiveLength;
         recoverLength = attackParameters.smashRecoverLength;
         //3rd anim
+
         comboState = ComboState.SmashAttack;
         PlayAnimation(attackDir);
         comboState = ComboState.Default;
@@ -349,6 +362,9 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         //_pc.invincibleCounter = activeLength;
+        smashBurstFX.Play();
+        smashWaveFX.Play();
+        GameManager.instance._cmShake.ShakeCamera(7, .1f);
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state

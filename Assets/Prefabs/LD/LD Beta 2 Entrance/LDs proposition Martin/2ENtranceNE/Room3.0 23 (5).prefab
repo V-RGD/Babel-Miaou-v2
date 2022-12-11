@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4669014671276210142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 168293998480044559}
+  - component: {fileID: 6921314402689730207}
+  m_Layer: 6
+  m_Name: Ground (1)
+  m_TagString: Ground
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &168293998480044559
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4669014671276210142}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -12, y: 0, z: 16}
+  m_LocalScale: {x: 0.165, y: 1, z: 0.33}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8482729418155413016}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6921314402689730207
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4669014671276210142}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 48, y: 1, z: 48}
+  m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!1 &8482729416566306667
 GameObject:
   m_ObjectHideFlags: 0
@@ -1268,7 +1313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8482729416703557571}
   - component: {fileID: 8482729416703557580}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: PontN
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -2236,7 +2281,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1a459c4d6f769c2458402ddc66326489, type: 2}
+  - {fileID: 2100000, guid: bc89cf2ec8e4b2140a06a00f598e9a20, type: 2}
   - {fileID: 2100000, guid: d70785617929c9346a64d65c71707725, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -14954,7 +14999,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8482729418072380793}
   - component: {fileID: 8482729418072380794}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: PontE
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -15494,8 +15539,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8482729418108381939}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 8, y: 0, z: 4}
+  m_LocalScale: {x: 0.67, y: 1, z: 0.84}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8482729418155413016}
@@ -16258,6 +16303,7 @@ Transform:
   - {fileID: 8482729418142095399}
   - {fileID: 8482729418108381948}
   - {fileID: 8482729417346247595}
+  - {fileID: 168293998480044559}
   m_Father: {fileID: 8482729418642297762}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

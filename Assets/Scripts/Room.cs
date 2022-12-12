@@ -79,9 +79,16 @@ public class Room : MonoBehaviour
             }
         }
 
-        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType is 1 or 4)
+        if (_hasPlayerEnteredRoom && _canActivateEnemies && roomType == 1)
         {
             _canActivateEnemies = false;
+            DoorLock();
+            StartCoroutine(ActivateAllEnemies());
+        }
+
+        if (isStelaActive)
+        {
+            isStelaActive = false;
             DoorLock();
             StartCoroutine(ActivateAllEnemies());
         }
@@ -218,18 +225,19 @@ public class Room : MonoBehaviour
                 ShopSpawn();
                 break;
             case 4 : //mini-boss room
-                GameObject stela = Instantiate(_lm.stela, roomCenter.position + Vector3.up, Quaternion.identity);
+                GameObject stela = Instantiate(_lm.stela, roomCenter.position, Quaternion.identity);
                 stela.GetComponent<ActiveStela>().room = this;
-                GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position + Vector3.up, Quaternion.identity);
+                GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position, Quaternion.identity);
                 _lm.exit = exitPrefab;
                 _lm.exit.SetActive(false);
+                StelaSpawn();
                 break;
             case 5 : //final boss room
                 break;
         }
     }
 
-    void StelaSpawn()
+    public void StelaSpawn()
     {
         //determine etage
         int stage = _gameManager.currentLevel;
@@ -251,6 +259,7 @@ public class Room : MonoBehaviour
         //pour chaque ennemi
         for (int i = 0; i < enemyNumber; i++)
         {
+            Debug.Log("stela spawned enemy");
             //determine les pourcentages d'apparition pour chacun
             int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis
@@ -292,6 +301,7 @@ public class Room : MonoBehaviour
 
             //spawns enemy
             enemySpawning.transform.position = spawnPoint;
+            enemySpawning.transform.parent = enemyGroup.transform;
             enemySpawning.transform.Rotate(0, -45, 0);
             enemySpawning.GetComponent<Enemy>().room = gameObject;
             enemySpawning.SetActive(false);
@@ -329,7 +339,7 @@ public class Room : MonoBehaviour
         }
     }
 
-    IEnumerator ActivateAllEnemies()
+    public IEnumerator ActivateAllEnemies()
     {
         if (_objectsManager.noHit)
         {

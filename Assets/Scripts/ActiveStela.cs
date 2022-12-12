@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,10 +14,10 @@ public class ActiveStela : MonoBehaviour
     private GameObject canvas;
     public GameObject activePrompt;
 
-    private bool isPlayerInRange;
-    private bool isActive;
-    private float activeDist = 5;
-    private bool canActive;
+    public bool isPlayerInRange;
+    public bool isActive;
+    public float activeDist = 5;
+    public bool canActive = true;
     
     private void Awake()
     {
@@ -27,14 +28,14 @@ public class ActiveStela : MonoBehaviour
 
     private void Start()
     {
-        
+        canActive = true;
         _uiManager = UIManager.instance;
         _menuManager = MenuManager.instance;
     }
     
-    void ShopItem()
+    void ShowPrompt()
     {
-        if (isPlayerInRange)
+        if (isPlayerInRange & canActive)
         {
             activePrompt.SetActive(true);
         }
@@ -61,7 +62,13 @@ public class ActiveStela : MonoBehaviour
             canActive = false;
             //actives stela
             room.isStelaActive = true;
+            //room.StartCoroutine(room.ActivateAllEnemies());
         }
+    }
+
+    private void Update()
+    {
+        ShowPrompt();
     }
 
     #region InputSystemRequirements

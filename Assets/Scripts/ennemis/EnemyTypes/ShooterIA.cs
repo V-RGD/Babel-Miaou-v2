@@ -143,8 +143,8 @@ public class ShooterIA : MonoBehaviour
         projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
         //waits for cooldown to refresh to shoot again
         yield return new WaitForSeconds(attackCooldown);
-        _animator.CrossFade(Idle, 0, 0);
-        currentAnimatorState = Idle;
+        _animator.CrossFade(Attack, 0, 0);
+        currentAnimatorState = Attack;
         //can shoot again
         _canShootProjectile = true;
     }

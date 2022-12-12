@@ -143,7 +143,7 @@ public class Enemy : MonoBehaviour
         }
         
         //deals damage
-        if (other.CompareTag("Player") && canTouchPlayer)
+        if (other.CompareTag("Player") && canTouchPlayer && PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Active)
         {
             _gameManager.DealDamageToPlayer(damage);
         }

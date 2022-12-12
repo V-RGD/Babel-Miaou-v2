@@ -23,6 +23,7 @@ public class DebugWindow : MonoBehaviour
 
     private float _deltaTime;
     private PlayerController _pc;
+    private PlayerAttacks _playerAttacks;
     private GameManager _gameManager;
     private ObjectsManager _objectsManager;
     private GameObject _player;
@@ -35,10 +36,7 @@ public class DebugWindow : MonoBehaviour
 
     private void Awake()
     {
-        _gameManager = GameManager.instance;
-        _objectsManager = ObjectsManager.instance;
         _player = GameObject.Find("Player");
-        _pc = PlayerController.instance;
         _rb = _player.GetComponent<Rigidbody>();
         _cam = GameObject.Find("Camera");
         _uiPanel = transform.GetChild(0).gameObject;
@@ -47,6 +45,10 @@ public class DebugWindow : MonoBehaviour
     //values
     void Start()
     {
+        _playerAttacks = PlayerAttacks.instance;
+        _pc = PlayerController.instance;
+        _gameManager = GameManager.instance;
+        _objectsManager = ObjectsManager.instance;
         _activationKey = KeyCode.F1.ToString();
         _isActive = false;
         _uiPanel.SetActive(false);
@@ -98,9 +100,9 @@ public class DebugWindow : MonoBehaviour
             "Total Enemies : " + _enemiesTotal + "\n"  + "\n" +
             
             "Current Stats : " +  "\n" + "\n" +                       
-            "Attack : " + _pc._playerAttacks.attackStat + "\n" +                            
+            "Attack : " + _playerAttacks.attackStat + "\n" +                            
             "Speed : " + _pc.maxSpeed + "\n"   +
-            "Dexterity : " + _pc._playerAttacks.dexterity + "\n" +   
+            "Dexterity : " + _playerAttacks.dexterity + "\n" +   
             
             "Current Objects : " +  "\n" + "\n" +                       
             "Killing Spree : "+ _objectsManager.killingSpree + " : " + _objectsManager.killingSpreeTimer + "\n" +                            

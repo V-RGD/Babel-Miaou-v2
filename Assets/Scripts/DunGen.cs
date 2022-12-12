@@ -28,7 +28,8 @@ public class DunGen : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
+            return;
         }
 
         instance = this;
@@ -142,7 +143,7 @@ public class DunGen : MonoBehaviour
 
                     int currentRoom = _roomNumberMap[i, j];
                     
-                    if (currentRoom == 0 && currentRoom == dungeonSize && currentRoom == dungeonSize - 1)
+                    if (currentRoom == 0 || currentRoom == dungeonSize || currentRoom == dungeonSize - 1)
                     {
                         foreach (GameObject room in fullRooms)
                         {

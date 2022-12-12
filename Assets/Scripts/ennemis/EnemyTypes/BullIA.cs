@@ -42,7 +42,8 @@ public class BullIA : MonoBehaviour
     private static readonly int Attack = Animator.StringToHash("Attack");
     private static readonly int Stun = Animator.StringToHash("Stun");
     public GameObject dashFx;
-    
+    public ParticleSystem stunFx;
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -53,6 +54,7 @@ public class BullIA : MonoBehaviour
 
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+        stunFx.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -141,6 +143,8 @@ public class BullIA : MonoBehaviour
         dashFactor = 1;
         //fonce jusuqu'a toucher un mur
         yield return new WaitUntil(() => _isTouchingWall);
+        stunFx.gameObject.SetActive(true);
+        stunFx.Play();
         _sprite.SetActive(true);
         _animator.CrossFade(Stun, 0, 0);
         currentAnimatorState = Stun;

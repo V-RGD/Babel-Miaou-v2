@@ -49,7 +49,8 @@ public class LevelManager : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
+            return;
         }
 
         instance = this;

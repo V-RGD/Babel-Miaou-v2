@@ -28,6 +28,7 @@ public class ObjectsManager : MonoBehaviour
     [Header("Assignations")] [Space]
     [SerializeField] private Room _currentRoom;
     public GameObject[] uiItemBoxes;
+    public GameObject[] uiActivationFx;
     private GameManager _gameManager;
     private PlayerControls _playerControls;
     private InputAction moveUp;
@@ -89,9 +90,14 @@ public class ObjectsManager : MonoBehaviour
         AssignObjectInfos();
         //UpdateStats();
 
-        _player._playerAttacks.dexterity = gameVariables.baseDexterity;
+        PlayerAttacks.instance.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
-        _player._playerAttacks.attackStat = gameVariables.baseAttack;
+        PlayerAttacks.instance.attackStat = gameVariables.baseAttack;
+
+        for (int i = 0; i < uiActivationFx.Length - 1; i++)
+        {
+            uiActivationFx[i].SetActive(false);
+        }
     }
 
     private void Update()
@@ -223,6 +229,12 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = true;
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = icon;
+
+                if (i < itemObjectsInventory.Count - 1)
+                {
+                    Debug.Log(i);
+                    uiActivationFx[i].SetActive(true);
+                }
             }
             else
             {
@@ -231,6 +243,10 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = objectSprites[^1];
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = false;
+                if (i < itemObjectsInventory.Count)
+                {
+                    uiActivationFx[i].SetActive(false);
+                }
             }
         }
     }

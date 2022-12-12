@@ -118,7 +118,6 @@ public class Enemy : MonoBehaviour
         mainCollider.enabled = true;
         isActive = true;
     }
-    
     private void OnTriggerEnter(Collider other)
     {
         //if player hit

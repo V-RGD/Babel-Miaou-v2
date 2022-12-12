@@ -33,7 +33,8 @@ public class GameManager : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
+            return;
         }
 
         instance = this;
@@ -128,7 +129,7 @@ public class GameManager : MonoBehaviour
             damage *= 2;
         }
         enemy.health -= damage;
-        Debug.Log(damage);
+        //Debug.Log(damage);
         _cmShake.ShakeCamera(enemyHitShakeIntensity, .1f);
         //applies killing effects
         if (enemy.health <= 0)

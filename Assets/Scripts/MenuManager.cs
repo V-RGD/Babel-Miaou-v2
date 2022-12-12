@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class MenuManager : MonoBehaviour
     public bool quitWarningActive;
     public bool gameIsPaused;
     public bool isInOptions;
+    public PlayerControls playerControls;
+    public InputAction quitMenu;
 
     public GameObject loadingSlider;
     public GameObject quitWarning;
@@ -30,14 +33,29 @@ public class MenuManager : MonoBehaviour
     private bool isInObjectMenu;
     private bool isInCommandLine;
 
+    private void OnEnable()
+    {
+        quitMenu = playerControls.Menus.Escape;
+        quitMenu.performed += EscapeButton;
+        quitMenu.Enable();
+    }
+
+    private void OnDisable()
+    {
+        quitMenu.Disable();
+    }
+
     private void Awake()
     {
         if (instance != null && instance != this)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
+            return;
         }
 
         instance = this;
+
+        playerControls = new PlayerControls();
     }
 
     private void Start()
@@ -46,6 +64,44 @@ public class MenuManager : MonoBehaviour
         _objectsManager = ObjectsManager.instance;
         _uiManager = UIManager.instance;
         _cheatManager = CheatManager.instance;
+    }
+
+    void EscapeButton(InputAction.CallbackContext context)
+    {
+        if (isInCommandLine)
+        {
+            _cheatManager.CloseCommandLine();
+            return;
+        }
+            
+        if (isInOptions)
+        {
+            SettingsMenu();
+            return;
+        }
+
+        bool slotsFilled = true;
+        foreach (var slot in _objectsManager.itemObjectsInventory)
+        {
+            if (slot == 999)
+            {
+                slotsFilled = false;
+                break;
+            }
+        }
+
+        if (!_objectsManager.canReplaceItem || (_objectsManager.canReplaceItem && slotsFilled) )
+        {
+            if (isInObjectMenu)
+            {
+                //resets every position
+                
+                //then closes menu
+                ObjectMenu();
+                return;
+            }
+            PauseMenu();
+        }
     }
 
     private void Update()
@@ -68,45 +124,6 @@ public class MenuManager : MonoBehaviour
             _cheatManager.CloseCommandLine();
         }
         
-        //escape shortcut
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (isInCommandLine)
-            {
-                _cheatManager.CloseCommandLine();
-                return;
-            }
-            
-            if (isInOptions)
-            {
-                SettingsMenu();
-                return;
-            }
-
-            bool slotsFilled = true;
-            foreach (var slot in _objectsManager.itemObjectsInventory)
-            {
-                if (slot == 999)
-                {
-                    slotsFilled = false;
-                    break;
-                }
-            }
-
-            if (!_objectsManager.canReplaceItem || (_objectsManager.canReplaceItem && slotsFilled) )
-            {
-                if (isInObjectMenu)
-                {
-                    //resets every position
-                
-                    //then closes menu
-                    ObjectMenu();
-                    return;
-                }
-                PauseMenu();
-            }
-        }
-
         if (quitWarningActive && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
             MainMenu();

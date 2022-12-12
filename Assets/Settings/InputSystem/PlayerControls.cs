@@ -456,6 +456,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""82c64acb-3b76-4321-8fc7-da96859dd0eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -901,6 +910,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""0d4815c9-429c-4116-b86c-603edbc4a882"",
+                    ""path"": ""<Joystick>/stick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""973770f6-c223-4fc8-a2c7-eaacd619dcc7"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
@@ -940,6 +960,39 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e1e8ea88-ba52-4a5c-8662-9402f189df85"",
+                    ""path"": ""<Joystick>/stick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7d37ffd8-b183-4844-8627-897327abc053"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c6f2b322-163c-464b-b754-5a64881a62d3"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -994,6 +1047,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold(duration=0.1,pressPoint=0.5)"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Console"",
+                    ""type"": ""Button"",
+                    ""id"": ""e8d2980c-3546-4ddc-bd07-b3ddf7f657f2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1010,12 +1072,34 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""f0c4685b-9556-453f-a383-8a0637c01eb1"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""4422b4ae-63d6-4b61-95d4-3a5373e61d45"",
                     ""path"": ""<Mouse>/press"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MouseClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3bd5ca9b-3440-4583-ae40-c1906223b5a3"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Console"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1109,6 +1193,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_UI_MoveUp = m_UI.FindAction("MoveUp", throwIfNotFound: true);
         m_UI_Confirm = m_UI.FindAction("Confirm", throwIfNotFound: true);
         m_UI_MoveDown = m_UI.FindAction("MoveDown", throwIfNotFound: true);
+        m_UI_Quit = m_UI.FindAction("Quit", throwIfNotFound: true);
         // Mouse
         m_Mouse = asset.FindActionMap("Mouse", throwIfNotFound: true);
         m_Mouse_MousePos = m_Mouse.FindAction("MousePos", throwIfNotFound: true);
@@ -1116,6 +1201,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Menus = asset.FindActionMap("Menus", throwIfNotFound: true);
         m_Menus_Escape = m_Menus.FindAction("Escape", throwIfNotFound: true);
         m_Menus_MouseClick = m_Menus.FindAction("MouseClick", throwIfNotFound: true);
+        m_Menus_Console = m_Menus.FindAction("Console", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1269,6 +1355,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_MoveUp;
     private readonly InputAction m_UI_Confirm;
     private readonly InputAction m_UI_MoveDown;
+    private readonly InputAction m_UI_Quit;
     public struct UIActions
     {
         private @PlayerControls m_Wrapper;
@@ -1286,6 +1373,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @MoveUp => m_Wrapper.m_UI_MoveUp;
         public InputAction @Confirm => m_Wrapper.m_UI_Confirm;
         public InputAction @MoveDown => m_Wrapper.m_UI_MoveDown;
+        public InputAction @Quit => m_Wrapper.m_UI_Quit;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1334,6 +1422,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @MoveDown.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMoveDown;
                 @MoveDown.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMoveDown;
                 @MoveDown.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMoveDown;
+                @Quit.started -= m_Wrapper.m_UIActionsCallbackInterface.OnQuit;
+                @Quit.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnQuit;
+                @Quit.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnQuit;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -1377,6 +1468,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @MoveDown.started += instance.OnMoveDown;
                 @MoveDown.performed += instance.OnMoveDown;
                 @MoveDown.canceled += instance.OnMoveDown;
+                @Quit.started += instance.OnQuit;
+                @Quit.performed += instance.OnQuit;
+                @Quit.canceled += instance.OnQuit;
             }
         }
     }
@@ -1420,12 +1514,14 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private IMenusActions m_MenusActionsCallbackInterface;
     private readonly InputAction m_Menus_Escape;
     private readonly InputAction m_Menus_MouseClick;
+    private readonly InputAction m_Menus_Console;
     public struct MenusActions
     {
         private @PlayerControls m_Wrapper;
         public MenusActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Escape => m_Wrapper.m_Menus_Escape;
         public InputAction @MouseClick => m_Wrapper.m_Menus_MouseClick;
+        public InputAction @Console => m_Wrapper.m_Menus_Console;
         public InputActionMap Get() { return m_Wrapper.m_Menus; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1441,6 +1537,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @MouseClick.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnMouseClick;
                 @MouseClick.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnMouseClick;
                 @MouseClick.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnMouseClick;
+                @Console.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnConsole;
+                @Console.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnConsole;
+                @Console.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnConsole;
             }
             m_Wrapper.m_MenusActionsCallbackInterface = instance;
             if (instance != null)
@@ -1451,6 +1550,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @MouseClick.started += instance.OnMouseClick;
                 @MouseClick.performed += instance.OnMouseClick;
                 @MouseClick.canceled += instance.OnMouseClick;
+                @Console.started += instance.OnConsole;
+                @Console.performed += instance.OnConsole;
+                @Console.canceled += instance.OnConsole;
             }
         }
     }
@@ -1525,6 +1627,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnMoveUp(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);
         void OnMoveDown(InputAction.CallbackContext context);
+        void OnQuit(InputAction.CallbackContext context);
     }
     public interface IMouseActions
     {
@@ -1534,5 +1637,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     {
         void OnEscape(InputAction.CallbackContext context);
         void OnMouseClick(InputAction.CallbackContext context);
+        void OnConsole(InputAction.CallbackContext context);
     }
 }

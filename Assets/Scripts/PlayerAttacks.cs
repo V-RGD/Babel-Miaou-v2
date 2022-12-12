@@ -368,7 +368,7 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
-        SetAttackState(AttackState.Recovery);
+        //SetAttackState(AttackState.Recovery);
         //hitbox inactive, not invincible
         hitbox.SetActive(false);
         yield return new WaitForSeconds(recoverLength);

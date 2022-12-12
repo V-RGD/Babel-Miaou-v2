@@ -153,7 +153,6 @@ public class Room : MonoBehaviour
                 for (int k = 0; k < enemyProbas[possibleEnemies[j]]; k++)
                 {
                     randomEnemyType.Add(possibleEnemies[j]);
-                    Debug.Log(possibleEnemies[j]);
                 }
             }
 
@@ -177,8 +176,6 @@ public class Room : MonoBehaviour
             enemySpawning.GetComponent<Enemy>().damage = _lm.matrices[enemyType].enemyValues[stage].y;
             enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
             enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
-        
-            //Debug.Log("enemy spawned");
         }
     }
     
@@ -281,7 +278,6 @@ public class Room : MonoBehaviour
                 for (int k = 0; k < enemyProbas[possibleEnemies[j]]; k++)
                 {
                     randomEnemyType.Add(possibleEnemies[j]);
-                    Debug.Log(possibleEnemies[j]);
                 }
             }
 
@@ -305,8 +301,6 @@ public class Room : MonoBehaviour
             enemySpawning.GetComponent<Enemy>().damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
             enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
             enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
-
-            Debug.Log("enemy spawned by stela");
         }
     }
 

@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
     public Sprite midHeart;
     public Sprite emptyHeart;
     public Image panel;
-    public Image smashSlider;
+    //public Image smashSlider;
     public Animator hurtPanel;
     public RectTransform lowHpPanel;
 
@@ -167,22 +167,22 @@ public class UIManager : MonoBehaviour
 
     void SmashGauge()
     {
-        //used to display progress bar for smash holding
-        float value = _playerController._playerAttacks.smashGauge * 100;
-        float xValue = value / 2 - 50;
-
-        if (value > 20)
-        {
-            smashSlider.gameObject.SetActive(true);
-            smashSlider.GetComponent<RectTransform>().localPosition = new Vector3(xValue, 0, 0);
-            smashSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, 10);
-            smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(true);
-        }
-        else
-        {
-            smashSlider.gameObject.SetActive(false);
-            smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(false);
-        }
+        // //used to display progress bar for smash holding
+        // float value = _playerController._playerAttacks.smashGauge * 100;
+        // float xValue = value / 2 - 50;
+        //
+        // if (value > 20)
+        // {
+        //     smashSlider.gameObject.SetActive(true);
+        //     smashSlider.GetComponent<RectTransform>().localPosition = new Vector3(xValue, 0, 0);
+        //     smashSlider.GetComponent<RectTransform>().sizeDelta = new Vector2(value, 10);
+        //     smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(true);
+        // }
+        // else
+        // {
+        //     smashSlider.gameObject.SetActive(false);
+        //     smashSlider.transform.parent.transform.GetChild(0).gameObject.SetActive(false);
+        // }
     }
 
     public void UpdateHUDIcons()

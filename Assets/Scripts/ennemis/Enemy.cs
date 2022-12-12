@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -35,11 +36,17 @@ public class Enemy : MonoBehaviour
     public bool isFlippingSprite;
 
     [HideInInspector]public GameObject room;
+
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+        _agent = GetComponent<NavMeshAgent>();
+    }
+
     void Start()
     {
         _gameManager = GameManager.instance;
-        _rb = GetComponent<Rigidbody>();
-        _agent = GetComponent<NavMeshAgent>();
+        
         _agent.speed = speed;
         maxHealth = health;
         _player = GameObject.Find("Player");
@@ -76,12 +83,12 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            if (_flipCounter < 1 && _flipCounter > 0)
+            if (_flipCounter is < 1 and > 0)
             {
                 _flipCounter = 1;
                 sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
             }
-            if (_flipCounter > -1 && _flipCounter < 0)
+            if (_flipCounter is > -1 and < 0)
             {
                 _flipCounter = -1;
                 sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);

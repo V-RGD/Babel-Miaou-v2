@@ -1006,6 +1006,7 @@ GameObject:
   - component: {fileID: 8072159720759811462}
   - component: {fileID: 2399865614561188035}
   - component: {fileID: 8530052230994336021}
+  - component: {fileID: 885826342}
   m_Layer: 0
   m_Name: Shooter
   m_TagString: EnemyAttack
@@ -1104,6 +1105,7 @@ MonoBehaviour:
   eyesLooted: 0
   damage: 0
   isActive: 0
+  stunCounter: 0
   healthSlider: {fileID: 6630231367734555507}
   mainCollider: {fileID: 8767110605205087536}
   sprite: {fileID: 6630231366323925635}
@@ -1112,6 +1114,7 @@ MonoBehaviour:
   splashFX: {fileID: 5000641642245314913}
   hitFX: {fileID: 5395938444045840285}
   canTouchPlayer: 0
+  isFlippingSprite: 0
   room: {fileID: 0}
 --- !u!114 &2399865614561188035
 MonoBehaviour:
@@ -1140,6 +1143,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isBigShooter: 0
   bigShooterProjo: {fileID: 0}
+--- !u!95 &885826342
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630231365920386385}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a5fcb3465e846a64e881b40d6060645f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6630231366096100661
 GameObject:
   m_ObjectHideFlags: 0
@@ -1507,6 +1530,7 @@ GameObject:
   - component: {fileID: 6630231367704235617}
   - component: {fileID: 6630231367704235616}
   - component: {fileID: 6630231367704235619}
+  - component: {fileID: 885826343}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1596,6 +1620,26 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!95 &885826343
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630231367704235621}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 190bcda864adfe64899bcb724d83b80c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6630231367734555507
 GameObject:
   m_ObjectHideFlags: 0

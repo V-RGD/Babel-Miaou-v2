@@ -39,6 +39,12 @@ public class ShooterIA : MonoBehaviour
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
 
+    private Animator _animator;
+    public int currentAnimatorState;
+    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Attack = Animator.StringToHash("Attack");
+    private static readonly int Stun = Animator.StringToHash("Stun");
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -46,13 +52,10 @@ public class ShooterIA : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _enemyTrigger = GetComponent<Enemy>();
         enemyTypeData = _enemyTrigger.enemyTypeData;
+        _animator = GetComponent<Animator>();
 
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
-    }
-
-    private void Start()
-    {
     }
 
     private void Update()
@@ -130,6 +133,8 @@ public class ShooterIA : MonoBehaviour
 
     IEnumerator ShootProjectile()
     {
+        _animator.CrossFade(Attack, 0, 0);
+        currentAnimatorState = Attack;
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
         //shoots a projectile
         GameObject projectile = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
@@ -138,6 +143,8 @@ public class ShooterIA : MonoBehaviour
         projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
         //waits for cooldown to refresh to shoot again
         yield return new WaitForSeconds(attackCooldown);
+        _animator.CrossFade(Idle, 0, 0);
+        currentAnimatorState = Idle;
         //can shoot again
         _canShootProjectile = true;
     }

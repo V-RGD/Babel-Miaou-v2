@@ -61,11 +61,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         isFreezed = false;
     }
-
-    private void Update()
-    {
-        
-    }
+    
     public void DealDamageToPlayer(float damageDealt) //when player takes hit
     {
         if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0 && !_playerController.isDashing)
@@ -138,9 +134,11 @@ public class GameManager : MonoBehaviour
         if (enemy.health <= 0)
         {
             _objectsManager.OnEnemyKill();
+            GameScore.instance.AddScore(30);
             enemy.Death();
         }
         enemy.SliderUpdate();
+        GameScore.instance.AddScore(10);
     }
     
     public void DealDamageToEnemy(float damageDealt, Enemy enemy, bool doShake) //when enemy takes hit

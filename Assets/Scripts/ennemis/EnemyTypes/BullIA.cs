@@ -54,34 +54,6 @@ public class BullIA : MonoBehaviour
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
-    
-    void GetAnimation()
-    {
-        if (_isDashing)
-        {
-            return;
-        }
-
-        if (_stunCounter > 0)
-        {
-            if (currentAnimatorState != Stun)
-            {
-                if (Stun == currentAnimatorState) return;
-                _animator.CrossFade(Stun, 0, 0);
-                currentAnimatorState = Stun;
-                Debug.Log("changed to stun");
-            }
-            return;
-        }
-        else
-        {
-            if (Idle == currentAnimatorState) return;
-            _animator.CrossFade(Idle, 0, 0);
-            currentAnimatorState = Idle;
-            Debug.Log("changed to idle");
-        }
-        
-    }
 
     private void Update()
     {

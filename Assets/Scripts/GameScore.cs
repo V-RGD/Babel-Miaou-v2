@@ -13,6 +13,7 @@ public class GameScore : MonoBehaviour
     public string tempPlayerName;
     public int tempScore;
     public GameObject scoreMenu;
+    public TMP_Text scoreTxtHud;
 
     private void Awake()
     {
@@ -30,11 +31,13 @@ public class GameScore : MonoBehaviour
         {
             scores = new int[playerAmount];
         }
+        scoreTxtHud.text = "Score : " + tempScore;
     }
 
     public void AddScore(int scoreAdded)
     {
         tempScore += scoreAdded;
+        scoreTxtHud.text = "Score : " + tempScore;
     }
     
     public void SetPlayerScore(int scoreSet)

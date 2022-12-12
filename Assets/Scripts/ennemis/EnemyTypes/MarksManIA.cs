@@ -32,8 +32,14 @@ public class MarksManIA : MonoBehaviour
     private GameManager _gameManager;
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
-    private LineRenderer _lineRenderer;
+    [SerializeField]private LineRenderer _lineRenderer;
     public ParticleSystem laserFx;
+    
+    [SerializeField]private Animator _animator;
+    public int currentAnimatorState;
+    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Attack = Animator.StringToHash("Attack");
+    private static readonly int Stun = Animator.StringToHash("Stun");
 
     private void Awake()
     {
@@ -41,7 +47,6 @@ public class MarksManIA : MonoBehaviour
         _gameManager = GameManager.instance;
         _player = GameObject.Find("Player");
         _enemyTrigger = GetComponent<Enemy>();
-        _lineRenderer = GetComponent<LineRenderer>();
         laserMaterial = _lineRenderer.material;
         enemyTypeData = _enemyTrigger.enemyTypeData;
 
@@ -126,6 +131,8 @@ public class MarksManIA : MonoBehaviour
 
     IEnumerator LaserAttack()
     {
+        _animator.CrossFade(Attack, 0, 0);
+        currentAnimatorState = Attack;
         //while charging, laser is in direction of player, and color is updated depending on the current charge
         _lineRenderer.enabled = true;
         _isCharging = true;
@@ -151,6 +158,8 @@ public class MarksManIA : MonoBehaviour
         
         //can shoot again
         yield return new WaitForSeconds(enemyTypeData.attackCooldown);
+        _animator.CrossFade(Idle, 0, 0);
+        currentAnimatorState = Idle;
         _lineRenderer.enabled = false;
         _canShootLaser = true;
     }

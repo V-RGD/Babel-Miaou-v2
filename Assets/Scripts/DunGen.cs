@@ -14,8 +14,8 @@ public class DunGen : MonoBehaviour
     public List<GameObject> fullRooms;
     public GameObject roomList;
 
-    private readonly int[,] _map = new int[100, 100];
-    private readonly int[,] _roomNumberMap = new int[100, 100];
+    private int[,] _map = new int[100, 100];
+    private int[,] _roomNumberMap = new int[100, 100];
     private int _roomToSpawnNumber = 1;
     public int dungeonSize;
     [HideInInspector]public bool finishedGeneration;
@@ -45,6 +45,9 @@ public class DunGen : MonoBehaviour
     #region Genpro
     public IEnumerator GenPro()
     {
+       _map = new int[100, 100];
+       _roomNumberMap = new int[100, 100];
+        
         //set un offset
         float offset = 96f;
         //choisit une diagonale

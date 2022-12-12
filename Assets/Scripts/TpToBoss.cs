@@ -23,27 +23,26 @@ public class TpToBoss : MonoBehaviour
         {
             if (_gameManager.currentLevel < 4)
             {
-                // //increases level
-                // _gameManager.currentLevel++;
-                // //desactivates all current rooms
-                // List<GameObject> oldRooms = new List<GameObject>(_levelManager.roomList);
-                // foreach (var room in _levelManager.roomList)
-                // {
-                //     room.SetActive(false);
-                // }
-                // _levelManager.roomList.Clear();
-                // _dunGen.dungeonSize = _dunGen.goldenPathLength;
-                // _dunGen.finishedGeneration = false;
-                // //builds new level
-                // _dunGen.StartCoroutine(_dunGen.GenPro());
-                // yield return new WaitUntil(()=> _dunGen.finishedGeneration);
-                // foreach (var room in oldRooms)
-                // {
-                //     //Destroy(room);
-                // }
+                //increases level
+                _gameManager.currentLevel++;
+                //desactivates all current rooms
+                List<GameObject> oldRooms = new List<GameObject>(_levelManager.roomList);
+                foreach (var room in _levelManager.roomList)
+                {
+                    room.SetActive(false);
+                }
+                _levelManager.roomList.Clear();
+                _dunGen.dungeonSize = _dunGen.goldenPathLength;
+                _dunGen.finishedGeneration = false;
+                //builds new level
+                _dunGen.StartCoroutine(_dunGen.GenPro());
                 yield return new WaitUntil(()=> _dunGen.finishedGeneration);
-                // Destroy(_dunGen.roomList);
-                // Instantiate()
+                foreach (var room in oldRooms)
+                {
+                    //Destroy(room);
+                }
+                yield return new WaitUntil(()=> _dunGen.finishedGeneration);
+                //Destroy(_dunGen.roomList);
             }
             else
             {

@@ -362,8 +362,10 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         //_pc.invincibleCounter = activeLength;
-        smashBurstFX.Play();
-        smashWaveFX.Play();
+        GameObject burstFx = Instantiate(smashBurstFX.gameObject, transform.position + attackDir.normalized * 1.5f, Quaternion.identity);
+        GameObject waveFx = Instantiate(smashWaveFX.gameObject, transform.position + attackDir.normalized * 1.5f, Quaternion.identity);
+        burstFx.GetComponent<ParticleSystem>().Play();
+        waveFx.GetComponent<VisualEffect>().Play();
         GameManager.instance._cmShake.ShakeCamera(7, .1f);
         yield return new WaitForSeconds(activeLength);
 
@@ -372,6 +374,8 @@ public class PlayerAttacks : MonoBehaviour
         //hitbox inactive, not invincible
         hitbox.SetActive(false);
         yield return new WaitForSeconds(recoverLength);
+        // Destroy(burstFx);
+        // Destroy(waveFx);
 
         //-----------can attack again
         SetAttackState(AttackState.Default);

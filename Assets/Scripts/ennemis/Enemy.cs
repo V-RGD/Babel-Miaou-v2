@@ -177,7 +177,7 @@ public class Enemy : MonoBehaviour
     {
         for (int i = 0; i < eyesLooted; i++)
         {
-            Instantiate(enemyTypeData.eyeToken, new Vector3(transform.position.x, _player.transform.position.y, transform.position.z), Quaternion.identity);
+            Instantiate(ObjectsManager.instance.eyeToken, new Vector3(transform.position.x, _player.transform.position.y, transform.position.z), Quaternion.identity);
         }
         Destroy(gameObject);
     }

@@ -11,6 +11,7 @@ public class DunGen : MonoBehaviour
     public int goldenPathLength = 8;
 
     public List<GameObject> rooms;
+    public List<GameObject> fullRooms;
     public GameObject roomList;
 
     private readonly int[,] _map = new int[100, 100];
@@ -139,16 +140,34 @@ public class DunGen : MonoBehaviour
                         isThereARoomLeft = true;
                     }
 
-                    //pour chaque salle définie, instancier les salles correspondantes pour relier le donjon
-                    foreach (GameObject room in rooms)
+                    int currentRoom = _roomNumberMap[i, j];
+                    
+                    if (currentRoom == 0 && currentRoom == dungeonSize && currentRoom == dungeonSize - 1)
                     {
-                        //check if the room has same parameters
-                        if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
-                            room.GetComponent<RoomInfo>().isThereARoomLeft == isThereARoomLeft
-                            && room.GetComponent<RoomInfo>().isThereARoomUp == isThereARoomUp &&
-                            room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
+                        foreach (GameObject room in fullRooms)
                         {
-                            potentialRooms.Add(room);
+                            //check if the room has same parameters
+                            if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
+                                room.GetComponent<RoomInfo>().isThereARoomLeft == isThereARoomLeft
+                                && room.GetComponent<RoomInfo>().isThereARoomUp == isThereARoomUp &&
+                                room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
+                            {
+                                potentialRooms.Add(room);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (GameObject room in rooms)
+                        {
+                            //check if the room has same parameters
+                            if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
+                                room.GetComponent<RoomInfo>().isThereARoomLeft == isThereARoomLeft
+                                && room.GetComponent<RoomInfo>().isThereARoomUp == isThereARoomUp &&
+                                room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
+                            {
+                                potentialRooms.Add(room);
+                            }
                         }
                     }
 

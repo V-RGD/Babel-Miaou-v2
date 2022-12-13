@@ -362,8 +362,9 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         //_pc.invincibleCounter = activeLength;
-        GameObject burstFx = Instantiate(smashBurstFX.gameObject, transform.position + attackDir.normalized * 1.5f, Quaternion.identity);
-        GameObject waveFx = Instantiate(smashWaveFX.gameObject, transform.position + attackDir.normalized * 1.5f, Quaternion.identity);
+        Vector3 pos = new Vector3(transform.position.x, 0.03f, transform.position.z);
+        GameObject burstFx = Instantiate(smashBurstFX.gameObject, pos + attackDir.normalized * 1.5f, Quaternion.identity);
+        GameObject waveFx = Instantiate(smashWaveFX.gameObject, pos + attackDir.normalized * 1.5f, Quaternion.identity);
         burstFx.GetComponent<ParticleSystem>().Play();
         waveFx.GetComponent<VisualEffect>().Play();
         GameManager.instance._cmShake.ShakeCamera(7, .1f);

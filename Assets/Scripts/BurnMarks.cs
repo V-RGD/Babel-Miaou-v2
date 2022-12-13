@@ -103,7 +103,8 @@ public class BurnMarks : MonoBehaviour
                 break;
         }
         //sets position and rotation according to the player direction
-        vfx.transform.position = _player.transform.position;
+        Vector3 pos = new Vector3(transform.position.x, 0.06f, transform.position.z);
+        vfx.transform.position = pos;
         vfx.transform.LookAt(_player.transform.position + (-attackDir * 1000));
         vfx.transform.position += attackDir * (5 * offset);
         //actives fx

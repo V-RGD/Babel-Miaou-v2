@@ -34,6 +34,7 @@ public class Enemy : MonoBehaviour
     public ParticleSystem hitFX;
     public bool canTouchPlayer;
     public bool isFlippingSprite;
+    public bool canFlip;
 
     [HideInInspector]public GameObject room;
 
@@ -77,7 +78,7 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (canTouchPlayer)
+        if (canTouchPlayer || canFlip)
         {
             FlipSprite();
         }

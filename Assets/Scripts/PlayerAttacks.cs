@@ -129,6 +129,10 @@ public class PlayerAttacks : MonoBehaviour
     {
         isAttacking = true;
         canInterruptAnimation = false;
+        if (_pc.currentState != PlayerController.PlayerStates.Dash)
+        {
+            _rb.velocity = Vector3.zero;
+        }
         _pc.SwitchState(PlayerController.PlayerStates.Attack);;
         
         //values assignation
@@ -199,7 +203,7 @@ public class PlayerAttacks : MonoBehaviour
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
-                damage = attackStat * spinDamageMultiplier / 5;
+                damage = attackStat * spinDamageMultiplier;
                 hitbox = _spinHitBox; 
                 force = spinForce;
                 startUpLength = attackParameters.spinStartupLength;
@@ -244,7 +248,7 @@ public class PlayerAttacks : MonoBehaviour
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
-        _rb.velocity = Vector3.zero;
+        //_rb.velocity = Vector3.zero;
         //restores speed
         _pc.canMove = true;
         isAttacking = false;
@@ -340,8 +344,9 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = false;
         //add current damage stat to weapon
         hitbox.GetComponent<ObjectDamage>().damage = damage;
-        //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
+
+        //adds force to simulate inertia
         if (_pc.movementDir != Vector2.zero)
         {
             _rb.AddForce(attackDir * force, ForceMode.Impulse);
@@ -380,7 +385,7 @@ public class PlayerAttacks : MonoBehaviour
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
-        _rb.velocity = Vector3.zero;
+        //_rb.velocity = Vector3.zero;
         //restores speed
         _pc.canMove = true;
         isAttacking = false;

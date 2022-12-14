@@ -133,11 +133,11 @@ public class PlayerController : MonoBehaviour
     {
         if (Time.time < _lockedTill) return currentAnimatorState;
         //checks player speed for orientation
-        float xVal = _rb.velocity.x >= 0 ? _rb.velocity.x : -movementDir.x;
-        float yVal = _rb.velocity.z >= 0 ? _rb.velocity.z : -movementDir.y;
+        float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
+        float yVal = movementDir.y >= 0 ? movementDir.y : -movementDir.y;
         
         //if running
-        if (_rb.velocity != Vector3.zero)
+        if (movementDir != Vector2.zero)
         {
             //checks the best option depending on the speed
             if (yVal > xVal && movementDir.y != 0)

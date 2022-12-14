@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _playerAttacks = PlayerAttacks.instance;
         currentState = PlayerStates.Run;
+        lastWalkedDir = Vector3.right;
     }
     void Behaviour(PlayerStates state)
     {
@@ -132,11 +133,11 @@ public class PlayerController : MonoBehaviour
     {
         if (Time.time < _lockedTill) return currentAnimatorState;
         //checks player speed for orientation
-        float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
-        float yVal = movementDir.y >= 0 ? movementDir.y : -movementDir.y;
+        float xVal = _rb.velocity.x >= 0 ? _rb.velocity.x : -movementDir.x;
+        float yVal = _rb.velocity.z >= 0 ? _rb.velocity.z : -movementDir.y;
         
         //if running
-        if (movementDir != Vector2.zero)
+        if (_rb.velocity != Vector3.zero)
         {
             //checks the best option depending on the speed
             if (yVal > xVal && movementDir.y != 0)
@@ -235,7 +236,7 @@ public class PlayerController : MonoBehaviour
 
     void InputDash(InputAction.CallbackContext context)
     {
-        if ((currentState == PlayerStates.Run && _dashesAvailable > 0 && dashCooldownTimer <= 0))
+        if ((currentState == PlayerStates.Run || currentState == PlayerStates.Attack) && _dashesAvailable > 0 && dashCooldownTimer <= 0)
         {
             _dashesAvailable--;
             StartCoroutine(DashSequence());
@@ -249,6 +250,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator DashSequence()
     {
+        _playerAttacks.InterruptAttack();
         SwitchState(PlayerStates.Dash);
         isDashing = true;
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
@@ -260,7 +262,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y), ForceMode.Impulse);
+            _rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y) * 1.15f, ForceMode.Impulse);
         }
         yield return new WaitForSeconds(dashLenght);
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);

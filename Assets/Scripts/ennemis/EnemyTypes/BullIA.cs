@@ -52,7 +52,7 @@ public class BullIA : MonoBehaviour
         _enemyTrigger = GetComponent<Enemy>();
         enemyTypeData = _enemyTrigger.enemyTypeData;
 
-        wallLayerMask = LayerMask.GetMask("Wall");
+        wallLayerMask = LayerMask.GetMask("Wall", "Pont");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
         stunFx.gameObject.SetActive(false);
     }
@@ -205,7 +205,8 @@ public class BullIA : MonoBehaviour
 
     void WallCheck()
     {
-        if (Physics.Raycast(transform.position, attackDir, 6, wallLayerMask))
+        Debug.DrawRay(transform.position + Vector3.down * 1.5f, (attackDir  ) * 6 ,Color.red);
+        if (Physics.Raycast(transform.position + Vector3.down * 1.5f, (attackDir  ), 6, wallLayerMask))
         {
             _isTouchingWall = true;
         }

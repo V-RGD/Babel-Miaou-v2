@@ -70,7 +70,7 @@ public class Item : MonoBehaviour
         switch (itemType)
         {
             case ItemType.Heal : 
-                int healAmount = 4;
+                int healAmount = 8;
                 gameManager.health += healAmount;
                 //caps health to the max amount
                 if (gameManager.health > gameManager.maxHealth)
@@ -80,7 +80,7 @@ public class Item : MonoBehaviour
                 _uiManager.HealthBar(gameManager.health);
                 break;
             case ItemType.MaxHealth :
-                int maxHealthAmount = 2;
+                int maxHealthAmount = 4;
                 gameManager.maxHealth += maxHealthAmount;
                 gameManager.health += maxHealthAmount;
                 _uiManager.HealthBar(gameManager.health);
@@ -191,7 +191,7 @@ public class Item : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
     {
-        collect = playerControls.Player.Collect;
+        collect = playerControls.Player.Interact;
         collect.Enable();
         collect.performed += Collect;
     }

@@ -74,7 +74,7 @@ public class ActiveStela : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
     {
-        collect = playerControls.Player.Collect;
+        collect = playerControls.Player.Interact;
         collect.Enable();
         collect.performed += Collect;
     }

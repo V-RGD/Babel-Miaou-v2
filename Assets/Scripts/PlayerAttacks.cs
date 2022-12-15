@@ -522,11 +522,11 @@ public class PlayerAttacks : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
     {
-        _mouseHold = _playerControls.Player.AttackHold;
+        _mouseHold = _playerControls.Player.LightAttack;
         _mouseHold.performed += NormalAttackManagement;
         _mouseHold.Enable();
         
-        _rightClick = _playerControls.Player.RightClick;
+        _rightClick = _playerControls.Player.HeavyAttack;
         _rightClick.performed += SmashAttackManagement;
         _rightClick.started += RightMouseHold;
         _rightClick.canceled += RightMouseReleased;

@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 7294989189091147455}
   - component: {fileID: 1111289694}
   - component: {fileID: 1111289695}
+  - component: {fileID: 8264643096837906632}
   m_Layer: 12
   m_Name: Player
   m_TagString: Player
@@ -323,6 +324,7 @@ MonoBehaviour:
   stunCounter: 0
   lastWalkedDir: {x: 0, y: 0, z: 0}
   movementDir: {x: 0, y: 0}
+  remnants: {fileID: 0}
   _playerAttacks: {fileID: 0}
   currentAnimatorState: 0
   currentState: 0
@@ -456,6 +458,13 @@ MonoBehaviour:
     particleList: []
     offset: 0.5
     duration: 3
+  - particle: {fileID: 1959625612540594431, guid: d16050cf8dcd626488838a75fc9afc88,
+      type: 3}
+    generatedAmount: 10
+    counter: 0
+    particleList: []
+    offset: 0
+    duration: 3
   vfxList:
   - effect: {fileID: 5345115710315643013, guid: dc4eefec9717cf049b89eda81a6f399d,
       type: 3}
@@ -478,6 +487,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sprite: {fileID: 1565165419920850762}
+--- !u!114 &8264643096837906632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7294989189091147427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504d64bbafe02ae47ab8adb6e1725faa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7353462990282828062
 GameObject:
   m_ObjectHideFlags: 0

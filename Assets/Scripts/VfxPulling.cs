@@ -47,6 +47,7 @@ public class VfxPulling : MonoBehaviour
             for (int i = 0; i < particleType.generatedAmount; i++)
             {
                 GameObject newParticle = Instantiate(particleType.particle.gameObject, Vector3.back * 1000, Quaternion.identity);
+                newParticle.SetActive(false);
                 particleType.particleList.Add(newParticle.GetComponent<ParticleSystem>());
                 newParticle.transform.parent = _gameManager.transform;
             }
@@ -57,6 +58,7 @@ public class VfxPulling : MonoBehaviour
             for (int i = 0; i < effectType.generatedAmount; i++)
             {
                 GameObject newParticle = Instantiate(effectType.effect.gameObject, Vector3.back * 1000, Quaternion.identity);
+                newParticle.SetActive(false);
                 effectType.effectList.Add(newParticle.GetComponent<VisualEffect>());
                 newParticle.transform.parent = _gameManager.transform;
             }
@@ -102,9 +104,11 @@ public class VfxPulling : MonoBehaviour
         //particle.transform.LookAt(_player.transform.position + (-attackDir * 1000));
         particle.transform.position += attackDir * newParticle.offset;
         //actives fx
+        particle.gameObject.SetActive(true);
         particle.Stop();
         particle.Play();
         yield return new WaitForSeconds(newParticle.duration);
+        particle.gameObject.SetActive(false);
         //dissapears far away
         particle.transform.position = Vector3.back * 1000;
     }
@@ -120,16 +124,17 @@ public class VfxPulling : MonoBehaviour
         {
             newVfx.counter = 0;
         }
-
         //sets position and rotation according to the player direction
         Vector3 pos = new Vector3(transform.position.x, 0.2f, transform.position.z);
         particle.transform.position = pos;
         //particle.transform.LookAt(_player.transform.position + (-attackDir * 1000));
         particle.transform.position += attackDir * newVfx.offset;
         //actives fx
+        particle.gameObject.SetActive(true);
         particle.Stop();
         particle.Play();
         yield return new WaitForSeconds(newVfx.duration);
+        particle.gameObject.SetActive(false);
         //dissapears far away
         particle.transform.position = Vector3.back * 1000;
     }
@@ -152,10 +157,44 @@ public class VfxPulling : MonoBehaviour
         particle.transform.LookAt(_player.transform.position + (-attackDir * 1000));
         particle.transform.position += attackDir * newParticle.offset;
         //actives fx
+        particle.gameObject.SetActive(true);
         particle.Stop();
         particle.Play();
         yield return new WaitForSeconds(newParticle.duration);
+        particle.gameObject.SetActive(false);
         //dissapears far away
         particle.transform.position = Vector3.back * 1000;
+    }
+    public IEnumerator PlaceNewVfx(Particle newParticle, Vector3 rotation)
+    {
+        //place vfx
+        ParticleSystem particle = newParticle.particleList[newParticle.counter];
+        if (newParticle.counter < newParticle.particleList.Count - 1)
+        {
+            newParticle.counter++;
+        }
+        else
+        {
+            newParticle.counter = 0;
+        }
+        //sets position and rotation according to the player direction
+        Vector3 pos = new Vector3(transform.position.x, 0.2f, transform.position.z);
+        particle.transform.position = pos;
+        particle.transform.LookAt(_player.transform.position + (-rotation * 1000));
+        particle.transform.position += attackDir * newParticle.offset;
+        //actives fx
+        particle.gameObject.SetActive(true);
+        particle.Stop();
+        particle.Play();
+        yield return new WaitForSeconds(newParticle.duration);
+        particle.gameObject.SetActive(false);
+        //dissapears far away
+        particle.transform.position = Vector3.back * 1000;
+    }
+    public void PlaceDashFx()
+    {
+        //place vfx
+        Particle particle = particleList[4];
+        StartCoroutine(PlaceNewVfx(particle, new Vector3(PlayerController.instance.lastWalkedDir.x, 0 ,PlayerController.instance.lastWalkedDir.y)));
     }
 }

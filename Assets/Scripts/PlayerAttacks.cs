@@ -66,7 +66,6 @@ public class PlayerAttacks : MonoBehaviour
     public VisualEffect reverseSlashFX;
     public VisualEffect spinSlashFX;
     public VisualEffect smashSlashFX;
-
     public VfxPulling vfxPulling;
 
     public bool canInterruptAnimation;

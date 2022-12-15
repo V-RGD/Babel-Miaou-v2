@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private InputAction _move;
     private InputAction _dash;
     private Animator _animator;
+    private PlayerRemnants _remnants;
     private float _lockedTill;
     [HideInInspector] public PlayerAttacks _playerAttacks;
     [HideInInspector] public int currentAnimatorState;
@@ -68,6 +69,7 @@ public class PlayerController : MonoBehaviour
         _playerControls = new PlayerControls();
         
         _animator = GetComponent<Animator>();
+        _remnants = GetComponent<PlayerRemnants>();
         _playerAttacks = PlayerAttacks.instance;
         currentState = PlayerStates.Run;
         lastWalkedDir = Vector3.right;
@@ -253,6 +255,8 @@ public class PlayerController : MonoBehaviour
         _playerAttacks.InterruptAttack();
         SwitchState(PlayerStates.Dash);
         isDashing = true;
+        _playerAttacks.vfxPulling.PlaceDashFx();
+        _remnants.StartCoroutine(_remnants.DashRemnants());
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
         //applies dash force

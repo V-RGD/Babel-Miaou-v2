@@ -24,25 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Attack",
-                    "type": "Button",
-                    "id": "dbb9d53e-9dc5-4ab4-a3bb-3d39c2801b95",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Spell",
-                    "type": "Button",
-                    "id": "5fe44b6c-e775-4266-85c9-49106769ec59",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Collect",
+                    "name": "Interact",
                     "type": "Button",
                     "id": "3273ad73-a353-4566-81c6-8fb805189091",
                     "expectedControlType": "Button",
@@ -51,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "AttackHold",
+                    "name": "LightAttack",
                     "type": "Button",
                     "id": "91cd78e0-d231-429c-b3ed-85f2021949a1",
                     "expectedControlType": "Button",
@@ -60,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "RightClick",
+                    "name": "HeavyAttack",
                     "type": "Button",
                     "id": "c850b113-9921-4049-ad38-b4835798399c",
                     "expectedControlType": "Button",
@@ -204,28 +186,6 @@
                 },
                 {
                     "name": "",
-                    "id": "e531b45c-5913-425d-a2e0-dd5a864be3b1",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7a736298-f622-4ef5-a272-960eabe248df",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Spell",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "f326659e-5b98-45e3-ba88-2c8240287385",
                     "path": "<Keyboard>/space",
                     "interactions": "",
@@ -238,7 +198,18 @@
                 {
                     "name": "",
                     "id": "c26bed04-f48b-446f-a45b-2a1ee7977188",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0aeb85af-e924-4451-bc31-116e1418e696",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -253,18 +224,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Collect",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "bc4e248e-7dc1-4e8a-9d91-5301e509be9b",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Collect",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -275,18 +246,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AttackHold",
+                    "action": "LightAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "8484be22-4d1b-4fdd-981a-c475e8090f8b",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AttackHold",
+                    "action": "LightAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -297,7 +268,7 @@
                     "interactions": "Hold(duration=0.2)",
                     "processors": "",
                     "groups": "",
-                    "action": "RightClick",
+                    "action": "HeavyAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -308,7 +279,7 @@
                     "interactions": "Hold(duration=0.2)",
                     "processors": "",
                     "groups": "",
-                    "action": "RightClick",
+                    "action": "HeavyAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

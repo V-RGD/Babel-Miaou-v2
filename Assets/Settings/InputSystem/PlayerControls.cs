@@ -46,25 +46,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Attack"",
-                    ""type"": ""Button"",
-                    ""id"": ""dbb9d53e-9dc5-4ab4-a3bb-3d39c2801b95"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Spell"",
-                    ""type"": ""Button"",
-                    ""id"": ""5fe44b6c-e775-4266-85c9-49106769ec59"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Collect"",
+                    ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""3273ad73-a353-4566-81c6-8fb805189091"",
                     ""expectedControlType"": ""Button"",
@@ -73,7 +55,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""AttackHold"",
+                    ""name"": ""LightAttack"",
                     ""type"": ""Button"",
                     ""id"": ""91cd78e0-d231-429c-b3ed-85f2021949a1"",
                     ""expectedControlType"": ""Button"",
@@ -82,7 +64,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""RightClick"",
+                    ""name"": ""HeavyAttack"",
                     ""type"": ""Button"",
                     ""id"": ""c850b113-9921-4049-ad38-b4835798399c"",
                     ""expectedControlType"": ""Button"",
@@ -226,28 +208,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""e531b45c-5913-425d-a2e0-dd5a864be3b1"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Attack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7a736298-f622-4ef5-a272-960eabe248df"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Spell"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""f326659e-5b98-45e3-ba88-2c8240287385"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -260,7 +220,18 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c26bed04-f48b-446f-a45b-2a1ee7977188"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0aeb85af-e924-4451-bc31-116e1418e696"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -275,18 +246,18 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Collect"",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""bc4e248e-7dc1-4e8a-9d91-5301e509be9b"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Collect"",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -297,18 +268,18 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AttackHold"",
+                    ""action"": ""LightAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""8484be22-4d1b-4fdd-981a-c475e8090f8b"",
-                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AttackHold"",
+                    ""action"": ""LightAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -319,7 +290,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": ""Hold(duration=0.2)"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RightClick"",
+                    ""action"": ""HeavyAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -330,7 +301,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": ""Hold(duration=0.2)"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RightClick"",
+                    ""action"": ""HeavyAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1173,11 +1144,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
-        m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
-        m_Player_Spell = m_Player.FindAction("Spell", throwIfNotFound: true);
-        m_Player_Collect = m_Player.FindAction("Collect", throwIfNotFound: true);
-        m_Player_AttackHold = m_Player.FindAction("AttackHold", throwIfNotFound: true);
-        m_Player_RightClick = m_Player.FindAction("RightClick", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_LightAttack = m_Player.FindAction("LightAttack", throwIfNotFound: true);
+        m_Player_HeavyAttack = m_Player.FindAction("HeavyAttack", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1263,22 +1232,18 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Dash;
-    private readonly InputAction m_Player_Attack;
-    private readonly InputAction m_Player_Spell;
-    private readonly InputAction m_Player_Collect;
-    private readonly InputAction m_Player_AttackHold;
-    private readonly InputAction m_Player_RightClick;
+    private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_LightAttack;
+    private readonly InputAction m_Player_HeavyAttack;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
         public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
-        public InputAction @Attack => m_Wrapper.m_Player_Attack;
-        public InputAction @Spell => m_Wrapper.m_Player_Spell;
-        public InputAction @Collect => m_Wrapper.m_Player_Collect;
-        public InputAction @AttackHold => m_Wrapper.m_Player_AttackHold;
-        public InputAction @RightClick => m_Wrapper.m_Player_RightClick;
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @LightAttack => m_Wrapper.m_Player_LightAttack;
+        public InputAction @HeavyAttack => m_Wrapper.m_Player_HeavyAttack;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1294,21 +1259,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
-                @Attack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
-                @Attack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
-                @Attack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
-                @Spell.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpell;
-                @Spell.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpell;
-                @Spell.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSpell;
-                @Collect.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
-                @Collect.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
-                @Collect.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCollect;
-                @AttackHold.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackHold;
-                @AttackHold.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackHold;
-                @AttackHold.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackHold;
-                @RightClick.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
-                @RightClick.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
-                @RightClick.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
+                @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @LightAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
+                @LightAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
+                @LightAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
+                @HeavyAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyAttack;
+                @HeavyAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyAttack;
+                @HeavyAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyAttack;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -1319,21 +1278,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
-                @Attack.started += instance.OnAttack;
-                @Attack.performed += instance.OnAttack;
-                @Attack.canceled += instance.OnAttack;
-                @Spell.started += instance.OnSpell;
-                @Spell.performed += instance.OnSpell;
-                @Spell.canceled += instance.OnSpell;
-                @Collect.started += instance.OnCollect;
-                @Collect.performed += instance.OnCollect;
-                @Collect.canceled += instance.OnCollect;
-                @AttackHold.started += instance.OnAttackHold;
-                @AttackHold.performed += instance.OnAttackHold;
-                @AttackHold.canceled += instance.OnAttackHold;
-                @RightClick.started += instance.OnRightClick;
-                @RightClick.performed += instance.OnRightClick;
-                @RightClick.canceled += instance.OnRightClick;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
+                @LightAttack.started += instance.OnLightAttack;
+                @LightAttack.performed += instance.OnLightAttack;
+                @LightAttack.canceled += instance.OnLightAttack;
+                @HeavyAttack.started += instance.OnHeavyAttack;
+                @HeavyAttack.performed += instance.OnHeavyAttack;
+                @HeavyAttack.canceled += instance.OnHeavyAttack;
             }
         }
     }
@@ -1606,11 +1559,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
-        void OnAttack(InputAction.CallbackContext context);
-        void OnSpell(InputAction.CallbackContext context);
-        void OnCollect(InputAction.CallbackContext context);
-        void OnAttackHold(InputAction.CallbackContext context);
-        void OnRightClick(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
+        void OnLightAttack(InputAction.CallbackContext context);
+        void OnHeavyAttack(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

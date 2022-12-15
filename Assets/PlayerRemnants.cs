@@ -30,7 +30,7 @@ public class PlayerRemnants : MonoBehaviour
         for (int i = 0; i < _amount; i++)
         {
             _remnants[i].sprite = playerSprite.sprite;
-            _remnants[i].flipY = playerSprite.flipY;
+            _remnants[i].flipX = playerSprite.flipX;
             _remnants[i].transform.position = _player.position + Vector3.up;
             yield return new WaitForSeconds(_interval);
         }

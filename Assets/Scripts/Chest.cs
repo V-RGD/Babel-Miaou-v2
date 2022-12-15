@@ -21,7 +21,7 @@ public class Chest : MonoBehaviour
     {
         _playerControls = new PlayerControls();
         _player = GameObject.Find("Player");
-        _collect = _playerControls.Player.Collect;
+        _collect = _playerControls.Player.Interact;
     }
 
     private void Start()

@@ -50,7 +50,7 @@ public class EnemyHitFx : MonoBehaviour
         }
         
         //sets position in front of enemy
-        Vector3 position = new Vector3(enemyPos.x, _player.transform.position.y, enemyPos.z);
+        Vector3 position = new Vector3(enemyPos.x, _player.transform.position.y - 1, enemyPos.z);
         vfx.transform.position = position + (_player.transform.position - position).normalized * 0;
         vfx.SetActive(true);
         //set rotation as the result of the attack

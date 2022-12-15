@@ -40,7 +40,7 @@ public class CheatManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow) && canEnterCommand)
         {
             if (previousCommand != String.Empty)
             {

@@ -66,10 +66,8 @@ public class PlayerAttacks : MonoBehaviour
     public VisualEffect reverseSlashFX;
     public VisualEffect spinSlashFX;
     public VisualEffect smashSlashFX;
-    public VisualEffect smashWaveFX;
-    public ParticleSystem smashBurstFX;
 
-    public BurnMarks burnMarks;
+    public VfxPulling vfxPulling;
 
     public bool canInterruptAnimation;
     public enum AttackState
@@ -102,7 +100,7 @@ public class PlayerAttacks : MonoBehaviour
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _spinHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
-        burnMarks = GetComponent<BurnMarks>();
+        vfxPulling = GetComponent<VfxPulling>();
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _playerControls = new PlayerControls();
@@ -123,7 +121,7 @@ public class PlayerAttacks : MonoBehaviour
         _animator.CrossFade(state, 0, 0);
         _pc.currentAnimatorState = state;    
     }
-    void SetAttackState(AttackState state)
+    public void SetAttackState(AttackState state)
     {
         currentAttackState = state;
     }
@@ -131,6 +129,10 @@ public class PlayerAttacks : MonoBehaviour
     {
         isAttacking = true;
         canInterruptAnimation = false;
+        if (_pc.currentState != PlayerController.PlayerStates.Dash)
+        {
+            _rb.velocity = Vector3.zero;
+        }
         _pc.SwitchState(PlayerController.PlayerStates.Attack);;
         
         //values assignation
@@ -168,7 +170,7 @@ public class PlayerAttacks : MonoBehaviour
         
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);
-        burnMarks.attackDir = attackDir;
+        vfxPulling.attackDir = attackDir;
         
         switch (comboState)
         {
@@ -181,7 +183,7 @@ public class PlayerAttacks : MonoBehaviour
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 normalSlashFX.Play();
-                burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(0));
+                vfxPulling.PlaceBurnMark(0);
                 //1st anim
                 comboState = ComboState.SimpleAttack;
                 PlayAnimation(attackDir);
@@ -196,12 +198,12 @@ public class PlayerAttacks : MonoBehaviour
                 recoverLength = attackParameters.attackRecoverLength;
                 //2nd anim
                 reverseSlashFX.Play();
-                burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(1));
+                vfxPulling.PlaceBurnMark(1);
                 comboState = ComboState.ReverseAttack;
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
-                damage = attackStat * spinDamageMultiplier / 5;
+                damage = attackStat * spinDamageMultiplier;
                 hitbox = _spinHitBox; 
                 force = spinForce;
                 startUpLength = attackParameters.spinStartupLength;
@@ -246,7 +248,7 @@ public class PlayerAttacks : MonoBehaviour
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
-        _rb.velocity = Vector3.zero;
+        //_rb.velocity = Vector3.zero;
         //restores speed
         _pc.canMove = true;
         isAttacking = false;
@@ -255,29 +257,29 @@ public class PlayerAttacks : MonoBehaviour
     {
         yield return new WaitForSeconds(attackParameters.spinStartupLength);
         float interval = attackParameters.spinActiveLength/4;
-        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        vfxPulling.PlaceBurnMark(2);
         spinSlashFX.Play();
         _spinHitBox.SetActive(true);
         yield return new WaitForSeconds(interval);
-        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        vfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
-        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        vfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
-        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        vfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
-        burnMarks.StartCoroutine(burnMarks.PlaceNewVfx(2));
+        vfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         spinSlashFX.Stop();
         spinSlashFX.Play();
@@ -342,8 +344,9 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = false;
         //add current damage stat to weapon
         hitbox.GetComponent<ObjectDamage>().damage = damage;
-        //adds force to simulate inertia
         _rb.velocity = Vector3.zero;
+
+        //adds force to simulate inertia
         if (_pc.movementDir != Vector2.zero)
         {
             _rb.AddForce(attackDir * force, ForceMode.Impulse);
@@ -362,10 +365,9 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         //_pc.invincibleCounter = activeLength;
-        GameObject burstFx = Instantiate(smashBurstFX.gameObject, transform.position + attackDir.normalized * 1.5f, Quaternion.identity);
-        GameObject waveFx = Instantiate(smashWaveFX.gameObject, transform.position + attackDir.normalized * 1.5f, Quaternion.identity);
-        burstFx.GetComponent<ParticleSystem>().Play();
-        waveFx.GetComponent<VisualEffect>().Play();
+        Vector3 pos = new Vector3(transform.position.x, 0.03f, transform.position.z);
+        vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.vfxList[0]));
+        vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[3]));
         GameManager.instance._cmShake.ShakeCamera(7, .1f);
         yield return new WaitForSeconds(activeLength);
 
@@ -383,7 +385,7 @@ public class PlayerAttacks : MonoBehaviour
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
-        _rb.velocity = Vector3.zero;
+        //_rb.velocity = Vector3.zero;
         //restores speed
         _pc.canMove = true;
         isAttacking = false;
@@ -497,18 +499,27 @@ public class PlayerAttacks : MonoBehaviour
         }
         return state;
     }
-    int GetAttackAnimationNoDir()
+
+    public void InterruptAttack()
     {
-        //Debug.Log("attack anim" + comboState);
-        int state = comboState switch
-        {
-            ComboState.SimpleAttack => Attack_Side,
-            ComboState.ReverseAttack => SecondAttack_Side,
-            ComboState.SpinAttack => Spin_Attack,
-            _ => Idle
-        };
-        return state;
+        //to make sure any attack is disabled
+        StopAllCoroutines();
+        //-----------can attack again
+        SetAttackState(AttackState.Default);
+        //comboState = ComboState.Default;
+        //can walk again
+        _pc.SwitchState(PlayerController.PlayerStates.Run);
+        //waits cooldown depending on the attack used
+        _rb.velocity = Vector3.zero;
+        //restores speed
+        _pc.canMove = true;
+        _pc._playerAttacks.isAttacking = false;
+        
+        _slashHitBox.SetActive(false);
+        _smashHitBox.SetActive(false);
+        _spinHitBox.SetActive(false);
     }
+    
     #region InputSystemRequirements
     private void OnEnable()
     {

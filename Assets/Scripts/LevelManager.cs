@@ -21,6 +21,7 @@ public class LevelManager : MonoBehaviour
     public GameObject entrance;
     public GameObject exit;
     public int currentLevel;
+    public PropsGenProfile propsProfile;
     
     //how much enemy will spawn in the room
     public List<int> roomSpawnAmountMatrix = new List<int>(9);
@@ -62,7 +63,6 @@ public class LevelManager : MonoBehaviour
     {
         //keeps track of passed rooms : pass to next level
         currentLevel++;
-        
         //disables all current rooms
         for (int i = 0; i < roomList.Count; i++)
         {
@@ -70,12 +70,8 @@ public class LevelManager : MonoBehaviour
             roomList.Remove(roomList[i]);
             Destroy(objectToRemove);
         }
-        
         //builds new level
         _dunGen.StartCoroutine(_dunGen.GenPro());
-        
-        
-        
         //places player in first room
         GameObject.Find("Player").transform.position = new Vector3(entrance.transform.position.x, 1, entrance.transform.position.z);
     }

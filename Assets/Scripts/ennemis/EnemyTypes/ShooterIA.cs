@@ -73,9 +73,15 @@ public class ShooterIA : MonoBehaviour
             //if is not stunned by player
             //main behaviour
             Shooter();
+            _enemyTrigger.canFlip = true;
         }
         else
         {
+            if (currentAnimatorState != Stun)
+            {
+                _animator.CrossFade(Stun, 0, 0);
+                currentAnimatorState = Stun;
+            }
             _agent.speed = 0;
             _speedFactor = 0;
             _rb.velocity = Vector3.zero;

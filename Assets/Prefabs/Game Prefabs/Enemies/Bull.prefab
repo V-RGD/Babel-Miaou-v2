@@ -2796,6 +2796,7 @@ GameObject:
   - component: {fileID: 559905685669659472}
   - component: {fileID: 6105707505898351614}
   - component: {fileID: 4314272186310209112}
+  - component: {fileID: 4909371404839554798}
   m_Layer: 0
   m_Name: Bull
   m_TagString: EnemyAttack
@@ -2904,6 +2905,7 @@ MonoBehaviour:
   hitFX: {fileID: 3320182439536204311}
   canTouchPlayer: 0
   isFlippingSprite: 0
+  canFlip: 0
   room: {fileID: 0}
 --- !u!114 &6105707505898351614
 MonoBehaviour:
@@ -2936,6 +2938,21 @@ MonoBehaviour:
   currentAnimatorState: 0
   dashFx: {fileID: 4672903547579972260}
   stunFx: {fileID: 1873147018367190406}
+--- !u!114 &4909371404839554798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9140140783102714226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d07d0ef90aa91948afae0302c10fffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
+  player: {fileID: 0}
+  enemy: {fileID: 0}
 --- !u!1 &9140140784160897991
 GameObject:
   m_ObjectHideFlags: 0

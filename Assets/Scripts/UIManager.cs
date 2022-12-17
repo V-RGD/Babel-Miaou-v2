@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     public TMP_Text MoneyUI;
     public GameObject[] heartUIs;
     public GameObject[] itemBoxHUD;
+    public GameObject[] enemyWarnings;
+    public Transform enemyWarningGroup;
     public Sprite fullHeart;
     public Sprite midHeart;
     public Sprite emptyHeart;

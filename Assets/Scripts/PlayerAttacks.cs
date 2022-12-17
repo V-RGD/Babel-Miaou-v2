@@ -12,7 +12,7 @@ public class PlayerAttacks : MonoBehaviour
     private float _attackMultiplier = 1;
     public float smashPower;
     private bool _isMouseHolding;
-    private bool _rightMouseHolding;
+    [SerializeField]private bool _rightMouseHolding;
     public float smashGauge;
     [HideInInspector] public bool isAttacking;
     private int _comboCounter;
@@ -88,7 +88,8 @@ public class PlayerAttacks : MonoBehaviour
         SimpleAttack,
         ReverseAttack,
         SpinAttack,
-        SmashAttack
+        SmashAttack,
+        SmashRelease,
     }
     public ComboState comboState;
     public AttackState currentAttackState;
@@ -116,8 +117,8 @@ public class PlayerAttacks : MonoBehaviour
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
         {
             Timer();
-            RightClickAttackManagement();
         }
+        OnSmashHold();
     }
     void PlayAnimation(Vector3 playerDirection)
     {
@@ -296,7 +297,6 @@ public class PlayerAttacks : MonoBehaviour
         comboState = ComboState.Default;
         _animator.CrossFade(Idle, 0, 0);
         SetAttackState(AttackState.Default);
-        //comboState = ComboState.Default;
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         canInterruptAnimation = false;
@@ -304,6 +304,7 @@ public class PlayerAttacks : MonoBehaviour
         //values assignation
         GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
+        smashForce = smashGauge / attackParameters.smashChargeLength;
         float damage = 0;
         float cooldown = 0;
         float force = 0;
@@ -347,7 +348,9 @@ public class PlayerAttacks : MonoBehaviour
         {
             _rb.AddForce(attackDir * force, ForceMode.Impulse);
         }
+        comboState = ComboState.SmashRelease;
         PlayAnimation(attackDir);
+        comboState = ComboState.Default;
         yield return new WaitForSeconds(startUpLength);
         //-----------active state
         //can touch enemies, hitbox active, is invincible
@@ -360,7 +363,6 @@ public class PlayerAttacks : MonoBehaviour
             Instantiate(poisonCloud, transform.position, Quaternion.identity);
         }
         
-        //_pc.invincibleCounter = activeLength;
         Vector3 pos = new Vector3(transform.position.x, 0.03f, transform.position.z);
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.vfxList[0]));
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[3]));
@@ -368,23 +370,23 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
-        //SetAttackState(AttackState.Recovery);
         //hitbox inactive, not invincible
         hitbox.SetActive(false);
         yield return new WaitForSeconds(recoverLength);
         //-----------can attack again
         SetAttackState(AttackState.Default);
-        //comboState = ComboState.Default;
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
-        //_rb.velocity = Vector3.zero;
         //restores speed
+        smashPower = 0;
+        smashGauge = 0;
         _pc.canMove = true;
         isAttacking = false;
     }
-    void RightMouseHold(InputAction.CallbackContext context)
+    void OnSmash(InputAction.CallbackContext context)
     {
+        _rightMouseHolding = true;
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
         {
             if (currentAttackState == AttackState.Default)
@@ -397,7 +399,7 @@ public class PlayerAttacks : MonoBehaviour
             StartCoroutine(SmashCoroutine());
         }
     }
-    void RightMouseReleased(InputAction.CallbackContext context)
+    void OnReleaseSmash(InputAction.CallbackContext context)
     {
         _rightMouseHolding = false;
     }
@@ -413,7 +415,7 @@ public class PlayerAttacks : MonoBehaviour
             }
         }
     #endregion
-    private void NormalAttackManagement(InputAction.CallbackContext context)
+    private void OnAttack(InputAction.CallbackContext context)
     {
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
         {
@@ -422,33 +424,22 @@ public class PlayerAttacks : MonoBehaviour
             StartCoroutine(AttackCoroutine());
         }
     }
-    private void SmashAttackManagement(InputAction.CallbackContext context)
+    private void OnSmashHold()
     {
-        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
+        if (smashGauge >= attackParameters.smashChargeLength)
         {
-            _pc.canMove = true;
-            StopAllCoroutines();
-            StartCoroutine(SmashCoroutine());
+            smashGauge = attackParameters.smashChargeLength;
         }
-    }
-    private void RightClickAttackManagement()
-    {
         if (_rightMouseHolding)
         {
             _pc.currentState = PlayerController.PlayerStates.Attack;
             _rb.velocity = Vector3.zero;
             smashGauge += Time.deltaTime;
-            smashPower = smashGauge / attackParameters.smashStartupLength;
-        }
-
-        if (smashGauge >= attackParameters.smashStartupLength)
-        {
-            smashGauge = attackParameters.smashStartupLength;
+            smashPower = smashGauge / attackParameters.smashChargeLength;
         }
     }
     int GetAttackAnimation(Vector3 playerDir)
     {
-        //Debug.Log("attack anim" + comboState);
         var state = Idle;
         //checks player speed for orientation
         var xVal = playerDir.x >= 0 ? playerDir.x : -playerDir.x;
@@ -463,7 +454,8 @@ public class PlayerAttacks : MonoBehaviour
                 ComboState.SimpleAttack => playerDir.z >= 0 ? Attack_Back : Attack_Front,
                 ComboState.ReverseAttack => playerDir.z >= 0 ? SecondAttack_Back : SecondAttack_Front,
                 ComboState.SpinAttack => Spin_Attack,
-                ComboState.SmashAttack => !_isMouseHolding ? SmashPrepare : SmashRelease,
+                ComboState.SmashAttack => SmashPrepare,
+                ComboState.SmashRelease => SmashRelease,
                 _ => state
             };
         }
@@ -475,7 +467,8 @@ public class PlayerAttacks : MonoBehaviour
                 ComboState.SimpleAttack => Attack_Side,
                 ComboState.ReverseAttack => SecondAttack_Side,
                 ComboState.SpinAttack => Spin_Attack,
-                ComboState.SmashAttack => !_isMouseHolding ? SmashPrepare : SmashRelease,
+                ComboState.SmashAttack => SmashPrepare,
+                ComboState.SmashRelease => SmashRelease,
                 _ => state
             };
         }
@@ -487,7 +480,6 @@ public class PlayerAttacks : MonoBehaviour
         StopAllCoroutines();
         //-----------can attack again
         SetAttackState(AttackState.Default);
-        //comboState = ComboState.Default;
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         //waits cooldown depending on the attack used
@@ -505,13 +497,12 @@ public class PlayerAttacks : MonoBehaviour
     private void OnEnable()
     {
         _mouseHold = _playerControls.Player.LightAttack;
-        _mouseHold.performed += NormalAttackManagement;
+        _mouseHold.performed += OnAttack;
         _mouseHold.Enable();
         
         _rightClick = _playerControls.Player.HeavyAttack;
-        //_rightClick.performed += SmashAttackManagement;
-        _rightClick.started += RightMouseHold;
-        _rightClick.canceled += RightMouseReleased;
+        _rightClick.performed += OnSmash;
+        _rightClick.canceled += OnReleaseSmash;
         _rightClick.Enable();
     }
     private void OnDisable()

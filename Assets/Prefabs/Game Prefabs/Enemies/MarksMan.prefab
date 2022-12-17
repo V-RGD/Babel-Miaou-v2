@@ -40201,6 +40201,7 @@ GameObject:
   - component: {fileID: 2449855803510468244}
   - component: {fileID: 579700217678924375}
   - component: {fileID: 2835795681475235415}
+  - component: {fileID: 3590902630773151248}
   m_Layer: 0
   m_Name: MarksMan
   m_TagString: EnemyAttack
@@ -40322,6 +40323,7 @@ MonoBehaviour:
   hitFX: {fileID: 1007786726997871462}
   canTouchPlayer: 0
   isFlippingSprite: 0
+  canFlip: 0
   room: {fileID: 0}
 --- !u!114 &2449855803510468244
 MonoBehaviour:
@@ -40481,6 +40483,21 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &3590902630773151248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6679677847728413446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d07d0ef90aa91948afae0302c10fffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 4
+  player: {fileID: 0}
+  enemy: {fileID: 0}
 --- !u!1 &6679677847794138278
 GameObject:
   m_ObjectHideFlags: 0

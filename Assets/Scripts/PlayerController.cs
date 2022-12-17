@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
     private static readonly int Run_Side = Animator.StringToHash("Run_Side");
     private static readonly int Run_Back = Animator.StringToHash("Run_Back");
     private static readonly int Run_Front = Animator.StringToHash("Run_Front");
-
+    public ParticleSystem dashTrail;
     #endregion
 
     public PlayerStates currentState;
@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour
         _playerAttacks = PlayerAttacks.instance;
         currentState = PlayerStates.Run;
         lastWalkedDir = Vector3.right;
+        dashTrail.Stop();
     }
     void Behaviour(PlayerStates state)
     {
@@ -256,6 +257,7 @@ public class PlayerController : MonoBehaviour
         SwitchState(PlayerStates.Dash);
         isDashing = true;
         _playerAttacks.vfxPulling.PlaceDashFx();
+        dashTrail.Play();
         _remnants.StartCoroutine(_remnants.DashRemnants());
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
@@ -269,6 +271,7 @@ public class PlayerController : MonoBehaviour
             _rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y) * 1.15f, ForceMode.Impulse);
         }
         yield return new WaitForSeconds(dashLenght);
+        dashTrail.Stop();
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = true;
         isDashing = false;

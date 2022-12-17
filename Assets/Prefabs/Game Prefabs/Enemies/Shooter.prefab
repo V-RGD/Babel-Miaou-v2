@@ -1007,6 +1007,7 @@ GameObject:
   - component: {fileID: 2399865614561188035}
   - component: {fileID: 8530052230994336021}
   - component: {fileID: 885826342}
+  - component: {fileID: 3311321598119745687}
   m_Layer: 0
   m_Name: Shooter
   m_TagString: EnemyAttack
@@ -1115,6 +1116,7 @@ MonoBehaviour:
   hitFX: {fileID: 5395938444045840285}
   canTouchPlayer: 0
   isFlippingSprite: 0
+  canFlip: 0
   room: {fileID: 0}
 --- !u!114 &2399865614561188035
 MonoBehaviour:
@@ -1143,6 +1145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isBigShooter: 0
   bigShooterProjo: {fileID: 0}
+  currentAnimatorState: 0
 --- !u!95 &885826342
 Animator:
   serializedVersion: 4
@@ -1163,6 +1166,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3311321598119745687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630231365920386385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d07d0ef90aa91948afae0302c10fffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 2
+  player: {fileID: 0}
+  enemy: {fileID: 0}
 --- !u!1 &6630231366096100661
 GameObject:
   m_ObjectHideFlags: 0

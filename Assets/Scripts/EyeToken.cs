@@ -40,6 +40,7 @@ public class EyeToken : MonoBehaviour
             //player collects coin
             _gameManager.money++;
             _gameManager.eyesInGame.Remove(transform);
+            PlayerSounds.instance.eyeSource.PlayOneShot(PlayerSounds.instance.eyeSource.clip);
             Destroy(gameObject);
         }
         if (other.CompareTag("LittleShit"))

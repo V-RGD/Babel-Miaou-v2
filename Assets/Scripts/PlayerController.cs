@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     #region Components
     private Rigidbody _rb;
+    private RandSoundGen _stepSounds;
     private SpriteRenderer _spriteRenderer;
     private PlayerControls _playerControls;
     private InputAction _move;
@@ -65,6 +66,7 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         
         _rb = GetComponent<Rigidbody>();
+        _stepSounds = GetComponent<RandSoundGen>();
         _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
         _playerControls = new PlayerControls();
         
@@ -256,8 +258,10 @@ public class PlayerController : MonoBehaviour
         _playerAttacks.InterruptAttack();
         SwitchState(PlayerStates.Dash);
         isDashing = true;
+        //plays fx and sfx
         _playerAttacks.vfxPulling.PlaceDashFx();
         dashTrail.Play();
+        PlayerSounds.instance.dashSource.PlayOneShot(PlayerSounds.instance.dashSource.clip);
         _remnants.StartCoroutine(_remnants.DashRemnants());
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;

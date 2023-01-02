@@ -83,6 +83,7 @@ public class VfxPulling : MonoBehaviour
                 break;
         }
         StartCoroutine(PlaceNewVfx(particle, true));
+        PlayerSounds.instance.PlayAttackSound(type);
     }
     
     public IEnumerator PlaceNewVfx(Particle newParticle)
@@ -101,7 +102,6 @@ public class VfxPulling : MonoBehaviour
         //sets position and rotation according to the player direction
         Vector3 pos = new Vector3(transform.position.x, 0.2f, transform.position.z);
         particle.transform.position = pos;
-        //particle.transform.LookAt(_player.transform.position + (-attackDir * 1000));
         particle.transform.position += attackDir * newParticle.offset;
         //actives fx
         particle.gameObject.SetActive(true);
@@ -112,6 +112,7 @@ public class VfxPulling : MonoBehaviour
         //dissapears far away
         particle.transform.position = Vector3.back * 1000;
     }
+    //for smash
     public IEnumerator PlaceNewVfx(Vfx newVfx)
     {
         //place vfx
@@ -127,7 +128,6 @@ public class VfxPulling : MonoBehaviour
         //sets position and rotation according to the player direction
         Vector3 pos = new Vector3(transform.position.x, 0.2f, transform.position.z);
         particle.transform.position = pos;
-        //particle.transform.LookAt(_player.transform.position + (-attackDir * 1000));
         particle.transform.position += attackDir * newVfx.offset;
         //actives fx
         particle.gameObject.SetActive(true);

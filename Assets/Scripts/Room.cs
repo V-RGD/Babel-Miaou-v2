@@ -259,7 +259,7 @@ public class Room : MonoBehaviour
         //pour chaque ennemi
         for (int i = 0; i < enemyNumber; i++)
         {
-            Debug.Log("stela spawned enemy");
+            //Debug.Log("stela spawned enemy");
             //determine les pourcentages d'apparition pour chacun
             int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis

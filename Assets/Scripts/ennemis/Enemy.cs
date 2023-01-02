@@ -36,6 +36,9 @@ public class Enemy : MonoBehaviour
     public bool isFlippingSprite;
     public bool canFlip;
 
+    public RandSoundGen stabGen;
+    public RandSoundGen bleedGen;
+
     [HideInInspector]public GameObject room;
 
     private void Awake()
@@ -133,6 +136,8 @@ public class Enemy : MonoBehaviour
             {
                 //receives damage
                 _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
+                bleedGen.PlayRandomSound(0);
+                stabGen.PlayRandomSound(0);
             }
 
             if (!hitFX.gameObject.activeInHierarchy)

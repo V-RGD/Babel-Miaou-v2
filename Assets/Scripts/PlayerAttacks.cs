@@ -351,6 +351,7 @@ public class PlayerAttacks : MonoBehaviour
         comboState = ComboState.SmashRelease;
         PlayAnimation(attackDir);
         comboState = ComboState.Default;
+        PlayerSounds.instance.PlayAttackSound(2);
         yield return new WaitForSeconds(startUpLength);
         //-----------active state
         //can touch enemies, hitbox active, is invincible

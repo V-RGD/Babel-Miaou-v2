@@ -46,12 +46,18 @@ public class ObjectsManager : MonoBehaviour
     public int itemAmount;
     #endregion
     #region Booleans
-    [HideInInspector] public bool sacredCross; //invincible time when hit
-    [HideInInspector] public bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
-    [HideInInspector] public bool noHit; //actives when entering a room - player gets 2x damage until hit
-    [HideInInspector] public bool catLuck;
-    [HideInInspector] public bool stinkyFish;
-    [HideInInspector] public bool earthQuake;
+    //[HideInInspector] 
+    public bool sacredCross; //invincible time when hit
+    //[HideInInspector] 
+    public bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
+    //[HideInInspector] 
+    public bool noHit; //actives when entering a room - player gets 2x damage until hit
+    //[HideInInspector] 
+    public bool catLuck;
+    //[HideInInspector] 
+    public bool stinkyFish;
+    //[HideInInspector] 
+    public bool earthQuake;
     #endregion
     #region StatsIncrease
     private float killingSpreeDamage;

@@ -200,4 +200,30 @@ public class VfxPulling : MonoBehaviour
         Particle particle = particleList[4];
         StartCoroutine(PlaceNewVfx(particle, new Vector3(PlayerController.instance.lastWalkedDir.x, 0 ,PlayerController.instance.lastWalkedDir.y)));
     }
+    
+    public IEnumerator PlaceNewVfx(Particle newParticle, Vector3 position, bool isPlacedByPosition)
+    {
+        //place vfx
+        ParticleSystem particle = newParticle.particleList[newParticle.counter];
+        if (newParticle.counter < newParticle.particleList.Count - 1)
+        {
+            newParticle.counter++;
+        }
+        else
+        {
+            newParticle.counter = 0;
+        }
+        //sets position and rotation according to the player direction
+        Vector3 pos = new Vector3(position.x, 0.2f, position.z);
+        //Debug.Log(pos);
+        particle.transform.position = pos;
+        //actives fx
+        particle.gameObject.SetActive(true);
+        particle.Stop();
+        particle.Play();
+        yield return new WaitForSeconds(newParticle.duration);
+        particle.gameObject.SetActive(false);
+        //dissapears far away
+        particle.transform.position = Vector3.back * 10000;
+    }
 }

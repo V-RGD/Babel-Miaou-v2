@@ -147,6 +147,7 @@ public class ShooterIA : MonoBehaviour
         //gives it proper force
         projectile.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized * enemyTypeData.projectileForce);
         projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+        projectile.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
         //waits for cooldown to refresh to shoot again
         yield return new WaitForSeconds(attackCooldown);
         _animator.CrossFade(Attack, 0, 0);

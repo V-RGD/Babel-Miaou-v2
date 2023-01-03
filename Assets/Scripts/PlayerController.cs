@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     #region Movement Values
     [Header("Movement")]
     public float maxSpeed;
+    public float attackSpeedFactor;
     public float acceleration;
     public float dashForce;
     public float frictionAmount;
@@ -81,12 +82,15 @@ public class PlayerController : MonoBehaviour
     {
         switch (state)
         {
-            case PlayerStates.Run: 
+            case PlayerStates.Run:
+                _speedFactor = 1;
                 MovePlayer();
                 MovingAnimations();
                 Flip();
                 break;
             case PlayerStates.Attack:
+                MovePlayer();
+                _speedFactor = attackSpeedFactor;
                 break;
             case PlayerStates.Dash:
                 break;
@@ -114,6 +118,7 @@ public class PlayerController : MonoBehaviour
         Run, 
         Attack,
         Dash,
+        Hurt
     }
     void FixedUpdate()
     {
@@ -198,25 +203,25 @@ public class PlayerController : MonoBehaviour
     {
         if (movementDir!= Vector2.zero && _speedFactor != 0)
         {
-            _rb.AddForce(new Vector3(movementDir.x * acceleration, 0, movementDir.y * acceleration), ForceMode.Impulse);
+            _rb.AddForce(new Vector3(movementDir.x * acceleration * _speedFactor, 0, movementDir.y * acceleration * _speedFactor), ForceMode.Impulse);
             lastWalkedDir = movementDir;
             
             //cap x speed
-            if(_rb.velocity.x > maxSpeed)
+            if(_rb.velocity.x > maxSpeed * _speedFactor)
             {
                 _rb.velocity = new Vector3(maxSpeed, _rb.velocity.y, _rb.velocity.z);
             }
-            if(_rb.velocity.x < -maxSpeed)
+            if(_rb.velocity.x < -maxSpeed * _speedFactor)
             {
                 _rb.velocity = new Vector3(-maxSpeed, _rb.velocity.y, _rb.velocity.z);
             }
             
             //cap x speed
-            if(_rb.velocity.z > maxSpeed)
+            if(_rb.velocity.z > maxSpeed * _speedFactor)
             {
                 _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, maxSpeed);
             }
-            if(_rb.velocity.z < -maxSpeed)
+            if(_rb.velocity.z < -maxSpeed * _speedFactor)
             {
                 _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -maxSpeed);
             }
@@ -282,9 +287,9 @@ public class PlayerController : MonoBehaviour
         _dashesAvailable++;
         dashCooldownTimer = dashCooldownLenght;
 
-        if (invincibleCounter < dashLenght + 0.2f)
+        if (invincibleCounter < dashLenght + 0.25f)
         {
-            //invincibleCounter = dashLenght + 0.2f;
+            invincibleCounter = dashLenght + 0.25f;
         }
         
         SwitchState(PlayerStates.Run);

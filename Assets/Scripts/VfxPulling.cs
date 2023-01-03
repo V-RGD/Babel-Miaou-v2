@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using Random = UnityEngine.Random;
 
 public class VfxPulling : MonoBehaviour
 {
@@ -110,7 +111,7 @@ public class VfxPulling : MonoBehaviour
         yield return new WaitForSeconds(newParticle.duration);
         particle.gameObject.SetActive(false);
         //dissapears far away
-        particle.transform.position = Vector3.back * 1000;
+        particle.transform.position = Vector3.back * 10000;
     }
     //for smash
     public IEnumerator PlaceNewVfx(Vfx newVfx)
@@ -136,7 +137,7 @@ public class VfxPulling : MonoBehaviour
         yield return new WaitForSeconds(newVfx.duration);
         particle.gameObject.SetActive(false);
         //dissapears far away
-        particle.transform.position = Vector3.back * 1000;
+        particle.transform.position = Vector3.back * 10000;
     }
     public IEnumerator PlaceNewVfx(Particle newParticle, bool directedByRotation)
     {
@@ -154,7 +155,9 @@ public class VfxPulling : MonoBehaviour
         //sets position and rotation according to the player direction
         Vector3 pos = new Vector3(transform.position.x, 0.2f, transform.position.z);
         particle.transform.position = pos;
-        particle.transform.LookAt(_player.transform.position + (-attackDir * 1000));
+        float randRot = Random.Range(-30f, 30f);
+        Vector3 randomRotation = new Vector3(randRot ,0, randRot);
+        particle.transform.LookAt(_player.transform.position + (-attackDir * 1000 + randomRotation * 10) );
         particle.transform.position += attackDir * newParticle.offset;
         //actives fx
         particle.gameObject.SetActive(true);
@@ -162,8 +165,8 @@ public class VfxPulling : MonoBehaviour
         particle.Play();
         yield return new WaitForSeconds(newParticle.duration);
         particle.gameObject.SetActive(false);
-        //dissapears far away
-        particle.transform.position = Vector3.back * 1000;
+        //disapears far away
+        particle.transform.position = Vector3.back * 10000;
     }
     public IEnumerator PlaceNewVfx(Particle newParticle, Vector3 rotation)
     {
@@ -189,7 +192,7 @@ public class VfxPulling : MonoBehaviour
         yield return new WaitForSeconds(newParticle.duration);
         particle.gameObject.SetActive(false);
         //dissapears far away
-        particle.transform.position = Vector3.back * 1000;
+        particle.transform.position = Vector3.back * 10000;
     }
     public void PlaceDashFx()
     {

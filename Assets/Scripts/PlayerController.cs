@@ -282,9 +282,9 @@ public class PlayerController : MonoBehaviour
         _dashesAvailable++;
         dashCooldownTimer = dashCooldownLenght;
 
-        if (invincibleCounter < dashLenght + 0.2f)
+        if (invincibleCounter < dashLenght + 0.25f)
         {
-            //invincibleCounter = dashLenght + 0.2f;
+            invincibleCounter = dashLenght + 0.25f;
         }
         
         SwitchState(PlayerStates.Run);

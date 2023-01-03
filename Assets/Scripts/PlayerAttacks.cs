@@ -397,7 +397,6 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = true;
         isAttacking = false;
     }
-
     IEnumerator EarthquakeRocks(Vector3 initialPos, Vector3 direction)
     {
         for (int i = 0; i < rocksAmount; i++)
@@ -505,7 +504,9 @@ public class PlayerAttacks : MonoBehaviour
     public void InterruptAttack()
     {
         //to make sure any attack is disabled
-        StopAllCoroutines();
+        StopCoroutine(AttackCoroutine());
+        StopCoroutine(SpinSlashes());
+        StopCoroutine(SmashCoroutine());
         //-----------can attack again
         SetAttackState(AttackState.Default);
         //can walk again

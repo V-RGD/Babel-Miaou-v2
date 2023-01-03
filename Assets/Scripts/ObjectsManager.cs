@@ -40,6 +40,8 @@ public class ObjectsManager : MonoBehaviour
     public GameVariables gameVariables;
     public ObjectTextData itemDataScriptable;
     public Sprite[] objectSprites;
+    public ParticleSystem sacredCrossFx;
+    public ParticleSystem killingSpreeFx;
     #endregion
     #region Values
     [Header("Values")] [Space]
@@ -189,11 +191,13 @@ public class ObjectsManager : MonoBehaviour
         {
             _player.dashCooldownTimer = 0;
             killingSpreeTimer = gameVariables.killingSpreeLength;
+            killingSpreeFx.Play();
         }
 
         if (sacredCross)
         {
             sacredCrossTimer = gameVariables.sacredCrossLength;
+            sacredCrossFx.Play();
         }
     }
     public void OnPlayerHit(int sourceDamage)

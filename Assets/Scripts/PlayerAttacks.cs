@@ -39,7 +39,7 @@ public class PlayerAttacks : MonoBehaviour
     public float slashForce = 15;
     public float spinForce = 8;
 
-    public GameObject _attackAnchor;
+    private GameObject _attackAnchor;
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _spinHitBox;
@@ -71,7 +71,8 @@ public class PlayerAttacks : MonoBehaviour
     public VisualEffect reverseSlashFX;
     public VisualEffect spinSlashFX;
     public VisualEffect smashSlashFX;
-    public VfxPulling vfxPulling;
+    [HideInInspector] public VfxPulling vfxPulling;
+    public GameObject smashChargingFx;
     #endregion
 
     public bool canInterruptAnimation;
@@ -365,6 +366,7 @@ public class PlayerAttacks : MonoBehaviour
         }
         
         Vector3 pos = new Vector3(transform.position.x, 0.03f, transform.position.z);
+        //place 2 new vfx for burn marks & slash effects
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.vfxList[0]));
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[3]));
         GameManager.instance._cmShake.ShakeCamera(7, .1f);
@@ -403,6 +405,7 @@ public class PlayerAttacks : MonoBehaviour
     void OnReleaseSmash(InputAction.CallbackContext context)
     {
         _rightMouseHolding = false;
+        smashChargingFx.SetActive(false);
     }
     #region Timer
     private void Timer()
@@ -433,6 +436,7 @@ public class PlayerAttacks : MonoBehaviour
         }
         if (_rightMouseHolding)
         {
+            smashChargingFx.SetActive(true);
             _pc.currentState = PlayerController.PlayerStates.Attack;
             _rb.velocity = Vector3.zero;
             smashGauge += Time.deltaTime;

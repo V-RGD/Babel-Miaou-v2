@@ -8,25 +8,21 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-    
-    private GameManager gameManager;
-    private PlayerController _playerController;
-    
-    public PlayerControls playerControls;
-    private ObjectsManager _objectsManager;
+    private PlayerControls _playerControls;
     private InputAction mouseClick;
     public TMP_Text MoneyUI;
-    public GameObject[] heartUIs;
     public GameObject[] itemBoxHUD;
     public GameObject[] enemyWarnings;
     public Transform enemyWarningGroup;
-    public Sprite fullHeart;
-    public Sprite midHeart;
-    public Sprite emptyHeart;
-    public Image panel;
+    //public GameObject[] heartUIs;
+    //public Sprite fullHeart;
+    //public Sprite midHeart;
+    //public Sprite emptyHeart;
     //public Image smashSlider;
+    public Image panel;
     public Animator hurtPanel;
     public RectTransform lowHpPanel;
+    public RectTransform healthBarAmount;
 
     [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;
@@ -45,15 +41,14 @@ public class UIManager : MonoBehaviour
 
         instance = this;
         
-        playerControls = new PlayerControls();
-        mouseClick = playerControls.Menus.MouseClick;
+        _playerControls = new PlayerControls();
+        mouseClick = _playerControls.Menus.MouseClick;
     }
 
     private void Start()
     {
-        _objectsManager = ObjectsManager.instance;
-        _playerController = PlayerController.instance;
-        gameManager = GameManager.instance;
+        ObjectsManager.instance = ObjectsManager.instance;
+        GameManager.instance = GameManager.instance;
     }
 
     void Update()
@@ -68,8 +63,8 @@ public class UIManager : MonoBehaviour
         //launches hurt anim
         hurtPanel.SetTrigger("RedOut");
         //updates low hp panel scale
-        float health = gameManager.health;
-        float maxHealth = gameManager.maxHealth;
+        float health = GameManager.instance.health;
+        float maxHealth = GameManager.instance.maxHealth;
         if (health/maxHealth < 0.5f)
         {
             float panelScale = 1 + (3 * (health/maxHealth));
@@ -80,44 +75,54 @@ public class UIManager : MonoBehaviour
             lowHpPanel.localScale = new Vector3(4, 4, 1);
         }
     }
-    public void HealthBar(int health)
-    {
-        //gerer si le coeur est actif
-        for (var i = 0; i < 20; i++)
-        {
-            Image image = heartUIs[i].GetComponent<Image>();
-            int ceil = i * 2 + 1;
-            if (gameManager.maxHealth >= ceil)
-            {
-                if (health < ceil)
-                {
-                    //si la vie est en dessous du seuil requis pour l'activation du coeur, le desactiver
-                    image.sprite = emptyHeart;
-                }
-                else
-                {
-                    image.enabled = true;
-                    if (health == ceil)
-                    {
-                        image.sprite = midHeart;
-                    }
 
-                    if (health > ceil)
-                    {
-                        image.sprite = fullHeart;
-                    }
-                }
-            }
-            else
-            {
-                image.enabled = false;  
-            }
-        }
+    public void HealthBar(float health)
+    {
+        //sets health bar length depending on the health remaining
+        float healthRatio = health / GameManager.instance.maxHealth;
+        //healthBarAmount.localScale = new Vector3(1 * healthRatio, 1 * healthRatio, 1);
+        float barSize = 1000;
+        healthBarAmount.localPosition = new Vector3( barSize * (-1 + 1 * healthRatio), 0, 0);
     }
+    
+    // public void HeartBar(int health)
+    // {
+    //     //gerer si le coeur est actif
+    //     for (var i = 0; i < 20; i++)
+    //     {
+    //         Image image = heartUIs[i].GetComponent<Image>();
+    //         int ceil = i * 2 + 1;
+    //         if (GameManager.instance.instance.maxHealth >= ceil)
+    //         {
+    //             if (health < ceil)
+    //             {
+    //                 //si la vie est en dessous du seuil requis pour l'activation du coeur, le desactiver
+    //                 image.sprite = emptyHeart;
+    //             }
+    //             else
+    //             {
+    //                 image.enabled = true;
+    //                 if (health == ceil)
+    //                 {
+    //                     image.sprite = midHeart;
+    //                 }
+    //
+    //                 if (health > ceil)
+    //                 {
+    //                     image.sprite = fullHeart;
+    //                 }
+    //             }
+    //         }
+    //         else
+    //         {
+    //             image.enabled = false;  
+    //         }
+    //     }
+    // }
     void Money()
     {
         //updates current money on screen
-        MoneyUI.text = gameManager.money.ToString();
+        MoneyUI.text = GameManager.instance.money.ToString();
     }
     
     #region panel alpha
@@ -192,11 +197,11 @@ public class UIManager : MonoBehaviour
         //used to reload data from the object when added
         for (int i = 0; i < 3; i++)
         {
-            if (_objectsManager.itemObjectsInventory[i] != 999)
+            if (ObjectsManager.instance.itemObjectsInventory[i] != 999)
             {
-                int id = _objectsManager.itemObjectsInventory[i];
+                int id = ObjectsManager.instance.itemObjectsInventory[i];
                 //update : box name, icon, description, rarity color
-                Sprite icon = _objectsManager.objectSprites[id];
+                Sprite icon = ObjectsManager.instance.objectSprites[id];
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().enabled = true;
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().sprite = icon;
             }

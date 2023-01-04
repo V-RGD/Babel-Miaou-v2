@@ -339,7 +339,7 @@ public class Room : MonoBehaviour
         }
     }
 
-    public IEnumerator ActivateAllEnemies()
+    private IEnumerator ActivateAllEnemies()
     {
         if (_objectsManager.noHit)
         {

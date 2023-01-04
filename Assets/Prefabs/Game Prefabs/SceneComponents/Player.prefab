@@ -210,7 +210,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1565165419813755922}
-  - component: {fileID: 1565165419813755950}
   - component: {fileID: 1565165419813755949}
   - component: {fileID: 6296558312193280575}
   m_Layer: 12
@@ -235,19 +234,6 @@ Transform:
   m_Father: {fileID: 1565165419495972265}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!114 &1565165419813755950
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1565165419813755923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 558c4a661029c04429cd94767048ac44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
 --- !u!114 &1565165419813755949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1042,10 +1028,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa6ad9564dde36148bbcf7bbce83db0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _comboCooldown: 1
-  _comboTimer: 0
+  comboCooldown: 1
   smashPower: 0
-  _rightMouseHolding: 0
+  comboTimer: 0
+  rightMouseHolding: 0
   smashGauge: 0
   isAttacking: 0
   bumpForce: 20
@@ -1062,9 +1048,9 @@ MonoBehaviour:
   spinForce: 8
   poisonCloud: {fileID: 4546682728129121351, guid: d06cc51c19d64484983e4f6dbf20dde2,
     type: 3}
-  rocksAmount: 0
-  rocksOffsetAmount: 0
-  rocksPlacementInterval: 0
+  rocksAmount: 5
+  rocksOffsetAmount: 4
+  rocksPlacementInterval: 0.1
   attackParameters: {fileID: 11400000, guid: b453879381bbe4944a7703322391cfb6, type: 2}
   normalSlashFX: {fileID: 1389619976277534535}
   reverseSlashFX: {fileID: 8925728775587143215}
@@ -1172,6 +1158,13 @@ MonoBehaviour:
     particleList: []
     offset: 0
     duration: 3
+  - particle: {fileID: 6327240807807252847, guid: 22792dfcc12d37a45b60102d688d07e5,
+      type: 3}
+    generatedAmount: 20
+    counter: 0
+    particleList: []
+    offset: 0
+    duration: 3
   vfxList:
   - effect: {fileID: 5345115710315643013, guid: dc4eefec9717cf049b89eda81a6f399d,
       type: 3}
@@ -1193,10 +1186,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 504d64bbafe02ae47ab8adb6e1725faa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _amount: 5
-  _remnantFx: {fileID: 2191553059900112084, guid: 45ca99263091f7b4d887ffc9898a714e,
+  fadeAwaySpeed: 4.5
+  amount: 5
+  remnantFx: {fileID: 2191553059900112084, guid: 45ca99263091f7b4d887ffc9898a714e,
     type: 3}
   playerSprite: {fileID: 1565165419920850760}
+  remnantTimers: []
 --- !u!114 &1111289698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1445,7 +1440,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7353462991234616420}
-  - component: {fileID: 7353462991234616422}
   - component: {fileID: 7353462991234616421}
   - component: {fileID: 1351934400569373402}
   m_Layer: 12
@@ -1470,19 +1464,6 @@ Transform:
   m_Father: {fileID: 1565165419495972265}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -90}
---- !u!114 &7353462991234616422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7353462991234616427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 558c4a661029c04429cd94767048ac44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
 --- !u!114 &7353462991234616421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1761,10 +1742,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2042313316750518230}
     m_Modifications:
+    - target: {fileID: 247501915228777120, guid: 74c14dca4f5e7b34bb18acb6e7018204,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1494570268024643974, guid: 74c14dca4f5e7b34bb18acb6e7018204,
         type: 3}
       propertyPath: m_Name
       value: No_Hit
+      objectReference: {fileID: 0}
+    - target: {fileID: 3695227270437645331, guid: 74c14dca4f5e7b34bb18acb6e7018204,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5259737079863274594, guid: 74c14dca4f5e7b34bb18acb6e7018204,
         type: 3}
@@ -1820,6 +1811,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7866557254942229875, guid: 74c14dca4f5e7b34bb18acb6e7018204,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 74c14dca4f5e7b34bb18acb6e7018204, type: 3}
@@ -2255,7 +2251,27 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2042313316750518230}
     m_Modifications:
+    - target: {fileID: 2854345221549472656, guid: 037b7d08b64a03148bbfaf734c95ca58,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4418193454749533475, guid: 037b7d08b64a03148bbfaf734c95ca58,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566306069053935861, guid: 037b7d08b64a03148bbfaf734c95ca58,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6221650263623569429, guid: 037b7d08b64a03148bbfaf734c95ca58,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386897831875759001, guid: 037b7d08b64a03148bbfaf734c95ca58,
         type: 3}
       propertyPath: playOnAwake
       value: 0
@@ -2318,6 +2334,11 @@ PrefabInstance:
     - target: {fileID: 7173294379251356458, guid: 037b7d08b64a03148bbfaf734c95ca58,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431970176456759737, guid: 037b7d08b64a03148bbfaf734c95ca58,
+        type: 3}
+      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

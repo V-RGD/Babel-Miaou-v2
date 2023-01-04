@@ -1,17 +1,13 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class ActiveStela : MonoBehaviour
 {
-    private PlayerControls playerControls;
-    private MenuManager _menuManager;
+    private PlayerControls _playerControls;
     [HideInInspector]public InputAction collect;
     public Room room;
-    private UIManager _uiManager;
 
-    private GameObject player;
-    private GameObject canvas;
+    private GameObject _player;
     public GameObject activePrompt;
 
     public bool isPlayerInRange;
@@ -21,16 +17,13 @@ public class ActiveStela : MonoBehaviour
     
     private void Awake()
     {
-        playerControls = new PlayerControls();
-        canvas = GameObject.Find("UI Canvas");
-        player = GameObject.Find("Player");
+        _playerControls = new PlayerControls();
+        _player = GameObject.Find("Player");
     }
 
     private void Start()
     {
         canActive = true;
-        _uiManager = UIManager.instance;
-        _menuManager = MenuManager.instance;
     }
     
     void ShowPrompt()
@@ -44,7 +37,7 @@ public class ActiveStela : MonoBehaviour
             activePrompt.SetActive(false);
         }
             
-        if ((player.transform.position - transform.position).magnitude <= activeDist)
+        if ((_player.transform.position - transform.position).magnitude <= activeDist)
         {
             //show message prompt
             isPlayerInRange = true;
@@ -57,7 +50,7 @@ public class ActiveStela : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && !_menuManager.gameIsPaused && canActive)
+        if (isPlayerInRange && !MenuManager.instance.gameIsPaused && canActive)
         {
             canActive = false;
             //actives stela
@@ -74,7 +67,7 @@ public class ActiveStela : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
     {
-        collect = playerControls.Player.Interact;
+        collect = _playerControls.Player.Interact;
         collect.Enable();
         collect.performed += Collect;
     }

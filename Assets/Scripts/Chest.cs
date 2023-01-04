@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,12 +7,11 @@ using Random = UnityEngine.Random;
 public class Chest : MonoBehaviour
 {
     public bool isPlayerInRange;
-    private float openDist = 5;
+    private float _openDist = 5;
     private PlayerControls _playerControls;
     private InputAction _collect;
     private GameObject _player;
     public GameObject messagePrompt;
-    private ObjectsManager objectManager;
 
     private void Awake()
     {
@@ -26,7 +22,7 @@ public class Chest : MonoBehaviour
 
     private void Start()
     {
-        objectManager = ObjectsManager.instance;
+        ObjectsManager.instance = ObjectsManager.instance;
     }
 
     void Collect(InputAction.CallbackContext context)
@@ -39,13 +35,14 @@ public class Chest : MonoBehaviour
 
     IEnumerator ChestLoot()
     {
+        Vector3 lootDropPos = transform.position;
         //spawns a random item between items, spells, or loot
         int randLoot = Random.Range(0, 100);
         if (randLoot <= 15)
         {
-            GameObject item = Instantiate(objectManager.objectTemplate, transform.position, Quaternion.identity);
+            GameObject item = Instantiate(ObjectsManager.instance.objectTemplate, transform.position, Quaternion.identity);
             //checks which items are already equipped and remove them from the possible items
-            item.GetComponent<Item>().objectID = objectManager.itemList[Random.Range(0, objectManager.itemList.Count)];
+            item.GetComponent<Item>().objectID = ObjectsManager.instance.itemList[Random.Range(0, ObjectsManager.instance.itemList.Count)];
             item.SetActive(true);
             float randDir = Random.Range(0, 1f);
             Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;
@@ -54,11 +51,11 @@ public class Chest : MonoBehaviour
         else
         {
             //heal,eyes
-            GameObject heal = Instantiate(objectManager.healItem, transform.position + Vector3.left,
+            GameObject heal = Instantiate(ObjectsManager.instance.healItem, lootDropPos + Vector3.left,
                 quaternion.identity);
             heal.SetActive(true);
             yield return new WaitForSeconds(0.5f);
-            GameObject eyes = Instantiate(objectManager.eyeToken, transform.position + Vector3.right,
+            GameObject eyes = Instantiate(ObjectsManager.instance.eyeToken, lootDropPos + Vector3.right,
                 quaternion.identity);
             eyes.SetActive(true);
         }
@@ -67,7 +64,7 @@ public class Chest : MonoBehaviour
 
     private void Update()
     {
-        if ((_player.transform.position - transform.position).magnitude <= openDist)
+        if ((_player.transform.position - transform.position).magnitude <= _openDist)
         {
             //show message prompt
             isPlayerInRange = true;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -26,14 +25,14 @@ public class ObjectsManager : MonoBehaviour
     #endregion
     #region Assignations
     [Header("Assignations")] [Space]
-    [SerializeField] private Room _currentRoom;
+    [SerializeField] private Room currentRoom;
     public GameObject[] uiItemBoxes;
     public GameObject[] uiActivationFx;
     private GameManager _gameManager;
     private PlayerControls _playerControls;
-    private InputAction moveUp;
-    private InputAction moveDown;
-    private InputAction confirm;
+    private InputAction _moveUp;
+    private InputAction _moveDown;
+    private InputAction _confirm;
     private UIManager _uiManager;
     private PlayerController _player;
     public GameObject objectMenu;
@@ -63,7 +62,7 @@ public class ObjectsManager : MonoBehaviour
     public bool earthQuake;
     #endregion
     #region StatsIncrease
-    private float killingSpreeDamage;
+    private float _killingSpreeDamage;
     #endregion
     #region Timers
     [HideInInspector] public float killingSpreeTimer;
@@ -120,7 +119,7 @@ public class ObjectsManager : MonoBehaviour
     public void OnObjectEquip(int item)
     {
         itemList.Remove(item);
-        Debug.Log("equiped Item#" + item);
+        Debug.Log("equipped Item#" + item);
         //check the ID of the object to add additional effects
         switch (item)
         {
@@ -142,7 +141,7 @@ public class ObjectsManager : MonoBehaviour
             itemList.Add(item);
         }
         
-        Debug.Log("unequiped Item#" + item);
+        Debug.Log("unequipped Item#" + item);
         //check the ID of the object to remove additional effects
         switch (item)
         {
@@ -264,7 +263,7 @@ public class ObjectsManager : MonoBehaviour
     }
     void MoveExtraBox(int dir)
     {
-        int pos = 0;
+        int pos;
         //if it goes beyond max
         if (currentBoxPos + dir > 2)
         {
@@ -330,23 +329,23 @@ public class ObjectsManager : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
     {
-        moveDown = _playerControls.UI.MoveDown;
-        moveDown.Enable();
-        moveDown.performed += MoveBoxDown;
+        _moveDown = _playerControls.UI.MoveDown;
+        _moveDown.Enable();
+        _moveDown.performed += MoveBoxDown;
 
-        moveUp = _playerControls.UI.MoveUp;
-        moveUp.Enable();
-        moveUp.performed += MoveBoxUp;
+        _moveUp = _playerControls.UI.MoveUp;
+        _moveUp.Enable();
+        _moveUp.performed += MoveBoxUp;
 
-        confirm = _playerControls.UI.Confirm;
-        confirm.Enable();
-        confirm.performed += ReplaceItem;
+        _confirm = _playerControls.UI.Confirm;
+        _confirm.Enable();
+        _confirm.performed += ReplaceItem;
     }
     private void OnDisable()
     {
-        moveDown.Disable();
-        moveUp.Disable();
-        confirm.Disable();
+        _moveDown.Disable();
+        _moveUp.Disable();
+        _confirm.Disable();
     }
     #endregion
 }

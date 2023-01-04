@@ -45,18 +45,18 @@ public class BossHurtBoxes : MonoBehaviour
         int damage = Mathf.CeilToInt(damageDealt);
         //applies damage
         health -= damage;
-        _gameManager._cmShake.ShakeCamera(5, .1f);
+        _gameManager.cmShake.ShakeCamera(5, .1f);
         
-        switch (_gameManager._playerAttacks.comboState)
+        switch (PlayerAttacks.instance.comboState)
         {
             case PlayerAttacks.ComboState.SimpleAttack:
-                _gameManager._cmShake.ShakeCamera(2, .1f);
+                _gameManager.cmShake.ShakeCamera(2, .1f);
                 break;
             case PlayerAttacks.ComboState.ReverseAttack:
-                _gameManager._cmShake.ShakeCamera(2, .1f);
+                _gameManager.cmShake.ShakeCamera(2, .1f);
                 break;
             case PlayerAttacks.ComboState.SpinAttack:
-                _gameManager._cmShake.ShakeCamera(2, .1f);
+                _gameManager.cmShake.ShakeCamera(2, .1f);
                 break;
         }
     }

@@ -50,11 +50,11 @@ public class EyeChain : MonoBehaviour
         }
         
         //connects to any eye close to it
-        foreach (var eye in ia.eyeList)
+        foreach (var eye in ia.eyeChains)
         {
             if ((eye.transform.position - transform.position).magnitude < range)
             {
-                connectedToMe.Add(eye.GetComponent<EyeChain>());
+                connectedToMe.Add(eye);
             }
         }
 
@@ -83,7 +83,7 @@ public class EyeChain : MonoBehaviour
                 }
             }
             //connects it
-            connectedToMe.Add(ia.eyeList[closestEye].GetComponent<EyeChain>());
+            connectedToMe.Add(ia.eyeChains[closestEye]);
         }
         
         //---draws web

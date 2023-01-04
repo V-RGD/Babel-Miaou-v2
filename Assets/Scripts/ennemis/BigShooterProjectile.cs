@@ -1,31 +1,22 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BigShooterProjectile : MonoBehaviour
 {
     public int damage;
-
-    private GameObject player;
-    private GameManager gameManager;
-    private ObjectsManager _objectsManager;
-    private Rigidbody _rb;
-    private List<GameObject> _projeciles;
+    private GameObject _player;
+    private List<GameObject> _projectiles;
     public EnemyType enemyTypeData;
 
     private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
-        player = GameObject.Find("Player");
-        _rb = GetComponent<Rigidbody>();
-
+        _player = GameObject.Find("Player");
         //creates a list of projectiles for further use
-        _projeciles = new List<GameObject>();
+        _projectiles = new List<GameObject>();
         for (int i = 0; i < 4; i++)
         {
             GameObject projo = Instantiate(enemyTypeData.mageProjectile);
-            _projeciles.Add(projo);
+            _projectiles.Add(projo);
             projo.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
             projo.SetActive(false);
         }
@@ -33,7 +24,7 @@ public class BigShooterProjectile : MonoBehaviour
 
     private void Update()
     {
-        if ((player.transform.position - transform.position).magnitude > 50)
+        if ((_player.transform.position - transform.position).magnitude > 50)
         {
             Destroy(gameObject);
         }
@@ -48,23 +39,24 @@ public class BigShooterProjectile : MonoBehaviour
             for (int i = 0; i < 4; i++)
             {
                 //actives projo
-                _projeciles[0].SetActive(true);
-                _projeciles[1].SetActive(true);
-                _projeciles[2].SetActive(true);
-                _projeciles[3].SetActive(true);
+                _projectiles[0].SetActive(true);
+                _projectiles[1].SetActive(true);
+                _projectiles[2].SetActive(true);
+                _projectiles[3].SetActive(true);
                 //shoots projectile
-                _projeciles[0].transform.position = transform.position + Vector3.forward * 5;
-                _projeciles[1].transform.position = transform.position + Vector3.back * 5;
-                _projeciles[2].transform.position = transform.position + Vector3.left * 5;
-                _projeciles[3].transform.position = transform.position + Vector3.right * 5;
+                Vector3 position = transform.position;
+                _projectiles[0].transform.position = position + Vector3.forward * 5;
+                _projectiles[1].transform.position = position + Vector3.back * 5;
+                _projectiles[2].transform.position = position + Vector3.left * 5;
+                _projectiles[3].transform.position = position + Vector3.right * 5;
                 //gives it proper force
-                _projeciles[0].GetComponent<Rigidbody>()
+                _projectiles[0].GetComponent<Rigidbody>()
                     .AddForce(new Vector3(1, 0, 1) * enemyTypeData.projectileForce);
-                _projeciles[1].GetComponent<Rigidbody>()
+                _projectiles[1].GetComponent<Rigidbody>()
                     .AddForce(new Vector3(-1, 0, -1) * enemyTypeData.projectileForce);
-                _projeciles[2].GetComponent<Rigidbody>()
+                _projectiles[2].GetComponent<Rigidbody>()
                     .AddForce(new Vector3(-1, 0, 1) * enemyTypeData.projectileForce);
-                _projeciles[3].GetComponent<Rigidbody>()
+                _projectiles[3].GetComponent<Rigidbody>()
                     .AddForce(new Vector3(1, 0, -1) * enemyTypeData.projectileForce);
             }
 

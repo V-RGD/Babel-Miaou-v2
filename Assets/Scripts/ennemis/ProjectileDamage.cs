@@ -5,13 +5,9 @@ public class ProjectileDamage : MonoBehaviour
     public int damage;
 
     private GameObject player;
-    private GameManager gameManager;
-    private ObjectsManager _objectsManager;
     private Rigidbody _rb;
     private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _objectsManager = GameObject.Find("GameManager").GetComponent<ObjectsManager>();
         player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
     }
@@ -28,7 +24,7 @@ public class ProjectileDamage : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            gameManager.DealDamageToPlayer(damage);
+            GameManager.instance.DealDamageToPlayer(damage);
             Destroy(gameObject);
         }
 

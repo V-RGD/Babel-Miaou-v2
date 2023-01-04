@@ -1,18 +1,20 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
+[SuppressMessage("ReSharper", "Unity.PerformanceCriticalCodeInvocation")]
 public class PlayerAttacks : MonoBehaviour
 {
     public static PlayerAttacks instance;
     
-    public float _comboCooldown = 1f; //max time allowed to combo
-    public float _comboTimer;
-    private float _attackMultiplier = 1;
+    public float comboCooldown = 1f; //max time allowed to combo
     public float smashPower;
+    public float comboTimer;
+    private float _attackMultiplier = 1;
     private bool _isMouseHolding;
-    [SerializeField]private bool _rightMouseHolding;
+    [SerializeField]private bool rightMouseHolding;
     public float smashGauge;
     [HideInInspector] public bool isAttacking;
     private int _comboCounter;
@@ -59,16 +61,15 @@ public class PlayerAttacks : MonoBehaviour
 
     #region Animations
     private static readonly int Idle = Animator.StringToHash("Idle");
-    private static readonly int Attack_Side = Animator.StringToHash("Attack_Side");
-    private static readonly int Attack_Back = Animator.StringToHash("Attack_Back");
-    private static readonly int Attack_Front = Animator.StringToHash("Attack_Front");
-    private static readonly int SecondAttack_Side = Animator.StringToHash("SecondAttack_Side");
-    private static readonly int SecondAttack_Back = Animator.StringToHash("SecondAttack_Back");
-    private static readonly int SecondAttack_Front = Animator.StringToHash("SecondAttack_Front");
-    private static readonly int Spin_Attack = Animator.StringToHash("Spin_Attack");
+    private static readonly int AttackSide = Animator.StringToHash("Attack_Side");
+    private static readonly int AttackBack = Animator.StringToHash("Attack_Back");
+    private static readonly int AttackFront = Animator.StringToHash("Attack_Front");
+    private static readonly int SecondAttackSide = Animator.StringToHash("SecondAttack_Side");
+    private static readonly int SecondAttackBack = Animator.StringToHash("SecondAttack_Back");
+    private static readonly int SecondAttackFront = Animator.StringToHash("SecondAttack_Front");
+    private static readonly int SpinAttack = Animator.StringToHash("Spin_Attack");
     private static readonly int SmashPrepare = Animator.StringToHash("SmashPrepare");
     private static readonly int SmashRelease = Animator.StringToHash("SmashRelease");
-    private static readonly int Smash = Animator.StringToHash("Smash");
     #endregion
 
     #region VFX
@@ -133,7 +134,8 @@ public class PlayerAttacks : MonoBehaviour
         _animator.CrossFade(state, 0, 0);
         _pc.currentAnimatorState = state;    
     }
-    public void SetAttackState(AttackState state)
+
+    private void SetAttackState(AttackState state)
     {
         currentAttackState = state;
     }
@@ -145,11 +147,11 @@ public class PlayerAttacks : MonoBehaviour
         {
             _rb.velocity = Vector3.zero;
         }
-        _pc.SwitchState(PlayerController.PlayerStates.Attack);;
+        _pc.SwitchState(PlayerController.PlayerStates.Attack);
         
         //values assignation
         GameObject hitbox = null;
-        Vector3 attackDir = Vector3.zero;
+        Vector3 attackDir;
         float damage = 0;
         float cooldown = 0;
         float force = 0;
@@ -163,7 +165,7 @@ public class PlayerAttacks : MonoBehaviour
         _pc.SwitchState(PlayerController.PlayerStates.Attack);
         
         //starts timer for combos
-        _comboTimer = recoverLength + 0.2f;
+        comboTimer = recoverLength + 0.2f;
         
         if (_pc.movementDir != Vector2.zero)
         {
@@ -308,7 +310,6 @@ public class PlayerAttacks : MonoBehaviour
         canInterruptAnimation = false;
         _pc.SwitchState(PlayerController.PlayerStates.Attack);
         //values assignation
-        GameObject hitbox = null;
         Vector3 attackDir = Vector3.zero;
         smashForce = smashGauge / attackParameters.smashChargeLength;
         float damage = 0;
@@ -332,7 +333,7 @@ public class PlayerAttacks : MonoBehaviour
         }
         cooldown = smashCooldown; 
         damage = (attackStat * smashDamageMultiplier);
-        hitbox = _smashHitBox; 
+        GameObject hitbox = _smashHitBox; 
         force = smashForce;
         startUpLength = attackParameters.smashStartupLength;
         activeLength = attackParameters.smashActiveLength;
@@ -348,7 +349,7 @@ public class PlayerAttacks : MonoBehaviour
         //add current damage stat to weapon
         hitbox.GetComponent<ObjectDamage>().damage = damage;
         _rb.velocity = Vector3.zero;
-        yield return new WaitUntil(()=> !_rightMouseHolding);
+        yield return new WaitUntil(()=> !rightMouseHolding);
         //adds force to simulate inertia
         if (_pc.movementDir != Vector2.zero)
         {
@@ -379,7 +380,7 @@ public class PlayerAttacks : MonoBehaviour
         //place 2 new vfx for burn marks & slash effects
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.vfxList[0]));
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[3]));
-        GameManager.instance._cmShake.ShakeCamera(7, .1f);
+        GameManager.instance.cmShake.ShakeCamera(7, .1f);
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state
@@ -402,7 +403,7 @@ public class PlayerAttacks : MonoBehaviour
         for (int i = 0; i < rocksAmount; i++)
         {
             //instanciates a new vfx pulled from the vfx pulling script
-            Vector3 rocksOffsetPos = initialPos + (rocksOffsetAmount * direction * (i + 1));
+            Vector3 rocksOffsetPos = initialPos + (direction * (rocksOffsetAmount * (i + 1)));
             vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[5], rocksOffsetPos, true));
             //waits a bit before spawning another one
             yield return new WaitForSeconds(rocksPlacementInterval);
@@ -410,12 +411,12 @@ public class PlayerAttacks : MonoBehaviour
     }
     void OnSmash(InputAction.CallbackContext context)
     {
-        _rightMouseHolding = true;
+        rightMouseHolding = true;
         if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
         {
             if (currentAttackState == AttackState.Default)
             {
-                _rightMouseHolding = true;
+                rightMouseHolding = true;
             }
             
             _pc.canMove = true;
@@ -425,15 +426,15 @@ public class PlayerAttacks : MonoBehaviour
     }
     void OnReleaseSmash(InputAction.CallbackContext context)
     {
-        _rightMouseHolding = false;
+        rightMouseHolding = false;
         smashChargingFx.SetActive(false);
     }
     #region Timer
     private void Timer()
         {
-            _comboTimer -= Time.deltaTime;
+            comboTimer -= Time.deltaTime;
 
-            if (_comboTimer <= 0)
+            if (comboTimer <= 0)
             {
                 _comboCounter = 0;
                 comboState = ComboState.Default;
@@ -455,7 +456,7 @@ public class PlayerAttacks : MonoBehaviour
         {
             smashGauge = attackParameters.smashChargeLength;
         }
-        if (_rightMouseHolding)
+        if (rightMouseHolding)
         {
             smashChargingFx.SetActive(true);
             _pc.currentState = PlayerController.PlayerStates.Attack;
@@ -477,9 +478,9 @@ public class PlayerAttacks : MonoBehaviour
             //if y value is dominant, plays up or down anims
             state = comboState switch
             {
-                ComboState.SimpleAttack => playerDir.z >= 0 ? Attack_Back : Attack_Front,
-                ComboState.ReverseAttack => playerDir.z >= 0 ? SecondAttack_Back : SecondAttack_Front,
-                ComboState.SpinAttack => Spin_Attack,
+                ComboState.SimpleAttack => playerDir.z >= 0 ? AttackBack : AttackFront,
+                ComboState.ReverseAttack => playerDir.z >= 0 ? SecondAttackBack : SecondAttackFront,
+                ComboState.SpinAttack => SpinAttack,
                 ComboState.SmashAttack => SmashPrepare,
                 ComboState.SmashRelease => SmashRelease,
                 _ => state
@@ -490,9 +491,9 @@ public class PlayerAttacks : MonoBehaviour
             //else, plays side
             state = comboState switch
             {
-                ComboState.SimpleAttack => Attack_Side,
-                ComboState.ReverseAttack => SecondAttack_Side,
-                ComboState.SpinAttack => Spin_Attack,
+                ComboState.SimpleAttack => AttackSide,
+                ComboState.ReverseAttack => SecondAttackSide,
+                ComboState.SpinAttack => SpinAttack,
                 ComboState.SmashAttack => SmashPrepare,
                 ComboState.SmashRelease => SmashRelease,
                 _ => state

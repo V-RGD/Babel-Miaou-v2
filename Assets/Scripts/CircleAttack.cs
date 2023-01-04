@@ -1,7 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.VFX;
-
 public class CircleAttack : MonoBehaviour
 {
     public bool isActive;
@@ -42,7 +40,7 @@ public class CircleAttack : MonoBehaviour
         _minDist = circleDist/2 - detectionOffset;
         transform.localScale = new Vector3(circleDist, circleDist, circleDist);
 
-        //manages playerhitbox check
+        //manages player hitbox check
         if (_playerDist > _minDist && _playerDist < _maxDist && PlayerController.instance.invincibleCounter <= 0)
         {
             _gameManager.DealDamageToPlayer(damage);

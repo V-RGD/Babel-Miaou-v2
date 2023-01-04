@@ -12,7 +12,7 @@ public class HugeLaserDamage : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //deals damage
-        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerController.instance._playerAttacks.isAttacking)
+        if (other.CompareTag("Player") && PlayerController.instance.stunCounter < 0 && !PlayerAttacks.instance.isAttacking)
         {
             _gameManager.DealDamageToPlayer(damage);
         }

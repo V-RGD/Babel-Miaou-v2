@@ -515,7 +515,7 @@ public class PlayerAttacks : MonoBehaviour
         _rb.velocity = Vector3.zero;
         //restores speed
         _pc.canMove = true;
-        _pc._playerAttacks.isAttacking = false;
+        isAttacking = false;
         
         _slashHitBox.SetActive(false);
         _smashHitBox.SetActive(false);

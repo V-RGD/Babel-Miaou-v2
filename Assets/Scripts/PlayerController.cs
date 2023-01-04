@@ -43,7 +43,6 @@ public class PlayerController : MonoBehaviour
     private Animator _animator;
     private PlayerRemnants _remnants;
     private float _lockedTill;
-    [HideInInspector] public PlayerAttacks _playerAttacks;
     [HideInInspector] public int currentAnimatorState;
     private BoxCollider _boxCollider;
     
@@ -75,7 +74,6 @@ public class PlayerController : MonoBehaviour
         
         _animator = GetComponent<Animator>();
         _remnants = GetComponent<PlayerRemnants>();
-        _playerAttacks = PlayerAttacks.instance;
         currentState = PlayerStates.Run;
         lastWalkedDir = Vector3.right;
         dashTrail.Stop();
@@ -262,11 +260,11 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator DashSequence()
     {
-        _playerAttacks.InterruptAttack();
+        PlayerAttacks.instance.InterruptAttack();
         SwitchState(PlayerStates.Dash);
         isDashing = true;
         //plays fx and sfx
-        _playerAttacks.vfxPulling.PlaceDashFx();
+        PlayerAttacks.instance.vfxPulling.PlaceDashFx();
         dashTrail.Play();
         PlayerSounds.instance.dashSource.PlayOneShot(PlayerSounds.instance.dashSource.clip);
         _remnants.StartCoroutine(_remnants.DashRemnants());

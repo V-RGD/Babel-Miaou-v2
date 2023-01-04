@@ -43,7 +43,12 @@ public class PlayerAttacks : MonoBehaviour
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _spinHitBox;
+    
     public GameObject poisonCloud;
+    
+    public float rocksAmount;
+    public float rocksOffsetAmount;
+    public float rocksPlacementInterval;
 
     #endregion
     
@@ -364,6 +369,11 @@ public class PlayerAttacks : MonoBehaviour
         {
             Instantiate(poisonCloud, transform.position, Quaternion.identity);
         }
+
+        if (ObjectsManager.instance.earthQuake)
+        {
+            StartCoroutine(EarthquakeRocks(transform.position, attackDir));
+        }
         
         Vector3 pos = new Vector3(transform.position.x, 0.03f, transform.position.z);
         //place 2 new vfx for burn marks & slash effects
@@ -386,6 +396,18 @@ public class PlayerAttacks : MonoBehaviour
         smashGauge = 0;
         _pc.canMove = true;
         isAttacking = false;
+    }
+    IEnumerator EarthquakeRocks(Vector3 initialPos, Vector3 direction)
+    {
+        for (int i = 0; i < rocksAmount; i++)
+        {
+            //instanciates a new vfx pulled from the vfx pulling script
+            Vector3 rocksOffsetPos = initialPos + (rocksOffsetAmount * direction * (i + 1));
+            Debug.Log(rocksOffsetPos);
+            vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[5], rocksOffsetPos, true));
+            //waits a bit before spawning another one
+            yield return new WaitForSeconds(rocksPlacementInterval);
+        }
     }
     void OnSmash(InputAction.CallbackContext context)
     {
@@ -482,7 +504,9 @@ public class PlayerAttacks : MonoBehaviour
     public void InterruptAttack()
     {
         //to make sure any attack is disabled
-        StopAllCoroutines();
+        StopCoroutine(AttackCoroutine());
+        StopCoroutine(SpinSlashes());
+        StopCoroutine(SmashCoroutine());
         //-----------can attack again
         SetAttackState(AttackState.Default);
         //can walk again

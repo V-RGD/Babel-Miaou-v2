@@ -270,16 +270,48 @@ public class PlayerController : MonoBehaviour
         _remnants.StartCoroutine(_remnants.DashRemnants());
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
-        //applies dash force
-        if (movementDir != Vector2.zero)
+
+        
+        Vector3 dashDir = new Vector3(movementDir.x, 0,  movementDir.y);
+        //if finds wall and ground on the other side
+        if (movementDir == Vector2.zero)
         {
-            _rb.AddForce(new Vector3(dashForce * movementDir.x, 0, dashForce * movementDir.y), ForceMode.Impulse);
+            dashDir = new Vector3(lastWalkedDir.x, 0,  lastWalkedDir.y);
+        }
+        
+        RaycastHit wallHit;
+        RaycastHit groundHit;
+        float characterSize = 2f;
+        if (Physics.Raycast(transform.position, dashDir, out wallHit, 6, LayerMask.GetMask("Wall")) && 
+            Physics.Raycast(transform.position + Vector3.down * characterSize + dashDir.normalized, dashDir,
+                out groundHit, 20, LayerMask.GetMask("Ground", "Pont")))
+        {
+            Vector3 wallPos = wallHit.point;
+            Vector3 groundPos = groundHit.point;
+            Vector3 destination = groundPos + dashDir;
+            
+            //starts dash while disabling collider
+            GetComponent<BoxCollider>().enabled = false;
+            _rb.AddForce(dashForce * dashDir, ForceMode.Impulse);
+            //waits until reached ground
+            yield return new WaitUntil(() => (destination - transform.position).magnitude <= 3f);
+            GetComponent<BoxCollider>().enabled = true;
         }
         else
         {
-            _rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y) * 1.15f, ForceMode.Impulse);
+            //if normal dash (doesn't find a wall AND there isn't anywhere to dash to
+            //applies dash force
+            if (movementDir != Vector2.zero)
+            {
+                _rb.AddForce(dashDir * dashForce, ForceMode.Impulse);
+            }
+            else
+            {
+                _rb.AddForce(new Vector3(dashForce * lastWalkedDir.x, 0, dashForce * lastWalkedDir.y) * 1.15f, ForceMode.Impulse);
+            }
+            //stop dash
+            yield return new WaitForSeconds(dashLenght);
         }
-        yield return new WaitForSeconds(dashLenght);
         dashTrail.Stop();
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = true;
@@ -291,7 +323,6 @@ public class PlayerController : MonoBehaviour
         {
             invincibleCounter = dashLenght + 0.25f;
         }
-        
         SwitchState(PlayerStates.Run);
     }
     #endregion

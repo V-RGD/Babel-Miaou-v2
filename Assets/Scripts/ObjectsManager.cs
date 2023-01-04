@@ -40,18 +40,26 @@ public class ObjectsManager : MonoBehaviour
     public GameVariables gameVariables;
     public ObjectTextData itemDataScriptable;
     public Sprite[] objectSprites;
+    public ParticleSystem sacredCrossFx;
+    public ParticleSystem killingSpreeFx;
     #endregion
     #region Values
     [Header("Values")] [Space]
     public int itemAmount;
     #endregion
     #region Booleans
-    [HideInInspector] public bool sacredCross; //invincible time when hit
-    [HideInInspector] public bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
-    [HideInInspector] public bool noHit; //actives when entering a room - player gets 2x damage until hit
-    [HideInInspector] public bool catLuck;
-    [HideInInspector] public bool stinkyFish;
-    [HideInInspector] public bool earthQuake;
+    //[HideInInspector] 
+    public bool sacredCross; //invincible time when hit
+    //[HideInInspector] 
+    public bool killingSpree; //killing an enemy grants X extra damage during Y seconds. Dash is cooldown is reset
+    //[HideInInspector] 
+    public bool noHit; //actives when entering a room - player gets 2x damage until hit
+    //[HideInInspector] 
+    public bool catLuck;
+    //[HideInInspector] 
+    public bool stinkyFish;
+    //[HideInInspector] 
+    public bool earthQuake;
     #endregion
     #region StatsIncrease
     private float killingSpreeDamage;
@@ -183,11 +191,13 @@ public class ObjectsManager : MonoBehaviour
         {
             _player.dashCooldownTimer = 0;
             killingSpreeTimer = gameVariables.killingSpreeLength;
+            killingSpreeFx.Play();
         }
 
         if (sacredCross)
         {
             sacredCrossTimer = gameVariables.sacredCrossLength;
+            sacredCrossFx.Play();
         }
     }
     public void OnPlayerHit(int sourceDamage)

@@ -344,6 +344,7 @@ public class Room : MonoBehaviour
         if (_objectsManager.noHit)
         {
             _objectsManager.noHitStreak = true;
+            _objectsManager.noHitFx.Play();
         }
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {

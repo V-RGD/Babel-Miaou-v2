@@ -403,7 +403,6 @@ public class PlayerAttacks : MonoBehaviour
         {
             //instanciates a new vfx pulled from the vfx pulling script
             Vector3 rocksOffsetPos = initialPos + (rocksOffsetAmount * direction * (i + 1));
-            Debug.Log(rocksOffsetPos);
             vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[5], rocksOffsetPos, true));
             //waits a bit before spawning another one
             yield return new WaitForSeconds(rocksPlacementInterval);

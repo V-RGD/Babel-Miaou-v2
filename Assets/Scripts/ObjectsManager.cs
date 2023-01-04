@@ -42,6 +42,7 @@ public class ObjectsManager : MonoBehaviour
     public Sprite[] objectSprites;
     public ParticleSystem sacredCrossFx;
     public ParticleSystem killingSpreeFx;
+    public ParticleSystem noHitFx;
     #endregion
     #region Values
     [Header("Values")] [Space]
@@ -212,6 +213,7 @@ public class ObjectsManager : MonoBehaviour
         if (noHit)
         {
             noHitStreak = false;
+            noHitFx.Stop();
         }
         
         _gameManager.health -= damage;

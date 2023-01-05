@@ -339,12 +339,11 @@ public class Room : MonoBehaviour
         }
     }
 
-    private IEnumerator ActivateAllEnemies()
+    public IEnumerator ActivateAllEnemies()
     {
         if (_objectsManager.noHit)
         {
             _objectsManager.noHitStreak = true;
-            _objectsManager.noHitFx.Play();
         }
         for (int i = 0; i < enemyGroup.transform.childCount; i++)
         {

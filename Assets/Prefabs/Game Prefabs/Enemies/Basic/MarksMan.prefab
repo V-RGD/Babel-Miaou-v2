@@ -40391,6 +40391,7 @@ GameObject:
   - component: {fileID: 6679677847304855727}
   - component: {fileID: 6679677847304855724}
   - component: {fileID: 6679677847304855725}
+  - component: {fileID: 6679677847304855722}
   m_Layer: 0
   m_Name: JabRange
   m_TagString: Untagged
@@ -40476,6 +40477,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6679677847304855722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6679677847304855720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 558c4a661029c04429cd94767048ac44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 0}
 --- !u!1 &6679677847553715042
 GameObject:
   m_ObjectHideFlags: 0
@@ -40644,7 +40658,7 @@ MonoBehaviour:
   damage: 0
   isActive: 0
   stunCounter: 0
-  healthSlider: {fileID: 6679677848062248230}
+  healthSlider: {fileID: 6679677848062248228}
   mainCollider: {fileID: 8726466951401739111}
   sprite: {fileID: 3983356318548164143}
   spawnVfx: {fileID: 8501968302094724205}

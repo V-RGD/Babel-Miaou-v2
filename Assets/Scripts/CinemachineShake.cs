@@ -3,34 +3,34 @@ using UnityEngine;
 
 public class CinemachineShake : MonoBehaviour
 {
-    private CinemachineVirtualCamera _vCam;
+    private CinemachineVirtualCamera vCam;
     //private CinemachineBasicMultiChannelPerlin channel;
-    private float _startIntensity;
-    private float _shakeTimerTotal;
+    private float startIntensity;
+    private float shakeTimerTotal;
 
-    private float _shakeTimer;
+    private float shakeTimer;
 
     private void Awake()
     {
-        _vCam = GetComponent<CinemachineVirtualCamera>();
+        vCam = GetComponent<CinemachineVirtualCamera>();
     }
 
     public void ShakeCamera(float intensity, float time)
     {
-        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = intensity;
-        _shakeTimer = time;
-        _startIntensity = intensity;
-        _shakeTimerTotal = time;
+        shakeTimer = time;
+        startIntensity = intensity;
+        shakeTimerTotal = time;
     }
 
     private void Update()
     {
-        if (_shakeTimer > 0)
+        if (shakeTimer > 0)
         {
-            CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            _shakeTimer -= Time.deltaTime;
-            cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = Mathf.Lerp(_startIntensity, 0, _shakeTimer/_shakeTimerTotal);
+            CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            shakeTimer -= Time.deltaTime;
+            cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = Mathf.Lerp(startIntensity, 0, shakeTimer/shakeTimerTotal);
         }
     }
 }

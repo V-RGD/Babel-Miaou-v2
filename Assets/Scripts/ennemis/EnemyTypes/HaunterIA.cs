@@ -1,12 +1,15 @@
 using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+
 public class HaunterIA : MonoBehaviour
 {
     //public int enemyType;
     
-    private Vector3 _playerDir;
-    private Vector3 _attackDir;
+    private Vector3 playerDir;
+    private Vector3 attackDir;
     
     //values
     private float _stunCounter;
@@ -30,13 +33,13 @@ public class HaunterIA : MonoBehaviour
     private GameObject _player;
     private GameObject _attackAnchor;
     private Rigidbody _rb;
-    private ObjectDamage _jabDamage;
-    private EnemyType _enemyTypeData;
-    [SerializeField]private Animator animator;
+    private EnemyType enemyTypeData;
+    [SerializeField]private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     public int currentAnimatorState;
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Attack = Animator.StringToHash("Attack");
+    private static readonly int Death = Animator.StringToHash("Death");
     
     private void Awake()
     {
@@ -45,23 +48,20 @@ public class HaunterIA : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _attackAnchor = transform.GetChild(1).gameObject;
         _enemyTrigger = GetComponent<Enemy>();
-        _enemyTypeData = _enemyTrigger.enemyTypeData;
+        enemyTypeData = _enemyTrigger.enemyTypeData;
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
-        _jabDamage = _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>();
     }
 
     private void Update()
     {
-        Vector3 playerPos = _player.transform.position;
-        Vector3 position = transform.position;
-        _agent.speed = _enemyTrigger.speed * _speedFactor  * _enemyTypeData.enemySpeed;
-        _playerDist = (playerPos - position).magnitude;
-        _playerDir = (playerPos - position).normalized;
+        _agent.speed = _enemyTrigger.speed * _speedFactor  * enemyTypeData.enemySpeed;
+        _playerDist = (_player.transform.position - transform.position).magnitude;
+        playerDir = (_player.transform.position - transform.position).normalized;
 
         if (_isHit)
         {
             //resets stun counter
-            _stunCounter = _enemyTypeData.stunLenght;
+            _stunCounter = enemyTypeData.stunLenght;
         }
         GetAnimation();
     }
@@ -89,7 +89,7 @@ public class HaunterIA : MonoBehaviour
         else
         {
             if (Idle == currentAnimatorState) return;
-            animator.CrossFade(Idle, 0, 0);
+            _animator.CrossFade(Idle, 0, 0);
             currentAnimatorState = Idle;
         }
         
@@ -100,15 +100,14 @@ public class HaunterIA : MonoBehaviour
         if (_isAttacking)
         {
             _agent.speed = 0;
-            Vector3 velocity = _rb.velocity;
-            _rb.velocity = new Vector3(velocity.x * 0.95f, velocity.y, velocity.z * 0.95f);
+            _rb.velocity = new Vector3(_rb.velocity.x * 0.95f, _rb.velocity.y, _rb.velocity.z * 0.95f);
         }
     }
 
     void Haunter()
     {
         //if the enemy is in player range
-        if (_playerDist <= _enemyTypeData.attackRange)
+        if (_playerDist <= enemyTypeData.attackRange)
         {
             //stops then attacks
             _speedFactor = 0;
@@ -131,22 +130,22 @@ public class HaunterIA : MonoBehaviour
     
     IEnumerator AttackCooldown()
     {
-            animator.CrossFade(Attack, 0, 0);
+            _animator.CrossFade(Attack, 0, 0);
             currentAnimatorState = Attack;
-            float force = _enemyTypeData.attackForce;
+            float force = enemyTypeData.attackForce;
             //determines attack length, damage, hitbox, force to add
             //stops movement
             //add current damage stat to weapon
-            _jabDamage.damage = _enemyTrigger.damage;
+            _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>().damage = _enemyTrigger.damage;
             //warmup
-            yield return new WaitForSeconds(_enemyTypeData.shootWarmup);
+            yield return new WaitForSeconds(enemyTypeData.shootWarmup);
             //determine où l'attaque va se faire
             _attackAnchor.transform.LookAt(_player.transform.position);
             //actives weapon
             _enemyTrigger.canTouchPlayer = true;
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             _rb.velocity = Vector3.zero;
-            Vector3 pushedDir = _playerDir;
+            Vector3 pushedDir = playerDir;
             _rb.AddForce(pushedDir * force, ForceMode.Impulse);
             //plays animation
             //attack duration : time when the player can actually be hit
@@ -154,9 +153,9 @@ public class HaunterIA : MonoBehaviour
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
             _enemyTrigger.canTouchPlayer = false;
             //waits cooldown depending on the attack used
-            yield return new WaitForSeconds(_enemyTypeData.attackCooldown - 0.4f);
+            yield return new WaitForSeconds(enemyTypeData.attackCooldown - 0.4f);
             _rb.velocity = Vector3.zero;
-            animator.CrossFade(Idle, 0, 0);
+            _animator.CrossFade(Idle, 0, 0);
             currentAnimatorState = Idle;
             //disables hitbox
             _isAttacking = false;

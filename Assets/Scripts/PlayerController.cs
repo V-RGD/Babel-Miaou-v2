@@ -45,7 +45,6 @@ public class PlayerController : MonoBehaviour
     private float _lockedTill;
     [HideInInspector] public PlayerAttacks _playerAttacks;
     [HideInInspector] public int currentAnimatorState;
-    private BoxCollider _boxCollider;
     
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Dash = Animator.StringToHash("Dash");
@@ -68,7 +67,6 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         
         _rb = GetComponent<Rigidbody>();
-        _boxCollider = GetComponent<BoxCollider>();
         _stepSounds = GetComponent<RandSoundGen>();
         _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
         _playerControls = new PlayerControls();
@@ -272,6 +270,7 @@ public class PlayerController : MonoBehaviour
         _remnants.StartCoroutine(_remnants.DashRemnants());
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = false;
+
         
         Vector3 dashDir = new Vector3(movementDir.x, 0,  movementDir.y);
         //if finds wall and ground on the other side
@@ -279,22 +278,24 @@ public class PlayerController : MonoBehaviour
         {
             dashDir = new Vector3(lastWalkedDir.x, 0,  lastWalkedDir.y);
         }
-
+        
+        RaycastHit wallHit;
+        RaycastHit groundHit;
         float characterSize = 2f;
-        if (Physics.Raycast(transform.position, dashDir, out var wallHit, 6, LayerMask.GetMask("Wall")) && 
+        if (Physics.Raycast(transform.position, dashDir, out wallHit, 6, LayerMask.GetMask("Wall")) && 
             Physics.Raycast(transform.position + Vector3.down * characterSize + dashDir.normalized, dashDir,
-                out var groundHit, 20, LayerMask.GetMask("Ground", "Pont")))
+                out groundHit, 20, LayerMask.GetMask("Ground", "Pont")))
         {
             Vector3 wallPos = wallHit.point;
             Vector3 groundPos = groundHit.point;
             Vector3 destination = groundPos + dashDir;
             
             //starts dash while disabling collider
-            _boxCollider.enabled = false;
+            GetComponent<BoxCollider>().enabled = false;
             _rb.AddForce(dashForce * dashDir, ForceMode.Impulse);
             //waits until reached ground
             yield return new WaitUntil(() => (destination - transform.position).magnitude <= 3f);
-            _boxCollider.enabled = true;
+            GetComponent<BoxCollider>().enabled = true;
         }
         else
         {

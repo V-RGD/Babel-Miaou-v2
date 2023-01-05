@@ -6,10 +6,15 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     
+    private GameObject player;
     public GameObject[] items;
     private GameVariables _gameVariables;
+    private UIManager _uiManager;
+    private ObjectsManager _objectsManager;
+    private PlayerController _playerController;
     private Room _room;
-    [HideInInspector] public CinemachineShake cmShake;
+    public CinemachineShake _cmShake;
+    [HideInInspector]public PlayerAttacks _playerAttacks;
     public List<Transform> eyesInGame;
     private EnemyHitFx _enemyHitFx;
 
@@ -21,7 +26,7 @@ public class GameManager : MonoBehaviour
 
     public int playerRoom;
     public bool isDead;
-    private bool _isFreezed;
+    private bool isFreezed;
     public int currentLevel;
 
     private void Awake()
@@ -34,19 +39,20 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         
-        cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
+        player = GameObject.Find("Player");
+        _cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
         _enemyHitFx = GetComponent<EnemyHitFx>();
     }
 
     void Start()
     {
-        ObjectsManager.instance = ObjectsManager.instance;
-        _gameVariables = ObjectsManager.instance.gameVariables;
-        PlayerController.instance = PlayerController.instance;
-        UIManager.instance = UIManager.instance;
-        PlayerAttacks.instance = PlayerAttacks.instance;
+        _objectsManager = ObjectsManager.instance;
+        _gameVariables = _objectsManager.gameVariables;
+        _playerController = PlayerController.instance;
+        _uiManager = UIManager.instance;
+        _playerAttacks = PlayerAttacks.instance;
         health = maxHealth;
-        UIManager.instance.HealthBar(health);
+        _uiManager.HealthBar(health);
     }
 
     IEnumerator FreezeFrame(float length)
@@ -54,45 +60,45 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         yield return new WaitForSecondsRealtime(length);
         Time.timeScale = 0;
-        _isFreezed = false;
+        isFreezed = false;
     }
     
     public void DealDamageToPlayer(float damageDealt) //when player takes hit
     {
-        if (PlayerController.instance.invincibleCounter <= 0 && ObjectsManager.instance.sacredCrossTimer <= 0 && !PlayerController.instance.isDashing)
+        if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0 && !_playerController.isDashing)
         {
             //clamps damage to an int (security)
             int damage = Mathf.CeilToInt(damageDealt);
             //applies effects --- including damage taken
-            ObjectsManager.instance.OnPlayerHit(damage);
+            _objectsManager.OnPlayerHit(damage);
             //player is invincible for a time
-            PlayerController.instance.invincibleCounter = PlayerController.instance.invincibleTime;
+            _playerController.invincibleCounter = _playerController.invincibleTime;
             //sets health bar
-            UIManager.instance.HealthBar(health);
-            UIManager.instance.HurtPanels();
-            PlayerController.instance.invincibleCounter = 1;
-            cmShake.ShakeCamera(7, .1f);
+            _uiManager.HealthBar(health);
+            _uiManager.HurtPanels();
+            _playerController.invincibleCounter = 1;
+            _cmShake.ShakeCamera(7, .1f);
             
             //ded
             if (health <= 0)
             {
-                if (ObjectsManager.instance.catLuck)
+                if (_objectsManager.catLuck)
                 {
                     //destroys catnip
                     for (int i = 0; i < 3; i++)
                     {
-                        if (ObjectsManager.instance.itemObjectsInventory[i] == 4)
+                        if (_objectsManager.itemObjectsInventory[i] == 4)
                         {
                             //destroys item
-                            ObjectsManager.instance.OnObjectUnEquip(4);
+                            _objectsManager.OnObjectUnEquip(4);
                             //adds new one
-                            ObjectsManager.instance.itemObjectsInventory[i] = 999;
-                            UIManager.instance.UpdateHUDIcons();
+                            _objectsManager.itemObjectsInventory[i] = 999;
+                            _uiManager.UpdateHUDIcons();
                         }
                     }
                     //adds health
                     health = Mathf.CeilToInt(_gameVariables.catLuckResHp);
-                    UIManager.instance.HealthBar(health);
+                    _uiManager.HealthBar(health);
                 }
                 else
                 {
@@ -113,22 +119,22 @@ public class GameManager : MonoBehaviour
         //clamps damage to an int (security)
         float damage = damageDealt;
         //applies damage
-        if (ObjectsManager.instance.killingSpreeTimer > 0)
+        if (_objectsManager.killingSpreeTimer > 0)
         {
             damage++;
         }
         //if no hit, doubles damage
-        if (ObjectsManager.instance.noHitStreak)
+        if (_objectsManager.noHitStreak)
         {
             damage *= 2;
         }
         enemy.health -= damage;
         //Debug.Log(damage);
-        cmShake.ShakeCamera(enemyHitShakeIntensity, .1f);
+        _cmShake.ShakeCamera(enemyHitShakeIntensity, .1f);
         //applies killing effects
         if (enemy.health <= 0)
         {
-            ObjectsManager.instance.OnEnemyKill();
+            _objectsManager.OnEnemyKill();
             GameScore.instance.AddScore(30);
             enemy.Death();
         }
@@ -144,7 +150,7 @@ public class GameManager : MonoBehaviour
         //applies killing effects
         if (enemy.health <= 0)
         {
-            ObjectsManager.instance.OnEnemyKill();
+            _objectsManager.OnEnemyKill();
             enemy.Death();
         }
         enemy.SliderUpdate();

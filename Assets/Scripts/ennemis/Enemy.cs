@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,10 +21,11 @@ public class Enemy : MonoBehaviour
     private bool _canTakePoisonDamage = true;
 
     private GameObject _player;
-    public Slider healthSlider;
+    public GameObject healthSlider;
     public BoxCollider mainCollider;
     private Rigidbody _rb;
 
+    private GameManager _gameManager;
     public GameObject sprite;
     public VisualEffect spawnVfx;
     public EnemyType enemyTypeData;
@@ -47,11 +49,13 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        _gameManager = GameManager.instance;
+        
         _agent.speed = speed;
         maxHealth = health;
         _player = GameObject.Find("Player");
         sprite.SetActive(false);
-        healthSlider.gameObject.SetActive(false);
+        healthSlider.SetActive(false);
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
@@ -99,7 +103,7 @@ public class Enemy : MonoBehaviour
     IEnumerator ResetPoisonCounter()
     {
         _canTakePoisonDamage = false;
-        GameManager.instance.DealDamageToEnemy(ObjectsManager.instance.gameVariables.poisonDamage, this, false);
+        _gameManager.DealDamageToEnemy(ObjectsManager.instance.gameVariables.poisonDamage, this, false);
         yield return new WaitForSeconds(ObjectsManager.instance.gameVariables.poisonCooldown);
         _canTakePoisonDamage = true;
     }
@@ -131,7 +135,7 @@ public class Enemy : MonoBehaviour
             else
             {
                 //receives damage
-                GameManager.instance.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
+                _gameManager.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
                 bleedGen.PlayRandomSound(0);
                 stabGen.PlayRandomSound(0);
             }
@@ -145,11 +149,9 @@ public class Enemy : MonoBehaviour
         }
         
         //deals damage
-        if (other.CompareTag("Player") && canTouchPlayer 
-                                       //&& PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Active
-                                       )
+        if (other.CompareTag("Player") && canTouchPlayer && PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Active)
         {
-            GameManager.instance.DealDamageToPlayer(damage);
+            _gameManager.DealDamageToPlayer(damage);
         }
 
         if (other.CompareTag("Poison"))
@@ -159,7 +161,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void FlipSprite()
+    public void FlipSprite()
     {
         Vector3 playerDir = _player.transform.position - transform.position;
         if (!isFlippingSprite)
@@ -190,15 +192,15 @@ public class Enemy : MonoBehaviour
     {
         if (health >= maxHealth)
         {
-            healthSlider.gameObject.SetActive(false);
+            healthSlider.SetActive(false);
         }
         else
         {
-            if (!healthSlider.gameObject.activeInHierarchy)
+            if (!healthSlider.activeInHierarchy)
             {
-                healthSlider.gameObject.SetActive(true);
+                healthSlider.SetActive(true);
             }
-            healthSlider.value = health / maxHealth;
+            healthSlider.GetComponent<Slider>().value = health / maxHealth;
         }
     }
 }

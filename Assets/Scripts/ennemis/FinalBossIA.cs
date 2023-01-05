@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
@@ -12,8 +13,8 @@ public class FinalBossIA : MonoBehaviour
     #region Global Values
 
     [Header("Values")] 
-    public float maxHealth = 200;
-    public float health;
+    public float _maxHealth = 200;
+    public float _health;
     private float _handRespawnTimer;
     private float _roomSize = 20;
     public int handAttackCount;
@@ -25,8 +26,8 @@ public class FinalBossIA : MonoBehaviour
     private GameManager _gameManager;
     private NavMeshSurface _navMeshSurface;
     private GameObject _player;
-    private GameObject _leftHand;
-    private GameObject _rightHand;
+    private GameObject leftHand;
+    private GameObject rightHand;
     public RectTransform healthBar;
     public ParticleSystem splashFX;
     #endregion
@@ -34,10 +35,10 @@ public class FinalBossIA : MonoBehaviour
     #region M_Laser
     [Header("M_Laser")] 
     private Vector3 _playerDir;
-    private Vector3 _mLaserPos;
-    private Vector3 _mLaserDir;
-    private LaserVisuals _laserVisualsL;
-    private LaserVisuals _laserVisualsR;
+    private Vector3 _m_laserPos;
+    private Vector3 _m_laserDir;
+    private LaserVisuals _laserVisuals_L;
+    private LaserVisuals _laserVisuals_R;
     #endregion
 
     #region Wanderer
@@ -47,8 +48,8 @@ public class FinalBossIA : MonoBehaviour
 
     #region Claw
     [Header("Claw")]
-    public GameObject clawHitboxL;
-    public GameObject clawHitboxR;
+    public GameObject clawHitbox_L;
+    public GameObject clawHitbox_R;
     public VisualEffect clawFxL;
     public VisualEffect clawFxR;
     public GameObject clawWarning;
@@ -67,20 +68,18 @@ public class FinalBossIA : MonoBehaviour
     [Header("EyeChain")] [Header("EyeChain")]
     public GameObject eyeChainPrefab;
     [SerializeField] public List<GameObject> eyeList;
-    public List<EyeChain> eyeChains;
-    public List<EyeChain> eyeChainsExternal;
     [SerializeField] public List<GameObject> externalList;
     #endregion
 
     #region H_Laser
     [Header("H_Laser")]
-    public GameObject hLaserWarning;
-    public VisualEffect hLaserVfx;
+    public GameObject _H_LaserWarning;
+    public VisualEffect H_LaserVfx;
     public GameObject rockPrefab;
     public GameObject rockWarning;
-    private bool _hLaserActive;
-    public bool canActiveFirstLaser;
-    public bool canActiveSecondLaser;
+    private bool H_LaserActive;
+    public bool _canActiveFirstLaser;
+    public bool _canActiveSecondLaser;
     #endregion
     private void Awake()
     {
@@ -91,10 +90,10 @@ public class FinalBossIA : MonoBehaviour
 
         instance = this;
         
-        _laserVisualsL = transform.GetChild(0).GetComponent<LaserVisuals>();
-        _laserVisualsR = transform.GetChild(1).GetComponent<LaserVisuals>();
-        _laserVisualsL.values = values;
-        _laserVisualsR.values = values;
+        _laserVisuals_L = transform.GetChild(0).GetComponent<LaserVisuals>();
+        _laserVisuals_R = transform.GetChild(1).GetComponent<LaserVisuals>();
+        _laserVisuals_L.values = values;
+        _laserVisuals_R.values = values;
         _player = GameObject.Find("Player");
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
@@ -104,10 +103,10 @@ public class FinalBossIA : MonoBehaviour
         healthBar.transform.parent.gameObject.SetActive(true);
 
         handAttackCount = 0;
-        canActiveFirstLaser = true;
-        canActiveSecondLaser = true;
+        _canActiveFirstLaser = true;
+        _canActiveSecondLaser = true;
         _navMeshSurface.BuildNavMesh();
-        hLaserVfx.Stop();
+        H_LaserVfx.Stop();
         _circleNumber = 1;
     
         for (int i = 0; i < values.eyeNumber; i++)
@@ -116,13 +115,10 @@ public class FinalBossIA : MonoBehaviour
             eye.GetComponent<EyeChain>().ia = this;
             eye.SetActive(false);
             eyeList.Add(eye);
-            eyeChains.Add(eye.GetComponent<EyeChain>());
         }
         for (int i = 0; i < externalList.Count; i++)
         {
             externalList[i].GetComponent<EyeChain>().ia = this;
-            eyeChainsExternal.Add(externalList[i].GetComponent<EyeChain>());
-            eyeChainsExternal[i].ia = this;
         }
 
         StartCoroutine(ChooseNextAttack());
@@ -136,8 +132,8 @@ public class FinalBossIA : MonoBehaviour
     {
         float totalLenght = values.m_laserWarmup + 0.5f + values.m_laserLength;
         //while charging, laser is in direction of player, and color is updated depending on the current charge
-        _laserVisualsL.StartCoroutine(_laserVisualsL.ShootLaser());
-        _laserVisualsR.StartCoroutine(_laserVisualsR.ShootLaser());
+        _laserVisuals_L.StartCoroutine(_laserVisuals_L.ShootLaser());
+        _laserVisuals_R.StartCoroutine(_laserVisuals_R.ShootLaser());
         yield return new WaitForSeconds(totalLenght);
         StartCoroutine(ChooseNextAttack());
     }
@@ -149,17 +145,17 @@ public class FinalBossIA : MonoBehaviour
         yield return new WaitForSeconds(values.clawWarmup);
         clawWarning.SetActive(false);
         //left claw
-        clawHitboxL.SetActive(true);
+        clawHitbox_L.SetActive(true);
         clawFxL.gameObject.SetActive(true);
         clawFxL.Play();
         yield return new WaitForSeconds(0.5f);
         //right claw
-        clawHitboxL.SetActive(false);
-        clawHitboxR.SetActive(true);
+        clawHitbox_L.SetActive(false);
+        clawHitbox_R.SetActive(true);
         clawFxR.gameObject.SetActive(true);
         clawFxR.Play();
         yield return new WaitForSeconds(0.5f);
-        clawHitboxR.SetActive(false);
+        clawHitbox_R.SetActive(false);
         clawFxL.gameObject.SetActive(false);
         clawFxR.gameObject.SetActive(false);
         yield return new WaitForSeconds(2);
@@ -219,16 +215,15 @@ public class FinalBossIA : MonoBehaviour
             eyeChainRows.Add(row);
             yield return new WaitForSeconds(0.1f);
         }
-
-        eyeChains[4].isbase = true;
+        eyeList[4].GetComponent<EyeChain>().isbase = true;
         //----attend un peu
-        foreach (var eye in eyeChains)
+        foreach (var eye in eyeList)
         {
-            StartCoroutine(eye.CheckConnection());
+            StartCoroutine(eye.GetComponent<EyeChain>().CheckConnection());
         }
-        foreach (var eye in eyeChainsExternal)
+        foreach (var eye in externalList)
         {
-            StartCoroutine(eye.CheckConnection());
+            StartCoroutine(eye.GetComponent<EyeChain>().CheckConnection());
         }
         yield return new WaitForSeconds(4);
 
@@ -246,25 +241,25 @@ public class FinalBossIA : MonoBehaviour
         rockPrefab.SetActive(true);
         rockPrefab.transform.position = rockSpawnPoint;
         //laser warning
-        hLaserWarning.SetActive(true);
+        _H_LaserWarning.SetActive(true);
         yield return new WaitForSeconds(4);
-        hLaserWarning.SetActive(false);
+        _H_LaserWarning.SetActive(false);
         //laser 
-        _hLaserActive = true;
-        hLaserVfx.gameObject.SetActive(true);
-        hLaserVfx.Play();
+        H_LaserActive = true;
+        H_LaserVfx.gameObject.SetActive(true);
+        H_LaserVfx.Play();
         yield return new WaitForSeconds(2);
-        _hLaserActive = false;
+        H_LaserActive = false;
         rockPrefab.SetActive(false);
         yield return new WaitForSeconds(values.m_laserCooldown);
-        hLaserVfx.gameObject.SetActive(false);
+        H_LaserVfx.gameObject.SetActive(false);
         StartCoroutine(ChooseNextAttack());    
     }
     IEnumerator ChooseNextAttack()
     {
         float attackCooldown;
         //determines attack cooldown
-        float healthRatio = health / maxHealth;
+        float healthRatio = _health / _maxHealth;
         if (healthRatio > 0.66f)
         {
             //if first phase
@@ -287,18 +282,18 @@ public class FinalBossIA : MonoBehaviour
         float handsAvailable = 2;
         
         //---------------------checks before if it must shoot the Huge Laser
-        if (healthRatio is < 0.66f and > 0.33f && canActiveFirstLaser)
+        if (healthRatio is < 0.66f and > 0.33f && _canActiveFirstLaser)
         {
             //if first phase
-            canActiveFirstLaser = false;
+            _canActiveFirstLaser = false;
             StartCoroutine(H_Laser());
             _circleNumber = 2;
             yield break;
         }
-        if (healthRatio < 0.33f && canActiveSecondLaser)
+        if (healthRatio < 0.33f && _canActiveSecondLaser)
         {
             //secondPhase
-            canActiveSecondLaser = false;
+            _canActiveSecondLaser = false;
             StartCoroutine(H_Laser());
             _circleNumber = 3;
             yield break;
@@ -348,7 +343,7 @@ public class FinalBossIA : MonoBehaviour
     }
     void H_LaserCheck()
     {
-        if (_hLaserActive)
+        if (H_LaserActive)
         {
             //checks if players is in safe zone
             RaycastHit hit;
@@ -371,9 +366,9 @@ public class FinalBossIA : MonoBehaviour
         //clamps damage to an int (security)
         int damage = Mathf.CeilToInt(damageDealt);
         //applies damage
-        health -= damage;
-        _gameManager.cmShake.ShakeCamera(4, .1f);
-        healthBar.sizeDelta = new Vector2(1323.4f * health / maxHealth, 12.95f);
+        _health -= damage;
+        _gameManager._cmShake.ShakeCamera(4, .1f);
+        healthBar.sizeDelta = new Vector2(1323.4f * _health / _maxHealth, 12.95f);
     }
     private void OnTriggerEnter(Collider other)
     {

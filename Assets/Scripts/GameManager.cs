@@ -139,8 +139,8 @@ public class GameManager : MonoBehaviour
     public void DealDamageToEnemy(float damageDealt, Enemy enemy, bool doShake) //when enemy takes hit
     {
         //clamps damage to an int (security)
-        int damage = Mathf.CeilToInt(damageDealt);
-        enemy.health -= damage;
+        //int damage = Mathf.CeilToInt(damageDealt);
+        enemy.health -= damageDealt;
         //applies killing effects
         if (enemy.health <= 0)
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -30,6 +31,7 @@ public class Enemy : MonoBehaviour
     private NavMeshAgent _agent;
     public ParticleSystem splashFX;
     public ParticleSystem hitFX;
+    public ParticleSystem poisonedFx;
     public bool canTouchPlayer;
     public bool isFlippingSprite;
     public bool canFlip;
@@ -70,11 +72,16 @@ public class Enemy : MonoBehaviour
         stunCounter -= Time.deltaTime;
         if (_poisonCounter > 0 && health > 0)
         {
+            poisonedFx.Play();
             _poisonCounter -= Time.deltaTime;
             if (_canTakePoisonDamage)
             {
                 StartCoroutine(ResetPoisonCounter());
             }
+        }
+        else
+        {
+            poisonedFx.Stop();
         }
 
         if (canTouchPlayer || canFlip)
@@ -151,8 +158,11 @@ public class Enemy : MonoBehaviour
         {
             GameManager.instance.DealDamageToPlayer(damage);
         }
+    }
 
-        if (other.CompareTag("Poison"))
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Poison") && _poisonCounter <= 0) 
         {
             //gets poisoned
             _poisonCounter = ObjectsManager.instance.gameVariables.poisonLenght;

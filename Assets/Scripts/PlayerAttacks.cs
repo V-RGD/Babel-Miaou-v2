@@ -46,12 +46,9 @@ public class PlayerAttacks : MonoBehaviour
     private GameObject _slashHitBox;
     private GameObject _spinHitBox;
     
-    public GameObject poisonCloud;
-    
     public float rocksAmount;
     public float rocksOffsetAmount;
     public float rocksPlacementInterval;
-
     #endregion
     
     private Animator _animator;
@@ -368,7 +365,7 @@ public class PlayerAttacks : MonoBehaviour
 
         if (ObjectsManager.instance.stinkyFish)
         {
-            Instantiate(poisonCloud, transform.position, Quaternion.identity);
+            vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[6]));
         }
 
         if (ObjectsManager.instance.earthQuake)
@@ -380,7 +377,7 @@ public class PlayerAttacks : MonoBehaviour
         //place 2 new vfx for burn marks & slash effects
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.vfxList[0]));
         vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[3]));
-        GameManager.instance.cmShake.ShakeCamera(7, .1f);
+        GameManager.instance.cmShake.ShakeCamera(10, 0.1f);
         yield return new WaitForSeconds(activeLength);
 
         //------------recovery state

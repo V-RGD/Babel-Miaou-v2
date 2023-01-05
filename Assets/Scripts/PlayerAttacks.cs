@@ -443,7 +443,7 @@ public class PlayerAttacks : MonoBehaviour
     #endregion
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup)
+        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup && PlayerController.instance.currentState != PlayerController.PlayerStates.Dash)
         {
             _pc.canMove = true;
             StopAllCoroutines();

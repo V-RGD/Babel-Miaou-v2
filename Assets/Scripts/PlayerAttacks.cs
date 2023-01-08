@@ -3,12 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
-
-[SuppressMessage("ReSharper", "Unity.PerformanceCriticalCodeInvocation")]
 public class PlayerAttacks : MonoBehaviour
 {
     public static PlayerAttacks instance;
-    
+
+    #region Variables
     public float comboCooldown = 1f; //max time allowed to combo
     public float smashPower;
     public float comboTimer;
@@ -57,7 +56,7 @@ public class PlayerAttacks : MonoBehaviour
     public AttackParameters attackParameters;
 
     #region Animations
-    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Idle_Breath = Animator.StringToHash("Idle_Breath");
     private static readonly int AttackSide = Animator.StringToHash("Attack_Side");
     private static readonly int AttackBack = Animator.StringToHash("Attack_Back");
     private static readonly int AttackFront = Animator.StringToHash("Attack_Front");
@@ -67,6 +66,7 @@ public class PlayerAttacks : MonoBehaviour
     private static readonly int SpinAttack = Animator.StringToHash("Spin_Attack");
     private static readonly int SmashPrepare = Animator.StringToHash("SmashPrepare");
     private static readonly int SmashRelease = Animator.StringToHash("SmashRelease");
+    public bool canInterruptAnimation;
     #endregion
 
     #region VFX
@@ -78,7 +78,7 @@ public class PlayerAttacks : MonoBehaviour
     public GameObject smashChargingFx;
     #endregion
 
-    public bool canInterruptAnimation;
+    #region StatesDeclaration
     public enum AttackState
     {
         Default,
@@ -97,6 +97,8 @@ public class PlayerAttacks : MonoBehaviour
     }
     public ComboState comboState;
     public AttackState currentAttackState;
+    #endregion
+    #endregion
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -124,18 +126,18 @@ public class PlayerAttacks : MonoBehaviour
         }
         OnSmashHold();
     }
-    void PlayAnimation(Vector3 playerDirection)
-    {
-        int state = GetAttackAnimation(playerDirection);
-        if (state == _pc.currentAnimatorState) return;
-        _animator.CrossFade(state, 0, 0);
-        _pc.currentAnimatorState = state;    
-    }
+    private void Timer()
+        {
+            comboTimer -= Time.deltaTime;
 
-    private void SetAttackState(AttackState state)
-    {
-        currentAttackState = state;
-    }
+            if (comboTimer <= 0)
+            {
+                _comboCounter = 0;
+                comboState = ComboState.Default;
+            }
+        }
+    
+    #region Attacks
     IEnumerator AttackCoroutine()
     {
         isAttacking = true;
@@ -295,12 +297,26 @@ public class PlayerAttacks : MonoBehaviour
         spinSlashFX.Stop();
         spinSlashFX.Play();
     }
+    IEnumerator EarthquakeRocks(Vector3 initialPos, Vector3 direction)
+    {
+        for (int i = 0; i < rocksAmount; i++)
+        {
+            //instanciates a new vfx pulled from the vfx pulling script
+            Vector3 rocksOffsetPos = initialPos + (direction * (rocksOffsetAmount * (i + 1)));
+            vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[5], rocksOffsetPos, true));
+            //waits a bit before spawning another one
+            yield return new WaitForSeconds(rocksPlacementInterval);
+        }
+    }
+    #endregion
+    
+    #region Smash
     IEnumerator SmashCoroutine()
     {
         isAttacking = true;
         //-----------can attack again
         comboState = ComboState.Default;
-        _animator.CrossFade(Idle, 0, 0);
+        _animator.CrossFade(Idle_Breath, 0, 0);
         SetAttackState(AttackState.Default);
         //can walk again
         _pc.SwitchState(PlayerController.PlayerStates.Run);
@@ -395,16 +411,25 @@ public class PlayerAttacks : MonoBehaviour
         _pc.canMove = true;
         isAttacking = false;
     }
-    IEnumerator EarthquakeRocks(Vector3 initialPos, Vector3 direction)
+    private void OnSmashHold()
     {
-        for (int i = 0; i < rocksAmount; i++)
+        if (smashGauge >= attackParameters.smashChargeLength)
         {
-            //instanciates a new vfx pulled from the vfx pulling script
-            Vector3 rocksOffsetPos = initialPos + (direction * (rocksOffsetAmount * (i + 1)));
-            vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[5], rocksOffsetPos, true));
-            //waits a bit before spawning another one
-            yield return new WaitForSeconds(rocksPlacementInterval);
+            smashGauge = attackParameters.smashChargeLength;
         }
+        if (rightMouseHolding)
+        {
+            smashChargingFx.SetActive(true);
+            _pc.currentState = PlayerController.PlayerStates.Attack;
+            _rb.velocity = Vector3.zero;
+            smashGauge += Time.deltaTime;
+            smashPower = smashGauge / attackParameters.smashChargeLength;
+        }
+    }
+    void OnReleaseSmash(InputAction.CallbackContext context)
+    {
+        rightMouseHolding = false;
+        smashChargingFx.SetActive(false);
     }
     void OnSmash(InputAction.CallbackContext context)
     {
@@ -421,53 +446,19 @@ public class PlayerAttacks : MonoBehaviour
             StartCoroutine(SmashCoroutine());
         }
     }
-    void OnReleaseSmash(InputAction.CallbackContext context)
-    {
-        rightMouseHolding = false;
-        smashChargingFx.SetActive(false);
-    }
-    #region Timer
-    private void Timer()
-        {
-            comboTimer -= Time.deltaTime;
-
-            if (comboTimer <= 0)
-            {
-                _comboCounter = 0;
-                comboState = ComboState.Default;
-            }
-        }
     #endregion
-    private void OnAttack(InputAction.CallbackContext context)
-    {
-        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup && PlayerController.instance.currentState != PlayerController.PlayerStates.Dash)
-        {
-            _pc.canMove = true;
-            StopAllCoroutines();
-            StartCoroutine(AttackCoroutine());
-        }
-    }
-    private void OnSmashHold()
-    {
-        if (smashGauge >= attackParameters.smashChargeLength)
-        {
-            smashGauge = attackParameters.smashChargeLength;
-        }
-        if (rightMouseHolding)
-        {
-            smashChargingFx.SetActive(true);
-            _pc.currentState = PlayerController.PlayerStates.Attack;
-            _rb.velocity = Vector3.zero;
-            smashGauge += Time.deltaTime;
-            smashPower = smashGauge / attackParameters.smashChargeLength;
-        }
-    }
+    
+    #region Animations
     int GetAttackAnimation(Vector3 playerDir)
     {
-        var state = Idle;
+        var state = Idle_Breath;
         //checks player speed for orientation
-        var xVal = playerDir.x >= 0 ? playerDir.x : -playerDir.x;
+        var xVal = playerDir.x;
         var yVal = playerDir.z >= 0 ? playerDir.z : -playerDir.z;
+
+        PlayerController.instance.spriteRenderer.flipX = xVal < 0;
+        Debug.Log(xVal < 0);
+        
         //if is attacking, animation plays, then locks current state during x seconds
         //checks the best option depending on the speed
         if (yVal >= xVal)
@@ -498,6 +489,31 @@ public class PlayerAttacks : MonoBehaviour
         }
         return state;
     }
+    void PlayAnimation(Vector3 playerDirection)
+    {
+        StopCoroutine(PlayerController.instance.IdleAnimations());
+
+        int state = GetAttackAnimation(playerDirection);
+        if (state == _pc.currentAnimatorState) return;
+        _animator.CrossFade(state, 0, 0);
+        _pc.currentAnimatorState = state;    
+    }
+    #endregion
+
+    #region StateManagement
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup && PlayerController.instance.currentState != PlayerController.PlayerStates.Dash)
+        {
+            _pc.canMove = true;
+            StopAllCoroutines();
+            StartCoroutine(AttackCoroutine());
+        }
+    }
+    private void SetAttackState(AttackState state)
+    {
+        currentAttackState = state;
+    }
     public void InterruptAttack()
     {
         //to make sure any attack is disabled
@@ -518,6 +534,7 @@ public class PlayerAttacks : MonoBehaviour
         _smashHitBox.SetActive(false);
         _spinHitBox.SetActive(false);
     }
+    #endregion
     
     #region InputSystemRequirements
     private void OnEnable()
@@ -537,5 +554,4 @@ public class PlayerAttacks : MonoBehaviour
         _rightClick.Disable();
     }
     #endregion
-
 }

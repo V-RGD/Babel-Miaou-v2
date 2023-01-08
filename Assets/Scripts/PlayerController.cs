@@ -1,11 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController instance;
-    
     #region Movement Values
     [Header("Movement")]
     public float maxSpeed;
@@ -19,7 +17,6 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool isDashing;
     
     #endregion
-
     #region Intern Values
     private float _frictionMultiplier = 1;
     private float _speedFactor = 1;
@@ -31,12 +28,12 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float stunCounter;
     [HideInInspector] public Vector3 lastWalkedDir;
     [HideInInspector] public Vector2 movementDir;
+    public PlayerStates currentState;
     #endregion
-
     #region Components
     private Rigidbody _rb;
     private RandSoundGen _stepSounds;
-    private SpriteRenderer _spriteRenderer;
+    [HideInInspector] public SpriteRenderer spriteRenderer;
     private PlayerControls _playerControls;
     private InputAction _move;
     private InputAction _dash;
@@ -46,15 +43,26 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public int currentAnimatorState;
     private BoxCollider _boxCollider;
     
-    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int IdleLick = Animator.StringToHash("Idle_Lick");
+    private static readonly int IdleHeadFlip = Animator.StringToHash("Idle_HeadFlip");
+    private static readonly int IdleBreath = Animator.StringToHash("Idle_Breath");
     private static readonly int Dash = Animator.StringToHash("Dash");
-    private static readonly int Run_Side = Animator.StringToHash("Run_Side");
-    private static readonly int Run_Back = Animator.StringToHash("Run_Back");
-    private static readonly int Run_Front = Animator.StringToHash("Run_Front");
+    private static readonly int Run_Up = Animator.StringToHash("Run_Up");
+    private static readonly int Run_Down = Animator.StringToHash("Run_Down");
+    private static readonly int Run_Left = Animator.StringToHash("Run_Left");
+    private static readonly int Run_Right = Animator.StringToHash("Run_Right");
+    private static readonly int Run_DiagonalUp = Animator.StringToHash("Run_DiagonalUp");
+    private static readonly int Run_DiagonalDown = Animator.StringToHash("Run_DiagonalDown");
+    public bool isIdle = false;
     public ParticleSystem dashTrail;
     #endregion
-
-    public PlayerStates currentState;
+    public enum PlayerStates
+    {
+        Run, 
+        Attack,
+        Dash,
+        Hurt
+    }
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -69,7 +77,7 @@ public class PlayerController : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _boxCollider = GetComponent<BoxCollider>();
         _stepSounds = GetComponent<RandSoundGen>();
-        _spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        spriteRenderer = transform.GetChild(1).GetComponent<SpriteRenderer>();
         _playerControls = new PlayerControls();
         
         _animator = GetComponent<Animator>();
@@ -86,7 +94,7 @@ public class PlayerController : MonoBehaviour
                 _speedFactor = 1;
                 MovePlayer();
                 MovingAnimations();
-                Flip();
+                //Flip();
                 break;
             case PlayerStates.Attack:
                 MovePlayer();
@@ -96,108 +104,13 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    void MovingAnimations()
-    {
-        var state = GetMovingAnimation();
-        if (state == currentAnimatorState) return;
-        _animator.CrossFade(state, 0, 0);
-        currentAnimatorState = state;
-    }
-    public void SwitchState(PlayerStates nextState)
-    {
-        currentState = nextState;
-    }
-    void Timer()
-    {
-        dashCooldownTimer -= Time.deltaTime;
-        invincibleCounter -= Time.deltaTime;
-        stunCounter -= Time.deltaTime;
-    }
-    public enum PlayerStates
-    {
-        Run, 
-        Attack,
-        Dash,
-        Hurt
-    }
     void FixedUpdate()
     {
         Behaviour(currentState);
-        JostickDir();
+        JoystickDir();
         Timer();
         Friction();
     }
-    void PlayAnimation(int state)
-    {
-        //if is dashing, lock current state during x seconds
-        if (currentState == PlayerStates.Dash)
-        {
-            //state = _currentAnimatorState;
-        }
-        
-        if (state == currentAnimatorState) return;
-        _animator.CrossFade(state, 0, 0);
-        currentAnimatorState = state;
-    }
-    private int GetMovingAnimation()
-    {
-        if (Time.time < _lockedTill) return currentAnimatorState;
-        //checks player speed for orientation
-        float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
-        float yVal = movementDir.y >= 0 ? movementDir.y : -movementDir.y;
-        
-        //if running
-        if (movementDir != Vector2.zero)
-        {
-            //checks the best option depending on the speed
-            if (yVal > xVal && movementDir.y != 0)
-            {
-                //plays back and forward anims instead of side
-                return movementDir.y >= 0 ? Run_Back : Run_Front;
-            }
-            else
-            {
-                //plays side anim
-                return Run_Side;
-            }
-        }
-        else
-        {
-            //if the player isn't moving, simply plays idle anim
-            return Idle;
-        }
-
-        int LockState(int s, float t)
-        {
-            _lockedTill = Time.time + t;
-            return s;
-        }
-    }
-    #region Flip
-
-    void Flip()
-    {
-        //Flips the sprite when turning around
-        if (movementDir.x > 0.1f)
-        {
-            _spriteRenderer.flipX = false;
-        }
-
-        else if (movementDir.x < -0.1f)
-        {
-            _spriteRenderer.flipX = true;
-        }
-
-        if (!_spriteRenderer.flipX)
-        {
-            _dirCoef = 1;
-        }
-        else
-        {
-            _dirCoef = -1;
-        }
-    }
-    #endregion
     #region Basic Movement
     void MovePlayer()
     {
@@ -243,7 +156,6 @@ public class PlayerController : MonoBehaviour
 
         _rb.velocity = new Vector3(_rb.velocity.x * _frictionMultiplier, _rb.velocity.y, _rb.velocity.z * _frictionMultiplier);
     }
-
     void InputDash(InputAction.CallbackContext context)
     {
         if ((currentState == PlayerStates.Run || currentState == PlayerStates.Attack) && _dashesAvailable > 0 && dashCooldownTimer <= 0)
@@ -257,7 +169,6 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(DashSequence());
         }
     }
-
     IEnumerator DashSequence()
     {
         PlayerAttacks.instance.InterruptAttack();
@@ -323,12 +234,112 @@ public class PlayerController : MonoBehaviour
         SwitchState(PlayerStates.Run);
     }
     #endregion
-    void JostickDir()
+    void JoystickDir()
     {
         Vector2 inputDir = _move.ReadValue<Vector2>();
         movementDir = new Vector2(inputDir.x, inputDir.y);
     }
-    
+
+    #region Animator
+    void MovingAnimations()
+    {
+        //if moving
+        if (movementDir != Vector2.zero)
+        {
+            var state = GetMovingAnimation();
+            if (state == currentAnimatorState) return;
+            _animator.CrossFade(state, 0, 0);
+            currentAnimatorState = state;
+        }
+        else
+        {
+            //idle
+            if (!isIdle)
+            {
+                StartCoroutine(IdleAnimations());
+            }
+        }
+    }
+    private int GetMovingAnimation()
+    {
+        isIdle = false;
+        StopCoroutine(IdleAnimations());
+        if (Time.time < _lockedTill) return currentAnimatorState;
+        //checks player speed for orientation
+        float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
+        float yVal = movementDir.y;
+        //>= 0 ? movementDir.y : -movementDir.y;
+
+        //checks the best option depending on the dir
+        //up
+        if (yVal > 0.9f)
+        {
+            spriteRenderer.flipX = false;
+            return Run_Up;
+        }
+        //diagonal up
+        if (yVal > 0.2f && yVal < 0.8f)
+        {
+            spriteRenderer.flipX = movementDir.x >= 0 ? true : false;
+            return Run_DiagonalUp;
+        }
+        //side
+        if (yVal > -0.2f && yVal < 0.2f)
+        {
+            spriteRenderer.flipX = false;
+            return movementDir.x <= 0 ? Run_Left : Run_Right;
+        }
+        //diagonal down
+        if (yVal > -0.8f && yVal < -0.2f)
+        {
+            spriteRenderer.flipX = false;
+            spriteRenderer.flipX = movementDir.x >= 0 ? true : false;
+            return Run_DiagonalDown;
+        }
+        //down
+        else
+        {
+            spriteRenderer.flipX = false;
+            return Run_Down;
+        }
+    }
+    public IEnumerator IdleAnimations()
+    {
+        Debug.Log("started idle");
+        spriteRenderer.flipX = false;
+        //plays two breathing then a random idle
+        isIdle = true;
+        float idleLenght = 3;
+        float variantLenght = 1;
+        _animator.CrossFade(IdleBreath, 0, 0);
+        currentAnimatorState = IdleBreath;
+        yield return new WaitForSeconds(idleLenght);
+        int randAnim = Random.Range(0, 2);
+        switch (randAnim)
+        {
+            case 0 : _animator.CrossFade(IdleLick, 0, 0);
+                currentAnimatorState = IdleLick;
+                variantLenght = 0.55f;
+                break;
+            case 1 : _animator.CrossFade(IdleHeadFlip, 0, 0);
+                currentAnimatorState = IdleHeadFlip;
+                variantLenght = 1.35f;
+                break;
+        }
+        yield return new WaitForSeconds(variantLenght);
+        isIdle = false;
+    }
+    #endregion
+    public void SwitchState(PlayerStates nextState)
+    {
+        currentState = nextState;
+    }
+    void Timer()
+    {
+        dashCooldownTimer -= Time.deltaTime;
+        invincibleCounter -= Time.deltaTime;
+        stunCounter -= Time.deltaTime;
+    }
     #region InputSystemRequirements
     private void OnEnable()
         {

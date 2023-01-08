@@ -457,8 +457,6 @@ public class PlayerAttacks : MonoBehaviour
         var yVal = playerDir.z >= 0 ? playerDir.z : -playerDir.z;
 
         PlayerController.instance.spriteRenderer.flipX = xVal < 0;
-        Debug.Log(xVal < 0);
-        
         //if is attacking, animation plays, then locks current state during x seconds
         //checks the best option depending on the speed
         if (yVal >= xVal)

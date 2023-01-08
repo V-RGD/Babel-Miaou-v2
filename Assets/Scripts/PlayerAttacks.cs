@@ -126,6 +126,8 @@ public class PlayerAttacks : MonoBehaviour
     }
     void PlayAnimation(Vector3 playerDirection)
     {
+        StopCoroutine(PlayerController.instance.IdleAnimations());
+
         int state = GetAttackAnimation(playerDirection);
         if (state == _pc.currentAnimatorState) return;
         _animator.CrossFade(state, 0, 0);

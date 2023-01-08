@@ -46,11 +46,17 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public int currentAnimatorState;
     private BoxCollider _boxCollider;
     
-    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int IdleLick = Animator.StringToHash("Idle_Lick");
+    private static readonly int IdleHeadFlip = Animator.StringToHash("Idle_HeadFlip");
+    private static readonly int IdleBreath = Animator.StringToHash("Idle_Breath");
     private static readonly int Dash = Animator.StringToHash("Dash");
-    private static readonly int Run_Side = Animator.StringToHash("Run_Side");
-    private static readonly int Run_Back = Animator.StringToHash("Run_Back");
-    private static readonly int Run_Front = Animator.StringToHash("Run_Front");
+    private static readonly int Run_Up = Animator.StringToHash("Run_Up");
+    private static readonly int Run_Down = Animator.StringToHash("Run_Down");
+    private static readonly int Run_Left = Animator.StringToHash("Run_Left");
+    private static readonly int Run_Right = Animator.StringToHash("Run_Right");
+    private static readonly int Run_DiagonalUp = Animator.StringToHash("Run_DiagonalUp");
+    private static readonly int Run_DiagonalDown = Animator.StringToHash("Run_DiagonalDown");
+    public bool isIdle = false;
     public ParticleSystem dashTrail;
     #endregion
 
@@ -86,7 +92,7 @@ public class PlayerController : MonoBehaviour
                 _speedFactor = 1;
                 MovePlayer();
                 MovingAnimations();
-                Flip();
+                //Flip();
                 break;
             case PlayerStates.Attack:
                 MovePlayer();
@@ -98,10 +104,49 @@ public class PlayerController : MonoBehaviour
     }
     void MovingAnimations()
     {
-        var state = GetMovingAnimation();
-        if (state == currentAnimatorState) return;
-        _animator.CrossFade(state, 0, 0);
-        currentAnimatorState = state;
+        //if moving
+        if (movementDir != Vector2.zero)
+        {
+            var state = GetMovingAnimation();
+            if (state == currentAnimatorState) return;
+            _animator.CrossFade(state, 0, 0);
+            currentAnimatorState = state;
+        }
+        else
+        {
+            //idle
+            if (!isIdle)
+            {
+                StartCoroutine(IdleAnimations());
+            }
+        }
+    }
+
+    public IEnumerator IdleAnimations()
+    {
+        Debug.Log("started idle");
+        _spriteRenderer.flipX = false;
+        //plays two breathing then a random idle
+        isIdle = true;
+        float idleLenght = 3;
+        float variantLenght = 1;
+        _animator.CrossFade(IdleBreath, 0, 0);
+        currentAnimatorState = IdleBreath;
+        yield return new WaitForSeconds(idleLenght);
+        int randAnim = Random.Range(0, 2);
+        switch (randAnim)
+        {
+            case 0 : _animator.CrossFade(IdleLick, 0, 0);
+                currentAnimatorState = IdleLick;
+                variantLenght = 0.55f;
+                break;
+            case 1 : _animator.CrossFade(IdleHeadFlip, 0, 0);
+                currentAnimatorState = IdleHeadFlip;
+                variantLenght = 1.35f;
+                break;
+        }
+        yield return new WaitForSeconds(variantLenght);
+        isIdle = false;
     }
     public void SwitchState(PlayerStates nextState)
     {
@@ -139,40 +184,57 @@ public class PlayerController : MonoBehaviour
         _animator.CrossFade(state, 0, 0);
         currentAnimatorState = state;
     }
+
     private int GetMovingAnimation()
     {
+        isIdle = false;
+        StopCoroutine(IdleAnimations());
         if (Time.time < _lockedTill) return currentAnimatorState;
         //checks player speed for orientation
         float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
-        float yVal = movementDir.y >= 0 ? movementDir.y : -movementDir.y;
-        
-        //if running
-        if (movementDir != Vector2.zero)
+        float yVal = movementDir.y;
+                     //>= 0 ? movementDir.y : -movementDir.y;
+
+        //checks the best option depending on the dir
+        //up
+        if (yVal > 0.9f)
         {
-            //checks the best option depending on the speed
-            if (yVal > xVal && movementDir.y != 0)
-            {
-                //plays back and forward anims instead of side
-                return movementDir.y >= 0 ? Run_Back : Run_Front;
-            }
-            else
-            {
-                //plays side anim
-                return Run_Side;
-            }
+            _spriteRenderer.flipX = false;
+            return Run_Up;
         }
+        //diagonal up
+        if (yVal > 0.2f && yVal < 0.8f)
+        {
+            _spriteRenderer.flipX = movementDir.x >= 0 ? true : false;
+            return Run_DiagonalUp;
+        }
+        //side
+        if (yVal > -0.2f && yVal < 0.2f)
+        {
+            _spriteRenderer.flipX = false;
+            return movementDir.x <= 0 ? Run_Left : Run_Right;
+        }
+        //diagonal down
+        if (yVal > -0.8f && yVal < -0.2f)
+        {
+            _spriteRenderer.flipX = false;
+            _spriteRenderer.flipX = movementDir.x >= 0 ? true : false;
+            return Run_DiagonalDown;
+        }
+        //down
         else
         {
-            //if the player isn't moving, simply plays idle anim
-            return Idle;
+            _spriteRenderer.flipX = false;
+            return Run_Down;
         }
+    }
 
-        int LockState(int s, float t)
+    int LockState(int s, float t)
         {
             _lockedTill = Time.time + t;
             return s;
         }
-    }
+    
     #region Flip
 
     void Flip()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -25,14 +26,14 @@ public class ObjectsManager : MonoBehaviour
     #endregion
     #region Assignations
     [Header("Assignations")] [Space]
-    [SerializeField] private Room currentRoom;
+    [SerializeField] private Room _currentRoom;
     public GameObject[] uiItemBoxes;
     public GameObject[] uiActivationFx;
     private GameManager _gameManager;
     private PlayerControls _playerControls;
-    private InputAction _moveUp;
-    private InputAction _moveDown;
-    private InputAction _confirm;
+    private InputAction moveUp;
+    private InputAction moveDown;
+    private InputAction confirm;
     private UIManager _uiManager;
     private PlayerController _player;
     public GameObject objectMenu;
@@ -62,7 +63,7 @@ public class ObjectsManager : MonoBehaviour
     public bool earthQuake;
     #endregion
     #region StatsIncrease
-    private float _killingSpreeDamage;
+    private float killingSpreeDamage;
     #endregion
     #region Timers
     [HideInInspector] public float killingSpreeTimer;
@@ -119,7 +120,7 @@ public class ObjectsManager : MonoBehaviour
     public void OnObjectEquip(int item)
     {
         itemList.Remove(item);
-        Debug.Log("equipped Item#" + item);
+        Debug.Log("equiped Item#" + item);
         //check the ID of the object to add additional effects
         switch (item)
         {
@@ -141,7 +142,7 @@ public class ObjectsManager : MonoBehaviour
             itemList.Add(item);
         }
         
-        Debug.Log("unequipped Item#" + item);
+        Debug.Log("unequiped Item#" + item);
         //check the ID of the object to remove additional effects
         switch (item)
         {
@@ -212,7 +213,6 @@ public class ObjectsManager : MonoBehaviour
         if (noHit)
         {
             noHitStreak = false;
-            noHitFx.Stop();
         }
         
         _gameManager.health -= damage;
@@ -263,7 +263,7 @@ public class ObjectsManager : MonoBehaviour
     }
     void MoveExtraBox(int dir)
     {
-        int pos;
+        int pos = 0;
         //if it goes beyond max
         if (currentBoxPos + dir > 2)
         {
@@ -329,23 +329,23 @@ public class ObjectsManager : MonoBehaviour
     #region InputSystemRequirements
     private void OnEnable()
     {
-        _moveDown = _playerControls.UI.MoveDown;
-        _moveDown.Enable();
-        _moveDown.performed += MoveBoxDown;
+        moveDown = _playerControls.UI.MoveDown;
+        moveDown.Enable();
+        moveDown.performed += MoveBoxDown;
 
-        _moveUp = _playerControls.UI.MoveUp;
-        _moveUp.Enable();
-        _moveUp.performed += MoveBoxUp;
+        moveUp = _playerControls.UI.MoveUp;
+        moveUp.Enable();
+        moveUp.performed += MoveBoxUp;
 
-        _confirm = _playerControls.UI.Confirm;
-        _confirm.Enable();
-        _confirm.performed += ReplaceItem;
+        confirm = _playerControls.UI.Confirm;
+        confirm.Enable();
+        confirm.performed += ReplaceItem;
     }
     private void OnDisable()
     {
-        _moveDown.Disable();
-        _moveUp.Disable();
-        _confirm.Disable();
+        moveDown.Disable();
+        moveUp.Disable();
+        confirm.Disable();
     }
     #endregion
 }

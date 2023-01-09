@@ -6,18 +6,21 @@ public class BreakablePot : MonoBehaviour
     private ParticleSystem _particleSystem;
     private SpriteRenderer _sr;
     private BoxCollider _collider;
+    private bool _canBeDestroyed = true;
 
     private void Awake()
     {
-        _particleSystem = GetComponentInChildren<ParticleSystem>();
+        _particleSystem = transform.GetChild(1).GetComponent<ParticleSystem>();
         _sr = GetComponent<SpriteRenderer>();
         _collider = GetComponent<BoxCollider>();
+        _canBeDestroyed = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlayerAttack"))
+        if (other.CompareTag("PlayerAttack") && _canBeDestroyed)
         {
+            _canBeDestroyed = false;
             StartCoroutine(Break());
         }
     }

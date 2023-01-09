@@ -75,7 +75,9 @@ public class PlayerAttacks : MonoBehaviour
     public VisualEffect spinSlashFX;
     public VisualEffect smashSlashFX;
     [HideInInspector] public VfxPulling vfxPulling;
-    public GameObject smashChargingFx;
+    public ParticleSystem chargeFx1;
+    public ParticleSystem chargeFx2;
+    public ParticleSystem chargeFx3;
     #endregion
 
     #region StatesDeclaration
@@ -419,17 +421,38 @@ public class PlayerAttacks : MonoBehaviour
         }
         if (rightMouseHolding)
         {
-            smashChargingFx.SetActive(true);
             _pc.currentState = PlayerController.PlayerStates.Attack;
             _rb.velocity = Vector3.zero;
             smashGauge += Time.deltaTime;
             smashPower = smashGauge / attackParameters.smashChargeLength;
+            //varies smash preparation fx depending on the power needed
+            if (smashPower < 0.33f)
+            {
+                chargeFx1.gameObject.SetActive(true);
+                chargeFx2.gameObject.SetActive(false);
+                chargeFx3.gameObject.SetActive(false);
+            }
+            else if (smashPower < 0.66f)
+            {
+                chargeFx1.gameObject.SetActive(false);
+                chargeFx2.gameObject.SetActive(true);
+                chargeFx3.gameObject.SetActive(false);
+            }
+            else
+            {
+                chargeFx1.gameObject.SetActive(false);
+                chargeFx2.gameObject.SetActive(false);
+                chargeFx3.gameObject.SetActive(true);
+            }
         }
+        
     }
     void OnReleaseSmash(InputAction.CallbackContext context)
     {
         rightMouseHolding = false;
-        smashChargingFx.SetActive(false);
+        chargeFx1.gameObject.SetActive(false);
+        chargeFx2.gameObject.SetActive(false);
+        chargeFx3.gameObject.SetActive(false);
     }
     void OnSmash(InputAction.CallbackContext context)
     {

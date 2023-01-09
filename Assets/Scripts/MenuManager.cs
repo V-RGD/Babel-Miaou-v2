@@ -15,7 +15,6 @@ public class MenuManager : MonoBehaviour
     public PlayerControls playerControls;
     public InputAction quitMenu;
 
-    public GameObject loadingSlider;
     public GameObject quitWarning;
     public GameObject loadingUI;
     public GameObject pauseMenu;
@@ -32,19 +31,16 @@ public class MenuManager : MonoBehaviour
     public bool canEscapeObjectMenu = true;
     private bool isInObjectMenu;
     private bool isInCommandLine;
-
     private void OnEnable()
     {
         quitMenu = playerControls.Menus.Escape;
         quitMenu.performed += EscapeButton;
         quitMenu.Enable();
     }
-
     private void OnDisable()
     {
         quitMenu.Disable();
     }
-
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -57,16 +53,20 @@ public class MenuManager : MonoBehaviour
 
         playerControls = new PlayerControls();
     }
-
     private void Start()
     {
         _gameManager = GameManager.instance;
         _objectsManager = ObjectsManager.instance;
         _uiManager = UIManager.instance;
         _cheatManager = CheatManager.instance;
-    }
 
-    void EscapeButton(InputAction.CallbackContext context)
+        if (isLoading)
+        {
+            loadingUI.SetActive(true);
+            StartCoroutine(StartLevel());
+        }
+    }
+    private void EscapeButton(InputAction.CallbackContext context)
     {
         if (isInCommandLine)
         {
@@ -103,7 +103,6 @@ public class MenuManager : MonoBehaviour
             PauseMenu();
         }
     }
-
     private void Update()
     {
         if (Input.GetKey(KeyCode.Quote))
@@ -134,9 +133,6 @@ public class MenuManager : MonoBehaviour
             DeathPanel();
         }
     }
-
-
-    #region fonctionne
     public void StartGame()
     {
         StartCoroutine(LoadingScreen());
@@ -159,7 +155,6 @@ public class MenuManager : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadScene("MainScene");
     }
-
     public void QuitGame()
     {
         Application.Quit();
@@ -192,8 +187,6 @@ public class MenuManager : MonoBehaviour
             Time.timeScale = 1;
         }
     }
-    #endregion
-
     public void ObjectMenu()
     {
         if (isInObjectMenu && canEscapeObjectMenu)
@@ -225,33 +218,37 @@ public class MenuManager : MonoBehaviour
             return;
         }
     }
-    
-    #region WarningPrompt
-    
-    #endregion
     IEnumerator LoadingScreen()
     {
+        PlayerController.instance.enabled = false;
+        PlayerAttacks.instance.enabled = false;
+
         loadingUI.SetActive(true);
         //does nothing the first second
-        yield return new WaitForSeconds(1);
-        loadingSlider.GetComponent<Animator>().SetTrigger("LoadingStart");
-        //loads for 3 seconds
         yield return new WaitForSeconds(3);
         //change scene
         SceneManager.LoadScene("MainScene");
     }
-
-    public void DeathPanel()
+    private void DeathPanel()
     {
         deathPanel.SetActive(true);
         
         Time.timeScale = 0;
     }
-
     public void DiscardWarningPrompt()
     {
         quitWarningActive = false;
         quitWarning.SetActive(false);
+    }
+    public IEnumerator StartLevel()
+    {
+        //waits for the level to start
+        yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
+        yield return new WaitForSeconds(2);
+        //disables screen, enables character
+        PlayerController.instance.enabled = true;
+        PlayerAttacks.instance.enabled = true;
+        loadingUI.SetActive(false);
     }
 }
     

@@ -11,6 +11,8 @@ public class DunGen : MonoBehaviour
     public int goldenPathLength = 8;
 
     public List<GameObject> rooms;
+    public List<GameObject> roomsLevel2;
+    public List<GameObject> roomsLevel3;
     public List<GameObject> fullRooms;
     public GameObject roomList;
 

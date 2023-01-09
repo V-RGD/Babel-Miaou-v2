@@ -1,39 +1,48 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
 public class MainMenu : MonoBehaviour
 {
-    public static MainMenu instance;
-    
-    public bool isLoading;
     public bool quitWarningActive;
     public bool isInOptions;
+    public PlayerControls playerControls;
+    public InputAction quitMenu;
 
-    public GameObject loadingSlider;
     public GameObject quitWarning;
     public GameObject loadingUI;
     public GameObject optionMenu;
-    
-    private bool _canActiveDeathPanel = true;
-    private bool _canPause = true;
-    public bool canEscapeObjectMenu = true;
-    private bool isInObjectMenu;
+    private void OnEnable()
+    {
+        quitMenu = playerControls.Menus.Escape;
+        quitMenu.performed += EscapeButton;
+        quitMenu.Enable();
+    }
+    private void OnDisable()
+    {
+        quitMenu.Disable();
+    }
     private void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(this);
-        }
-
-        instance = this;
+        playerControls = new PlayerControls();
     }
-
-    #region fonctionne
+    private void EscapeButton(InputAction.CallbackContext context)
+    {
+        if (isInOptions)
+        {
+            SettingsMenu();
+        }
+    }
     public void StartGame()
     {
         StartCoroutine(LoadingScreen());
+    }
+    public void RestartLevel()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("MainScene");
     }
     public void QuitGame()
     {
@@ -52,18 +61,11 @@ public class MainMenu : MonoBehaviour
             optionMenu.SetActive(false);
         }
     }
-    #endregion
-    
-    #region WarningPrompt
-    #endregion
     IEnumerator LoadingScreen()
     {
         loadingUI.SetActive(true);
         //does nothing the first second
-        yield return new WaitForSeconds(1);
-        loadingSlider.GetComponent<Animator>().SetTrigger("LoadingStart");
-        //loads for 3 seconds
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(3);
         //change scene
         SceneManager.LoadScene("MainScene");
     }

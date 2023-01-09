@@ -305,7 +305,6 @@ public class PlayerController : MonoBehaviour
     }
     public IEnumerator IdleAnimations()
     {
-        Debug.Log("started idle");
         spriteRenderer.flipX = false;
         //plays two breathing then a random idle
         isIdle = true;

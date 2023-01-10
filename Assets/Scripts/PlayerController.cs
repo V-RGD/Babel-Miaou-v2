@@ -226,7 +226,7 @@ public class PlayerController : MonoBehaviour
         SwitchState(PlayerStates.Dash);
         isDashing = true;
         //plays fx and sfx
-        PlayerAttacks.instance.vfxPulling.PlaceDashFx();
+        PlayerAttacks.instance.burnVfxPulling.PlaceDashFx();
         dashTrail.Play();
         PlayerSounds.instance.dashSource.PlayOneShot(PlayerSounds.instance.dashSource.clip);
         _remnants.StartCoroutine(_remnants.DashRemnants());

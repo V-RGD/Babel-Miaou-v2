@@ -7,6 +7,8 @@ using Random = UnityEngine.Random;
 
 public class VfxPulling : MonoBehaviour
 {
+    [Header("CATEGORY")]
+    public string name;
     //for burn marks on the floor
     private PlayerAttacks _playerAttacks;
     private GameObject _player;
@@ -197,7 +199,7 @@ public class VfxPulling : MonoBehaviour
     public void PlaceDashFx()
     {
         //place vfx
-        Particle particle = particleList[4];
+        Particle particle = particleList[3];
         StartCoroutine(PlaceNewVfx(particle, new Vector3(PlayerController.instance.lastWalkedDir.x, 0 ,PlayerController.instance.lastWalkedDir.y)));
     }
     

@@ -410,7 +410,7 @@ public class Room : MonoBehaviour
 
     void PlacePlayerAtSpawnPoint()
     {
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 1.65f;
+        _player.transform.position = roomCenter.transform.position + Vector3.up * 2.1f;
     }
 
     void ActiveEffects()

@@ -6,22 +6,18 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     
-    private GameObject player;
-    public GameObject[] items;
     private GameVariables _gameVariables;
     private UIManager _uiManager;
     private ObjectsManager _objectsManager;
     private PlayerController _playerController;
     private Room _room;
-    public CinemachineShake cmShake;
-    [HideInInspector]public PlayerAttacks _playerAttacks;
+    [HideInInspector]public CinemachineShake cmShake;
     public List<Transform> eyesInGame;
     private EnemyHitFx _enemyHitFx;
 
     public int money;
     public int maxHealth = 3;
     public int health;
-    public int healthBonus;
     public float enemyHitShakeIntensity = 3;
 
     public int playerRoom;
@@ -39,7 +35,6 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         
-        player = GameObject.Find("Player");
         cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
         _enemyHitFx = GetComponent<EnemyHitFx>();
     }
@@ -50,7 +45,6 @@ public class GameManager : MonoBehaviour
         _gameVariables = _objectsManager.gameVariables;
         _playerController = PlayerController.instance;
         _uiManager = UIManager.instance;
-        _playerAttacks = PlayerAttacks.instance;
         health = maxHealth;
         _uiManager.HealthBar(health);
     }

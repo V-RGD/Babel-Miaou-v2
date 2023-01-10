@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
+
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController instance;
@@ -13,8 +16,9 @@ public class PlayerController : MonoBehaviour
     public float frictionAmount;
     public float dashLenght;
     public float dashCooldownLenght;
-    [HideInInspector] public bool canMove = true;
+    public bool canMove = true;
     [HideInInspector] public bool isDashing;
+    public bool isDashingOverHole;
     
     #endregion
     #region Intern Values
@@ -28,6 +32,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float stunCounter;
     [HideInInspector] public Vector3 lastWalkedDir;
     [HideInInspector] public Vector2 movementDir;
+    public Vector3 dashOverDir;
     public PlayerStates currentState;
     #endregion
     #region Components
@@ -92,25 +97,71 @@ public class PlayerController : MonoBehaviour
         {
             case PlayerStates.Run:
                 _speedFactor = 1;
-                MovePlayer();
+                if (canMove)
+                {
+                    MovePlayer();
+                }
                 MovingAnimations();
-                //Flip();
                 break;
             case PlayerStates.Attack:
                 MovePlayer();
                 _speedFactor = attackSpeedFactor;
                 break;
-            case PlayerStates.Dash:
-                break;
         }
     }
     void FixedUpdate()
     {
-        Behaviour(currentState);
+        if (PlayerAttacks.instance.currentAttackState == PlayerAttacks.AttackState.Default)
+        {
+            Behaviour(currentState);
+        }
         JoystickDir();
         Timer();
         Friction();
+        
+        if (isDashing)
+        {
+            //HoleDashCheck();
+        }
+
+        if (isDashingOverHole)
+        {
+            HoleDashForce();
+        }
     }
+
+    void HoleDashCheck()
+    {
+        Vector3 dashDir = new Vector3(movementDir.x, 0,  movementDir.y);
+        //if finds wall and ground on the other side
+        if (movementDir == Vector2.zero)
+        {
+            dashDir = new Vector3(lastWalkedDir.x, 0,  lastWalkedDir.y);
+        }
+            
+        //checks for a hole
+        float characterSize = 2.4f;
+        if (Physics.Raycast(transform.position, dashDir, out var wallHit, 6, LayerMask.GetMask("Wall")) && 
+            Physics.Raycast(transform.position + Vector3.down * characterSize + dashDir.normalized, dashDir,
+                out var groundHit, 20, LayerMask.GetMask("Ground", "Pont")))
+        {
+            StopCoroutine(DashSequence());
+            StartCoroutine(DashOverHole(dashDir, groundHit.point));
+        }
+    }
+
+    void HoleDashForce()
+    {
+        if (_rb.velocity.magnitude < 70)
+        {
+            _rb.AddForce(new Vector3(dashOverDir.x, 0, dashOverDir.y) * 50, ForceMode.VelocityChange);
+        }
+        else
+        {
+            _rb.velocity = _rb.velocity.normalized * 70;
+        }
+    }
+
     #region Basic Movement
     void MovePlayer()
     {
@@ -158,7 +209,7 @@ public class PlayerController : MonoBehaviour
     }
     void InputDash(InputAction.CallbackContext context)
     {
-        if ((currentState == PlayerStates.Run || currentState == PlayerStates.Attack) && _dashesAvailable > 0 && dashCooldownTimer <= 0)
+        if ((currentState == PlayerStates.Run || PlayerAttacks.instance.currentAttackState == PlayerAttacks.AttackState.Recovery) && _dashesAvailable > 0 && dashCooldownTimer <= 0)
         {
             _dashesAvailable--;
             StartCoroutine(DashSequence());
@@ -175,7 +226,7 @@ public class PlayerController : MonoBehaviour
         SwitchState(PlayerStates.Dash);
         isDashing = true;
         //plays fx and sfx
-        PlayerAttacks.instance.vfxPulling.PlaceDashFx();
+        PlayerAttacks.instance.burnVfxPulling.PlaceDashFx();
         dashTrail.Play();
         PlayerSounds.instance.dashSource.PlayOneShot(PlayerSounds.instance.dashSource.clip);
         _remnants.StartCoroutine(_remnants.DashRemnants());
@@ -188,25 +239,9 @@ public class PlayerController : MonoBehaviour
         {
             dashDir = new Vector3(lastWalkedDir.x, 0,  lastWalkedDir.y);
         }
-
-        float characterSize = 2f;
-        if (Physics.Raycast(transform.position, dashDir, out var wallHit, 6, LayerMask.GetMask("Wall")) && 
-            Physics.Raycast(transform.position + Vector3.down * characterSize + dashDir.normalized, dashDir,
-                out var groundHit, 20, LayerMask.GetMask("Ground", "Pont")))
-        {
-            Vector3 wallPos = wallHit.point;
-            Vector3 groundPos = groundHit.point;
-            Vector3 destination = groundPos + dashDir;
-            
-            //starts dash while disabling collider
-            _boxCollider.enabled = false;
-            _rb.AddForce(dashForce * dashDir, ForceMode.Impulse);
-            //waits until reached ground
-            yield return new WaitUntil(() => (destination - transform.position).magnitude <= 3f);
-            _boxCollider.enabled = true;
-        }
-        else
-        {
+        
+        //else
+        //{
             //if normal dash (doesn't find a wall AND there isn't anywhere to dash to
             //applies dash force
             if (movementDir != Vector2.zero)
@@ -219,7 +254,50 @@ public class PlayerController : MonoBehaviour
             }
             //stop dash
             yield return new WaitForSeconds(dashLenght);
+        //}
+        dashTrail.Stop();
+        _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
+        canMove = true;
+        isDashing = false;
+        _dashesAvailable++;
+        dashCooldownTimer = dashCooldownLenght;
+
+        if (invincibleCounter < dashLenght + 0.25f)
+        {
+            invincibleCounter = dashLenght + 0.25f;
         }
+
+        if (!isDashingOverHole)
+        {
+            SwitchState(PlayerStates.Run);
+        }
+    }
+
+    IEnumerator DashOverHole(Vector3 dashDir, Vector3 groundHit)
+    {
+        isDashingOverHole = true;
+        Debug.Log("tried to ashed over");
+        PlayerAttacks.instance.InterruptAttack();
+        SwitchState(PlayerStates.Dash);
+        isDashing = true;
+        //plays fx and sfx
+        PlayerSounds.instance.dashSource.PlayOneShot(PlayerSounds.instance.dashSource.clip);
+        _remnants.StartCoroutine(_remnants.DashRemnants());
+        canMove = false;
+
+        Vector3 groundPos = groundHit;
+        Vector3 destination = groundPos + dashDir;
+        dashOverDir = lastWalkedDir;
+            
+        //starts dash while disabling collider
+        _boxCollider.enabled = false;
+        _rb.AddForce(dashForce * dashDir, ForceMode.Impulse);
+        //waits until reached ground
+        yield return new WaitUntil(() => (destination - transform.position).magnitude <= 3f);
+        isDashingOverHole = false;
+        Debug.Log("found ground");
+        _boxCollider.enabled = true;
+        
         dashTrail.Stop();
         _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
         canMove = true;
@@ -232,6 +310,7 @@ public class PlayerController : MonoBehaviour
             invincibleCounter = dashLenght + 0.25f;
         }
         SwitchState(PlayerStates.Run);
+        Debug.Log("dashed over hole");
     }
     #endregion
     void JoystickDir()
@@ -305,7 +384,7 @@ public class PlayerController : MonoBehaviour
     }
     public IEnumerator IdleAnimations()
     {
-        spriteRenderer.flipX = false;
+         spriteRenderer.flipX = false;
         //plays two breathing then a random idle
         isIdle = true;
         float idleLenght = 3;

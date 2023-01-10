@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
@@ -8,35 +7,56 @@ public class PlayerAttacks : MonoBehaviour
     public static PlayerAttacks instance;
 
     #region Variables
+    #region StatesDeclaration
+    public enum AttackState
+    {
+        Default,
+        Startup,
+        Active,
+        Recovery
+    }
+    public enum ComboState
+    {
+        Default,
+        SimpleAttack,
+        ReverseAttack,
+        ThirdAttack,
+        SpinAttack,
+        SmashAttack,
+        SmashRelease,
+    }
+    public ComboState comboState;
+    public AttackState currentAttackState;
+    #endregion
+    
     public float comboCooldown = 1f; //max time allowed to combo
+    public float smashPowerTimer;
     public float smashPower;
     public float comboTimer;
     private float _attackMultiplier = 1;
-    private bool _isMouseHolding;
-    [SerializeField]private bool rightMouseHolding;
+    public float rocksPlacementInterval = 0.1f;
     public float smashGauge;
-    [HideInInspector] public bool isAttacking;
     private int _comboCounter;
     private Vector3 _attackDir;
-    private InputAction _mouseHold;
-    private InputAction _rightClick;
-    private PlayerControls _playerControls;
-
+    
+    private bool _isMouseHolding;
+    [SerializeField] private bool rightMouseHolding;
+    [HideInInspector] public bool isAttacking;
+    
     #region Attack Values
-
     [Header("Attacks")] 
     public float bumpForce = 20;
     public float attackStat = 1;
-    public float spinDamageMultiplier = 1.5f;
-    public float smashDamageMultiplier = 5;
+    public float spinDamageMultiplier = 0.5f;
+    public float smashDamageMultiplier = 2;
     public float dexterity;
 
     public float slashCooldown = 0.4f;
     public float spinCooldown = 0.7f;
-    public float smashCooldown = 1;
-    public float smashWarmup = 0.2f;
+    public float smashCooldown = 2;
+    public float smashWarmup = 1;
 
-    public float smashForce = 15;
+    public float smashForce = 4;
     public float slashForce = 15;
     public float spinForce = 8;
 
@@ -44,12 +64,11 @@ public class PlayerAttacks : MonoBehaviour
     private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _spinHitBox;
-    
-    public float rocksAmount;
-    public float rocksOffsetAmount;
-    public float rocksPlacementInterval;
     #endregion
     
+    private InputAction _mouseHold;
+    private InputAction _rightClick;
+    private PlayerControls _playerControls;
     private Animator _animator;
     private Rigidbody _rb;
     private PlayerController _pc;
@@ -66,39 +85,26 @@ public class PlayerAttacks : MonoBehaviour
     private static readonly int SpinAttack = Animator.StringToHash("Spin_Attack");
     private static readonly int SmashPrepare = Animator.StringToHash("SmashPrepare");
     private static readonly int SmashRelease = Animator.StringToHash("SmashRelease");
-    public bool canInterruptAnimation;
+    // public bool canInterruptAnimation;
     #endregion
 
     #region VFX
     public VisualEffect normalSlashFX;
     public VisualEffect reverseSlashFX;
     public VisualEffect spinSlashFX;
-    public VisualEffect smashSlashFX;
-    [HideInInspector] public VfxPulling vfxPulling;
+    public VfxPulling burnVfxPulling;
+    public VfxPulling smashVfxPulling;
+    public VfxPulling poisonVfxPulling;
+    public VfxPulling rocksVfxPulling;
     public ParticleSystem chargeFx1;
     public ParticleSystem chargeFx2;
     public ParticleSystem chargeFx3;
-    #endregion
-
-    #region StatesDeclaration
-    public enum AttackState
-    {
-        Default,
-        Startup,
-        Active,
-        Recovery
-    }
-    public enum ComboState
-    {
-        Default,
-        SimpleAttack,
-        ReverseAttack,
-        SpinAttack,
-        SmashAttack,
-        SmashRelease,
-    }
-    public ComboState comboState;
-    public AttackState currentAttackState;
+    public ParticleSystem smashPowerFx1;
+    public ParticleSystem smashPowerFx2;
+    public ParticleSystem smashPowerFx3;
+    private bool canActiveFx1 = true;
+    private bool canActiveFx2 = true;
+    private bool canActiveFx3 = true;
     #endregion
     #endregion
     private void Awake()
@@ -114,7 +120,6 @@ public class PlayerAttacks : MonoBehaviour
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _spinHitBox = _attackAnchor.transform.GetChild(1).gameObject;
         _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
-        vfxPulling = GetComponent<VfxPulling>();
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _playerControls = new PlayerControls();
@@ -143,7 +148,7 @@ public class PlayerAttacks : MonoBehaviour
     IEnumerator AttackCoroutine()
     {
         isAttacking = true;
-        canInterruptAnimation = false;
+        //canInterruptAnimation = false;
         if (_pc.currentState != PlayerController.PlayerStates.Dash)
         {
             _rb.velocity = Vector3.zero;
@@ -166,7 +171,7 @@ public class PlayerAttacks : MonoBehaviour
         _pc.SwitchState(PlayerController.PlayerStates.Attack);
         
         //starts timer for combos
-        comboTimer = recoverLength + 0.2f;
+        comboTimer = recoverLength + 0.3f;
         
         if (_pc.movementDir != Vector2.zero)
         {
@@ -185,7 +190,7 @@ public class PlayerAttacks : MonoBehaviour
         
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);
-        vfxPulling.attackDir = attackDir;
+        burnVfxPulling.attackDir = attackDir;
         
         switch (comboState)
         {
@@ -198,7 +203,7 @@ public class PlayerAttacks : MonoBehaviour
                 activeLength = attackParameters.attackActiveLength;
                 recoverLength = attackParameters.attackRecoverLength;
                 normalSlashFX.Play();
-                vfxPulling.PlaceBurnMark(0);
+                burnVfxPulling.PlaceBurnMark(0);
                 //1st anim
                 comboState = ComboState.SimpleAttack;
                 PlayAnimation(attackDir);
@@ -213,11 +218,25 @@ public class PlayerAttacks : MonoBehaviour
                 recoverLength = attackParameters.attackRecoverLength;
                 //2nd anim
                 reverseSlashFX.Play();
-                vfxPulling.PlaceBurnMark(1);
+                burnVfxPulling.PlaceBurnMark(1);
                 comboState = ComboState.ReverseAttack;
                 PlayAnimation(attackDir);
                 break;
             case ComboState.ReverseAttack : 
+                cooldown = slashCooldown * dexterity; 
+                damage = attackStat;
+                hitbox = _slashHitBox; 
+                force = slashForce;
+                startUpLength = attackParameters.attackStartupLength;
+                activeLength = attackParameters.attackActiveLength;
+                recoverLength = attackParameters.attackRecoverLength;
+                normalSlashFX.Play();
+                burnVfxPulling.PlaceBurnMark(0);
+                //1st anim
+                comboState = ComboState.ThirdAttack;
+                PlayAnimation(attackDir);
+                break;
+            case ComboState.ThirdAttack : 
                 damage = attackStat * spinDamageMultiplier;
                 hitbox = _spinHitBox; 
                 force = spinForce;
@@ -243,7 +262,6 @@ public class PlayerAttacks : MonoBehaviour
         //can touch enemies, hitbox active, is invincible
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
-        //_pc.invincibleCounter = activeLength;
 
         if (_pc.movementDir != Vector2.zero)
         {
@@ -253,18 +271,13 @@ public class PlayerAttacks : MonoBehaviour
 
         //------------recovery state
         SetAttackState(AttackState.Recovery);
-        //hitbox inactive, not invincible
         hitbox.SetActive(false);
         yield return new WaitForSeconds(recoverLength);
 
         //-----------can attack again
         SetAttackState(AttackState.Default);
-        //comboState = ComboState.Default;
-        //can walk again
+        comboState = ComboState.Default;
         _pc.SwitchState(PlayerController.PlayerStates.Run);
-        //waits cooldown depending on the attack used
-        //_rb.velocity = Vector3.zero;
-        //restores speed
         _pc.canMove = true;
         isAttacking = false;
     }
@@ -272,40 +285,59 @@ public class PlayerAttacks : MonoBehaviour
     {
         yield return new WaitForSeconds(attackParameters.spinStartupLength);
         float interval = attackParameters.spinActiveLength/4;
-        vfxPulling.PlaceBurnMark(2);
+        burnVfxPulling.PlaceBurnMark(2);
         spinSlashFX.Play();
         _spinHitBox.SetActive(true);
         yield return new WaitForSeconds(interval);
-        vfxPulling.PlaceBurnMark(2);
+        burnVfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
-        vfxPulling.PlaceBurnMark(2);
+        burnVfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
-        vfxPulling.PlaceBurnMark(2);
+        burnVfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         _spinHitBox.SetActive(true);
         spinSlashFX.Stop();
         spinSlashFX.Play();
         yield return new WaitForSeconds(interval);
-        vfxPulling.PlaceBurnMark(2);
+        burnVfxPulling.PlaceBurnMark(2);
         _spinHitBox.SetActive(false);
         spinSlashFX.Stop();
         spinSlashFX.Play();
     }
-    IEnumerator EarthquakeRocks(Vector3 initialPos, Vector3 direction)
+    IEnumerator EarthquakeRocks(Vector3 initialPos, Vector3 direction, int power)
     {
+        int rocksAmount = 0;
+        float damage = 0;
+        float rocksOffset = 0;
+        switch (power)
+        {
+            case 0 :
+                rocksAmount = 3;
+                rocksOffset = 2;
+                break;
+            case 1 :
+                rocksAmount = 4;
+                rocksOffset = 3;
+                break;
+            case 2 :
+                rocksAmount = 5;
+                rocksOffset = 4;
+                break;
+        }
+        
         for (int i = 0; i < rocksAmount; i++)
         {
             //instanciates a new vfx pulled from the vfx pulling script
-            Vector3 rocksOffsetPos = initialPos + (direction * (rocksOffsetAmount * (i + 1)));
-            vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[5], rocksOffsetPos, true));
+            Vector3 rocksOffsetPos = initialPos + direction * (rocksOffset * (i + 1));
+            rocksVfxPulling.StartCoroutine(rocksVfxPulling.PlaceNewVfx(rocksVfxPulling.particleList[power], rocksOffsetPos, true));
             //waits a bit before spawning another one
             yield return new WaitForSeconds(rocksPlacementInterval);
         }
@@ -316,55 +348,32 @@ public class PlayerAttacks : MonoBehaviour
     IEnumerator SmashCoroutine()
     {
         isAttacking = true;
-        //-----------can attack again
-        comboState = ComboState.Default;
-        _animator.CrossFade(Idle_Breath, 0, 0);
-        SetAttackState(AttackState.Default);
-        //can walk again
-        _pc.SwitchState(PlayerController.PlayerStates.Run);
-        canInterruptAnimation = false;
-        _pc.SwitchState(PlayerController.PlayerStates.Attack);
-        //values assignation
+        _animator.CrossFade(SmashPrepare, 0, 0);
+        _pc.SwitchState(PlayerController.PlayerStates.Attack); //stops walking
+        _pc.canMove = false;
+        
+        //values
         Vector3 attackDir = Vector3.zero;
-        smashForce = smashGauge / attackParameters.smashChargeLength;
-        float damage = 0;
-        float cooldown = 0;
-        float force = 0;
-        float startUpLength = 0;
-        float activeLength = 0;
-        float recoverLength = 0;
+        var damage = (attackStat * smashDamageMultiplier);
+        GameObject hitbox = _smashHitBox; 
+        var force = smashForce;
+        var startUpLength = attackParameters.smashStartupLength;
+        var activeLength = attackParameters.smashActiveLength;
+        var recoverLength = attackParameters.smashRecoverLength;
+        
         //-----------startup state
         //defines values, blocks walking
         SetAttackState(AttackState.Startup);
-        _pc.SwitchState(PlayerController.PlayerStates.Attack);
-        if (_pc.movementDir != Vector2.zero)
-        {
-            attackDir = new Vector3(_pc.movementDir.x, 0, _pc.movementDir.y);
-        }
-        else
-        {
-            attackDir = new Vector3(_pc.lastWalkedDir.x, 0, _pc.lastWalkedDir.y);
-            force = 0;
-        }
-        cooldown = smashCooldown; 
-        damage = (attackStat * smashDamageMultiplier);
-        GameObject hitbox = _smashHitBox; 
-        force = smashForce;
-        startUpLength = attackParameters.smashStartupLength;
-        activeLength = attackParameters.smashActiveLength;
-        recoverLength = attackParameters.smashRecoverLength;
-        //3rd anim
+        attackDir = _pc.movementDir != Vector2.zero ? new Vector3(_pc.movementDir.x, 0, _pc.movementDir.y) : new Vector3(_pc.lastWalkedDir.x, 0, _pc.lastWalkedDir.y);
         comboState = ComboState.SmashAttack;
         PlayAnimation(attackDir);
         comboState = ComboState.Default;
-        //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);
-        //stops movement
-        _pc.canMove = false;
         //add current damage stat to weapon
         hitbox.GetComponent<ObjectDamage>().damage = damage;
         _rb.velocity = Vector3.zero;
         yield return new WaitUntil(()=> !rightMouseHolding);
+        
         //adds force to simulate inertia
         if (_pc.movementDir != Vector2.zero)
         {
@@ -375,84 +384,154 @@ public class PlayerAttacks : MonoBehaviour
         comboState = ComboState.Default;
         PlayerSounds.instance.PlayAttackSound(2);
         yield return new WaitForSeconds(startUpLength);
+        
         //-----------active state
         //can touch enemies, hitbox active, is invincible
         _rb.velocity = Vector3.zero;
         SetAttackState(AttackState.Active);
         hitbox.SetActive(true);
-
+        
+        #region VFX
+        //place vfx for burn marks, slash, and eventual objects
+        if (smashPowerTimer < 0.33f)
+        {
+            smashPower = 0;
+        }
+        else if (smashPowerTimer < 0.66f)
+        {
+            smashPower = 1;
+        }
+        else
+        {
+            smashPower = 2;
+        }
+        
         if (ObjectsManager.instance.stinkyFish)
         {
-            vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[6]));
+            switch (smashPower)
+            {
+                case 0 : 
+                    poisonVfxPulling.StartCoroutine(poisonVfxPulling.PlaceNewVfx(poisonVfxPulling.particleList[0]));
+                    break;
+                case 1 : 
+                    poisonVfxPulling.StartCoroutine(poisonVfxPulling.PlaceNewVfx(poisonVfxPulling.particleList[1]));
+                    break;
+                case 2 : 
+                    poisonVfxPulling.StartCoroutine(poisonVfxPulling.PlaceNewVfx(poisonVfxPulling.particleList[2]));
+                    break;
+            }
         }
 
         if (ObjectsManager.instance.earthQuake)
         {
-            StartCoroutine(EarthquakeRocks(transform.position, attackDir));
+            switch (smashPower)
+            {
+                case 0 : 
+                    StartCoroutine(EarthquakeRocks(transform.position, attackDir, 0));
+                    break;
+                case 1 : 
+                    StartCoroutine(EarthquakeRocks(transform.position, attackDir, 1));
+                    break;
+                case 2 : 
+                    StartCoroutine(EarthquakeRocks(transform.position, attackDir, 2));
+                    break;
+            }
         }
         
-        Vector3 pos = new Vector3(transform.position.x, 0.03f, transform.position.z);
-        //place 2 new vfx for burn marks & slash effects
-        vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.vfxList[0]));
-        vfxPulling.StartCoroutine(vfxPulling.PlaceNewVfx(vfxPulling.particleList[3]));
+        switch (smashPower)
+        {
+            case 0 : 
+                smashVfxPulling.StartCoroutine(smashVfxPulling.PlaceNewVfx(smashVfxPulling.vfxList[0]));
+                smashVfxPulling.StartCoroutine(smashVfxPulling.PlaceNewVfx(smashVfxPulling.particleList[0]));
+                break;
+            case 1 : 
+                smashVfxPulling.StartCoroutine(smashVfxPulling.PlaceNewVfx(smashVfxPulling.vfxList[1]));
+                smashVfxPulling.StartCoroutine(smashVfxPulling.PlaceNewVfx(smashVfxPulling.particleList[1]));
+                break;
+            case 2 : 
+                smashVfxPulling.StartCoroutine(smashVfxPulling.PlaceNewVfx(smashVfxPulling.vfxList[2]));
+                smashVfxPulling.StartCoroutine(smashVfxPulling.PlaceNewVfx(smashVfxPulling.particleList[2]));
+                break;
+        }
+        #endregion
         GameManager.instance.cmShake.ShakeCamera(10, 0.1f);
         yield return new WaitForSeconds(activeLength);
-
         //------------recovery state
         //hitbox inactive, not invincible
         hitbox.SetActive(false);
         yield return new WaitForSeconds(recoverLength);
         //-----------can attack again
-        SetAttackState(AttackState.Default);
         //can walk again
+        SetAttackState(AttackState.Default);
         _pc.SwitchState(PlayerController.PlayerStates.Run);
-        //waits cooldown depending on the attack used
-        //restores speed
-        smashPower = 0;
         smashGauge = 0;
+        smashPower = 0;
+        smashPowerTimer = 0;
         _pc.canMove = true;
         isAttacking = false;
     }
     private void OnSmashHold()
     {
+        smashForce = smashGauge / attackParameters.smashChargeLength;
         if (smashGauge >= attackParameters.smashChargeLength)
         {
             smashGauge = attackParameters.smashChargeLength;
         }
+        
         if (rightMouseHolding)
         {
             _pc.currentState = PlayerController.PlayerStates.Attack;
             _rb.velocity = Vector3.zero;
             smashGauge += Time.deltaTime;
-            smashPower = smashGauge / attackParameters.smashChargeLength;
+            smashPowerTimer = smashGauge / attackParameters.smashChargeLength;
             //varies smash preparation fx depending on the power needed
-            if (smashPower < 0.33f)
+            if (smashPowerTimer < 0.33f)
             {
-                chargeFx1.gameObject.SetActive(true);
-                chargeFx2.gameObject.SetActive(false);
-                chargeFx3.gameObject.SetActive(false);
+                if (canActiveFx1)
+                {
+                    smashPowerFx1.Play();
+                    canActiveFx1 = false;
+                }
+                
+                chargeFx1.gameObject.transform.localPosition = Vector3.zero;
+                chargeFx2.gameObject.transform.localPosition = Vector3.right * 1000;
+                chargeFx3.gameObject.transform.localPosition = Vector3.right * 1000;
             }
-            else if (smashPower < 0.66f)
+            else if (smashPowerTimer < 0.66f)
             {
-                chargeFx1.gameObject.SetActive(false);
-                chargeFx2.gameObject.SetActive(true);
-                chargeFx3.gameObject.SetActive(false);
+                if (canActiveFx2)
+                {
+                    canActiveFx2 = false;
+                    smashPowerFx2.Play();
+                }
+                
+                chargeFx1.gameObject.transform.localPosition = Vector3.right * 1000;
+                chargeFx2.gameObject.transform.localPosition = Vector3.zero;
+                chargeFx3.gameObject.transform.localPosition = Vector3.right * 1000;
             }
             else
             {
-                chargeFx1.gameObject.SetActive(false);
-                chargeFx2.gameObject.SetActive(false);
-                chargeFx3.gameObject.SetActive(true);
+                if (canActiveFx3)
+                {
+                    canActiveFx3 = false;
+                    smashPowerFx3.Play();
+                }
+                
+                chargeFx1.gameObject.transform.localPosition = Vector3.right * 1000;
+                chargeFx2.gameObject.transform.localPosition = Vector3.right * 1000;
+                chargeFx3.gameObject.transform.localPosition = Vector3.zero;
             }
         }
-        
     }
     void OnReleaseSmash(InputAction.CallbackContext context)
     {
         rightMouseHolding = false;
-        chargeFx1.gameObject.SetActive(false);
-        chargeFx2.gameObject.SetActive(false);
-        chargeFx3.gameObject.SetActive(false);
+        chargeFx1.gameObject.transform.localPosition = Vector3.right * 1000;
+        chargeFx2.gameObject.transform.localPosition = Vector3.right * 1000;
+        chargeFx3.gameObject.transform.localPosition = Vector3.right * 1000;
+        canActiveFx1 = true;
+        canActiveFx2 = true;
+        canActiveFx3 = true;
     }
     void OnSmash(InputAction.CallbackContext context)
     {
@@ -489,6 +568,7 @@ public class PlayerAttacks : MonoBehaviour
             {
                 ComboState.SimpleAttack => playerDir.z >= 0 ? AttackBack : AttackFront,
                 ComboState.ReverseAttack => playerDir.z >= 0 ? SecondAttackBack : SecondAttackFront,
+                ComboState.ThirdAttack => playerDir.z >= 0 ? AttackBack : AttackFront,
                 ComboState.SpinAttack => SpinAttack,
                 ComboState.SmashAttack => SmashPrepare,
                 ComboState.SmashRelease => SmashRelease,
@@ -502,6 +582,7 @@ public class PlayerAttacks : MonoBehaviour
             {
                 ComboState.SimpleAttack => AttackSide,
                 ComboState.ReverseAttack => SecondAttackSide,
+                ComboState.ThirdAttack => AttackSide,
                 ComboState.SpinAttack => SpinAttack,
                 ComboState.SmashAttack => SmashPrepare,
                 ComboState.SmashRelease => SmashRelease,
@@ -513,7 +594,6 @@ public class PlayerAttacks : MonoBehaviour
     void PlayAnimation(Vector3 playerDirection)
     {
         StopCoroutine(PlayerController.instance.IdleAnimations());
-
         int state = GetAttackAnimation(playerDirection);
         if (state == _pc.currentAnimatorState) return;
         _animator.CrossFade(state, 0, 0);
@@ -524,7 +604,7 @@ public class PlayerAttacks : MonoBehaviour
     #region StateManagement
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (currentAttackState != AttackState.Active && currentAttackState != AttackState.Startup && PlayerController.instance.currentState != PlayerController.PlayerStates.Dash)
+        if (currentAttackState is AttackState.Default or AttackState.Recovery && PlayerController.instance.currentState != PlayerController.PlayerStates.Dash)
         {
             _pc.canMove = true;
             StopAllCoroutines();

@@ -12,7 +12,7 @@ public class AttackParameters : ScriptableObject
     public float spinRecoverLength = 0.1f;
     
     public float smashStartupLength;
-    public float smashChargeLength = 1;
+    public float smashChargeLength = 2;
     public float smashActiveLength;
     public float smashRecoverLength;
 }

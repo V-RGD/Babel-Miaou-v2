@@ -25,6 +25,14 @@ public class PlayerAttacks : MonoBehaviour
         SmashAttack,
         SmashRelease,
     }
+    public enum SmashState
+    {
+        None,
+        Blue,
+        Orange,
+        Purple
+    }
+    public SmashState smashState;
     public ComboState comboState;
     public AttackState currentAttackState;
     #endregion
@@ -317,19 +325,23 @@ public class PlayerAttacks : MonoBehaviour
         int rocksAmount = 0;
         float damage = 0;
         float rocksOffset = 0;
+        int shakePower = 0;
         switch (power)
         {
             case 0 :
                 rocksAmount = 3;
                 rocksOffset = 2;
+                shakePower = 1;
                 break;
             case 1 :
                 rocksAmount = 4;
                 rocksOffset = 3;
+                shakePower = 2;
                 break;
             case 2 :
                 rocksAmount = 5;
                 rocksOffset = 4;
+                shakePower = 3;
                 break;
         }
         
@@ -338,6 +350,7 @@ public class PlayerAttacks : MonoBehaviour
             //instanciates a new vfx pulled from the vfx pulling script
             Vector3 rocksOffsetPos = initialPos + direction * (rocksOffset * (i + 1));
             rocksVfxPulling.StartCoroutine(rocksVfxPulling.PlaceNewVfx(rocksVfxPulling.particleList[power], rocksOffsetPos, true));
+            GameManager.instance.cmShake.ShakeCamera(shakePower, 0.1f);
             //waits a bit before spawning another one
             yield return new WaitForSeconds(rocksPlacementInterval);
         }
@@ -360,6 +373,7 @@ public class PlayerAttacks : MonoBehaviour
         var startUpLength = attackParameters.smashStartupLength;
         var activeLength = attackParameters.smashActiveLength;
         var recoverLength = attackParameters.smashRecoverLength;
+        var shakeStrengh = 0;
         
         //-----------startup state
         //defines values, blocks walking
@@ -373,6 +387,11 @@ public class PlayerAttacks : MonoBehaviour
         hitbox.GetComponent<ObjectDamage>().damage = damage;
         _rb.velocity = Vector3.zero;
         yield return new WaitUntil(()=> !rightMouseHolding);
+        if (smashPowerTimer < 0.33f)
+        {
+            AbortSmash();
+            yield break;
+        }
         
         //adds force to simulate inertia
         if (_pc.movementDir != Vector2.zero)
@@ -393,17 +412,20 @@ public class PlayerAttacks : MonoBehaviour
         
         #region VFX
         //place vfx for burn marks, slash, and eventual objects
-        if (smashPowerTimer < 0.33f)
+        if (smashPowerTimer < 0.66f)
         {
             smashPower = 0;
+            shakeStrengh = 5;
         }
-        else if (smashPowerTimer < 0.66f)
+        else if (smashPowerTimer < 0.95f)
         {
             smashPower = 1;
+            shakeStrengh = 7;
         }
         else
         {
             smashPower = 2;
+            shakeStrengh = 10;
         }
         
         if (ObjectsManager.instance.stinkyFish)
@@ -454,7 +476,7 @@ public class PlayerAttacks : MonoBehaviour
                 break;
         }
         #endregion
-        GameManager.instance.cmShake.ShakeCamera(10, 0.1f);
+        GameManager.instance.cmShake.ShakeCamera(shakeStrengh, 0.1f);
         yield return new WaitForSeconds(activeLength);
         //------------recovery state
         //hitbox inactive, not invincible
@@ -462,6 +484,17 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(recoverLength);
         //-----------can attack again
         //can walk again
+        SetAttackState(AttackState.Default);
+        _pc.SwitchState(PlayerController.PlayerStates.Run);
+        smashGauge = 0;
+        smashPower = 0;
+        smashPowerTimer = 0;
+        _pc.canMove = true;
+        isAttacking = false;
+    }
+
+    void AbortSmash()
+    {
         SetAttackState(AttackState.Default);
         _pc.SwitchState(PlayerController.PlayerStates.Run);
         smashGauge = 0;
@@ -487,39 +520,56 @@ public class PlayerAttacks : MonoBehaviour
             //varies smash preparation fx depending on the power needed
             if (smashPowerTimer < 0.33f)
             {
-                if (canActiveFx1)
-                {
-                    smashPowerFx1.Play();
-                    canActiveFx1 = false;
-                }
-                
+                smashState = SmashState.None;
                 chargeFx1.gameObject.transform.localPosition = Vector3.zero;
                 chargeFx2.gameObject.transform.localPosition = Vector3.right * 1000;
                 chargeFx3.gameObject.transform.localPosition = Vector3.right * 1000;
             }
             else if (smashPowerTimer < 0.66f)
             {
-                if (canActiveFx2)
-                {
-                    canActiveFx2 = false;
-                    smashPowerFx2.Play();
-                }
-                
+                smashState = SmashState.Blue;
                 chargeFx1.gameObject.transform.localPosition = Vector3.right * 1000;
                 chargeFx2.gameObject.transform.localPosition = Vector3.zero;
                 chargeFx3.gameObject.transform.localPosition = Vector3.right * 1000;
             }
-            else
+            else if (smashPowerTimer < 0.95f)
             {
-                if (canActiveFx3)
-                {
-                    canActiveFx3 = false;
-                    smashPowerFx3.Play();
-                }
-                
+                smashState = SmashState.Orange;
                 chargeFx1.gameObject.transform.localPosition = Vector3.right * 1000;
                 chargeFx2.gameObject.transform.localPosition = Vector3.right * 1000;
                 chargeFx3.gameObject.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                smashState = SmashState.Purple;
+            }
+            
+            //pour les passages entre chaque état de chargement
+            float delay = 0.25f;
+            
+            if (smashPowerTimer > 0.33f - delay)
+            {
+                if (canActiveFx1)
+                {
+                    smashPowerFx1.Play();
+                    canActiveFx1 = false;
+                }
+            }
+            else if (smashPowerTimer > 0.66f - delay)
+            {
+                if (canActiveFx2)
+                {
+                    smashPowerFx2.Play();
+                    canActiveFx2 = false;
+                }
+            }
+            else if (smashPowerTimer > 0.99f - delay)
+            {
+                if (canActiveFx3)
+                {
+                    smashPowerFx3.Play();
+                    canActiveFx3 = false;
+                }
             }
         }
     }
@@ -532,6 +582,9 @@ public class PlayerAttacks : MonoBehaviour
         canActiveFx1 = true;
         canActiveFx2 = true;
         canActiveFx3 = true;
+        smashPowerFx1.Stop();
+        smashPowerFx2.Stop();
+        smashPowerFx3.Stop();
     }
     void OnSmash(InputAction.CallbackContext context)
     {

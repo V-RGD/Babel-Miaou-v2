@@ -43,6 +43,7 @@ public class ObjectsManager : MonoBehaviour
     public ParticleSystem sacredCrossFx;
     public ParticleSystem killingSpreeFx;
     public ParticleSystem noHitFx;
+    public ParticleSystem resurrectionFx;
     #endregion
     #region Values
     [Header("Values")] [Space]

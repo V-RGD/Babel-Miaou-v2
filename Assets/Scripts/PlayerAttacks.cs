@@ -199,7 +199,8 @@ public class PlayerAttacks : MonoBehaviour
         //determine ou l'attaque va se faire
         _attackAnchor.transform.LookAt(transform.position + attackDir);
         burnVfxPulling.attackDir = attackDir;
-        
+        //StopCoroutine(PlayerController.instance.IdleAnimations());
+
         switch (comboState)
         {
             case ComboState.Default : 
@@ -380,6 +381,7 @@ public class PlayerAttacks : MonoBehaviour
         SetAttackState(AttackState.Startup);
         attackDir = _pc.movementDir != Vector2.zero ? new Vector3(_pc.movementDir.x, 0, _pc.movementDir.y) : new Vector3(_pc.lastWalkedDir.x, 0, _pc.lastWalkedDir.y);
         comboState = ComboState.SmashAttack;
+        //StopCoroutine(PlayerController.instance.IdleAnimations());
         PlayAnimation(attackDir);
         comboState = ComboState.Default;
         _attackAnchor.transform.LookAt(transform.position + attackDir);
@@ -646,7 +648,6 @@ public class PlayerAttacks : MonoBehaviour
     }
     void PlayAnimation(Vector3 playerDirection)
     {
-        StopCoroutine(PlayerController.instance.IdleAnimations());
         int state = GetAttackAnimation(playerDirection);
         if (state == _pc.currentAnimatorState) return;
         _animator.CrossFade(state, 0, 0);

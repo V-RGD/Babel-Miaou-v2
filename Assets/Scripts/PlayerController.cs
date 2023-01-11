@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
     private static readonly int Run_DiagonalUp = Animator.StringToHash("Run_DiagonalUp");
     private static readonly int Run_DiagonalDown = Animator.StringToHash("Run_DiagonalDown");
     public bool isIdle = false;
+    public float idleTimer;
     public ParticleSystem dashTrail;
     #endregion
     public enum PlayerStates
@@ -323,7 +324,7 @@ public class PlayerController : MonoBehaviour
     void MovingAnimations()
     {
         //if moving
-        if (movementDir != Vector2.zero)
+        if (movementDir != Vector2.zero && _rb.velocity != Vector3.zero)
         {
             var state = GetMovingAnimation();
             if (state == currentAnimatorState) return;
@@ -333,21 +334,37 @@ public class PlayerController : MonoBehaviour
         else
         {
             //idle
-            if (!isIdle)
+            if (PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Active 
+                        && PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Startup 
+                        && PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Recovery
+                        && movementDir == Vector2.zero)
             {
-                StartCoroutine(IdleAnimations());
+                if (idleTimer > 0 && currentAnimatorState != IdleBreath && !isIdle)
+                {
+                    Debug.Log("played breath");
+                    //if is not already breathing, plays anim
+                    _animator.CrossFade(IdleBreath, 0, 0);
+                    currentAnimatorState = IdleBreath;
+                    spriteRenderer.flipX = false;
+                }
+
+                if (idleTimer > 3 && currentAnimatorState == IdleBreath && !isIdle)
+                {
+                    //if player waits longer, plays a random animation
+                    isIdle = true;
+                    StartCoroutine(IdleAnimations());
+                }
             }
         }
     }
     private int GetMovingAnimation()
     {
         isIdle = false;
-        StopCoroutine(IdleAnimations());
+        //StopCoroutine(IdleAnimations());
         if (Time.time < _lockedTill) return currentAnimatorState;
         //checks player speed for orientation
         float xVal = movementDir.x >= 0 ? movementDir.x : -movementDir.x;
         float yVal = movementDir.y;
-        //>= 0 ? movementDir.y : -movementDir.y;
 
         //checks the best option depending on the dir
         //up
@@ -384,27 +401,27 @@ public class PlayerController : MonoBehaviour
     }
     public IEnumerator IdleAnimations()
     {
+        Debug.Log("played idles");
          spriteRenderer.flipX = false;
         //plays two breathing then a random idle
         isIdle = true;
-        float idleLenght = 3;
         float variantLenght = 1;
-        _animator.CrossFade(IdleBreath, 0, 0);
-        currentAnimatorState = IdleBreath;
-        yield return new WaitForSeconds(idleLenght);
         int randAnim = Random.Range(0, 2);
         switch (randAnim)
         {
             case 0 : _animator.CrossFade(IdleLick, 0, 0);
                 currentAnimatorState = IdleLick;
+                Debug.Log("played lick");
                 variantLenght = 0.55f;
                 break;
             case 1 : _animator.CrossFade(IdleHeadFlip, 0, 0);
                 currentAnimatorState = IdleHeadFlip;
+                Debug.Log("played headflip");
                 variantLenght = 1.35f;
                 break;
         }
         yield return new WaitForSeconds(variantLenght);
+        idleTimer = 0;
         isIdle = false;
     }
     #endregion
@@ -417,6 +434,15 @@ public class PlayerController : MonoBehaviour
         dashCooldownTimer -= Time.deltaTime;
         invincibleCounter -= Time.deltaTime;
         stunCounter -= Time.deltaTime;
+        if (_rb.velocity.magnitude < 01f)
+        {
+            idleTimer += Time.deltaTime;
+        }
+        else
+        {
+            idleTimer = 0;
+            //StopCoroutine(IdleAnimations());
+        }
     }
     #region InputSystemRequirements
     private void OnEnable()

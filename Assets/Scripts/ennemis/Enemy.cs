@@ -29,8 +29,6 @@ public class Enemy : MonoBehaviour
     public VisualEffect spawnVfx;
     public EnemyType enemyTypeData;
     private NavMeshAgent _agent;
-    public ParticleSystem splashFX;
-    public ParticleSystem hitFX;
     public ParticleSystem poisonedFx;
     public bool canTouchPlayer;
     public bool isFlippingSprite;
@@ -57,7 +55,7 @@ public class Enemy : MonoBehaviour
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
-        hitFX.gameObject.SetActive(false);
+        //hitFX.gameObject.SetActive(false);
 
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())
@@ -141,11 +139,6 @@ public class Enemy : MonoBehaviour
                 GameManager.instance.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
                 bleedGen.PlayRandomSound(0);
                 stabGen.PlayRandomSound(0);
-            }
-
-            if (!hitFX.gameObject.activeInHierarchy)
-            {
-                hitFX.gameObject.SetActive(true);
             }
             _rb.AddForce((_player.transform.position - transform.position).normalized * -PlayerAttacks.instance.bumpForce, ForceMode.Impulse);
             stunCounter = 1;

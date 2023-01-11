@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,7 +57,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         isFreezed = false;
     }
-    
+
     public void DealDamageToPlayer(float damageDealt) //when player takes hit
     {
         if (_playerController.invincibleCounter <= 0 && _objectsManager.sacredCrossTimer <= 0 && !_playerController.isDashing)
@@ -101,14 +102,12 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    
     public void DealDamageToEnemy(float damageDealt, Enemy enemy) //when enemy takes hit
     {
         //plays vfx
-        enemy.splashFX.gameObject.SetActive(true);
-        enemy.splashFX.Play();
-        //enemy.hitFX.gameObject.SetActive(true);
-        //enemy.hitFX.Play();
+        EnemyVfx.instance.hitFx.StartCoroutine(EnemyVfx.instance.hitFx.PlaceNewVfx(EnemyVfx.instance.hitFx.particleList[0], enemy.transform.position, true));
+        EnemyVfx.instance.hitFx.StartCoroutine(EnemyVfx.instance.hitFx.PlaceNewVfx(EnemyVfx.instance.hitFx.particleList[1], enemy.transform.position, true));
+        EnemyVfx.instance.hitFx.StartCoroutine(EnemyVfx.instance.hitFx.PlaceNewVfx(EnemyVfx.instance.hitFx.particleList[2], enemy.transform.position, true));
         _enemyHitFx.StartCoroutine(_enemyHitFx.PlaceNewVfx(enemy.transform.position));
         //clamps damage to an int (security)
         float damage = damageDealt;

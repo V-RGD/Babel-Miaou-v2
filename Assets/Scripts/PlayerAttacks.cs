@@ -39,11 +39,11 @@ public class PlayerAttacks : MonoBehaviour
     
     public float comboCooldown = 1f; //max time allowed to combo
     public float smashPowerTimer;
-    public float smashPower;
-    public float comboTimer;
+    private float smashPower;
+    private float comboTimer;
     private float _attackMultiplier = 1;
-    public float rocksPlacementInterval = 0.1f;
-    public float smashGauge;
+    private float rocksPlacementInterval = 0.1f;
+    private float smashGauge;
     private int _comboCounter;
     private Vector3 _attackDir;
     
@@ -53,25 +53,27 @@ public class PlayerAttacks : MonoBehaviour
     
     #region Attack Values
     [Header("Attacks")] 
-    public float bumpForce = 20;
-    public float attackStat = 1;
-    public float spinDamageMultiplier = 0.5f;
+    private float spinDamageMultiplier = 0.5f;
     public float smashDamageMultiplier = 2;
-    public float dexterity;
+    [HideInInspector] public float bumpForce = 20;
+    [HideInInspector] public float attackStat = 1;
+    [HideInInspector] public float dexterity;
 
-    public float slashCooldown = 0.4f;
-    public float spinCooldown = 0.7f;
-    public float smashCooldown = 2;
-    public float smashWarmup = 1;
+    private float slashCooldown = 0.4f;
+    private float spinCooldown = 0.7f;
+    private float smashCooldown = 2;
+    private float smashWarmup = 1;
 
-    public float smashForce = 4;
-    public float slashForce = 15;
-    public float spinForce = 8;
+    private float smashForce = 4;
+    private float slashForce = 15;
+    private float spinForce = 8;
 
     private GameObject _attackAnchor;
-    private GameObject _smashHitBox;
     private GameObject _slashHitBox;
     private GameObject _spinHitBox;
+    private GameObject _smashHitBox1;
+    private GameObject _smashHitBox2;
+    private GameObject _smashHitBox3;
     #endregion
     
     private InputAction _mouseHold;
@@ -127,7 +129,9 @@ public class PlayerAttacks : MonoBehaviour
         _attackAnchor = transform.GetChild(0).gameObject;
         _slashHitBox = _attackAnchor.transform.GetChild(0).gameObject;
         _spinHitBox = _attackAnchor.transform.GetChild(1).gameObject;
-        _smashHitBox = _attackAnchor.transform.GetChild(2).gameObject;
+        _smashHitBox1 = _attackAnchor.transform.GetChild(2).gameObject;
+        _smashHitBox2= _attackAnchor.transform.GetChild(3).gameObject;
+        _smashHitBox3 = _attackAnchor.transform.GetChild(4).gameObject;
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _playerControls = new PlayerControls();
@@ -351,10 +355,15 @@ public class PlayerAttacks : MonoBehaviour
             //instanciates a new vfx pulled from the vfx pulling script
             Vector3 rocksOffsetPos = initialPos + direction * (rocksOffset * (i + 1));
             rocksVfxPulling.StartCoroutine(rocksVfxPulling.PlaceNewVfx(rocksVfxPulling.particleList[power], rocksOffsetPos, true));
-            GameManager.instance.cmShake.ShakeCamera(shakePower, 0.1f);
+            StartCoroutine(DelayRockShake(shakePower, 0.15f));
             //waits a bit before spawning another one
             yield return new WaitForSeconds(rocksPlacementInterval);
         }
+    }
+    IEnumerator DelayRockShake(int power, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        GameManager.instance.cmShake.ShakeCamera(power, 0.1f);
     }
     #endregion
     
@@ -369,13 +378,13 @@ public class PlayerAttacks : MonoBehaviour
         //values
         Vector3 attackDir = Vector3.zero;
         var damage = (attackStat * smashDamageMultiplier);
-        GameObject hitbox = _smashHitBox; 
+        GameObject hitbox = _smashHitBox1; 
         var force = smashForce;
         var startUpLength = attackParameters.smashStartupLength;
         var activeLength = attackParameters.smashActiveLength;
         var recoverLength = attackParameters.smashRecoverLength;
         var shakeStrengh = 0;
-        
+
         //-----------startup state
         //defines values, blocks walking
         SetAttackState(AttackState.Startup);
@@ -389,6 +398,36 @@ public class PlayerAttacks : MonoBehaviour
         hitbox.GetComponent<ObjectDamage>().damage = damage;
         _rb.velocity = Vector3.zero;
         yield return new WaitUntil(()=> !rightMouseHolding);
+        
+        if (smashPowerTimer < 0.66f)
+        {
+            smashPower = 0;
+            shakeStrengh = 8;
+        }
+        else if (smashPowerTimer < 0.95f)
+        {
+            smashPower = 1;
+            shakeStrengh = 10;
+        }
+        else
+        {
+            smashPower = 2;
+            shakeStrengh = 15;
+        }
+        
+        switch (smashPower)
+        {
+            case 0 : 
+                hitbox = _smashHitBox1;
+                break;
+            case 1 : 
+                hitbox = _smashHitBox2;
+                break;
+            case 2 : 
+                hitbox = _smashHitBox3;
+                break;
+        }
+        
         if (smashPowerTimer < 0.33f)
         {
             AbortSmash();
@@ -414,22 +453,7 @@ public class PlayerAttacks : MonoBehaviour
         
         #region VFX
         //place vfx for burn marks, slash, and eventual objects
-        if (smashPowerTimer < 0.66f)
-        {
-            smashPower = 0;
-            shakeStrengh = 8;
-        }
-        else if (smashPowerTimer < 0.95f)
-        {
-            smashPower = 1;
-            shakeStrengh = 10;
-        }
-        else
-        {
-            smashPower = 2;
-            shakeStrengh = 15;
-        }
-        
+
         if (ObjectsManager.instance.stinkyFish)
         {
             switch (smashPower)
@@ -553,7 +577,6 @@ public class PlayerAttacks : MonoBehaviour
             {
                 if (canActiveFx1)
                 {
-                    Debug.Log("fx1");
                     smashPowerFx1.Play();
                     canActiveFx1 = false;
                 }
@@ -562,7 +585,6 @@ public class PlayerAttacks : MonoBehaviour
             {
                 if (canActiveFx2)
                 {
-                    Debug.Log("fx2");
                     smashPowerFx2.Play();
                     canActiveFx2 = false;
                 }
@@ -571,7 +593,6 @@ public class PlayerAttacks : MonoBehaviour
             {
                 if (canActiveFx3)
                 {
-                    Debug.Log("fx3");
                     smashPowerFx3.Play();
                     canActiveFx3 = false;
                 }
@@ -689,7 +710,9 @@ public class PlayerAttacks : MonoBehaviour
         isAttacking = false;
         
         _slashHitBox.SetActive(false);
-        _smashHitBox.SetActive(false);
+        _smashHitBox1.SetActive(false);
+        _smashHitBox2.SetActive(false);
+        _smashHitBox3.SetActive(false);
         _spinHitBox.SetActive(false);
     }
     #endregion

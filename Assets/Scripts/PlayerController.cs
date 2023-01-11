@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -341,7 +340,6 @@ public class PlayerController : MonoBehaviour
             {
                 if (idleTimer > 0 && currentAnimatorState != IdleBreath && !isIdle)
                 {
-                    Debug.Log("played breath");
                     //if is not already breathing, plays anim
                     _animator.CrossFade(IdleBreath, 0, 0);
                     currentAnimatorState = IdleBreath;
@@ -401,7 +399,6 @@ public class PlayerController : MonoBehaviour
     }
     public IEnumerator IdleAnimations()
     {
-        Debug.Log("played idles");
          spriteRenderer.flipX = false;
         //plays two breathing then a random idle
         isIdle = true;
@@ -411,12 +408,10 @@ public class PlayerController : MonoBehaviour
         {
             case 0 : _animator.CrossFade(IdleLick, 0, 0);
                 currentAnimatorState = IdleLick;
-                Debug.Log("played lick");
                 variantLenght = 0.55f;
                 break;
             case 1 : _animator.CrossFade(IdleHeadFlip, 0, 0);
                 currentAnimatorState = IdleHeadFlip;
-                Debug.Log("played headflip");
                 variantLenght = 1.35f;
                 break;
         }

@@ -547,28 +547,31 @@ public class PlayerAttacks : MonoBehaviour
             }
             
             //pour les passages entre chaque état de chargement
-            float delay = 0.25f;
+            float delay = 0.33f;
             
             if (smashPowerTimer > 0.33f - delay)
             {
                 if (canActiveFx1)
                 {
+                    Debug.Log("fx1");
                     smashPowerFx1.Play();
                     canActiveFx1 = false;
                 }
             }
-            else if (smashPowerTimer > 0.66f - delay)
+            if (smashPowerTimer > 0.66f - delay)
             {
                 if (canActiveFx2)
                 {
+                    Debug.Log("fx2");
                     smashPowerFx2.Play();
                     canActiveFx2 = false;
                 }
             }
-            else if (smashPowerTimer > 0.99f - delay)
+            if (smashPowerTimer > 0.99f - delay)
             {
                 if (canActiveFx3)
                 {
+                    Debug.Log("fx3");
                     smashPowerFx3.Play();
                     canActiveFx3 = false;
                 }

@@ -415,17 +415,17 @@ public class PlayerAttacks : MonoBehaviour
         if (smashPowerTimer < 0.66f)
         {
             smashPower = 0;
-            shakeStrengh = 5;
+            shakeStrengh = 8;
         }
         else if (smashPowerTimer < 0.95f)
         {
             smashPower = 1;
-            shakeStrengh = 7;
+            shakeStrengh = 10;
         }
         else
         {
             smashPower = 2;
-            shakeStrengh = 10;
+            shakeStrengh = 15;
         }
         
         if (ObjectsManager.instance.stinkyFish)

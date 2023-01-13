@@ -41,10 +41,19 @@ public class ShooterIA : MonoBehaviour
 
     private Animator _animator;
     public int currentAnimatorState;
-    private static readonly int Idle = Animator.StringToHash("Idle");
+    private static readonly int Walk = Animator.StringToHash("Walk");
     private static readonly int Attack = Animator.StringToHash("Attack");
     private static readonly int Stun = Animator.StringToHash("Stun");
 
+    public ShooterStates shooterState;
+    public enum ShooterStates
+    {
+        Stun,
+        Flee,
+        Follow,
+        Attack
+    }
+    
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -58,21 +67,12 @@ public class ShooterIA : MonoBehaviour
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
     }
 
-    private void Update()
-    {
-        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
-        _playerDist = (_player.transform.position - transform.position).magnitude;
-        playerDir = _player.transform.position - transform.position;
-        FleeDir();
-    }
-
-    private void FixedUpdate()
+    void StunSystem()
     {
         if (_enemyTrigger.stunCounter <= 0 && _enemyTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
-            Shooter();
             _enemyTrigger.canFlip = true;
         }
         else
@@ -87,58 +87,132 @@ public class ShooterIA : MonoBehaviour
             _rb.velocity = Vector3.zero;
         }
         
-        MaxSpeed();
+        // //if the enemy is in range, and not too far
+        // if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
+        // {
+        //     //attaque et agit normalement
+        //     _speedFactor = 0;
+        //     attackCooldown = enemyTypeData.attackCooldown;
+        //     _agent.SetDestination(transform.position);
+        // }
     }
 
-    void Shooter()
+    private void Start()
     {
-        //calculates the distance between object and player
-        var position = transform.position;
-        _projectileDir = _player.transform.position - position;
+        SwitchState(ShooterStates.Flee);
+    }
 
-        //if the enemy is too close, walks away
-        if (_playerDist < _desiredRange)
+    private void Update()
+    {
+        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
+        var playerPos = _player.transform.position;
+        var position = transform.position;
+        _playerDist = (playerPos - position).magnitude;
+        playerDir = playerPos - position;
+        _projectileDir = playerPos - position;
+        CheckPlayerState();
+    }
+    private void FixedUpdate()
+    {
+        if (_enemyTrigger.isActive)
         {
-            //increases cooldown if is normal version
-            if (!isBigShooter)
-            {
-                attackCooldown = attackCooldownWhenRunningAway;
-            }
-            //recule
-            _speedFactor = 0;
-            _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
+            Behaviour();
         }
-        //if the enemy is in range, and not too far
-        if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
+        MaxSpeed();
+    }
+    void Behaviour()
+    {
+        switch (shooterState)
         {
-            //attaque et agit normalement
-            _speedFactor = 0;
-            attackCooldown = enemyTypeData.attackCooldown;
-            _agent.SetDestination(transform.position);
+            case ShooterStates.Attack : break; //stays still
+            case ShooterStates.Follow :
+                FollowPlayer();
+                AttackManagement();
+                break; //gets closer to player
+            case ShooterStates.Flee : 
+                FleePlayer();
+                break; //gets away from it
+            case ShooterStates.Stun : 
+                StunSystem();
+                break; //stays still
         }
+    }
+
+    void CheckPlayerState()
+    {
+        //firs checks if it's stunned
+        if (_enemyTrigger.stunCounter > 0)    
+        {
+            SwitchState(ShooterStates.Stun);
+            return;
+        }
+        
+        //then if it's attacking
+        if (shooterState == ShooterStates.Attack)
+        {
+            return;
+        }
+        
+        //and then if it can move and in which direction
         //if the enemy is too far, gets closer
         if (_playerDist > enemyTypeData.attackRange)
         {
-            //avance
-            _speedFactor = 1;
-            _agent.SetDestination(_player.transform.position);
+            SwitchState(ShooterStates.Follow);
         }
-        if (_canShootProjectile && _playerDist < enemyTypeData.attackRange)
+        //if the enemy is too close, walks away
+        if (_playerDist < _desiredRange)
         {
-            _canShootProjectile = false;
-            if (isBigShooter)
-            {
-                StartCoroutine(ShootBigShooterProjectile());
-            }
-            else
-            {
-                StartCoroutine(ShootProjectile());
-            }
+            SwitchState(ShooterStates.Flee);
         }
     }
+    void FollowPlayer()
+    {
+        //avance
+        _speedFactor = 1;
+        _agent.SetDestination(_player.transform.position);
 
+        if (currentAnimatorState != Walk)
+        {
+            _animator.CrossFade(Walk, 0, 0);
+            currentAnimatorState = Walk;
+        }
+    }
+    void FleePlayer()
+    {
+        //increases cooldown if is normal version
+        if (!isBigShooter)
+        {
+            attackCooldown = attackCooldownWhenRunningAway;
+        }
+        //recule
+        _speedFactor = 0;
+        _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
+        
+        //flee dir
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -playerDir.normalized, out hit, 20, wallLayerMask))
+        {
+            //else, turns a bit
+            Vector3 wallDir = transform.position - hit.point;
+            _fleeDir = wallDir;
+        }
+        else
+        {
+            //if there isn't a wall in flee direction, simply run away from player
+            _fleeDir = -playerDir;
+        }
+        
+        if (currentAnimatorState != Walk)
+        {
+            _animator.CrossFade(Walk, 0, 0);
+            currentAnimatorState = Walk;
+        }
+    }
+    
     IEnumerator ShootProjectile()
     {
+        Debug.Log("prepares attack");
+        SwitchState(ShooterStates.Attack);
         _animator.CrossFade(Attack, 0, 0);
         currentAnimatorState = Attack;
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
@@ -149,13 +223,14 @@ public class ShooterIA : MonoBehaviour
         projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
         projectile.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
         //waits for cooldown to refresh to shoot again
+        SwitchState(ShooterStates.Flee);
+        Debug.Log("attacked");
         yield return new WaitForSeconds(attackCooldown);
         _animator.CrossFade(Attack, 0, 0);
         currentAnimatorState = Attack;
         //can shoot again
         _canShootProjectile = true;
     }
-    
     IEnumerator ShootBigShooterProjectile()
     {
         float maxAngle = 100; //degrees
@@ -200,7 +275,6 @@ public class ShooterIA : MonoBehaviour
         //can shoot again
         _canShootProjectile = true;
     }
-
     void MaxSpeed()
     {
         //cap x speed
@@ -223,20 +297,28 @@ public class ShooterIA : MonoBehaviour
             _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y, -enemyTypeData.maxSpeed);
         }
     }
-
-    void FleeDir()
+    void SwitchState(ShooterStates nextState)
     {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -playerDir.normalized, out hit, 20, wallLayerMask))
+        if (nextState != shooterState)
         {
-            //else, turns a bit
-            Vector3 wallDir = transform.position - hit.point;
-            _fleeDir = wallDir;
+            Debug.Log("switch state");
+            shooterState = nextState;
+            _rb.velocity = Vector3.zero;
         }
-        else
+    }
+    void AttackManagement()
+    {
+        if (_canShootProjectile && _playerDist < enemyTypeData.attackRange)
         {
-            //if there isn't a wall in flee direction, simply run away from player
-            _fleeDir = -playerDir;
+            _canShootProjectile = false;
+            if (isBigShooter)
+            {
+                StartCoroutine(ShootBigShooterProjectile());
+            }
+            else
+            {
+                StartCoroutine(ShootProjectile());
+            }
         }
     }
 }

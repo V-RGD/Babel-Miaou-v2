@@ -55,7 +55,6 @@ public class Enemy : MonoBehaviour
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
-        //hitFX.gameObject.SetActive(false);
 
         //check if the associated ia is a haunter with tank specs
         if (GetComponent<HaunterIA>())

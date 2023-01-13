@@ -2330,7 +2330,7 @@ PrefabInstance:
     - target: {fileID: 4015408102015411820, guid: 930c256e0f812f34fb42b7119e20648d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -32
+      value: -28.75
       objectReference: {fileID: 0}
     - target: {fileID: 4015408102015411820, guid: 930c256e0f812f34fb42b7119e20648d,
         type: 3}
@@ -4288,7 +4288,7 @@ PrefabInstance:
     - target: {fileID: 4656138864899141282, guid: 915f26012c9b67f48bbab37d8bc39261,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -32
+      value: -28.75
       objectReference: {fileID: 0}
     - target: {fileID: 4656138864899141282, guid: 915f26012c9b67f48bbab37d8bc39261,
         type: 3}
@@ -5070,6 +5070,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: Global Volume
       objectReference: {fileID: 0}
+    - target: {fileID: 611857169372409243, guid: 4f216c77c1f26c046b7133043581d651,
+        type: 3}
+      propertyPath: sharedProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: eb25a08a348ee9045bc279cce8a08745,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f216c77c1f26c046b7133043581d651, type: 3}
 --- !u!1 &1150679438
@@ -5103,16 +5109,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36db1c4e2a091454780db066ac10c00d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 150
-  _health: 100
+  maxHealth: 200
+  health: 0
   handAttackCount: 0
   values: {fileID: 11400000, guid: 91a95b89130e0db44837bdab9a0e4590, type: 2}
   healthBar: {fileID: 339008997}
   splashFX: {fileID: 4234802806887011472}
   wandererPrefab: {fileID: 1939700266231145097, guid: d59e3074c1113ed4eb64e4d84780b109,
     type: 3}
-  clawHitbox_L: {fileID: 1895468357}
-  clawHitbox_R: {fileID: 1474608385}
+  clawHitboxL: {fileID: 0}
+  clawHitboxR: {fileID: 0}
   clawFxL: {fileID: 1985978255}
   clawFxR: {fileID: 1317393026}
   clawWarning: {fileID: 3316687770439878020}
@@ -5124,6 +5130,8 @@ MonoBehaviour:
   eyeChainPrefab: {fileID: 252159430993309912, guid: 14e5f291d1a0bea48acd71d7542907c1,
     type: 3}
   eyeList: []
+  eyeChains: []
+  eyeChainsExternal: []
   externalList:
   - {fileID: 252159431650931968}
   - {fileID: 252159431332133520}
@@ -5138,12 +5146,12 @@ MonoBehaviour:
   - {fileID: 252159431544265987}
   - {fileID: 252159430929433437}
   - {fileID: 252159432322005359}
-  _H_LaserWarning: {fileID: 906004459}
-  H_LaserVfx: {fileID: 8665037116291259135}
+  hLaserWarning: {fileID: 0}
+  hLaserVfx: {fileID: 0}
   rockPrefab: {fileID: 850671793657125877}
   rockWarning: {fileID: 1654996391}
-  _canActiveFirstLaser: 0
-  _canActiveSecondLaser: 0
+  canActiveFirstLaser: 0
+  canActiveSecondLaser: 0
 --- !u!4 &1150679440
 Transform:
   m_ObjectHideFlags: 0
@@ -5649,6 +5657,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RedGlobalLight
+      objectReference: {fileID: 0}
+    - target: {fileID: 1034502871301790182, guid: 3ceaf2a4952536742920cdf04ab2c709,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1034502871301790187, guid: 3ceaf2a4952536742920cdf04ab2c709,
         type: 3}

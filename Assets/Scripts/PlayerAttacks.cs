@@ -377,7 +377,7 @@ public class PlayerAttacks : MonoBehaviour
         
         //values
         Vector3 attackDir = Vector3.zero;
-        var damage = (attackStat * smashDamageMultiplier);
+        var damage = 0;
         GameObject hitbox = _smashHitBox1; 
         var force = smashForce;
         var startUpLength = attackParameters.smashStartupLength;
@@ -394,25 +394,26 @@ public class PlayerAttacks : MonoBehaviour
         PlayAnimation(attackDir);
         comboState = ComboState.Default;
         _attackAnchor.transform.LookAt(transform.position + attackDir);
-        //add current damage stat to weapon
-        hitbox.GetComponent<ObjectDamage>().damage = damage;
         _rb.velocity = Vector3.zero;
         yield return new WaitUntil(()=> !rightMouseHolding);
-        
+        float smashPowerMultiplier = 0;
         if (smashPowerTimer < 0.66f)
         {
             smashPower = 0;
             shakeStrengh = 8;
+            smashPowerMultiplier = 0.4f;
         }
         else if (smashPowerTimer < 0.95f)
         {
             smashPower = 1;
             shakeStrengh = 10;
+            smashPowerMultiplier = 0.6f;
         }
         else
         {
             smashPower = 2;
             shakeStrengh = 15;
+            smashPowerMultiplier = 1f;
         }
         
         switch (smashPower)
@@ -427,7 +428,9 @@ public class PlayerAttacks : MonoBehaviour
                 hitbox = _smashHitBox3;
                 break;
         }
-        
+        //sets hitbox damage
+        hitbox.GetComponent<ObjectDamage>().damage = attackStat * smashDamageMultiplier * smashPowerMultiplier;
+
         if (smashPowerTimer < 0.33f)
         {
             AbortSmash();

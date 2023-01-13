@@ -3146,7 +3146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &9140140783102714184
 Transform:
   m_ObjectHideFlags: 0
@@ -3246,8 +3246,6 @@ MonoBehaviour:
   sprite: {fileID: 9140140782698659488}
   spawnVfx: {fileID: 643018852575628240}
   enemyTypeData: {fileID: 11400000, guid: 8f6bc1c0420a2e64ea799aa9c5551333, type: 2}
-  splashFX: {fileID: 8403293007541263268}
-  hitFX: {fileID: 3320182439536204311}
   poisonedFx: {fileID: 701582803008370361}
   canTouchPlayer: 0
   isFlippingSprite: 0
@@ -3333,7 +3331,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3744,7 +3742,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 81514754, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 81514754, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_SortingOrder
@@ -3756,7 +3754,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1291764548, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1291764548, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_SortingOrder
@@ -4075,12 +4073,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6829820884328204024}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &8403293007541263268 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 3050656168577342812, guid: a75f0ed54c2fd6c49b4578ae64a8ef7f,
-    type: 3}
-  m_PrefabInstance: {fileID: 6829820884328204024}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7136243538556211811
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4234,12 +4226,6 @@ PrefabInstance:
 --- !u!4 &3320182439536204304 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6555548428907234021, guid: 7da5f078489cc8b418796f76b4de0f9b,
-    type: 3}
-  m_PrefabInstance: {fileID: 8424639263519889653}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &3320182439536204311 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6555548428907234018, guid: 7da5f078489cc8b418796f76b4de0f9b,
     type: 3}
   m_PrefabInstance: {fileID: 8424639263519889653}
   m_PrefabAsset: {fileID: 0}

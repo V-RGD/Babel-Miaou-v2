@@ -1173,7 +1173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6630231365920386411
 Transform:
   m_ObjectHideFlags: 0
@@ -1273,8 +1273,6 @@ MonoBehaviour:
   sprite: {fileID: 6630231366323925635}
   spawnVfx: {fileID: 3185795578540481154}
   enemyTypeData: {fileID: 11400000, guid: 9ccc39e93183e6c4f92a030adc62484b, type: 2}
-  splashFX: {fileID: 5000641642245314913}
-  hitFX: {fileID: 5395938444045840285}
   poisonedFx: {fileID: 701582803105025760}
   canTouchPlayer: 0
   isFlippingSprite: 0
@@ -1310,6 +1308,7 @@ MonoBehaviour:
   isBigShooter: 0
   bigShooterProjo: {fileID: 0}
   currentAnimatorState: 0
+  shooterState: 0
 --- !u!95 &885826342
 Animator:
   serializedVersion: 4
@@ -1642,7 +1641,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2828,12 +2827,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1160739020466761087}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &5395938444045840285 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6555548428907234018, guid: 7da5f078489cc8b418796f76b4de0f9b,
-    type: 3}
-  m_PrefabInstance: {fileID: 1160739020466761087}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3185795578595478401
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2871,7 +2864,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 81514754, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 81514754, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_SortingOrder
@@ -2899,7 +2892,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1291764548, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1291764548, guid: 9600f4099d5919045b5e47d60e95429b, type: 3}
       propertyPath: m_SortingOrder
@@ -3092,12 +3085,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a75f0ed54c2fd6c49b4578ae64a8ef7f, type: 3}
---- !u!198 &5000641642245314913 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 3050656168577342812, guid: a75f0ed54c2fd6c49b4578ae64a8ef7f,
-    type: 3}
-  m_PrefabInstance: {fileID: 8012962066239767613}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5000641642245314918 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3050656168577342811, guid: a75f0ed54c2fd6c49b4578ae64a8ef7f,

@@ -22,11 +22,8 @@ public class FinalBossIA : MonoBehaviour
     #region Assignations
     [Header("Assignations")] [Space] 
     public FinalBossValues values;
-    private GameManager _gameManager;
     private NavMeshSurface _navMeshSurface;
     private GameObject _player;
-    private GameObject _leftHand;
-    private GameObject _rightHand;
     public RectTransform healthBar;
     #endregion
     
@@ -44,6 +41,10 @@ public class FinalBossIA : MonoBehaviour
     [Header("Claw")] public Transform attackAnchor;
     public GameObject clawL;
     public GameObject clawR;
+    private GameObject _leftHand;
+    private GameObject _rightHand;
+    private VisualEffect _leftHandClawFx;
+    private VisualEffect _rightHandClawFx;
     #endregion
 
     #region Circle
@@ -67,7 +68,8 @@ public class FinalBossIA : MonoBehaviour
     #region H_Laser
     [Header("H_Laser")]
     public GameObject hLaserWarning;
-    public VisualEffect hLaserVfx;
+    public ParticleSystem hLaserVfx;
+    public ParticleSystem hLaserChargeFx;
     public GameObject rockPrefab;
     public GameObject rockWarning;
     private bool _hLaserActive;
@@ -81,6 +83,7 @@ public class FinalBossIA : MonoBehaviour
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Invocation = Animator.StringToHash("Invocation");
     private static readonly int HugeLaser = Animator.StringToHash("Huge_Laser");
+    private static readonly int SmallLaser = Animator.StringToHash("Small_Laser");
     #endregion
 
     #region Movement
@@ -99,14 +102,15 @@ public class FinalBossIA : MonoBehaviour
 
         _laserVisualsL = transform.GetChild(0).GetComponent<LaserVisuals>();
         _laserVisualsR = transform.GetChild(1).GetComponent<LaserVisuals>();
-        _laserVisualsL.values = values;
-        _laserVisualsR.values = values;
+        _leftHandClawFx = clawL.transform.GetChild(0).GetComponent<VisualEffect>();
+        _rightHandClawFx = clawR.transform.GetChild(0).GetComponent<VisualEffect>();
+
         _player = GameObject.Find("Player");
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
     void Start()
     {
-        _gameManager = GameManager.instance;
+        GameManager.instance = GameManager.instance;
         healthBar.transform.parent.gameObject.SetActive(true);
 
         handAttackCount = 0;
@@ -118,6 +122,8 @@ public class FinalBossIA : MonoBehaviour
         health = maxHealth;
         animator.CrossFade(Idle, 0, 0);
         _currentAnimatorState = Idle;
+        _leftHandClawFx.Stop();
+        _rightHandClawFx.Stop();
     
         for (int i = 0; i < values.eyeNumber; i++)
         {
@@ -143,6 +149,8 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator M_Laser()
     {
+        animator.CrossFade(SmallLaser, 0, 0);
+        _currentAnimatorState = SmallLaser;
         float totalLenght = values.m_laserWarmup + 0.5f + values.m_laserLength;
         //while charging, laser is in direction of player, and color is updated depending on the current charge
         _laserVisualsL.StartCoroutine(_laserVisualsL.ShootLaser());
@@ -152,6 +160,8 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator ClawScratch()
     {
+        animator.CrossFade(Invocation, 0, 0);
+        _currentAnimatorState = Invocation;
         Vector3 playerPos = new Vector3(_player.transform.position.x, transform.position.y, _player.transform.position.z);
         attackAnchor.LookAt(playerPos);
         //a warning sprite appears
@@ -228,7 +238,7 @@ public class FinalBossIA : MonoBehaviour
             //place l'oeil sur la ligne i, avec la position de la colonne aléatoire
             int row = possibleRows[Random.Range(0, possibleRows.Count)];
             possibleRows.Remove(row);
-            Vector3 placement = startPoint + new Vector3(i * _roomSize * 2/values.eyeNumber, 1, row * _roomSize * 2/values.eyeNumber);
+            Vector3 placement = startPoint + new Vector3(i * _roomSize * 2/values.eyeNumber, 2, row * _roomSize * 2/values.eyeNumber);
             eyeList[i].transform.position = placement;
             eyeList[i].SetActive(true);
             eyeChainRows.Add(row);
@@ -264,7 +274,9 @@ public class FinalBossIA : MonoBehaviour
         rockPrefab.transform.position = rockSpawnPoint;
         //laser warning
         hLaserWarning.SetActive(true);
+        hLaserChargeFx.Play();
         yield return new WaitForSeconds(4);
+        hLaserChargeFx.Stop();
         hLaserWarning.SetActive(false);
         //laser 
         _hLaserActive = true;
@@ -301,6 +313,9 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
+
+        StartCoroutine(M_Laser());
+        yield break;
 
         float meleeRange = 25;
         float handsAvailable = 2;
@@ -376,7 +391,7 @@ public class FinalBossIA : MonoBehaviour
                 if (hit.collider.gameObject.CompareTag("Player"))
                 {
                     //deals damage
-                    _gameManager.DealDamageToPlayer(values.hugeLaserDamage);
+                    GameManager.instance.DealDamageToPlayer(values.hugeLaserDamage);
                     PlayerController.instance.invincibleCounter = 2;
                 }
             } 
@@ -393,7 +408,7 @@ public class FinalBossIA : MonoBehaviour
         int damage = Mathf.CeilToInt(damageDealt);
         //applies damage
         health -= damage;
-        _gameManager.cmShake.ShakeCamera(4, .1f);
+        GameManager.instance.cmShake.ShakeCamera(4, .1f);
         healthBar.sizeDelta = new Vector2(1323.4f * health / maxHealth, 12.95f);
     }
     private void OnTriggerEnter(Collider other)

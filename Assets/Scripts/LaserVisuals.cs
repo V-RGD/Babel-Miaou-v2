@@ -15,17 +15,19 @@ public class LaserVisuals : MonoBehaviour
     private float _laserTimer;
 
     private LineRenderer _lineRenderer;
-    public FinalBossValues values;
-    private GameManager _gameManager;
     private GameObject _player;
-    public VisualEffect _laserVfx;
+
+    private ParticleSystem _chargeFx;
+    private ParticleSystem _laserFx;
 
     private void Awake()
     {
         _lineRenderer = GetComponent<LineRenderer>();
-        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _player = GameObject.Find("Player");
         _laserMat = _lineRenderer.material;
+
+        _chargeFx = transform.GetChild(1).GetComponent<ParticleSystem>();
+        _laserFx = transform.GetChild(0).GetComponent<ParticleSystem>();
     }
 
     private void Update()
@@ -40,15 +42,15 @@ public class LaserVisuals : MonoBehaviour
             if (_isCharging)
             {
                 //updates laser color
-                if (_laserTimer < values.m_laserWarmup)
+                if (_laserTimer < FinalBossIA.instance.values.m_laserWarmup)
                 {
                     _laserTimer += Time.deltaTime;
                 }
                 else
                 {
-                    _laserTimer = values.m_laserWarmup;
+                    _laserTimer = FinalBossIA.instance.values.m_laserWarmup;
                 }
-                _laserMat.color = values.laserGradient.Evaluate(_laserTimer / values.m_laserWarmup);
+                _laserMat.color = FinalBossIA.instance.values.laserGradient.Evaluate(_laserTimer / FinalBossIA.instance.values.m_laserWarmup);
                 
                 //updates laser position
                 _laserDir = (_player.transform.position - transform.position).normalized;
@@ -56,7 +58,7 @@ public class LaserVisuals : MonoBehaviour
                 RaycastHit hit;
             
                 //check if a wall is in between laser
-                if (Physics.Raycast(transform.position, _laserDir, out hit, 1000, values.groundLayerMask))
+                if (Physics.Raycast(transform.position, _laserDir, out hit, 1000, FinalBossIA.instance.values.groundLayerMask))
                 {
                     hitPoint = hit.point;
                 }
@@ -74,10 +76,10 @@ public class LaserVisuals : MonoBehaviour
                 //shoots laser
                 _lineRenderer.enabled = false;
                 //check if player touches laser
-                if (Physics.Raycast(transform.position, _laserDir, 4000, values.playerLayerMask))
+                if (Physics.Raycast(transform.position, _laserDir, 4000, FinalBossIA.instance.values.playerLayerMask))
                 {
                     //deals damage
-                    _gameManager.DealDamageToPlayer(values.m_laserDamage);
+                    GameManager.instance.DealDamageToPlayer(FinalBossIA.instance.values.m_laserDamage);
                     //can touch laser twice
                 }
             }
@@ -92,19 +94,20 @@ public class LaserVisuals : MonoBehaviour
         _isCharging = true;
         _laserTimer = 0;
 
-        yield return new WaitForSeconds(values.m_laserWarmup);
+        _chargeFx.Play();
+        yield return new WaitForSeconds(FinalBossIA.instance.values.m_laserWarmup);
+        _chargeFx.Stop();
+        _laserFx.Play();
+        _laserFx.gameObject.transform.LookAt(_player.transform);
         _isCharging = false;
         //waits a bit for the player to avoid the laser
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
         //shoots laser
-        _laserVfx.gameObject.SetActive(true);
-        _laserVfx.Play();
         _isLaserActive = true;
-        _laserVfx.gameObject.transform.LookAt(_player.transform);
         //laser set inactive
-        yield return new WaitForSeconds(values.m_laserLength);
+        yield return new WaitForSeconds(FinalBossIA.instance.values.m_laserLength);
         _isLaserActive = false;
-        _laserVfx.gameObject.SetActive(false);
+        _laserFx.Stop();
         isLaserOn = false;
         _lineRenderer.enabled = false;
     }

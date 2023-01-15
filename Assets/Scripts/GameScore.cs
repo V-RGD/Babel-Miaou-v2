@@ -1,23 +1,14 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameScore : MonoBehaviour
 {
     public static GameScore instance;
-    
     public int tempScore;
-    public int highScoresAmount;
-
-    public int[] highScores;
-    public string[] highScoreNames;
-    public TMP_Text[] highScoresTexts;
-    public TMP_Text[] highScoreNamesTexts;
-
-    public string tempPlayerName;
-    public GameObject scoreMenu;
-    public TMP_Text scoreTxtHud;
-
+    public TMP_Text currentScore;
     private void Awake()
     {
         if (instance != null)
@@ -28,85 +19,108 @@ public class GameScore : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
+    public GameObject leaderboardMenu;
+    public TMP_Text[] scoreTxt;
+    public bool playerEnteredName;
+    public Button mainMenuButton;
+    public GameObject enterName;
+
+    public IEnumerator ShowLeaderBoards()
     {
-        //takes every highscore stored on the playerprefs
-        
-        if (highScoresAmount == 0)
+        playerEnteredName = false;
+        //shows leaderboard screen
+        leaderboardMenu.SetActive(true);
+        //freezes player and game
+        Time.timeScale = 0;
+        PlayerController.instance.enabled = false;
+        PlayerAttacks.instance.enabled = false;
+        mainMenuButton.enabled = false;
+        enterName.SetActive(true);
+        //updates scores
+        int[] scoreList = new int[5];
+        int[] oldScoreList = scoreList;
+        scoreList[0] = PlayerPrefs.GetInt("Score1");
+        scoreList[1] = PlayerPrefs.GetInt("Score2");
+        scoreList[2] = PlayerPrefs.GetInt("Score3");
+        scoreList[3] = PlayerPrefs.GetInt("Score4");
+        scoreList[4] = PlayerPrefs.GetInt("Score5");
+        for (int i = 0; i < 5; i++)
         {
-            highScores = new int[highScoresAmount];
+            scoreTxt[i].text = scoreList[i].ToString();
         }
-        scoreTxtHud.text = "Score : " + tempScore;
+
+        //checks if user score is in the top 5
+        int scorePosition = 5; //score is by default lower than each score in the leaderboard
+        for (var i = 4; i > 0; i--) //checks if the score is higher than each rank
+        {
+            if (GameScore.instance.tempScore > scoreList[i])
+            {
+                scorePosition--;
+            }
+        }
+
+        //if score is in the leaderboard
+        if (scorePosition < 5)
+        {
+            //wait till player adds it's name
+            yield return new WaitUntil(() => playerEnteredName);
+
+            //once it's done, applies score and decreases each other score below
+            int tempDelayedScore = scoreList[scorePosition];
+            //applies current score to the position
+            scoreList[scorePosition] = GameScore.instance.tempScore;
+
+            //if temp delayed score can be in the leaderboard, add it
+            if (scorePosition + 1 < 5)
+            {
+                scoreList[scorePosition + 1] = tempDelayedScore;
+            }
+
+            //then decreases every other score
+            for (int i = 5 + 1; i < scorePosition + 1; i--)
+            {
+                scoreList[i + 1] = oldScoreList[i];
+            }
+
+            //updates everything
+            for (int i = 0; i < 5; i++)
+            {
+                scoreTxt[i].text = scoreList[i].ToString();
+            }
+
+            PlayerPrefs.SetInt("Score1", scoreList[0]);
+            PlayerPrefs.SetInt("Score2", scoreList[1]);
+            PlayerPrefs.SetInt("Score3", scoreList[2]);
+            PlayerPrefs.SetInt("Score4", scoreList[3]);
+            PlayerPrefs.SetInt("Score5", scoreList[4]);
+
+            //return to menu
+            mainMenuButton.enabled = true;
+            enterName.SetActive(false);
+        }
+        else
+        {
+            //enables button to go back to the main menu
+            mainMenuButton.enabled = true;
+            enterName.SetActive(false);
+        }
+    }
+
+    public TMP_InputField nameField;
+    public TMP_Text[] nameTxt;
+
+    public void TypeName()
+    {
+        //get name from field
+
+        //sets name text
+        //enables the process
+        playerEnteredName = true;
     }
 
     public void AddScore(int scoreAdded)
     {
         tempScore += scoreAdded;
-        scoreTxtHud.text = "Score : " + tempScore;
+        currentScore.text = tempScore.ToString();
     }
-    
-    public void SetPlayerScore(int scoreSet)
-    {
-        tempScore = scoreSet;
-    }
-
-    public void ResetScore()
-    {
-        tempScore = 0;
-    }
-
-    public void UpdateBoard()
-    {
-        // //checks if player score is greater than 10s place
-        // if (tempScore > scores[playerAmount])
-        // {
-        //     
-        // }
-        // //sets player place to the minimum, checks for each score if it's greater to climb places
-        // int playerPlace = playerAmount;
-        // for (int i = playerAmount - 1; i >= 0; i--)
-        // {
-        //     if (tempScore > scores[i])
-        //     {
-        //         playerPlace = i;
-        //     }
-        // }
-        // //descend d'un cran tous les scores
-        // for (int i = playerAmount; i <= playerPlace; i--)
-        // {
-        //     //copies score to lower place
-        //     scores[i - 1] = scores[i];
-        //     //destroys score
-        //     scores[i] = 0;
-        // }
-        // //place le score dans son emplacement
-        // scores[playerPlace] = tempScore;
-    }
-
-    public void UpdateUI()
-    {
-        // string tempPlayerTxt = String.Empty;
-        // for (int i = 0; i < playerAmount; i++)
-        // {
-        //     tempPlayerTxt += playerNames[i] + "\n";
-        // }
-        // string tempScoresTxt = String.Empty;
-        // for (int i = 0; i < playerAmount; i++)
-        // {
-        //     tempScoresTxt += scores[i] + "\n";
-        // }
-    }
-
-    public void OpenScoreMenu()
-    {
-        scoreMenu.SetActive(true);
-    }
-
-    public void CloseScoreMenu()
-    {
-        scoreMenu.SetActive(false);
-    }
-    //when death, or win : stores score in new float[i], which is stored in playerprefs
-    //resets current score when starting game
-    //table shows while UI screen
 }

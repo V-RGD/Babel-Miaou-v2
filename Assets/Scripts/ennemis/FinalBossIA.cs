@@ -261,8 +261,8 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator H_Laser()
     {
-        animator.CrossFade(HugeLaser, 0, 0);
-        _currentAnimatorState = HugeLaser;
+        animator.CrossFade(Invocation, 0, 0);
+        _currentAnimatorState = Invocation;
         Vector3 rockSpawnPoint = roomCenter.position + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 4, Random.Range(-_roomSize/2, _roomSize/2));
         //rock warning
         rockWarning.SetActive(true);
@@ -275,18 +275,20 @@ public class FinalBossIA : MonoBehaviour
         //laser warning
         hLaserWarning.SetActive(true);
         hLaserChargeFx.Play();
-        yield return new WaitForSeconds(4);
+        animator.CrossFade(HugeLaser, 0, 0);
+        _currentAnimatorState = HugeLaser;
+        yield return new WaitForSeconds(values.hugeLaserWarmup);
         hLaserChargeFx.Stop();
+        hLaserVfx.Play();
         hLaserWarning.SetActive(false);
+        yield return new WaitForSeconds(0.6f);
         //laser 
         _hLaserActive = true;
-        hLaserVfx.gameObject.SetActive(true);
-        hLaserVfx.Play();
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(values.hugeLaserDuration);
         _hLaserActive = false;
         rockPrefab.SetActive(false);
+        hLaserVfx.Stop();
         yield return new WaitForSeconds(values.m_laserCooldown);
-        hLaserVfx.gameObject.SetActive(false);
         StartCoroutine(ChooseNextAttack());    
     }
     IEnumerator ChooseNextAttack()
@@ -313,10 +315,7 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
-
-        StartCoroutine(M_Laser());
-        yield break;
-
+        
         float meleeRange = 25;
         float handsAvailable = 2;
         
@@ -384,6 +383,7 @@ public class FinalBossIA : MonoBehaviour
     {
         if (_hLaserActive)
         {
+            hLaserVfx.gameObject.transform.LookAt(_player.transform);
             //checks if players is in safe zone
             RaycastHit hit;
             if (Physics.Raycast(transform.position, _player.transform.position - transform.position, out hit,4000))
@@ -418,5 +418,15 @@ public class FinalBossIA : MonoBehaviour
         {
             TakeDamage(other.GetComponent<ObjectDamage>().damage);
         }
+    }
+
+    private void FinalBossDeath()
+    {
+        //whiteout
+        //plays fx
+        //destroys gameobject
+        //leaderboards menu appears
+        StartCoroutine(GameScore.instance.ShowLeaderBoards());
+        //successes check
     }
 }

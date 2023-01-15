@@ -228,10 +228,10 @@ public class CheatManager : MonoBehaviour
                         switch (secondInput)
                         {
                             case "set" :
-                                _gameScore.SetPlayerScore(Convert.ToInt32(thirdInput));
+                                //_gameScore.SetPlayerScore(Convert.ToInt32(thirdInput));
                                 break;
                             case "update" :
-                                _gameScore.UpdateBoard();
+                                //_gameScore.UpdateBoard();
                                 break;
                         } 
                         break;

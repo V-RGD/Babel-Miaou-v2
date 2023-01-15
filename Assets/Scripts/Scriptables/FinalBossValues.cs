@@ -33,6 +33,7 @@ public class FinalBossValues : ScriptableObject
     
     [Header("HugeLaser")]
     public float hugeLaserWarmup;
+    public float hugeLaserDuration;
     public float rockWarmup;
 
     [Header("M_Laser")]

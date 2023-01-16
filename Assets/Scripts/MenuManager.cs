@@ -9,11 +9,12 @@ public class MenuManager : MonoBehaviour
     public static MenuManager instance;
     
     public bool isLoading;
-    public bool quitWarningActive;
-    public bool gameIsPaused;
-    public bool isInOptions;
     public PlayerControls playerControls;
-    public InputAction quitMenu;
+    public InputAction quit;
+    public InputAction confirm;
+    public InputAction upArrow;
+    public InputAction downArrow;
+    public InputAction commandLine;
 
     public GameObject quitWarning;
     public GameObject loadingUI;
@@ -26,20 +27,52 @@ public class MenuManager : MonoBehaviour
     private ObjectsManager _objectsManager;
     private UIManager _uiManager;
     private CheatManager _cheatManager;
-    private bool _canActiveDeathPanel = true;
-    private bool _canPause = true;
-    public bool canEscapeObjectMenu = true;
-    private bool isInObjectMenu;
-    private bool isInCommandLine;
+    public enum GameState
+    {
+        Play,
+        Pause,
+        Option,
+        QuitToMainMenuPrompt,
+
+        LeaderBoard,
+        Loading,
+        Console,
+        
+        MainMenu,
+        ExitGamePrompt,
+        Tutorial,
+        
+        Inventory,
+        DiscardInventory,
+        
+        Draw,
+        DiscardDraw,
+        
+        Death
+    }
+
+    public GameState gameState;
     private void OnEnable()
     {
-        quitMenu = playerControls.Menus.Escape;
-        quitMenu.performed += EscapeButton;
-        quitMenu.Enable();
+        quit = playerControls.Menus.Escape;
+        quit.performed += EscapeButton;
+        quit.Enable();
+        
+        confirm = playerControls.Menus.Confirm;
+        confirm.performed += ConfirmButton;
+        confirm.Enable();
+        
+        upArrow = playerControls.Menus.UpArrow;
+        upArrow.performed += UpButton;
+        upArrow.Enable();
+        
+        downArrow = playerControls.Menus.DownArrow;
+        downArrow.performed += DownButton;
+        downArrow.Enable();
     }
     private void OnDisable()
     {
-        quitMenu.Disable();
+        quit.Disable();
     }
     private void Awake()
     {
@@ -66,70 +99,114 @@ public class MenuManager : MonoBehaviour
             StartCoroutine(StartLevel());
         }
     }
-    private void EscapeButton(InputAction.CallbackContext context)
+    
+    private void ConfirmButton(InputAction.CallbackContext context)
     {
-        if (isInCommandLine)
+        switch (gameState)
         {
-            _cheatManager.CloseCommandLine();
-            return;
+            case GameState.Loading : break;
+            case GameState.Play : break;
+            case GameState.Pause : break;
+            case GameState.QuitToMainMenuPrompt : break;
+            case GameState.Option : break;
+            case GameState.Draw : break;
+            case GameState.Console : break;
+            case GameState.MainMenu : break;
+            case GameState.DiscardDraw : break;
+            case GameState.Tutorial : break;
+            case GameState.LeaderBoard : break;
+            case GameState.Inventory : break;
+            case GameState.DiscardInventory : break;
+            case GameState.Death : break;
+            case GameState.ExitGamePrompt : break;
         }
-            
-        if (isInOptions)
+    }
+    private void UpButton(InputAction.CallbackContext context)
+    {
+        switch (gameState)
         {
-            SettingsMenu();
-            return;
+            case GameState.Pause : break;
+            case GameState.QuitToMainMenuPrompt : break;
+            case GameState.Option : break;
+            case GameState.Draw : break;
+            case GameState.Console : break;
+            case GameState.MainMenu : break;
+            case GameState.DiscardDraw : break;
+            case GameState.LeaderBoard : break;
+            case GameState.Inventory : break;
+            case GameState.DiscardInventory : break;
+            case GameState.Death : break;
+            case GameState.ExitGamePrompt : break;
         }
-
-        bool slotsFilled = true;
-        foreach (var slot in _objectsManager.itemObjectsInventory)
+    }
+    private void DownButton(InputAction.CallbackContext context)
+    {
+        switch (gameState)
         {
-            if (slot == 999)
-            {
-                slotsFilled = false;
+            case GameState.Pause : break;
+            case GameState.QuitToMainMenuPrompt : break;
+            case GameState.Option : break;
+            case GameState.Draw : break;
+            case GameState.Console : break;
+            case GameState.MainMenu : break;
+            case GameState.DiscardDraw : break;
+            case GameState.LeaderBoard : break;
+            case GameState.Inventory : break;
+            case GameState.DiscardInventory : break;
+            case GameState.Death : break;
+            case GameState.ExitGamePrompt : break;
+        }
+    }
+    public void EscapeButton(InputAction.CallbackContext context)
+    {
+        switch (gameState)
+        {
+            case GameState.Play : break;
+            case GameState.Pause : break;
+            case GameState.QuitToMainMenuPrompt : break;
+            case GameState.Option : break;
+            case GameState.Draw : break;
+            case GameState.Console : break;
+            case GameState.MainMenu : break;
+            case GameState.DiscardDraw : break;
+            case GameState.Tutorial : break;
+            case GameState.LeaderBoard : break;
+            case GameState.Inventory : break;
+            case GameState.DiscardInventory : break;
+            case GameState.Death : break;
+            case GameState.ExitGamePrompt : break;
+        }
+    }
+    private void CommandLineShortcut()
+    {
+        switch (gameState)
+        { 
+            case GameState.Play : 
+                _cheatManager.OpenCommandLine();
+                SwitchState(GameState.Console);
                 break;
-            }
+            case GameState.Console : 
+                _cheatManager.CloseCommandLine();
+                SwitchState(GameState.Play);
+                break;
         }
+    }
 
-        if (!_objectsManager.canReplaceItem || (_objectsManager.canReplaceItem && slotsFilled) )
+    private void MenuShortCut()
+    {
+        switch (gameState)
         {
-            if (isInObjectMenu)
-            {
-                //resets every position
-                
-                //then closes menu
-                ObjectMenu();
-                return;
-            }
-            PauseMenu();
+            case GameState.Play : break;
+            case GameState.Pause : break;
+            case GameState.QuitToMainMenuPrompt : break;
+            case GameState.Option : break;
         }
     }
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Quote))
+        if (_gameManager.isDead && gameState == GameState.Play)
         {
-            //freezes game
-            if (!isInCommandLine)
-            {
-                _cheatManager.OpenCommandLine();
-            }
-            else
-            {
-                _cheatManager.CloseCommandLine();
-            }
-        }
-
-        if (isInCommandLine && Input.GetKeyDown(KeyCode.KeypadEnter))
-        {
-            _cheatManager.CloseCommandLine();
-        }
-        
-        if (quitWarningActive && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.KeypadEnter)))
-        {
-            MainMenu();
-        }
-        if (_gameManager.isDead && _canActiveDeathPanel)
-        {
-            _canActiveDeathPanel = false;
+            SwitchState(GameState.Death);
             DeathPanel();
         }
     }
@@ -140,14 +217,16 @@ public class MenuManager : MonoBehaviour
     public void MainMenu()
     {
         //shortcuts for use
-        if (quitWarningActive)
+        if (gameState == GameState.QuitToMainMenuPrompt)
         {
+            SwitchState(GameState.MainMenu);
             SceneManager.LoadScene("MainMenu");
         }
-        else
+
+        if (gameState == GameState.Pause)
         {
-            quitWarningActive = true;
             quitWarning.SetActive(true);
+            SwitchState(GameState.QuitToMainMenuPrompt);
         }
     }
     public void RestartLevel()
@@ -161,37 +240,38 @@ public class MenuManager : MonoBehaviour
     }
     public void SettingsMenu()
     {
-        if (!isInOptions)
+        if (gameState == GameState.Pause)
         {
-            isInOptions = true;
             optionMenu.SetActive(true);
+            SwitchState(GameState.Option);
         }
-        else
+
+        if (gameState == GameState.Option)
         {
-            isInOptions = false;
             optionMenu.SetActive(false);
+            SwitchState(GameState.Pause);
         }
     }
     public void PauseMenu()
     {
-        if (!gameIsPaused)
+        if (gameState == GameState.Play)
         {
-            gameIsPaused = true;
             pauseMenu.SetActive(true);
             Time.timeScale = 0;
+            SwitchState(GameState.Pause);
         }
-        else
+
+        if (gameState == GameState.Pause)
         {
-            gameIsPaused = false;
             pauseMenu.SetActive(false);
             Time.timeScale = 1;
+            SwitchState(GameState.Play);
         }
     }
     public void ObjectMenu()
     {
-        if (isInObjectMenu && canEscapeObjectMenu)
+        if (gameState == GameState.DiscardInventory)
         {
-            isInObjectMenu = false;
             //deletes 6th box object
             _objectsManager.itemObjectsInventory[3] = 999;
             //disables menu
@@ -199,27 +279,26 @@ public class MenuManager : MonoBehaviour
             //resume time
             Time.timeScale = 1;
             //can pause
-            _canPause = true;
             _objectsManager.canReplaceItem = false;
             _uiManager.UpdateHUDIcons();
+            SwitchState(GameState.Play);
             return;
         }
         
-        if (!isInObjectMenu)
+        if (gameState == GameState.Play)
         {
-            isInObjectMenu = true;
+            SwitchState(GameState.Inventory);
             //actives ui
             _objectsManager.objectMenu.SetActive(true);
             //stop time
             Time.timeScale = 0;
             //can't pause
-            _canPause = false;
             _objectsManager.canReplaceItem = true;
-            return;
         }
     }
     IEnumerator LoadingScreen()
     {
+        SwitchState(GameState.Loading);
         PlayerController.instance.enabled = false;
         PlayerAttacks.instance.enabled = false;
 
@@ -237,11 +316,11 @@ public class MenuManager : MonoBehaviour
     }
     public void DiscardWarningPrompt()
     {
-        quitWarningActive = false;
         quitWarning.SetActive(false);
     }
     public IEnumerator StartLevel()
     {
+        SwitchState(GameState.Loading);
         //waits for the level to start
         yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
         yield return new WaitForSeconds(2);
@@ -249,6 +328,34 @@ public class MenuManager : MonoBehaviour
         PlayerController.instance.enabled = true;
         PlayerAttacks.instance.enabled = true;
         loadingUI.SetActive(false);
+        SwitchState(GameState.Play);
+    }
+    private void EscapeInventory()
+    {
+        bool slotsFilled = true;
+        foreach (var slot in _objectsManager.itemObjectsInventory)
+        {
+            if (slot == 999)
+            {
+                slotsFilled = false;
+                break;
+            }
+        }
+        if ((_objectsManager.canReplaceItem && slotsFilled) )
+        {
+            if (gameState == GameState.Inventory)
+            {
+                //resets every position
+                //then closes menu
+                ObjectMenu();
+                return;
+            }
+            PauseMenu();
+        }
+    }
+    public void SwitchState(GameState newState)
+    {
+        gameState = newState;
     }
 }
     

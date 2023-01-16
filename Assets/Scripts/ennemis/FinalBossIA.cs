@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.VFX;
 using Random = UnityEngine.Random;
 
@@ -87,9 +88,7 @@ public class FinalBossIA : MonoBehaviour
     #endregion
 
     #region Movement
-
-    
-
+    public Transform[] waypoints;
     #endregion
     private void Awake()
     {
@@ -146,9 +145,12 @@ public class FinalBossIA : MonoBehaviour
     {
         _playerDist = (_player.transform.position - transform.position).magnitude;
         H_LaserCheck();
+        LerpLocation();
     }
     IEnumerator M_Laser()
     {
+        StartCoroutine(GoToLocation(waypoints[0].position, 1));
+
         animator.CrossFade(SmallLaser, 0, 0);
         _currentAnimatorState = SmallLaser;
         float totalLenght = values.m_laserWarmup + 0.5f + values.m_laserLength;
@@ -160,6 +162,8 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator ClawScratch()
     {
+        StartCoroutine(GoToLocation(_player.transform.position, 1));
+        
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         Vector3 playerPos = new Vector3(_player.transform.position.x, transform.position.y, _player.transform.position.z);
@@ -181,11 +185,21 @@ public class FinalBossIA : MonoBehaviour
         clawR.transform.GetChild(0).GetComponent<VisualEffect>().Play();
         yield return new WaitForSeconds(0.5f);
         clawR.GetComponent<BoxCollider>().enabled = false;
+        StartCoroutine(GoToLocation(waypoints[0].position, 1));
         yield return new WaitForSeconds(2);
         StartCoroutine(ChooseNextAttack());
     }
     IEnumerator SpawnWanderers()
     {
+        int randPos = Random.Range(4, 8);
+        switch (randPos)
+        {
+            case 0 : StartCoroutine(GoToLocation(waypoints[1].position, 1));
+                break;
+            case 1 : StartCoroutine(GoToLocation(waypoints[2].position, 1));
+                break;
+        }
+
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         for (int i = 0; i < values.wandererSpawnAmount; i++)
@@ -205,6 +219,9 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator CircleTrap()
     {
+        StartCoroutine(GoToLocation(roomCenter.position, 1));
+        yield return new WaitForSeconds(2f);
+
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         //manages circle appearance and dissapearance
@@ -218,6 +235,15 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator EyeChain()
     {
+        int randPos = Random.Range(1, 4);
+        switch (randPos)
+        {
+            case 0 : StartCoroutine(GoToLocation(waypoints[1].position, 1));
+                break;
+            case 1 : StartCoroutine(GoToLocation(waypoints[2].position, 1));
+                break;
+        }
+
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         //-------------------------------------------------------------------------place les yeux
@@ -261,6 +287,8 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator H_Laser()
     {
+        StartCoroutine(GoToLocation(waypoints[0].position, 1));
+
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         Vector3 rockSpawnPoint = roomCenter.position + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 4, Random.Range(-_roomSize/2, _roomSize/2));
@@ -301,20 +329,22 @@ public class FinalBossIA : MonoBehaviour
         if (healthRatio > 0.66f)
         {
             //if first phase
-            attackCooldown = 3;
+            attackCooldown = 2;
         }
         else if (healthRatio > 0.33f)
         {
             //secondPhase
-            attackCooldown = 2.5f;
+            attackCooldown = 1.5f;
         }
         else
         {
             //third phase
-            attackCooldown = 2;
+            attackCooldown = 1;
         }
 
         yield return new WaitForSeconds(attackCooldown);
+        // StartCoroutine(ClawScratch()); //H_Laser = gros laser, M_Laser = petits lasers, SpawnWanderers, ClawAttack pour les griffes, CircleTrap pour le cercle qui se referme, EyeChain pour la chaine d'yeux
+        // yield break;
         
         float meleeRange = 25;
         float handsAvailable = 2;
@@ -428,5 +458,40 @@ public class FinalBossIA : MonoBehaviour
         //leaderboards menu appears
         StartCoroutine(GameScore.instance.ShowLeaderBoards());
         //successes check
+    }
+
+
+    public void FlyUpwards()
+    {
+        //
+    }
+
+    public bool reachedPos;
+    public Vector3 targetPos;
+    public Vector3 oldPos;
+    public bool isChangingPos;
+    public float lerpPosTimer;
+
+    //fonction pour changer de position
+    public IEnumerator GoToLocation(Vector3 location, float duration)
+    {
+        reachedPos = false;
+        //goes from it's original place to the desired position in the elapsed time indicated
+        oldPos = transform.position;
+        targetPos = new Vector3(location.x, transform.position.y, location.z);
+        lerpPosTimer = 0;
+        isChangingPos = true;
+        //lerps between each location
+        yield return new WaitUntil(() => lerpPosTimer >= 1);
+        isChangingPos = false;
+    }
+
+    public void LerpLocation()
+    {
+        if (isChangingPos)
+        {
+            transform.position = (1 - lerpPosTimer) * oldPos + lerpPosTimer * targetPos;
+            lerpPosTimer += Time.deltaTime;
+        }
     }
 }

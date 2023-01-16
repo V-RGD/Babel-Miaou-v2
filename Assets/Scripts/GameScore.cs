@@ -53,7 +53,7 @@ public class GameScore : MonoBehaviour
         int scorePosition = 5; //score is by default lower than each score in the leaderboard
         for (var i = 4; i > 0; i--) //checks if the score is higher than each rank
         {
-            if (GameScore.instance.tempScore > scoreList[i])
+            if (tempScore > scoreList[i])
             {
                 scorePosition--;
             }
@@ -68,7 +68,7 @@ public class GameScore : MonoBehaviour
             //once it's done, applies score and decreases each other score below
             int tempDelayedScore = scoreList[scorePosition];
             //applies current score to the position
-            scoreList[scorePosition] = GameScore.instance.tempScore;
+            scoreList[scorePosition] = tempScore;
 
             //if temp delayed score can be in the leaderboard, add it
             if (scorePosition + 1 < 5)

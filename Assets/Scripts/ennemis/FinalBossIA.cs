@@ -315,6 +315,8 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
+        StartCoroutine(EyeChain()); //H_Laser = gros laser, M_Laser = petits lasers, SpawnWanderers, ClawAttack pour les griffes, CircleTrap pour le cercle qui se referme, EyeChain pour la chaine d'yeux
+        yield break;
         
         float meleeRange = 25;
         float handsAvailable = 2;

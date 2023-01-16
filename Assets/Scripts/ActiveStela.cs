@@ -50,7 +50,7 @@ public class ActiveStela : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && !MenuManager.instance.gameIsPaused && canActive)
+        if (isPlayerInRange && MenuManager.instance.gameState == MenuManager.GameState.Play && canActive)
         {
             canActive = false;
             //actives stela

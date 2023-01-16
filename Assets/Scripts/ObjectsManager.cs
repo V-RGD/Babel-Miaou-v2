@@ -97,8 +97,8 @@ public class ObjectsManager : MonoBehaviour
         bonusBoxStartPos = uiItemBoxes[3].transform.position;
         GameObject littleShit = Instantiate(gameVariables.eyeCollector);
         eyeCollector = littleShit;
+        littleShit.SetActive(false);
         AssignObjectInfos();
-        //UpdateStats();
 
         PlayerAttacks.instance.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
@@ -156,36 +156,6 @@ public class ObjectsManager : MonoBehaviour
             case 6 : noHit = false; break;
         }
         UiItemBoxesUpdate();
-        UpdateStats();
-    }
-    void UpdateStats()
-    {
-        // //killing spree
-        // float noHitMultiplier;
-        // if (noHitStreak)
-        // {
-        //     noHitMultiplier = gameVariables.noHitSpeedRunDamageMultiplier;
-        // }
-        // else
-        // {
-        //     noHitMultiplier = 1;
-        // }
-        //
-        // float attackBonuses = killingSpreeDamage;
-        // float attack = (gameVariables.baseAttack + attackBonuses) * noHitMultiplier;
-        // _player._playerAttacks.attackStat = attack;
-        
-        // //HP Max
-        // _gameManager.maxHealth = Mathf.CeilToInt(gameVariables.baseHealth + _gameManager.healthBonus);
-        
-        // //dexterity
-        // float bonusDex = 0;
-        // float dex = (gameVariables.baseDexterity + bonusDex);
-        // _player._playerAttacks.dexterity = dex;
-        
-        // float speedBonus = 0;
-        // float speed = gameVariables.baseSpeed + speedBonus;
-        // _player.maxSpeed = speed;
     }
     public void OnEnemyKill()
     {

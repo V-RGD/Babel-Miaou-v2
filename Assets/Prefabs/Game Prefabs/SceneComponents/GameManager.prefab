@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 5855979421817110363}
   - component: {fileID: 5855979421817110362}
   - component: {fileID: 2789269936625989645}
-  - component: {fileID: 230173574124167563}
+  - component: {fileID: 230173574124167564}
+  - component: {fileID: 230173574124167565}
+  - component: {fileID: 230173574124167566}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -48,18 +50,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbaf35ff94f042048a1f9e9ea23cd98a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items:
-  - {fileID: 7886117131615728332, guid: 65f6615d253592644a42bfc175252e87, type: 3}
-  - {fileID: 7886117131615728332, guid: d8efa16c12196074b8623f2c532f28cb, type: 3}
-  - {fileID: 7886117131615728332, guid: 5b7a4c8444a6afe4bb38c26350bf7243, type: 3}
-  - {fileID: 7886117131615728332, guid: b25ea912517af5b46be87280283f5bd5, type: 3}
-  _cmShake: {fileID: 0}
-  _playerAttacks: {fileID: 0}
+  cmShake: {fileID: 0}
   eyesInGame: []
   money: 0
   maxHealth: 18
   health: 0
-  healthBonus: 0
   enemyHitShakeIntensity: 3
   playerRoom: 0
   isDead: 0
@@ -113,6 +108,10 @@ MonoBehaviour:
   - {fileID: 1829918292, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
   - {fileID: -801784743, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
   - {fileID: -1632679625, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  sacredCrossFx: {fileID: 0}
+  killingSpreeFx: {fileID: 0}
+  noHitFx: {fileID: 0}
+  resurrectionFx: {fileID: 0}
   itemAmount: 25
   sacredCross: 0
   killingSpree: 0
@@ -156,16 +155,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c14b9d64397dfe340953321c510c0ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scores: 
-  playerNames: []
-  nameTable: {fileID: 0}
-  scoreTable: {fileID: 0}
-  playerAmount: 0
-  tempPlayerName: 
-  tempScore: 0
-  scoreMenu: {fileID: 0}
-  scoreTxtHud: {fileID: 0}
---- !u!114 &230173574124167563
+  tempName: 
+  tempScore: 20
+  currentScore: {fileID: 0}
+  users:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  scoreTxt:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  nameInput: {fileID: 0}
+  leaderboardMenu: {fileID: 0}
+  mainMenuButton: {fileID: 0}
+  playerEnteredName: 0
+--- !u!114 &230173574124167564
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,6 +183,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 5855979421817110367}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd4ec4b6048d0334c9a0df86110c5f86, type: 3}
+  m_Script: {fileID: 11500000, guid: b00c069ae4c3f8b44af9de5c61c75733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  display: 0
+  scoreList: 0000000000000000000000000000000000000000
+  nameList:
+  - 
+  - 
+  - 
+  - 
+  - 
+--- !u!114 &230173574124167565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 271f4729d66ec22459ec33fe9290c4a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &230173574124167566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d603f915fd850b40b192deb22b8c723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elapsedTime: 0

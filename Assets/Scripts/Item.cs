@@ -128,7 +128,7 @@ public class Item : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && isFromAShop && !_menuManager.gameIsPaused)
+        if (isPlayerInRange && isFromAShop && _menuManager.gameState == MenuManager.GameState.Pause)
         {
             if (gameManager.money >= itemCost)
             {

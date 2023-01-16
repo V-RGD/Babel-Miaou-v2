@@ -1011,6 +1011,33 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""4062c575-ac7f-4c1b-aa8f-d9e1ac7ff329"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UpArrow"",
+                    ""type"": ""Button"",
+                    ""id"": ""77e069d5-49ca-4bf1-829c-167da86b7fd9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DownArrow"",
+                    ""type"": ""Button"",
+                    ""id"": ""3e44991f-a9ae-4e67-866d-c3b6ec7ece24"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""MouseClick"",
                     ""type"": ""Button"",
                     ""id"": ""a249112a-40bd-44b3-afae-d77f08829d1b"",
@@ -1036,7 +1063,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Keyboard&Mouse;Gamepad"",
                     ""action"": ""Escape"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1047,7 +1074,18 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4bf0b6c1-e32a-4f67-9aa6-73303db21d76"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
                     ""action"": ""Escape"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1071,6 +1109,116 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Console"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4958b4e3-97d4-47a2-8ebe-351211d57cc0"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse;Gamepad"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""53f26e58-ca15-487e-a347-f6290339ce43"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1dd996d3-95cc-4b64-9fb4-80822a4c5934"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse;Gamepad"",
+                    ""action"": ""UpArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65e8a6c3-cf30-4cab-b0e0-db9a04f8b7d2"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""UpArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""af46d0fd-f16b-404c-8fc0-f578f8c9f511"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""UpArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2746606f-4e03-49ed-851d-1897d54d80dc"",
+                    ""path"": ""<XInputController>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""UpArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c2aad7d-9e19-43e9-a8f5-cb4ebf7c6a60"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse;Gamepad"",
+                    ""action"": ""DownArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7968e08-8f48-46f6-8dbf-d495a203e8dc"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse;Gamepad"",
+                    ""action"": ""DownArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf952e0c-7b80-49e3-970f-341e96248cf6"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""DownArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d3b7f0b2-6828-4570-830c-06e0465469f0"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""action"": ""DownArrow"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1169,6 +1317,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         // Menus
         m_Menus = asset.FindActionMap("Menus", throwIfNotFound: true);
         m_Menus_Escape = m_Menus.FindAction("Escape", throwIfNotFound: true);
+        m_Menus_Confirm = m_Menus.FindAction("Confirm", throwIfNotFound: true);
+        m_Menus_UpArrow = m_Menus.FindAction("UpArrow", throwIfNotFound: true);
+        m_Menus_DownArrow = m_Menus.FindAction("DownArrow", throwIfNotFound: true);
         m_Menus_MouseClick = m_Menus.FindAction("MouseClick", throwIfNotFound: true);
         m_Menus_Console = m_Menus.FindAction("Console", throwIfNotFound: true);
     }
@@ -1466,6 +1617,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Menus;
     private IMenusActions m_MenusActionsCallbackInterface;
     private readonly InputAction m_Menus_Escape;
+    private readonly InputAction m_Menus_Confirm;
+    private readonly InputAction m_Menus_UpArrow;
+    private readonly InputAction m_Menus_DownArrow;
     private readonly InputAction m_Menus_MouseClick;
     private readonly InputAction m_Menus_Console;
     public struct MenusActions
@@ -1473,6 +1627,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         private @PlayerControls m_Wrapper;
         public MenusActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Escape => m_Wrapper.m_Menus_Escape;
+        public InputAction @Confirm => m_Wrapper.m_Menus_Confirm;
+        public InputAction @UpArrow => m_Wrapper.m_Menus_UpArrow;
+        public InputAction @DownArrow => m_Wrapper.m_Menus_DownArrow;
         public InputAction @MouseClick => m_Wrapper.m_Menus_MouseClick;
         public InputAction @Console => m_Wrapper.m_Menus_Console;
         public InputActionMap Get() { return m_Wrapper.m_Menus; }
@@ -1487,6 +1644,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Escape.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnEscape;
                 @Escape.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnEscape;
                 @Escape.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnEscape;
+                @Confirm.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnConfirm;
+                @Confirm.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnConfirm;
+                @Confirm.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnConfirm;
+                @UpArrow.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnUpArrow;
+                @UpArrow.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnUpArrow;
+                @UpArrow.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnUpArrow;
+                @DownArrow.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnDownArrow;
+                @DownArrow.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnDownArrow;
+                @DownArrow.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnDownArrow;
                 @MouseClick.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnMouseClick;
                 @MouseClick.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnMouseClick;
                 @MouseClick.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnMouseClick;
@@ -1500,6 +1666,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Escape.started += instance.OnEscape;
                 @Escape.performed += instance.OnEscape;
                 @Escape.canceled += instance.OnEscape;
+                @Confirm.started += instance.OnConfirm;
+                @Confirm.performed += instance.OnConfirm;
+                @Confirm.canceled += instance.OnConfirm;
+                @UpArrow.started += instance.OnUpArrow;
+                @UpArrow.performed += instance.OnUpArrow;
+                @UpArrow.canceled += instance.OnUpArrow;
+                @DownArrow.started += instance.OnDownArrow;
+                @DownArrow.performed += instance.OnDownArrow;
+                @DownArrow.canceled += instance.OnDownArrow;
                 @MouseClick.started += instance.OnMouseClick;
                 @MouseClick.performed += instance.OnMouseClick;
                 @MouseClick.canceled += instance.OnMouseClick;
@@ -1587,6 +1762,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     public interface IMenusActions
     {
         void OnEscape(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
+        void OnUpArrow(InputAction.CallbackContext context);
+        void OnDownArrow(InputAction.CallbackContext context);
         void OnMouseClick(InputAction.CallbackContext context);
         void OnConsole(InputAction.CallbackContext context);
     }

@@ -4,29 +4,53 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 public class MenuManager : MonoBehaviour
 {
     public static MenuManager instance;
     
+    public GameState gameState;
     public bool isLoading;
-    public PlayerControls playerControls;
-    public InputAction quit;
-    public InputAction confirm;
-    public InputAction upArrow;
-    public InputAction downArrow;
-    public InputAction commandLine;
+    private PlayerControls _playerControls;
+    private InputAction _cancel;
+    private InputAction _menu;
+    private InputAction _confirm;
+    private InputAction _upArrow;
+    private InputAction _downArrow;
+    private InputAction _commandLine;
+    private GameManager _gameManager;
+    private ObjectsManager _objectsManager;
+    private UIManager _uiManager;
+    private CheatManager _cheatManager;
 
+    [Header("Warnings")]
     public GameObject quitWarning;
+    public GameObject quitToMainMenuWarning;
+    public GameObject discardItemWarning;
+    public GameObject discardDrawWarning;
+    [Header("Menus")]
     public GameObject loadingUI;
     public GameObject pauseMenu;
     public GameObject optionMenu;
     public DrawItemBox drawMenu;
     public GameObject deathPanel;
+
+    [Header("Buttons")]
+    public int buttonPos;
+    public Button[] buttonsMainMenu;
+    public Button[] buttonsPause;
+    public Button[] buttonsOptions;
+    public Button[] buttonsExitGame;
+    public Button[] buttonsInventory;
+    public Button[] buttonsDraw;
+    public Button[] buttonsDiscardInventory;
+    public Button[] buttonsDeath;
+    public Button[] buttonsDiscardDraw;
+    public Button[] buttonsExitToMainMenu;
+    public Button[] buttonsLeaderBoard;
     
-    private GameManager _gameManager;
-    private ObjectsManager _objectsManager;
-    private UIManager _uiManager;
-    private CheatManager _cheatManager;
+
     public enum GameState
     {
         Play,
@@ -50,41 +74,52 @@ public class MenuManager : MonoBehaviour
         
         Death
     }
-
-    public GameState gameState;
     private void OnEnable()
     {
-        quit = playerControls.Menus.Escape;
-        quit.performed += EscapeButton;
-        quit.Enable();
+        _menu = _playerControls.Menus.Menu;
+        _menu.performed += MenuShortcut;
+        _menu.Enable();
         
-        confirm = playerControls.Menus.Confirm;
-        confirm.performed += ConfirmButton;
-        confirm.Enable();
+        _cancel = _playerControls.Menus.Cancel;
+        _cancel.performed += EscapeButton;
+        _cancel.Enable();
         
-        upArrow = playerControls.Menus.UpArrow;
-        upArrow.performed += UpButton;
-        upArrow.Enable();
+        _confirm = _playerControls.Menus.Confirm;
+        _confirm.performed += ConfirmButton;
+        _confirm.Enable();
         
-        downArrow = playerControls.Menus.DownArrow;
-        downArrow.performed += DownButton;
-        downArrow.Enable();
+        _upArrow = _playerControls.Menus.UpArrow;
+        _upArrow.performed += UpButton;
+        _upArrow.Enable();
+        
+        _downArrow = _playerControls.Menus.DownArrow;
+        _downArrow.performed += DownButton;
+        _downArrow.Enable();
+        
+        _commandLine = _playerControls.Menus.Console;
+        _commandLine.performed += CommandLineShortcut;
+        _commandLine.Enable();
+        
     }
     private void OnDisable()
     {
-        quit.Disable();
+        _menu.Disable();
+        _confirm.Disable();
+        _upArrow.Disable();
+        _downArrow.Disable();
+        _commandLine.Disable();
     }
     private void Awake()
     {
         if (instance != null && instance != this)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
 
         instance = this;
 
-        playerControls = new PlayerControls();
+        _playerControls = new PlayerControls();
     }
     private void Start()
     {
@@ -99,85 +134,148 @@ public class MenuManager : MonoBehaviour
             StartCoroutine(StartLevel());
         }
     }
-    
     private void ConfirmButton(InputAction.CallbackContext context)
     {
         switch (gameState)
         {
-            case GameState.Loading : break;
-            case GameState.Play : break;
-            case GameState.Pause : break;
-            case GameState.QuitToMainMenuPrompt : break;
-            case GameState.Option : break;
-            case GameState.Draw : break;
-            case GameState.Console : break;
-            case GameState.MainMenu : break;
-            case GameState.DiscardDraw : break;
-            case GameState.Tutorial : break;
-            case GameState.LeaderBoard : break;
-            case GameState.Inventory : break;
-            case GameState.DiscardInventory : break;
-            case GameState.Death : break;
-            case GameState.ExitGamePrompt : break;
+            case GameState.Pause : 
+                UseSelectedButton(buttonsPause);
+                break;
+            case GameState.QuitToMainMenuPrompt : 
+                UseSelectedButton(buttonsExitToMainMenu);
+                break;
+            case GameState.Option : 
+                UseSelectedButton(buttonsOptions);
+                break;
+            case GameState.Draw :
+                //select draw item
+                drawMenu.AccessToItemMenu(drawMenu.items[buttonPos]);
+                break;
+            case GameState.Console : 
+                //use console
+                _cheatManager.CloseCommandLine();
+                break;
+            case GameState.MainMenu : 
+                UseSelectedButton(buttonsMainMenu);
+                break;
+            case GameState.DiscardDraw : 
+                UseSelectedButton(buttonsDiscardDraw);
+                break;
+            case GameState.LeaderBoard : 
+                UseSelectedButton(buttonsLeaderBoard);
+                break;
+            case GameState.Inventory : 
+                //replace object
+                ReplaceObjectInInventory();
+                break;
+            case GameState.DiscardInventory : 
+                UseSelectedButton(buttonsDiscardInventory);
+                break;
+            case GameState.Death : 
+                UseSelectedButton(buttonsDeath);
+                break;
+            case GameState.ExitGamePrompt : 
+                UseSelectedButton(buttonsExitGame);
+                break;
         }
+        CheckGameActive();
     }
     private void UpButton(InputAction.CallbackContext context)
     {
         switch (gameState)
         {
-            case GameState.Pause : break;
-            case GameState.QuitToMainMenuPrompt : break;
-            case GameState.Option : break;
-            case GameState.Draw : break;
-            case GameState.Console : break;
-            case GameState.MainMenu : break;
-            case GameState.DiscardDraw : break;
-            case GameState.LeaderBoard : break;
-            case GameState.Inventory : break;
-            case GameState.DiscardInventory : break;
-            case GameState.Death : break;
-            case GameState.ExitGamePrompt : break;
+            case GameState.Console : 
+                _cheatManager.InputLastCommand();
+                break;
+            case GameState.Inventory : 
+                //moves inventory box
+                _objectsManager.MoveExtraBox(-1);
+                buttonPos++;
+                break;
+            
+            //moves cursor
+            case GameState.Pause or
+             GameState.QuitToMainMenuPrompt or
+             GameState.Option or
+             GameState.MainMenu or
+             GameState.DiscardDraw or
+             GameState.LeaderBoard or
+             GameState.DiscardInventory or
+             GameState.Death or
+             GameState.ExitGamePrompt or GameState.Draw : 
+                buttonPos++;
+                break;
         }
     }
     private void DownButton(InputAction.CallbackContext context)
     {
         switch (gameState)
         {
-            case GameState.Pause : break;
-            case GameState.QuitToMainMenuPrompt : break;
-            case GameState.Option : break;
-            case GameState.Draw : break;
-            case GameState.Console : break;
-            case GameState.MainMenu : break;
-            case GameState.DiscardDraw : break;
-            case GameState.LeaderBoard : break;
-            case GameState.Inventory : break;
-            case GameState.DiscardInventory : break;
-            case GameState.Death : break;
-            case GameState.ExitGamePrompt : break;
+            case GameState.Inventory : 
+                //moves inventory box
+                _objectsManager.MoveExtraBox(1);
+                buttonPos--;
+                break;
+            
+            //moves cursor
+            case GameState.Pause or
+                GameState.QuitToMainMenuPrompt or
+                GameState.Option or
+                GameState.MainMenu or
+                GameState.DiscardDraw or
+                GameState.LeaderBoard or
+                GameState.DiscardInventory or
+                GameState.Death or
+                GameState.ExitGamePrompt or GameState.Draw : 
+                buttonPos--;
+                break;
         }
     }
     public void EscapeButton(InputAction.CallbackContext context)
     {
         switch (gameState)
         {
-            case GameState.Play : break;
-            case GameState.Pause : break;
-            case GameState.QuitToMainMenuPrompt : break;
-            case GameState.Option : break;
-            case GameState.Draw : break;
-            case GameState.Console : break;
-            case GameState.MainMenu : break;
-            case GameState.DiscardDraw : break;
-            case GameState.Tutorial : break;
-            case GameState.LeaderBoard : break;
-            case GameState.Inventory : break;
-            case GameState.DiscardInventory : break;
-            case GameState.Death : break;
-            case GameState.ExitGamePrompt : break;
+            case GameState.Pause : 
+                //back to play
+                pauseMenu.SetActive(false);
+                SwitchState(GameState.Play);
+                break;
+            case GameState.QuitToMainMenuPrompt :
+                //disables warning
+                //to pause
+                quitToMainMenuWarning.SetActive(false);
+                SwitchState(GameState.Pause);
+                break;
+            case GameState.Option : 
+                optionMenu.SetActive(false);
+                SwitchState(GameState.Pause);
+                break;
+            
+            case GameState.Draw :
+                //discard prompt
+                break;
+            case GameState.DiscardDraw :
+                break;
+            case GameState.Console : 
+                //use console
+                _cheatManager.CloseCommandLine();
+                break;
+            case GameState.MainMenu : 
+                //show exit warning prompt
+                break;
+            case GameState.LeaderBoard : 
+                break;
+            case GameState.Inventory : 
+                break;
+            case GameState.DiscardInventory : 
+                break;
+            case GameState.ExitGamePrompt : 
+                //to 
+                break;
         }
+        CheckGameActive();
     }
-    private void CommandLineShortcut()
+    private void CommandLineShortcut(InputAction.CallbackContext context)
     {
         switch (gameState)
         { 
@@ -190,17 +288,34 @@ public class MenuManager : MonoBehaviour
                 SwitchState(GameState.Play);
                 break;
         }
+        CheckGameActive();
     }
-
-    private void MenuShortCut()
+    private void MenuShortcut(InputAction.CallbackContext context)
     {
         switch (gameState)
         {
-            case GameState.Play : break;
-            case GameState.Pause : break;
-            case GameState.QuitToMainMenuPrompt : break;
-            case GameState.Option : break;
+            case GameState.Play : 
+                //activates pause
+                pauseMenu.SetActive(true);
+                SwitchState(GameState.Pause);
+                break;
+            case GameState.Pause : 
+                //back to play
+                pauseMenu.SetActive(false);
+                SwitchState(GameState.Play);
+                break;
+            case GameState.QuitToMainMenuPrompt :
+                //disables warning
+                //to pause
+                quitToMainMenuWarning.SetActive(false);
+                SwitchState(GameState.Pause);
+                break;
+            case GameState.Option : 
+                optionMenu.SetActive(false);
+                SwitchState(GameState.Pause);
+                break;
         }
+        CheckGameActive();
     }
     private void Update()
     {
@@ -231,7 +346,6 @@ public class MenuManager : MonoBehaviour
     }
     public void RestartLevel()
     {
-        Time.timeScale = 1;
         SceneManager.LoadScene("MainScene");
     }
     public void QuitGame()
@@ -252,22 +366,6 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.Pause);
         }
     }
-    public void PauseMenu()
-    {
-        if (gameState == GameState.Play)
-        {
-            pauseMenu.SetActive(true);
-            Time.timeScale = 0;
-            SwitchState(GameState.Pause);
-        }
-
-        if (gameState == GameState.Pause)
-        {
-            pauseMenu.SetActive(false);
-            Time.timeScale = 1;
-            SwitchState(GameState.Play);
-        }
-    }
     public void ObjectMenu()
     {
         if (gameState == GameState.DiscardInventory)
@@ -277,7 +375,6 @@ public class MenuManager : MonoBehaviour
             //disables menu
             _objectsManager.objectMenu.SetActive(false);
             //resume time
-            Time.timeScale = 1;
             //can pause
             _objectsManager.canReplaceItem = false;
             _uiManager.UpdateHUDIcons();
@@ -290,8 +387,6 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.Inventory);
             //actives ui
             _objectsManager.objectMenu.SetActive(true);
-            //stop time
-            Time.timeScale = 0;
             //can't pause
             _objectsManager.canReplaceItem = true;
         }
@@ -311,8 +406,6 @@ public class MenuManager : MonoBehaviour
     private void DeathPanel()
     {
         deathPanel.SetActive(true);
-        
-        Time.timeScale = 0;
     }
     public void DiscardWarningPrompt()
     {
@@ -356,6 +449,78 @@ public class MenuManager : MonoBehaviour
     public void SwitchState(GameState newState)
     {
         gameState = newState;
+    }
+    public void PauseMenu()
+    {
+        if (gameState == GameState.Play)
+        {
+            pauseMenu.SetActive(true);
+            SwitchState(GameState.Pause);
+        }
+
+        if (gameState == GameState.Pause)
+        {
+            pauseMenu.SetActive(false);
+            SwitchState(GameState.Play);
+        }
+    }
+    void DrawMenu()
+    {
+        if (gameState == GameState.Draw)
+        {
+            pauseMenu.SetActive(true);
+            SwitchState(GameState.Pause);
+        }
+
+        if (gameState == GameState.Play)
+        {
+            pauseMenu.SetActive(false);
+            SwitchState(GameState.Play);
+        }
+    }
+    // case GameState.Console : break;
+    // case GameState.MainMenu : break;
+    // case GameState.DiscardDraw : break;
+    // case GameState.Tutorial : break;
+    // case GameState.LeaderBoard : break;
+    // case GameState.Inventory : break;
+    // case GameState.DiscardInventory : break;
+    // case GameState.Death : break;
+    // case GameState.ExitGamePrompt : break;
+    void CheckGameActive()
+    {
+        if (gameState is GameState.Death 
+            or GameState.Console 
+            or GameState.Draw 
+            or GameState.Inventory
+            or GameState.Option 
+            or GameState.Pause 
+            or GameState.DiscardDraw 
+            or GameState.DiscardInventory 
+            or GameState.QuitToMainMenuPrompt)
+        {
+            //disables playercontroller + enemies
+            PlayerAttacks.instance.enabled = false;
+            PlayerController.instance.enabled = false;
+            Time.timeScale = 0;
+        }
+        else
+        {
+            //disables playercontroller + enemies
+            PlayerAttacks.instance.enabled = false;
+            PlayerController.instance.enabled = false;
+            Time.timeScale = 0;
+        }
+    }
+    public void UseSelectedButton(Button[] buttonList)
+    {
+        //uses currently selected button
+        buttonList[buttonPos].onClick.Invoke();
+        buttonPos = 0;
+    }
+    void ReplaceObjectInInventory()
+    {
+        _objectsManager.ReplaceItem(buttonPos, _objectsManager.itemObjectsInventory[3]);
     }
 }
     

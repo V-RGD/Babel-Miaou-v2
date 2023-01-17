@@ -232,7 +232,7 @@ public class ObjectsManager : MonoBehaviour
             }
         }
     }
-    void MoveExtraBox(int dir)
+    public void MoveExtraBox(int dir)
     {
         int pos = 0;
         //if it goes beyond max

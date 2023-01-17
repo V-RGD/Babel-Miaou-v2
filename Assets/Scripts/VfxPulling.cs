@@ -228,4 +228,30 @@ public class VfxPulling : MonoBehaviour
         //dissapears far away
         particle.transform.position = Vector3.back * 10000;
     }
+    
+    public IEnumerator PlaceNewVfx(Vfx newVfx, Vector3 position, bool isPlacedByPosition)
+    {
+        //place vfx
+        VisualEffect particle = newVfx.effectList[newVfx.counter];
+        if (newVfx.counter < newVfx.effectList.Count - 1)
+        {
+            newVfx.counter++;
+        }
+        else
+        {
+            newVfx.counter = 0;
+        }
+        //sets position and rotation according to the player direction
+        Vector3 pos = new Vector3(position.x, 0.2f, position.z);
+        //Debug.Log(pos);
+        particle.transform.position = pos;
+        //actives fx
+        particle.gameObject.SetActive(true);
+        particle.Stop();
+        particle.Play();
+        yield return new WaitForSeconds(newVfx.duration);
+        particle.gameObject.SetActive(false);
+        //dissapears far away
+        particle.transform.position = Vector3.back * 10000;
+    }
 }

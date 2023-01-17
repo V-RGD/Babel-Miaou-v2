@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]public CinemachineShake cmShake;
     public List<Transform> eyesInGame;
     private EnemyHitFx _enemyHitFx;
+    public bool hardcoreMode;
 
     public int money;
     public int maxHealth = 3;

@@ -10,10 +10,11 @@ public class DunGen : MonoBehaviour
     
     public int goldenPathLength = 8;
 
-    public List<GameObject> rooms;
+    public List<GameObject> roomsLevel1;
     public List<GameObject> roomsLevel2;
     public List<GameObject> roomsLevel3;
     public List<GameObject> fullRooms;
+    public List<GameObject> marchandRooms;
     public GameObject roomList;
 
     private int[,] _map = new int[100, 100];
@@ -148,7 +149,8 @@ public class DunGen : MonoBehaviour
 
                     int currentRoom = _roomNumberMap[i, j];
                     
-                    if (currentRoom == 0 || currentRoom == dungeonSize || currentRoom == dungeonSize - 1)
+                    //checks level, and then type of the room
+                    if (currentRoom == 0 || currentRoom == dungeonSize)
                     {
                         foreach (GameObject room in fullRooms)
                         {
@@ -162,9 +164,10 @@ public class DunGen : MonoBehaviour
                             }
                         }
                     }
-                    else
+
+                    if (currentRoom == dungeonSize - 1)
                     {
-                        foreach (GameObject room in rooms)
+                        foreach (GameObject room in marchandRooms)
                         {
                             //check if the room has same parameters
                             if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
@@ -173,6 +176,52 @@ public class DunGen : MonoBehaviour
                                 room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
                             {
                                 potentialRooms.Add(room);
+                            }
+                        }
+                    }
+                    
+                    else
+                    {
+                        if (LevelManager.instance.currentLevel == 0)
+                        {
+                            foreach (GameObject room in roomsLevel1)
+                            {
+                                //check if the room has same parameters
+                                if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
+                                    room.GetComponent<RoomInfo>().isThereARoomLeft == isThereARoomLeft
+                                    && room.GetComponent<RoomInfo>().isThereARoomUp == isThereARoomUp &&
+                                    room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
+                                {
+                                    potentialRooms.Add(room);
+                                }
+                            }
+                        }
+                        if (LevelManager.instance.currentLevel == 1)
+                        {
+                            foreach (GameObject room in roomsLevel2)
+                            {
+                                //check if the room has same parameters
+                                if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
+                                    room.GetComponent<RoomInfo>().isThereARoomLeft == isThereARoomLeft
+                                    && room.GetComponent<RoomInfo>().isThereARoomUp == isThereARoomUp &&
+                                    room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
+                                {
+                                    potentialRooms.Add(room);
+                                }
+                            }
+                        }
+                        if (LevelManager.instance.currentLevel == 2)
+                        {
+                            foreach (GameObject room in roomsLevel3)
+                            {
+                                //check if the room has same parameters
+                                if (room.GetComponent<RoomInfo>().isThereARoomRight == isThereARoomRight &&
+                                    room.GetComponent<RoomInfo>().isThereARoomLeft == isThereARoomLeft
+                                    && room.GetComponent<RoomInfo>().isThereARoomUp == isThereARoomUp &&
+                                    room.GetComponent<RoomInfo>().isThereARoomDown == isThereARoomDown)
+                                {
+                                    potentialRooms.Add(room);
+                                }
                             }
                         }
                     }

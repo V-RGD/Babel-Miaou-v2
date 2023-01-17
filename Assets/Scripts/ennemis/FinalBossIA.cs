@@ -68,11 +68,12 @@ public class FinalBossIA : MonoBehaviour
 
     #region H_Laser
     [Header("H_Laser")]
-    public GameObject hLaserWarning;
-    public ParticleSystem hLaserVfx;
+    //public GameObject hLaserWarning;
+    public VisualEffect hLaserVfx;
     public ParticleSystem hLaserChargeFx;
+    public ParticleSystem hLaserSparksFx;
     public GameObject rockPrefab;
-    public GameObject rockWarning;
+    //public GameObject rockWarning;
     private bool _hLaserActive;
     private bool canActiveFirstLaser;
     private bool canActiveSecondLaser;
@@ -145,11 +146,11 @@ public class FinalBossIA : MonoBehaviour
     {
         _playerDist = (_player.transform.position - transform.position).magnitude;
         H_LaserCheck();
-        LerpLocation();
+        LerpPosition();
     }
     IEnumerator M_Laser()
     {
-        StartCoroutine(GoToLocation(waypoints[0].position, 1));
+        StartCoroutine(GoToLocation(waypoints[0].position));
 
         animator.CrossFade(SmallLaser, 0, 0);
         _currentAnimatorState = SmallLaser;
@@ -162,8 +163,9 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator ClawScratch()
     {
-        StartCoroutine(GoToLocation(_player.transform.position, 1));
-        
+        StartCoroutine(GoToLocation(_player.transform.position));
+        yield return new WaitUntil(() => !isChangingPos);
+
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         Vector3 playerPos = new Vector3(_player.transform.position.x, transform.position.y, _player.transform.position.z);
@@ -185,7 +187,8 @@ public class FinalBossIA : MonoBehaviour
         clawR.transform.GetChild(0).GetComponent<VisualEffect>().Play();
         yield return new WaitForSeconds(0.5f);
         clawR.GetComponent<BoxCollider>().enabled = false;
-        StartCoroutine(GoToLocation(waypoints[0].position, 1));
+        StartCoroutine(GoToLocation(waypoints[0].position));
+        yield return new WaitUntil(() => !isChangingPos);
         yield return new WaitForSeconds(2);
         StartCoroutine(ChooseNextAttack());
     }
@@ -194,9 +197,11 @@ public class FinalBossIA : MonoBehaviour
         int randPos = Random.Range(4, 8);
         switch (randPos)
         {
-            case 0 : StartCoroutine(GoToLocation(waypoints[1].position, 1));
+            case 0 : StartCoroutine(GoToLocation(waypoints[1].position));
+                yield return new WaitUntil(() => !isChangingPos);
                 break;
-            case 1 : StartCoroutine(GoToLocation(waypoints[2].position, 1));
+            case 1 : StartCoroutine(GoToLocation(waypoints[2].position));
+                yield return new WaitUntil(() => !isChangingPos);
                 break;
         }
 
@@ -219,18 +224,40 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator CircleTrap()
     {
-        StartCoroutine(GoToLocation(roomCenter.position, 1));
+        StartCoroutine(GoToLocation(roomCenter.position));
+        yield return new WaitUntil(() => !isChangingPos);
         yield return new WaitForSeconds(2f);
+        
+        float healthRatio = health / maxHealth;
+        if (healthRatio is > 0.66f)
+        {
+            _circleNumber = 3;
+        }
+        if (healthRatio is < 0.66f and > 0.33f)
+        {
+            //if first phase
+            _circleNumber = 3;
+        }
+        if (healthRatio < 0.33f)
+        {
+            //secondPhase
+            _circleNumber = 3;
+        }
 
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         //manages circle appearance and dissapearance
         for (int i = 0; i < _circleNumber; i++)
         {
+            circleAttacks[i].gameObject.SetActive(true);
             circleAttacks[i].StartCoroutine(circleAttacks[i].CircleActivation());
             yield return new WaitForSeconds(2.5f);
         }
         yield return new WaitForSeconds(values.circleLength);
+        for (int i = 0; i < _circleNumber; i++)
+        {
+            circleAttacks[i].gameObject.SetActive(false);
+        }
         StartCoroutine(ChooseNextAttack());
     }
     IEnumerator EyeChain()
@@ -238,9 +265,11 @@ public class FinalBossIA : MonoBehaviour
         int randPos = Random.Range(1, 4);
         switch (randPos)
         {
-            case 0 : StartCoroutine(GoToLocation(waypoints[1].position, 1));
+            case 0 : StartCoroutine(GoToLocation(waypoints[1].position));
+                yield return new WaitUntil(() => !isChangingPos);
                 break;
-            case 1 : StartCoroutine(GoToLocation(waypoints[2].position, 1));
+            case 1 : StartCoroutine(GoToLocation(waypoints[2].position));
+                yield return new WaitUntil(() => !isChangingPos);
                 break;
         }
 
@@ -287,28 +316,29 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator H_Laser()
     {
-        StartCoroutine(GoToLocation(waypoints[0].position, 1));
+        StartCoroutine(GoToLocation(waypoints[0].position));
+        yield return new WaitUntil(() => !isChangingPos);
 
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         Vector3 rockSpawnPoint = roomCenter.position + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 4, Random.Range(-_roomSize/2, _roomSize/2));
         //rock warning
-        rockWarning.SetActive(true);
-        rockWarning.transform.position = rockSpawnPoint;
+        //rockWarning.SetActive(true);
+        //rockWarning.transform.position = rockSpawnPoint;
         yield return new WaitForSeconds(1.2f);
         //rock
-        rockWarning.SetActive(false);
+        //rockWarning.SetActive(false);
         rockPrefab.SetActive(true);
         rockPrefab.transform.position = rockSpawnPoint;
         //laser warning
-        hLaserWarning.SetActive(true);
+        //hLaserWarning.SetActive(true);
         hLaserChargeFx.Play();
         animator.CrossFade(HugeLaser, 0, 0);
         _currentAnimatorState = HugeLaser;
         yield return new WaitForSeconds(values.hugeLaserWarmup);
         hLaserChargeFx.Stop();
         hLaserVfx.Play();
-        hLaserWarning.SetActive(false);
+        //hLaserWarning.SetActive(false);
         yield return new WaitForSeconds(0.6f);
         //laser 
         _hLaserActive = true;
@@ -343,11 +373,12 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
-        // StartCoroutine(ClawScratch()); //H_Laser = gros laser, M_Laser = petits lasers, SpawnWanderers, ClawAttack pour les griffes, CircleTrap pour le cercle qui se referme, EyeChain pour la chaine d'yeux
-        // yield break;
-        
+
         float meleeRange = 25;
         float handsAvailable = 2;
+
+        StartCoroutine(H_Laser());
+        yield break;
         
         //---------------------checks before if it must shoot the Huge Laser
         if (healthRatio is < 0.66f and > 0.33f && canActiveFirstLaser)
@@ -355,7 +386,6 @@ public class FinalBossIA : MonoBehaviour
             //if first phase
             canActiveFirstLaser = false;
             StartCoroutine(H_Laser());
-            _circleNumber = 2;
             yield break;
         }
         if (healthRatio < 0.33f && canActiveSecondLaser)
@@ -363,7 +393,6 @@ public class FinalBossIA : MonoBehaviour
             //secondPhase
             canActiveSecondLaser = false;
             StartCoroutine(H_Laser());
-            _circleNumber = 3;
             yield break;
         }
         //if attack counter inferior to the required amount to play body attacks, and at least one hand is available, plays hand attack
@@ -424,7 +453,16 @@ public class FinalBossIA : MonoBehaviour
                     GameManager.instance.DealDamageToPlayer(values.hugeLaserDamage);
                     PlayerController.instance.invincibleCounter = 2;
                 }
-            } 
+                hLaserSparksFx.gameObject.SetActive(true);
+                hLaserSparksFx.Play();
+                hLaserSparksFx.transform.position = hit.point;
+                Debug.Log("places fx");
+            }
+            else
+            {
+                hLaserSparksFx.transform.position = Vector3.right * 2000;
+            }
+            //places sparks on the ground
         }
     }
     void TakeDamage(float damageDealt) //when enemy takes hit
@@ -459,39 +497,49 @@ public class FinalBossIA : MonoBehaviour
         StartCoroutine(GameScore.instance.ShowLeaderBoards());
         //successes check
     }
-
-
-    public void FlyUpwards()
-    {
-        //
-    }
-
-    public bool reachedPos;
-    public Vector3 targetPos;
-    public Vector3 oldPos;
     public bool isChangingPos;
     public float lerpPosTimer;
+    public VfxPulling replacingPulling;
+    public bool goUnderground;
+    public float digSpeed;
 
     //fonction pour changer de position
-    public IEnumerator GoToLocation(Vector3 location, float duration)
+    public IEnumerator GoToLocation(Vector3 location)
     {
-        reachedPos = false;
-        //goes from it's original place to the desired position in the elapsed time indicated
-        oldPos = transform.position;
-        targetPos = new Vector3(location.x, transform.position.y, location.z);
-        lerpPosTimer = 0;
+        Debug.Log("switching location");
+        //fais apparaitre un vfx
         isChangingPos = true;
-        //lerps between each location
+        replacingPulling.StartCoroutine(replacingPulling.PlaceNewVfx(replacingPulling.vfxList[0], transform.position, true));
+        yield return new WaitForSeconds(0.5f);
+        //rentre dans le sol
+        goUnderground = true;
         yield return new WaitUntil(() => lerpPosTimer >= 1);
+        
+        //se déplace
+        transform.position = new Vector3(location.x, transform.position.y, location.z);
+        replacingPulling.StartCoroutine(replacingPulling.PlaceNewVfx(replacingPulling.vfxList[0], transform.position, true));
+        yield return new WaitForSeconds(0.5f);
+
+        //ressort
+        goUnderground = false;
+        yield return new WaitUntil(() => lerpPosTimer <= 0);
+        //unlock
         isChangingPos = false;
+        Debug.Log("reached location");
     }
 
-    public void LerpLocation()
+    public void LerpPosition()
     {
-        if (isChangingPos)
+        //go from y up to y down
+        transform.position = new Vector3(transform.position.x, -60 * lerpPosTimer, transform.position.z);
+        if (goUnderground && lerpPosTimer < 1)
         {
-            transform.position = (1 - lerpPosTimer) * oldPos + lerpPosTimer * targetPos;
-            lerpPosTimer += Time.deltaTime;
+            lerpPosTimer += Time.deltaTime * digSpeed;
         }
+        if (!goUnderground && lerpPosTimer > 0)
+        {
+            lerpPosTimer -= Time.deltaTime * digSpeed;
+        }
+        
     }
 }

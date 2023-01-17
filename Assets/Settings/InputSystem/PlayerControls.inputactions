@@ -980,9 +980,18 @@
             "id": "21847dc1-1eba-4f86-bf78-d662a351a00f",
             "actions": [
                 {
-                    "name": "Escape",
+                    "name": "Cancel",
                     "type": "Button",
                     "id": "eb376f7d-6dc8-4548-82ed-e05b6c16f63b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "6aa5dea5-9650-47a4-a282-e98b3e31a3f8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -1037,34 +1046,12 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "6534c743-91b8-49ac-b86a-92d04ab8d3dc",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad",
-                    "action": "Escape",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f0c4685b-9556-453f-a383-8a0637c01eb1",
-                    "path": "<Gamepad>/start",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad;Keyboard&Mouse",
-                    "action": "Escape",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "4bf0b6c1-e32a-4f67-9aa6-73303db21d76",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Keyboard&Mouse",
-                    "action": "Escape",
+                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1197,6 +1184,28 @@
                     "processors": "",
                     "groups": "Gamepad;Keyboard&Mouse",
                     "action": "DownArrow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b21ceafb-64cd-4fe9-8442-422bf5c9225f",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse;Gamepad",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1bb1f9a8-859b-4106-b3b6-e0b0481430c7",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;Keyboard&Mouse",
+                    "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

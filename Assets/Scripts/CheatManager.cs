@@ -42,10 +42,15 @@ public class CheatManager : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.UpArrow) && canEnterCommand)
         {
-            if (_previousCommand != String.Empty)
-            {
-                field.text = _previousCommand;
-            }
+            InputLastCommand();
+        }
+    }
+
+    public void InputLastCommand()
+    {
+        if (_previousCommand != String.Empty)
+        {
+            field.text = _previousCommand;
         }
     }
 

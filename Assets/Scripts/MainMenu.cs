@@ -16,7 +16,7 @@ public class MainMenu : MonoBehaviour
     public GameObject optionMenu;
     private void OnEnable()
     {
-        quitMenu = playerControls.Menus.Escape;
+        quitMenu = playerControls.Menus.Menu;
         quitMenu.performed += EscapeButton;
         quitMenu.Enable();
     }

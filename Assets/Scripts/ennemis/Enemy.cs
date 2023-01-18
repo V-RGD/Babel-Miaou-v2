@@ -21,7 +21,6 @@ public class Enemy : MonoBehaviour
     private bool _canTakePoisonDamage = true;
 
     private GameObject _player;
-    public Slider healthSlider;
     public BoxCollider mainCollider;
     private Rigidbody _rb;
 
@@ -36,6 +35,12 @@ public class Enemy : MonoBehaviour
 
     public RandSoundGen stabGen;
     public RandSoundGen bleedGen;
+        
+    private float takenDamageSinceTimer;
+    private float regenTimer;
+    private float regenAmount = 0.05f;
+    private Animator healthBarAnimator;
+    public Slider healthBarSlider;
 
     [HideInInspector]public GameObject room;
 
@@ -43,15 +48,15 @@ public class Enemy : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _agent = GetComponent<NavMeshAgent>();
+        //healthBarAnimator = healthBarSlider.gameObject.GetComponent<Animator>();
     }
-
     void Start()
     {
         _agent.speed = speed;
         maxHealth = health;
         _player = GameObject.Find("Player");
         sprite.SetActive(false);
-        healthSlider.gameObject.SetActive(false);
+        //healthBarFill.gameObject.SetActive(false);
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
@@ -63,9 +68,9 @@ public class Enemy : MonoBehaviour
             _isTank = ia.isTank;
         }
     }
-
     private void Update()
     {
+        HardcoreModeRegeneration();
         stunCounter -= Time.deltaTime;
         if (_poisonCounter > 0 && health > 0)
         {
@@ -99,7 +104,6 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
     IEnumerator ResetPoisonCounter()
     {
         _canTakePoisonDamage = false;
@@ -107,7 +111,6 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(ObjectsManager.instance.gameVariables.poisonCooldown);
         _canTakePoisonDamage = true;
     }
-
     public IEnumerator EnemyApparition()
     {
         sprite.SetActive(false);
@@ -149,9 +152,9 @@ public class Enemy : MonoBehaviour
                                        )
         {
             GameManager.instance.DealDamageToPlayer(damage);
+            //StartCoroutine(TakeDamageFeedback());
         }
     }
-
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Poison") && _poisonCounter <= 0) 
@@ -192,15 +195,48 @@ public class Enemy : MonoBehaviour
     {
         if (health >= maxHealth)
         {
-            healthSlider.gameObject.SetActive(false);
+            healthBarSlider.gameObject.SetActive(false);
         }
         else
         {
-            if (!healthSlider.gameObject.activeInHierarchy)
+            if (!healthBarSlider.gameObject.activeInHierarchy)
             {
-                healthSlider.gameObject.SetActive(true);
+                healthBarSlider.gameObject.SetActive(true);
             }
-            healthSlider.value = health / maxHealth;
+
+            healthBarSlider.value = health / maxHealth;
         }
     }
+
+   public void HardcoreModeRegeneration()
+   {
+       //if hardcore mode and damage taken since too long, regens slowly (feedback needed)
+       if (GameManager.instance.hardcoreMode)
+       {
+           regenTimer -= Time.deltaTime;
+           if (takenDamageSinceTimer > 4 && regenTimer < 0)
+           {
+               health += maxHealth * regenAmount;
+               //feedback sur la barre de vie
+               //StartCoroutine(RegenerationFeedback());
+               //sets timer back
+               regenTimer = 1;
+               SliderUpdate();
+           }
+       }
+   }
+
+   public IEnumerator TakeDamageFeedback()
+   {
+       healthBarAnimator.CrossFade(Animator.StringToHash("Regen"), 0);
+       yield return new WaitForSeconds(0.5f);
+       healthBarAnimator.CrossFade(Animator.StringToHash("Normal"), 0);
+   }
+   
+   public IEnumerator RegenerationFeedback()
+   {
+       healthBarAnimator.CrossFade(Animator.StringToHash("Regen"), 0);
+       yield return new WaitForSeconds(0.5f);
+       healthBarAnimator.CrossFade(Animator.StringToHash("Normal"), 0);
+   }
 }

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 160928179594062747}
+  - component: {fileID: 1420914050298100658}
   m_Layer: 0
   m_Name: Laser_boss
   m_TagString: Untagged
@@ -23,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 160928179594062746}
-  m_LocalRotation: {x: 0.13009705, y: 0.86147904, z: -0.27622148, w: 0.4057465}
+  m_LocalRotation: {x: 0.13009593, y: 0.86147946, z: -0.2762176, w: 0.40574887}
   m_LocalPosition: {x: 11.07, y: 12.06, z: -15.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -33,6 +34,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 35.555, y: 129.56, z: 0}
+--- !u!114 &1420914050298100658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 160928179594062746}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c81814d9ed20a42862cbec409a9e82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pc: {fileID: 1262031124565700421}
+  fx: {fileID: 160928180998430724}
 --- !u!1 &160928180998430729
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,8 +212,8 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262031124565700420}
   serializedVersion: 8
-  lengthInSec: 2
-  simulationSpeed: 1
+  lengthInSec: 10
+  simulationSpeed: 5
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
@@ -379,7 +394,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0, g: 0.97032166, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -1752,7 +1767,7 @@ ParticleSystem:
     z:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 170
+      scalar: 20
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3941,7 +3956,7 @@ ParticleSystem:
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 61439
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -9889,8 +9904,7 @@ Transform:
 --- !u!198 &1941605860024831845
 ParticleSystem:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 6555548428907234018, guid: 7da5f078489cc8b418796f76b4de0f9b,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1941605860024831847}

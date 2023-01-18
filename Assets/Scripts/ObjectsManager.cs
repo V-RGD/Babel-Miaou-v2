@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -79,7 +80,7 @@ public class ObjectsManager : MonoBehaviour
     #endregion
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (instance != null)
         {
             Destroy(this);
         }
@@ -214,14 +215,13 @@ public class ObjectsManager : MonoBehaviour
 
                 if (i < itemObjectsInventory.Count - 1)
                 {
-                    Debug.Log(i);
                     uiActivationFx[i].SetActive(true);
                 }
             }
             else
             {
                 //shows empty box
-                uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Add Module>";
+                uiItemBoxes[i].transform.GetChild(1).GetComponent<TMP_Text>().text = "<Empty Slot>";
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = objectSprites[^1];
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = false;
@@ -235,6 +235,7 @@ public class ObjectsManager : MonoBehaviour
     public void MoveExtraBox(int dir)
     {
         int pos = 0;
+        Debug.Log("new pos would be =" + (currentBoxPos + dir));
         //if it goes beyond max
         if (currentBoxPos + dir > 2)
         {
@@ -282,9 +283,11 @@ public class ObjectsManager : MonoBehaviour
             //destroys old item and empties 5th box
             uiItemBoxes[3].SetActive(false);
             canReplaceItem = false;
+            MenuManager.instance.ObjectMenu();
+
         }
     }
-    
+
     public void ReplaceItem(int box , int item)
     {
         //replaces item selected
@@ -292,6 +295,7 @@ public class ObjectsManager : MonoBehaviour
         OnObjectUnEquip(oldItem);
         //adds new one
         int newItem = item;
+        Debug.Log(box);
         itemObjectsInventory[box] = newItem;
         OnObjectEquip(newItem);
         _uiManager.UpdateHUDIcons();

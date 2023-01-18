@@ -115,12 +115,12 @@ public class GameManager : MonoBehaviour
         //applies damage
         if (_objectsManager.killingSpreeTimer > 0)
         {
-            damage++;
+            //damage++;
         }
         //if no hit, doubles damage
         if (_objectsManager.noHitStreak)
         {
-            damage *= 2;
+            damage *= 1.3f;
         }
         enemy.health -= damage;
         //Debug.Log(damage);

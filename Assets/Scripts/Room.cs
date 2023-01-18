@@ -222,11 +222,13 @@ public class Room : MonoBehaviour
             case 2 : //special room
                 break;
             case 3 : //shop room
-                ShopSpawn();
+                _lm.currentShopPosition = transform.position;
+                //ShopSpawn();
                 break;
             case 4 : //mini-boss room
                 GameObject stela = Instantiate(_lm.stela, roomCenter.position, Quaternion.identity);
                 stela.GetComponent<ActiveStela>().room = this;
+                _lm.currentStelaPosition = stela.transform.position;
                 GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position, Quaternion.identity);
                 _lm.exit = exitPrefab;
                 _lm.exit.SetActive(false);

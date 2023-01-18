@@ -16,6 +16,9 @@ public class LevelManager : MonoBehaviour
     public GameObject door;
     public GameObject stela;
     
+    [HideInInspector] public Vector3 currentShopPosition;
+    [HideInInspector] public Vector3 currentStelaPosition;
+    
     public float roomSize;
     public List<GameObject> roomList;
     public GameObject entrance;

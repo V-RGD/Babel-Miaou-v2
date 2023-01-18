@@ -90,6 +90,7 @@ public class Item : MonoBehaviour
                 break;
             case ItemType.RandomItem : 
                 RandomObjectDraw();
+                Debug.Log("tried to access to draw menu");
                 break;
         }
         Destroy(gameObject);
@@ -128,7 +129,7 @@ public class Item : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && isFromAShop && _menuManager.gameState == MenuManager.GameState.Pause)
+        if (isPlayerInRange && isFromAShop)
         {
             if (gameManager.money >= itemCost)
             {
@@ -156,7 +157,16 @@ public class Item : MonoBehaviour
         int newItem = objectID;
         _objectsManager.itemObjectsInventory[3] = newItem;
         //updates it's id
-        _objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
+        //_objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = _objectsManager.objectSprites[objectID];
+        int id = _objectsManager.itemObjectsInventory[3];
+        //update : box name, icon, description, rarity color
+        string name = _objectsManager.itemDataScriptable.names[id];
+        Sprite icon = _objectsManager.objectSprites[id];
+        string desc = _objectsManager.itemDataScriptable.descriptions[id];
+        _objectsManager.uiItemBoxes[3].transform.GetChild(1).GetComponent<TMP_Text>().text = name;
+        _objectsManager.uiItemBoxes[3].transform.GetChild(2).GetComponent<TMP_Text>().text = desc;
+        _objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().enabled = true;
+        _objectsManager.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = icon;
         _objectsManager.UiItemBoxesUpdate();
         Destroy(gameObject);
     }

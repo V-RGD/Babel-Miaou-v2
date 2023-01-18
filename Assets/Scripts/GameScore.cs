@@ -26,15 +26,6 @@ public class GameScore : MonoBehaviour
         instance = this;
     }
 
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            StartCoroutine(ShowLeaderBoards());
-        }
-    }
-
     public IEnumerator ShowLeaderBoards()
     {
         playerEnteredName = false;

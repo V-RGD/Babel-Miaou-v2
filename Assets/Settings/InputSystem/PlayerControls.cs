@@ -1101,6 +1101,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""346d9cda-563f-4754-82f7-1417e15461f6"",
+                    ""path"": ""<Keyboard>/f2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Console"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""4958b4e3-97d4-47a2-8ebe-351211d57cc0"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",

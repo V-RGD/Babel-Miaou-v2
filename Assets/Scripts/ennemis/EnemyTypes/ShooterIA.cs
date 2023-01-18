@@ -211,20 +211,50 @@ public class ShooterIA : MonoBehaviour
     
     IEnumerator ShootProjectile()
     {
-        Debug.Log("prepares attack");
         SwitchState(ShooterStates.Attack);
         _animator.CrossFade(Attack, 0, 0);
         currentAnimatorState = Attack;
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
-        //shoots a projectile
-        GameObject projectile = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
-        //gives it proper force
-        projectile.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized * enemyTypeData.projectileForce);
-        projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
-        projectile.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+        //shoots a projectile depending on the current level
+        switch (LevelManager.instance.currentLevel)
+        {
+            case 0 : 
+                GameObject projectile = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+                projectile.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized * enemyTypeData.projectileForce);
+                projectile.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+                projectile.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+                break;
+            case 1 :
+                GameObject projectileLeft = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+                projectileLeft.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, 0, 15) * _projectileDir.normalized * enemyTypeData.projectileForce);
+                projectileLeft.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+                projectileLeft.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+                
+                GameObject projectileRight = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+                projectileRight.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, 0, -15) * _projectileDir.normalized * enemyTypeData.projectileForce);
+                projectileRight.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+                projectileRight.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+                break;
+            case 2 : 
+                GameObject projectile1 = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+                projectile1.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, 0, 15) * _projectileDir.normalized * enemyTypeData.projectileForce);
+                projectile1.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+                
+                GameObject projectile2 = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+                projectile2.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+                projectile2.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(0, 0, -15) * _projectileDir.normalized * enemyTypeData.projectileForce);
+                projectile2.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+                
+                GameObject projectile3 = Instantiate(enemyTypeData.mageProjectile, transform.position, quaternion.identity);
+                projectile3.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+                projectile3.GetComponent<Rigidbody>().AddForce(_projectileDir.normalized * enemyTypeData.projectileForce);
+                projectile3.GetComponent<ProjectileDamage>().damage = enemyTypeData.projectileDamage;
+                projectile3.transform.GetChild(0).transform.LookAt(transform.position + _projectileDir.normalized * 1000);
+                break;
+        }
+        
         //waits for cooldown to refresh to shoot again
         SwitchState(ShooterStates.Flee);
-        Debug.Log("attacked");
         yield return new WaitForSeconds(attackCooldown);
         _animator.CrossFade(Attack, 0, 0);
         currentAnimatorState = Attack;
@@ -301,7 +331,6 @@ public class ShooterIA : MonoBehaviour
     {
         if (nextState != shooterState)
         {
-            Debug.Log("switch state");
             shooterState = nextState;
             _rb.velocity = Vector3.zero;
         }

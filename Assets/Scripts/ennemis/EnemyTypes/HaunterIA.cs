@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.VFX;
+
 public class HaunterIA : MonoBehaviour
 {
     //public int enemyType;
-    
     private Vector3 _playerDir;
     private Vector3 _attackDir;
     
@@ -23,9 +25,8 @@ public class HaunterIA : MonoBehaviour
     private bool _isVulnerable;
     public bool isTank;
 
-    private Enemy _enemyTrigger;
-
     //components
+    private Enemy _enemyTrigger;
     private NavMeshAgent _agent;
     private GameObject _player;
     private GameObject _attackAnchor;
@@ -37,7 +38,7 @@ public class HaunterIA : MonoBehaviour
     public int currentAnimatorState;
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Attack = Animator.StringToHash("Attack");
-    
+    [SerializeField] private VisualEffect clawFx;
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -48,6 +49,11 @@ public class HaunterIA : MonoBehaviour
         _enemyTypeData = _enemyTrigger.enemyTypeData;
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
         _jabDamage = _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>();
+    }
+
+    private void Start()
+    {
+        clawFx.Stop();
     }
 
     private void Update()
@@ -65,7 +71,6 @@ public class HaunterIA : MonoBehaviour
         }
         GetAnimation();
     }
-
     private void FixedUpdate()
     {
         _stunCounter -= Time.deltaTime;
@@ -79,7 +84,6 @@ public class HaunterIA : MonoBehaviour
             Haunter();
         }
     }
-    
     void GetAnimation()
     {
         if (_isAttacking)
@@ -94,7 +98,6 @@ public class HaunterIA : MonoBehaviour
         }
         
     }
-
     void Friction()
     {
         if (_isAttacking)
@@ -104,7 +107,6 @@ public class HaunterIA : MonoBehaviour
             _rb.velocity = new Vector3(velocity.x * 0.95f, velocity.y, velocity.z * 0.95f);
         }
     }
-
     void Haunter()
     {
         //if the enemy is in player range
@@ -128,7 +130,6 @@ public class HaunterIA : MonoBehaviour
             _agent.SetDestination(_player.transform.position);
         }
     }
-    
     IEnumerator AttackCooldown()
     {
             animator.CrossFade(Attack, 0, 0);
@@ -145,6 +146,7 @@ public class HaunterIA : MonoBehaviour
             //actives weapon
             _enemyTrigger.canTouchPlayer = true;
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
+            clawFx.Play();
             _rb.velocity = Vector3.zero;
             Vector3 pushedDir = _playerDir;
             _rb.AddForce(pushedDir * force, ForceMode.Impulse);
@@ -161,7 +163,6 @@ public class HaunterIA : MonoBehaviour
             //disables hitbox
             _isAttacking = false;
     }
-
     void StunProcess()
     {
         //when stunned

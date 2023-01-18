@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
         
         if (isDashing)
         {
-            //HoleDashCheck();
+            HoleDashCheck();
         }
 
         if (isDashingOverHole)
@@ -149,7 +149,6 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(DashOverHole(dashDir, groundHit.point));
         }
     }
-
     void HoleDashForce()
     {
         if (_rb.velocity.magnitude < 70)
@@ -273,6 +272,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public float dashCheatCoef;
     IEnumerator DashOverHole(Vector3 dashDir, Vector3 groundHit)
     {
         isDashingOverHole = true;
@@ -285,15 +285,20 @@ public class PlayerController : MonoBehaviour
         _remnants.StartCoroutine(_remnants.DashRemnants());
         canMove = false;
 
+        Vector3 originalPos = transform.position;
         Vector3 groundPos = groundHit;
-        Vector3 destination = groundPos + dashDir;
-        dashOverDir = lastWalkedDir;
+        Vector3 destination = groundPos + dashDir.normalized * 2;
+        dashOverDir = dashDir;
             
         //starts dash while disabling collider
         _boxCollider.enabled = false;
         _rb.AddForce(dashForce * dashDir, ForceMode.Impulse);
         //waits until reached ground
+        StartCoroutine(DashSecurity(destination, destination - originalPos));
+        
         yield return new WaitUntil(() => (destination - transform.position).magnitude <= 3f);
+        
+        dashOverDir = Vector3.zero;
         isDashingOverHole = false;
         Debug.Log("found ground");
         _boxCollider.enabled = true;
@@ -311,6 +316,16 @@ public class PlayerController : MonoBehaviour
         }
         SwitchState(PlayerStates.Run);
         Debug.Log("dashed over hole");
+    }
+
+    IEnumerator DashSecurity(Vector3 securePoint, Vector3 gap)
+    {
+        yield return new WaitForSeconds(gap.magnitude * dashCheatCoef);
+        if (isDashingOverHole)
+        {
+            Debug.Log("dashSecurity");
+            transform.position = new Vector3(securePoint.x, transform.position.y, securePoint.z);
+        }
     }
     #endregion
     void JoystickDir()

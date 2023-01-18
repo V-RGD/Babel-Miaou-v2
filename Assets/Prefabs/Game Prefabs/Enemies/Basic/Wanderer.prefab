@@ -1602,6 +1602,8 @@ MonoBehaviour:
   canFlip: 0
   stabGen: {fileID: 1250661918}
   bleedGen: {fileID: 112399739}
+  _takenDamageSinceTimer: 0
+  _regenTimer: 0
   healthBarSlider: {fileID: 1939700264552250537}
   room: {fileID: 0}
 --- !u!114 &4407947557163151750
@@ -1632,6 +1634,7 @@ MonoBehaviour:
   isTank: 0
   animator: {fileID: 8438041661314605272}
   currentAnimatorState: 0
+  clawFx: {fileID: 4829547984134575620}
 --- !u!114 &7974157423740435458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3440,6 +3443,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebc29358a4803fb42948fe66937bc6cc, type: 3}
+--- !u!2083052967 &4829547984134575620 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 8550702672502061699, guid: ebc29358a4803fb42948fe66937bc6cc,
+    type: 3}
+  m_PrefabInstance: {fileID: 3867521754104360071}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4829547984349282820 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8550702671096163971, guid: ebc29358a4803fb42948fe66937bc6cc,

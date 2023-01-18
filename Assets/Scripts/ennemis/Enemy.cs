@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -36,11 +35,12 @@ public class Enemy : MonoBehaviour
     public RandSoundGen stabGen;
     public RandSoundGen bleedGen;
         
-    private float takenDamageSinceTimer;
-    private float regenTimer;
-    private float regenAmount = 0.05f;
-    private Animator healthBarAnimator;
+    [SerializeField]private float _takenDamageSinceTimer;
+    [SerializeField]private float _regenTimer;
+    private float _regenAmount = 0.05f;
+    private Animator _healthBarAnimator;
     public Slider healthBarSlider;
+    private Image _healthSliderImage;
 
     [HideInInspector]public GameObject room;
 
@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _agent = GetComponent<NavMeshAgent>();
-        //healthBarAnimator = healthBarSlider.gameObject.GetComponent<Animator>();
+        _healthSliderImage = healthBarSlider.fillRect.gameObject.GetComponent<Image>();
     }
     void Start()
     {
@@ -56,7 +56,7 @@ public class Enemy : MonoBehaviour
         maxHealth = health;
         _player = GameObject.Find("Player");
         sprite.SetActive(false);
-        //healthBarFill.gameObject.SetActive(false);
+        healthBarSlider.gameObject.SetActive(false);
         isActive = false;
         _rb.useGravity = false;
         mainCollider.enabled = false;
@@ -141,9 +141,11 @@ public class Enemy : MonoBehaviour
                 GameManager.instance.DealDamageToEnemy(other.GetComponent<ObjectDamage>().damage, this);
                 bleedGen.PlayRandomSound(0);
                 stabGen.PlayRandomSound(0);
+                _takenDamageSinceTimer = 0;
             }
             _rb.AddForce((_player.transform.position - transform.position).normalized * -PlayerAttacks.instance.bumpForce, ForceMode.Impulse);
             stunCounter = 1;
+            StartCoroutine(TakeDamageFeedback());
         }
         
         //deals damage
@@ -152,7 +154,6 @@ public class Enemy : MonoBehaviour
                                        )
         {
             GameManager.instance.DealDamageToPlayer(damage);
-            //StartCoroutine(TakeDamageFeedback());
         }
     }
     private void OnTriggerStay(Collider other)
@@ -208,35 +209,44 @@ public class Enemy : MonoBehaviour
         }
     }
 
-   public void HardcoreModeRegeneration()
+   private void HardcoreModeRegeneration()
    {
        //if hardcore mode and damage taken since too long, regens slowly (feedback needed)
        if (GameManager.instance.hardcoreMode)
        {
-           regenTimer -= Time.deltaTime;
-           if (takenDamageSinceTimer > 4 && regenTimer < 0)
+           //if hardcore mode, adds a timer to count since when the last hit has been made
+           _takenDamageSinceTimer += Time.deltaTime;
+           if (_takenDamageSinceTimer > 4)
            {
-               health += maxHealth * regenAmount;
-               //feedback sur la barre de vie
-               //StartCoroutine(RegenerationFeedback());
-               //sets timer back
-               regenTimer = 1;
-               SliderUpdate();
+               _regenTimer -= Time.deltaTime;
+               if (_regenTimer < 0)
+               {
+                   //once that timer exceeds the limit (each second), adds life and resets timer
+                   health += maxHealth * _regenAmount;
+                   _regenTimer = 1;
+                   //feedback sur la barre de vie
+                   StartCoroutine(RegenerationFeedback());
+                   SliderUpdate();
+               }
            }
        }
    }
 
-   public IEnumerator TakeDamageFeedback()
+   private IEnumerator TakeDamageFeedback() //used to indicate health loss
    {
-       healthBarAnimator.CrossFade(Animator.StringToHash("Regen"), 0);
-       yield return new WaitForSeconds(0.5f);
-       healthBarAnimator.CrossFade(Animator.StringToHash("Normal"), 0);
+       // healthBarAnimator.CrossFade(Animator.StringToHash("Regen"), 0);
+       _healthSliderImage.color = Color.white;
+       yield return new WaitForSeconds(0.1f);
+       _healthSliderImage.color = Color.red;
+       // healthBarAnimator.CrossFade(Animator.StringToHash("Normal"), 0);
    }
-   
-   public IEnumerator RegenerationFeedback()
+
+   private IEnumerator RegenerationFeedback() //used to indicate health gain
    {
-       healthBarAnimator.CrossFade(Animator.StringToHash("Regen"), 0);
-       yield return new WaitForSeconds(0.5f);
-       healthBarAnimator.CrossFade(Animator.StringToHash("Normal"), 0);
+       // healthBarAnimator.CrossFade(Animator.StringToHash("Regen"), 0);
+       _healthSliderImage.color = Color.green;
+       yield return new WaitForSeconds(0.1f);
+       _healthSliderImage.color = Color.red;
+       // healthBarAnimator.CrossFade(Animator.StringToHash("Normal"), 0);
    }
 }

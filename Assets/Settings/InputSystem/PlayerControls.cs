@@ -1063,6 +1063,24 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeftArrow"",
+                    ""type"": ""Button"",
+                    ""id"": ""d892a21b-bfaa-4f1f-8ee7-fc443470de05"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightArrow"",
+                    ""type"": ""Button"",
+                    ""id"": ""0aaf29e2-1554-4afc-8aa0-c5d9cd2f34b4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1241,6 +1259,39 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7d15156-ffe2-4a33-80b8-d2edaf8c3ab4"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeftArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2faf9db2-0ce5-441b-883b-3acd21b8f978"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeftArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a687be6-d2db-448c-9720-515dd44e3400"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightArrow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1343,6 +1394,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Menus_DownArrow = m_Menus.FindAction("DownArrow", throwIfNotFound: true);
         m_Menus_MouseClick = m_Menus.FindAction("MouseClick", throwIfNotFound: true);
         m_Menus_Console = m_Menus.FindAction("Console", throwIfNotFound: true);
+        m_Menus_LeftArrow = m_Menus.FindAction("LeftArrow", throwIfNotFound: true);
+        m_Menus_RightArrow = m_Menus.FindAction("RightArrow", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1644,6 +1697,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Menus_DownArrow;
     private readonly InputAction m_Menus_MouseClick;
     private readonly InputAction m_Menus_Console;
+    private readonly InputAction m_Menus_LeftArrow;
+    private readonly InputAction m_Menus_RightArrow;
     public struct MenusActions
     {
         private @PlayerControls m_Wrapper;
@@ -1655,6 +1710,8 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @DownArrow => m_Wrapper.m_Menus_DownArrow;
         public InputAction @MouseClick => m_Wrapper.m_Menus_MouseClick;
         public InputAction @Console => m_Wrapper.m_Menus_Console;
+        public InputAction @LeftArrow => m_Wrapper.m_Menus_LeftArrow;
+        public InputAction @RightArrow => m_Wrapper.m_Menus_RightArrow;
         public InputActionMap Get() { return m_Wrapper.m_Menus; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1685,6 +1742,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Console.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnConsole;
                 @Console.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnConsole;
                 @Console.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnConsole;
+                @LeftArrow.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnLeftArrow;
+                @LeftArrow.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnLeftArrow;
+                @LeftArrow.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnLeftArrow;
+                @RightArrow.started -= m_Wrapper.m_MenusActionsCallbackInterface.OnRightArrow;
+                @RightArrow.performed -= m_Wrapper.m_MenusActionsCallbackInterface.OnRightArrow;
+                @RightArrow.canceled -= m_Wrapper.m_MenusActionsCallbackInterface.OnRightArrow;
             }
             m_Wrapper.m_MenusActionsCallbackInterface = instance;
             if (instance != null)
@@ -1710,6 +1773,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Console.started += instance.OnConsole;
                 @Console.performed += instance.OnConsole;
                 @Console.canceled += instance.OnConsole;
+                @LeftArrow.started += instance.OnLeftArrow;
+                @LeftArrow.performed += instance.OnLeftArrow;
+                @LeftArrow.canceled += instance.OnLeftArrow;
+                @RightArrow.started += instance.OnRightArrow;
+                @RightArrow.performed += instance.OnRightArrow;
+                @RightArrow.canceled += instance.OnRightArrow;
             }
         }
     }
@@ -1797,5 +1866,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnDownArrow(InputAction.CallbackContext context);
         void OnMouseClick(InputAction.CallbackContext context);
         void OnConsole(InputAction.CallbackContext context);
+        void OnLeftArrow(InputAction.CallbackContext context);
+        void OnRightArrow(InputAction.CallbackContext context);
     }
 }

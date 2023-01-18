@@ -198,6 +198,7 @@ public class ObjectsManager : MonoBehaviour
     }
     public void UiItemBoxesUpdate()
     {
+        Debug.Log("ui box update");
         //used to reload data from the object when added
         for (int i = 0; i < 4; i++)
         {
@@ -234,8 +235,7 @@ public class ObjectsManager : MonoBehaviour
     }
     public void MoveExtraBox(int dir)
     {
-        int pos = 0;
-        Debug.Log("new pos would be =" + (currentBoxPos + dir));
+        int pos;
         //if it goes beyond max
         if (currentBoxPos + dir > 2)
         {

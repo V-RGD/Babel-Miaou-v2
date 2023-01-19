@@ -153,11 +153,14 @@ public class PlayerController : MonoBehaviour
     {
         if (_rb.velocity.magnitude < 70)
         {
-            _rb.AddForce(new Vector3(dashOverDir.x, 0, dashOverDir.y) * 50, ForceMode.VelocityChange);
+            Vector3 dir = -(dashDestination + transform.position).normalized;
+            transform.position = Vector3.MoveTowards(transform.position, dashDestination, 0.1f);
+            // _rb.AddForce(new Vector3(dir.x, 0, dir.y) * 50, ForceMode.VelocityChange);
         }
         else
         {
             _rb.velocity = _rb.velocity.normalized * 70;
+            transform.position = Vector3.MoveTowards(transform.position, dashDestination, 0.1f);
         }
     }
 
@@ -273,6 +276,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public float dashCheatCoef;
+    public Vector3 dashDestination;
     IEnumerator DashOverHole(Vector3 dashDir, Vector3 groundHit)
     {
         isDashingOverHole = true;
@@ -289,12 +293,13 @@ public class PlayerController : MonoBehaviour
         Vector3 groundPos = groundHit;
         Vector3 destination = groundPos + dashDir.normalized * 2;
         dashOverDir = dashDir;
+        dashDestination = destination;
             
         //starts dash while disabling collider
         _boxCollider.enabled = false;
         _rb.AddForce(dashForce * dashDir, ForceMode.Impulse);
         //waits until reached ground
-        StartCoroutine(DashSecurity(destination, destination - originalPos));
+        //StartCoroutine(DashSecurity(destination, destination - originalPos));
         
         yield return new WaitUntil(() => (destination - transform.position).magnitude <= 3f);
         

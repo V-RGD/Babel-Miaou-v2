@@ -195,6 +195,7 @@ public class Item : MonoBehaviour
             _menuManager.drawMenu.boxVisuals[i].description.text = desc;
             _menuManager.drawMenu.boxVisuals[i].name.text = name;
             _menuManager.drawMenu.boxVisuals[i].icon.sprite = icon;
+            _menuManager.drawMenu.isMenuActive = true;
         }
     }
 

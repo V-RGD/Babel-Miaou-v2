@@ -19,6 +19,11 @@ public class DrawItemBox : MonoBehaviour
     private InputAction _cursorRight;
     private InputAction _confirm;
 
+    private void Awake()
+    {
+        _playerControls = new PlayerControls();
+    }
+
     private void Start()
     {
         MenuManager.instance = GameObject.Find("UIManager").GetComponent<MenuManager>();
@@ -55,9 +60,9 @@ public class DrawItemBox : MonoBehaviour
     }
 
     
-    public void MoveExtraBox(int dir)
+    public void MoveCursor(int dir)
     {
-        Debug.Log("");
+        Debug.Log("moved cursor");
         int pos;
         //if it goes beyond max
         if (currentCursorPos + dir > 1)
@@ -78,18 +83,18 @@ public class DrawItemBox : MonoBehaviour
         cursor.transform.position = _cursorStartPos + Vector3.right * pos * cursorOffsetDiff;
         currentCursorPos = pos;
     }
-    void MoveBoxLeft(InputAction.CallbackContext context)
+    void MoveCursorLeft(InputAction.CallbackContext context)
     {
         if (isMenuActive)
         {
-            MoveExtraBox(-1);
+            MoveCursor(-1);
         }
     }
-    void MoveBoxRight(InputAction.CallbackContext context)
+    void MoveCursorRight(InputAction.CallbackContext context)
     {
         if (isMenuActive)
         {
-            MoveExtraBox(1);
+            MoveCursor(1);
         }
     }
 
@@ -117,8 +122,8 @@ public class DrawItemBox : MonoBehaviour
         _cursorRight.Enable();
         _confirm.Enable();
 
-        _cursorLeft.performed += MoveBoxLeft;
-        _cursorRight.performed += MoveBoxRight;
+        _cursorLeft.performed += MoveCursorLeft;
+        _cursorRight.performed += MoveCursorRight;
         _confirm.performed += ChooseItem;
     }
 

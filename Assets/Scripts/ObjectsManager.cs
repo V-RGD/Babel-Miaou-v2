@@ -106,6 +106,7 @@ public class ObjectsManager : MonoBehaviour
         {
             uiActivationFx[i].SetActive(false);
         }
+        AssignObjectInfos();
     }
 
     private void Update()
@@ -196,7 +197,6 @@ public class ObjectsManager : MonoBehaviour
     }
     public void UiItemBoxesUpdate()
     {
-        Debug.Log("ui box update");
         //used to reload data from the object when added
         for (int i = 0; i < 4; i++)
         {
@@ -282,7 +282,6 @@ public class ObjectsManager : MonoBehaviour
             uiItemBoxes[3].SetActive(false);
             canReplaceItem = false;
             MenuManager.instance.ObjectMenu();
-
         }
     }
 
@@ -297,6 +296,7 @@ public class ObjectsManager : MonoBehaviour
         itemObjectsInventory[box] = newItem;
         OnObjectEquip(newItem);
         _uiManager.UpdateHUDIcons();
+        MenuManager.instance.ObjectMenu();
     }
 
     #region InputSystemRequirements

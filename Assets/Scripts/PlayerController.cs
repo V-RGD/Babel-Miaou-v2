@@ -121,12 +121,12 @@ public class PlayerController : MonoBehaviour
         
         if (isDashing)
         {
-            HoleDashCheck();
+            //HoleDashCheck();
         }
 
         if (isDashingOverHole)
         {
-            HoleDashForce();
+            //HoleDashForce();
         }
     }
 
@@ -154,13 +154,13 @@ public class PlayerController : MonoBehaviour
         if (_rb.velocity.magnitude < 70)
         {
             Vector3 dir = -(dashDestination + transform.position).normalized;
-            transform.position = Vector3.MoveTowards(transform.position, dashDestination, 0.1f);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(dashDestination.x, transform.position.y, dashDestination.z), 1f);
             // _rb.AddForce(new Vector3(dir.x, 0, dir.y) * 50, ForceMode.VelocityChange);
         }
         else
         {
             _rb.velocity = _rb.velocity.normalized * 70;
-            transform.position = Vector3.MoveTowards(transform.position, dashDestination, 0.1f);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(dashDestination.x, transform.position.y, dashDestination.z), 1f);
         }
     }
 

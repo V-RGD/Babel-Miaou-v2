@@ -90,7 +90,6 @@ public class Item : MonoBehaviour
                 break;
             case ItemType.RandomItem : 
                 RandomObjectDraw();
-                Debug.Log("tried to access to draw menu");
                 break;
         }
         Destroy(gameObject);
@@ -174,6 +173,8 @@ public class Item : MonoBehaviour
     void RandomObjectDraw()
     {
         _menuManager.drawMenu.gameObject.SetActive(true);
+        PlayerController.instance.enabled = false;
+        PlayerAttacks.instance.enabled = false;
         List<int> doNotChooseTheSameObjectList = new List<int>();
         for (int i = 0; i < _objectsManager.itemList.Count; i++)
         {

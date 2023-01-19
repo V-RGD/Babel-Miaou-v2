@@ -18,7 +18,7 @@ public class EyeToken : MonoBehaviour
         player = GameObject.Find("Player");
         _gameManager = GameManager.instance;
         rb = GetComponent<Rigidbody>();
-        _littleShit = LittleShit.instance.gameObject;
+        _littleShit = ObjectsManager.instance.eyeCollector;
         
         {
             _gameManager.eyesInGame.Add(gameObject.transform);

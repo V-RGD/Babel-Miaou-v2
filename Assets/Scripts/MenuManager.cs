@@ -57,7 +57,8 @@ public class MenuManager : MonoBehaviour
 
     public GameObject drawMenuPanel;
     public GameObject objectMenu;
-    
+    public bool canChangeMenu;
+
     #endregion
     public enum GameState
     {
@@ -153,10 +154,7 @@ public class MenuManager : MonoBehaviour
             DeathPanel();
         }
     }
-    public void StartGame()
-    {
-        StartCoroutine(LoadingScreen());
-    }
+    
     public void MainMenu()
     {
         //shortcuts for use
@@ -172,14 +170,7 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.QuitToMainMenuPrompt);
         }
     }
-    public void RestartLevel()
-    {
-        SceneManager.LoadScene("MainScene");
-    }
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
+    
     public void SettingsMenu()
     {
         if (gameState == GameState.Pause)
@@ -198,59 +189,33 @@ public class MenuManager : MonoBehaviour
     {
         if (gameState == GameState.Inventory)
         {
+            Debug.Log("tried to escape object menu");
             //deletes 6th box object
             _objectsManager.itemObjectsInventory[3] = 999;
             //disables menu
-            StartCoroutine(CloseMenu(objectMenu, objectMenuAnimator, GameState.Play));
             //can pause
             _objectsManager.canReplaceItem = false;
             _uiManager.UpdateHUDIcons();
+            StartCoroutine(CloseMenu(objectMenu, objectMenuAnimator, GameState.Play));
             return;
         }
         
         if (gameState == GameState.Play)
         {
             //actives ui
-            Debug.Log("tried to open object menu");
             StartCoroutine(OpenMenu(objectMenu, objectMenuAnimator, GameState.Inventory));
             //can't pause
             _objectsManager.canReplaceItem = true;
         }
     }
-    IEnumerator LoadingScreen()
-    {
-        SwitchState(GameState.Loading);
-        PlayerController.instance.enabled = false;
-        PlayerAttacks.instance.enabled = false;
-
-        loadingUI.SetActive(true);
-        //does nothing the first second
-        yield return new WaitForSeconds(3);
-        //change scene
-        SceneManager.LoadScene("MainScene");
-    }
-    private void DeathPanel()
-    {
-        deathPanel.SetActive(true);
-    }
     public void DiscardWarningPrompt()
     {
         quitWarning.SetActive(false);
     }
-    public IEnumerator StartLevel()
-    {
-        SwitchState(GameState.Loading);
-        //waits for the level to start
-        yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
-        yield return new WaitForSeconds(2);
-        //disables screen, enables character
-        PlayerController.instance.enabled = true;
-        PlayerAttacks.instance.enabled = true;
-        loadingUI.SetActive(false);
-        SwitchState(GameState.Play);
-    }
+    
     private void EscapeInventory()
     {
+        ObjectMenu();
         if (!_objectsManager.canReplaceItem)
         {
             bool slotsFilled = true;
@@ -268,7 +233,6 @@ public class MenuManager : MonoBehaviour
                 {
                     //resets every position
                     //then closes menu
-                    ObjectMenu();
                     return;
                 }
                 // PauseMenu();
@@ -291,32 +255,7 @@ public class MenuManager : MonoBehaviour
             StartCoroutine(CloseMenu(pauseMenu, pauseMenuAnimator, GameState.Play));
         }
     }
-    public void DrawMenu()
-    {
-        if (gameState == GameState.Play)
-        {
-            StartCoroutine(OpenMenu(drawMenu.gameObject, drawMenuAnimator, GameState.Draw));
-        }
 
-        if (gameState == GameState.Draw)
-        {
-            StartCoroutine(CloseMenu(pauseMenu, pauseMenuAnimator, GameState.Play));
-        }
-    }
-    public void InventoryMenu()
-    {
-        if (gameState == GameState.Play)
-        {
-            StartCoroutine(OpenMenu(objectMenu, objectMenuAnimator, GameState.Inventory));
-        }
-
-        if (gameState == GameState.Inventory)
-        {
-            StartCoroutine(CloseMenu(objectMenu, objectMenuAnimator, GameState.Play));
-        }
-    }
-
-    public bool canChangeMenu;
     public IEnumerator SwitchMenu(GameObject oldMenu, Animator oldAnimator, GameState newState, GameObject newMenu, Animator newAnimator)
     {
         //to regain movement
@@ -360,7 +299,6 @@ public class MenuManager : MonoBehaviour
             PlayerController.instance.enabled = false;
         }
     }
-    
     public IEnumerator OpenMenu(GameObject newMenu, Animator newAnimator, GameState newState)
     {
         //to avoid movement
@@ -464,15 +402,56 @@ public class MenuManager : MonoBehaviour
         {
             _objectsManager.ReplaceItem(_objectsManager.currentBoxPos, _objectsManager.itemObjectsInventory[3]);
         }
+        ObjectMenu();
     }
+    
+    IEnumerator LoadingScreen()
+    {
+        SwitchState(GameState.Loading);
+        PlayerController.instance.enabled = false;
+        PlayerAttacks.instance.enabled = false;
 
+        loadingUI.SetActive(true);
+        //does nothing the first second
+        yield return new WaitForSeconds(3);
+        //change scene
+        SceneManager.LoadScene("MainScene");
+    }
+    private void DeathPanel()
+    {
+        deathPanel.SetActive(true);
+    }
+    public IEnumerator StartLevel()
+    {
+        SwitchState(GameState.Loading);
+        //waits for the level to start
+        yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
+        yield return new WaitForSeconds(2);
+        //disables screen, enables character
+        PlayerController.instance.enabled = true;
+        PlayerAttacks.instance.enabled = true;
+        loadingUI.SetActive(false);
+        SwitchState(GameState.Play);
+    }
+    public void StartGame()
+    {
+        StartCoroutine(LoadingScreen());
+    }
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene("MainScene");
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
     #region Shortcuts
     private void ConfirmButton(InputAction.CallbackContext context)
     {
         switch (gameState)
         {
             case GameState.Pause : 
-                UseSelectedButton(buttonsPause);
+                //UseSelectedButton(buttonsPause);
                 break;
             case GameState.QuitToMainMenuPrompt : 
                 UseSelectedButton(buttonsExitToMainMenu);
@@ -511,7 +490,7 @@ public class MenuManager : MonoBehaviour
                 UseSelectedButton(buttonsExitGame);
                 break;
         }
-        CheckGameActive();
+        //CheckGameActive();
     }
     private void UpButton(InputAction.CallbackContext context)
     {
@@ -566,36 +545,12 @@ public class MenuManager : MonoBehaviour
     {
         switch (gameState)
         {
-            // case GameState.Pause or GameState.Play: 
-            //     //StartCoroutine(PauseMenu());
-            //     break;
-            // case GameState.QuitToMainMenuPrompt :
-            //     //disables warning
-            //     //to pause
-            //     quitToMainMenuWarning.SetActive(false);
-            //     SwitchState(GameState.Pause);
-            //     break;
-            // case GameState.Option : 
-            //     optionMenu.SetActive(false);
-            //     SwitchState(GameState.Pause);
-            //     break;
-            
-            case GameState.Draw :
-                //discard prompt
-                break;
-            case GameState.DiscardDraw :
-                break;
             case GameState.Console : 
                 //use console
                 _cheatManager.CloseCommandLine();
                 break;
-            case GameState.MainMenu : 
-                //show exit warning prompt
-                break;
-            case GameState.LeaderBoard : 
-                break;
             case GameState.Inventory : 
-                EscapeInventory();
+                // ObjectMenu();
                 break;
             case GameState.DiscardInventory : 
                 break;
@@ -603,7 +558,7 @@ public class MenuManager : MonoBehaviour
                 //to 
                 break;
         }
-        CheckGameActive();
+        //CheckGameActive();
     }
     private void CommandLineShortcut(InputAction.CallbackContext context)
     {
@@ -618,7 +573,7 @@ public class MenuManager : MonoBehaviour
                 SwitchState(GameState.Play);
                 break;
         }
-        CheckGameActive();
+        //CheckGameActive();
     }
     private void MenuShortcut(InputAction.CallbackContext context)
     {

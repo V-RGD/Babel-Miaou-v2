@@ -26,7 +26,7 @@ public class DrawItemBox : MonoBehaviour
 
     private void Start()
     {
-        MenuManager.instance = GameObject.Find("UIManager").GetComponent<MenuManager>();
+        _cursorStartPos = cursor.position;
     }
 
     public void OnDrawBoxClick1()
@@ -80,7 +80,7 @@ public class DrawItemBox : MonoBehaviour
         }
         
         //moves box and indent
-        cursor.transform.position = _cursorStartPos + Vector3.right * pos * cursorOffsetDiff;
+        cursor.transform.position = _cursorStartPos + Vector3.left * pos * cursorOffsetDiff;
         currentCursorPos = pos;
     }
     void MoveCursorLeft(InputAction.CallbackContext context)

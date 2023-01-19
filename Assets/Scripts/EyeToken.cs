@@ -11,12 +11,14 @@ public class EyeToken : MonoBehaviour
     private float _pickupDist = 6;
     private float _collectSpeed = 6;
     private bool _canMoveToPlayer;
+    private GameObject _littleShit;
     
     void Start()
     {
         player = GameObject.Find("Player");
         _gameManager = GameManager.instance;
         rb = GetComponent<Rigidbody>();
+        _littleShit = LittleShit.instance.gameObject;
         
         {
             _gameManager.eyesInGame.Add(gameObject.transform);
@@ -30,6 +32,11 @@ public class EyeToken : MonoBehaviour
         if ((player.transform.position - transform.position).magnitude < _pickupDist)
         {
             GoToPlayer();
+        }
+
+        if ((_littleShit.transform.position - transform.position).magnitude < _pickupDist)
+        {
+            GoToRoger();
         }
     }
 
@@ -45,8 +52,9 @@ public class EyeToken : MonoBehaviour
         }
         if (other.CompareTag("LittleShit"))
         {
+            LittleShit.instance.animator.CrossFade(LittleShit.instance.Eat, 0, 0);
             //enemy collects it
-            other.GetComponent<LittleShit>().eyesInInventory++;
+            LittleShit.instance.eyesInInventory++;
             _gameManager.eyesInGame.Remove(transform);
             _gameManager.eyesInGame.Remove(transform);
             Destroy(gameObject);
@@ -56,5 +64,10 @@ public class EyeToken : MonoBehaviour
     void GoToPlayer()
     {
         transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 0.1f);
+    }
+    
+    void GoToRoger()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, _littleShit.transform.position, 0.1f);
     }
 }

@@ -58,6 +58,7 @@ public class ObjectsManager : MonoBehaviour
     //[HideInInspector] 
     public bool noHit; //actives when entering a room - player gets 2x damage until hit
     //[HideInInspector] 
+    public bool eyeCollectorActive;
     public bool catLuck;
     //[HideInInspector] 
     public bool stinkyFish;
@@ -96,10 +97,6 @@ public class ObjectsManager : MonoBehaviour
         _gameManager = GameManager.instance;
         
         bonusBoxStartPos = uiItemBoxes[3].transform.position;
-        GameObject littleShit = Instantiate(gameVariables.eyeCollector);
-        eyeCollector = littleShit;
-        littleShit.SetActive(false);
-        AssignObjectInfos();
 
         PlayerAttacks.instance.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
@@ -129,7 +126,7 @@ public class ObjectsManager : MonoBehaviour
             case 0 : killingSpree = true; break;
             case 1 : sacredCross = true; break;
             case 2 : stinkyFish = true; break;
-            case 3 : eyeCollector.transform.position = _player.transform.position; eyeCollector.SetActive(true); break;
+            case 3 : eyeCollector.transform.position = _player.transform.position; eyeCollector.SetActive(true); eyeCollectorActive = true; break;
             case 4 : catLuck = true; break;
             case 5 : earthQuake = true; break;
             case 6 : noHit = true; break;
@@ -151,7 +148,8 @@ public class ObjectsManager : MonoBehaviour
             case 0 : killingSpree = false; break;
             case 1 : sacredCross = false; break;
             case 2 : stinkyFish = false; break;
-            case 3 : eyeCollector.SetActive(false); break;
+            case 3 : eyeCollector.SetActive(false);
+                eyeCollectorActive = false; break;
             case 4 : catLuck = false; break;
             case 5 : earthQuake = false; break;
             case 6 : noHit = false; break;

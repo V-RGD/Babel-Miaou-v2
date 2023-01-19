@@ -84,6 +84,7 @@ public class Room : MonoBehaviour
             _canActivateEnemies = false;
             DoorLock();
             StartCoroutine(ActivateAllEnemies());
+            LittleShit.instance.TpToPlayer();
         }
 
         if (isStelaActive)
@@ -91,6 +92,7 @@ public class Room : MonoBehaviour
             isStelaActive = false;
             DoorLock();
             StartCoroutine(ActivateAllEnemies());
+            LittleShit.instance.TpToPlayer();
         }
         
         CheckPlayerPresence();
@@ -357,6 +359,7 @@ public class Room : MonoBehaviour
             enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
         }
+        
     }
 
     void DoorSpawn()

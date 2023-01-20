@@ -13,6 +13,7 @@ public class Room : MonoBehaviour
     public GameObject chest;
     [HideInInspector] public GameObject doorPrefab;
     [HideInInspector] public List<GameObject> doorsObjects;
+    [HideInInspector] public List<Animator> doorsAnimators;
 
     //components
     private LevelManager _lm;
@@ -376,8 +377,8 @@ public class Room : MonoBehaviour
             if (_roomInfo.doors[i] == 1)
             {
                 //spawns doors accordingly
-                var cornerOffset = -17;
-                var upOffset = 8;
+                var cornerOffset = -15;
+                var upOffset = 0;
                 var roomSize = 50 /2;
                 var spawnPoint = Vector3.zero;
                 var rotation = Vector3.zero;
@@ -385,38 +386,52 @@ public class Room : MonoBehaviour
                 {
                     case 0 : //left
                         spawnPoint = new Vector3(-roomSize + cornerOffset, upOffset, 0);
-                        rotation = new Vector3(90, -90, 0); break;
+                        rotation = new Vector3(0, -90, 0); break;
                     case 1 :  //up
                         spawnPoint = new Vector3(0, upOffset, roomSize - cornerOffset);
-                        rotation = new Vector3(90, 0, 0); break;
+                        rotation = new Vector3(0, 0, 0); break;
                     case 2 :  //right
                         spawnPoint = new Vector3(roomSize - cornerOffset, upOffset, 0);
-                        rotation = new Vector3(90, 90, 0); break;
+                        rotation = new Vector3(0, 90, 0); break;
                     case 3 :  //down
                         spawnPoint = new Vector3(0, upOffset, -roomSize + cornerOffset);
-                        rotation = new Vector3(90, 180, 0); break;
+                        rotation = new Vector3(0, 180, 0); break;
                 }
                 GameObject door = Instantiate(doorPrefab, spawnPoint + roomCenter.position, Quaternion.Euler(rotation));
                 door.transform.parent = gameObject.transform;
                 door.SetActive(false);
                 doorsObjects.Add(door);
+                doorsAnimators.Add(door.transform.GetChild(0).transform.GetChild(0).GetComponent<Animator>());
             }
         }
     }
 
     void DoorUnlock()
     {
-        foreach (var door in doorsObjects)
+        for (int i = 0; i < doorsObjects.Count; i++)
         {
-            door.SetActive(false);
+            StartCoroutine(DoorOpenCoroutine(doorsAnimators[i], doorsObjects[i]));
         }
     }
     void DoorLock()
     {
-        foreach (var door in doorsObjects)
+        for (int i = 0; i < doorsObjects.Count; i++)
         {
-            door.SetActive(true);
+            StartCoroutine(DoorCloseCoroutine(doorsAnimators[i], doorsObjects[i]));
         }
+    }
+
+    IEnumerator DoorOpenCoroutine(Animator doorAnimator, GameObject door)
+    {
+        doorAnimator.CrossFade(Animator.StringToHash("Open"), 0);
+        yield return new WaitForSeconds(1.5f);
+        door.GetComponent<BoxCollider>().enabled = false;
+    }
+    IEnumerator DoorCloseCoroutine(Animator doorAnimator, GameObject door)
+    {
+        door.SetActive(true);
+        doorAnimator.CrossFade(Animator.StringToHash("Close"), 0);
+        yield return new WaitForSeconds(0.1f);
     }
 
     void PlacePlayerAtSpawnPoint()

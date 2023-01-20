@@ -336,6 +336,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &7282967192209446126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1809183015335655423}
+  m_Layer: 7
+  m_Name: Anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1809183015335655423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7282967192209446126}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19, y: 0, z: -24}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6150718293181729414}
+  m_Father: {fileID: 3384913065256989079}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8162565625076692311
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,13 +377,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3384913065256989079}
-  m_Layer: 0
+  - component: {fileID: 1496419561}
+  m_Layer: 7
   m_Name: Porte 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3384913065256989079
 Transform:
   m_ObjectHideFlags: 0
@@ -364,10 +397,23 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6150718293181729414}
+  - {fileID: 1809183015335655423}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1496419561
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8162565625076692311}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 26.8, y: 70, z: 16.17079}
+  m_Center: {x: 0, y: 8, z: 8.15}
 --- !u!1 &8765468471787133260
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +425,7 @@ GameObject:
   - component: {fileID: 6150718293181729414}
   - component: {fileID: 8283265218295525055}
   - component: {fileID: 4065746925792703005}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: porte
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402,7 +448,7 @@ Transform:
   - {fileID: 5945647629507564027}
   - {fileID: 5945647629992133173}
   - {fileID: 5945647629981227248}
-  m_Father: {fileID: 3384913065256989079}
+  m_Father: {fileID: 1809183015335655423}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8283265218295525055

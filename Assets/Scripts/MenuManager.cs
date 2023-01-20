@@ -417,22 +417,24 @@ public class MenuManager : MonoBehaviour
         //change scene
         SceneManager.LoadScene("MainScene");
     }
-    public Button[] deathPanelButtons;
+    public GameObject[] deathPanelButtons;
     public Animator deathPanelAnimator;
     public Animator deathTitleAnimator;
     private IEnumerator DeathPanel()
     {
+        PlayerController.instance.enabled = false;
+        PlayerAttacks.instance.enabled = false;
         deathPanel.SetActive(true);
         foreach (var button in deathPanelButtons)
         {
-            button.enabled = false;
+            button.SetActive(false);
         }
         deathPanelAnimator.CrossFade(Animator.StringToHash("Open"), 0);
         deathTitleAnimator.CrossFade(Animator.StringToHash("DeathTitleTraduction"), 0);
         yield return new WaitForSeconds(1.3f);
         foreach (var button in deathPanelButtons)
         {
-            button.enabled = true;
+            button.SetActive(true);
         }
     }
     public IEnumerator StartLevel()

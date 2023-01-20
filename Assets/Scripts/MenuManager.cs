@@ -151,10 +151,14 @@ public class MenuManager : MonoBehaviour
         if (_gameManager.isDead && gameState == GameState.Play)
         {
             SwitchState(GameState.Death);
-            DeathPanel();
+            StartCoroutine(DeathPanel());
+        }
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            StartCoroutine(DeathPanel());
         }
     }
-    
     public void MainMenu()
     {
         //shortcuts for use
@@ -170,7 +174,6 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.QuitToMainMenuPrompt);
         }
     }
-    
     public void SettingsMenu()
     {
         if (gameState == GameState.Pause)
@@ -212,7 +215,6 @@ public class MenuManager : MonoBehaviour
     {
         quitWarning.SetActive(false);
     }
-    
     private void EscapeInventory()
     {
         ObjectMenu();
@@ -255,7 +257,6 @@ public class MenuManager : MonoBehaviour
             StartCoroutine(CloseMenu(pauseMenu, pauseMenuAnimator, GameState.Play));
         }
     }
-
     public IEnumerator SwitchMenu(GameObject oldMenu, Animator oldAnimator, GameState newState, GameObject newMenu, Animator newAnimator)
     {
         //to regain movement
@@ -404,7 +405,6 @@ public class MenuManager : MonoBehaviour
         }
         ObjectMenu();
     }
-    
     IEnumerator LoadingScreen()
     {
         SwitchState(GameState.Loading);
@@ -417,9 +417,23 @@ public class MenuManager : MonoBehaviour
         //change scene
         SceneManager.LoadScene("MainScene");
     }
-    private void DeathPanel()
+    public Button[] deathPanelButtons;
+    public Animator deathPanelAnimator;
+    public Animator deathTitleAnimator;
+    private IEnumerator DeathPanel()
     {
         deathPanel.SetActive(true);
+        foreach (var button in deathPanelButtons)
+        {
+            button.enabled = false;
+        }
+        deathPanelAnimator.CrossFade(Animator.StringToHash("Open"), 0);
+        deathTitleAnimator.CrossFade(Animator.StringToHash("DeathTitleTraduction"), 0);
+        yield return new WaitForSeconds(1.3f);
+        foreach (var button in deathPanelButtons)
+        {
+            button.enabled = true;
+        }
     }
     public IEnumerator StartLevel()
     {

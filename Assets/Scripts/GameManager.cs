@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
         //applies damage
         if (_objectsManager.killingSpreeTimer > 0)
         {
-            //damage++;
+            damage *= _gameVariables.killingSpreeDamage;
         }
         //if no hit, doubles damage
         if (_objectsManager.noHitStreak)

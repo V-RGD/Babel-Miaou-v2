@@ -115,6 +115,11 @@ public class ObjectsManager : MonoBehaviour
         {
             sacredCrossTimer -= Time.deltaTime;
         }
+
+        if (killingSpreeTimer <= 0)
+        {
+            killingSpreeFx.gameObject.SetActive(false);
+        }
     }
 
     public void OnObjectEquip(int item)
@@ -163,6 +168,7 @@ public class ObjectsManager : MonoBehaviour
         {
             _player.dashCooldownTimer = 0;
             killingSpreeTimer = gameVariables.killingSpreeLength;
+            killingSpreeFx.gameObject.SetActive(true);
             killingSpreeFx.Play();
         }
 

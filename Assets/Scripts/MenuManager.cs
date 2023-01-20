@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -264,6 +265,7 @@ public class MenuManager : MonoBehaviour
         {
             PlayerAttacks.instance.enabled = false;
             PlayerController.instance.enabled = false;
+            Time.timeScale = 0;
         }
         
         //bloque le changement de menu
@@ -273,14 +275,14 @@ public class MenuManager : MonoBehaviour
         oldAnimator.CrossFadeInFixedTime(Animator.StringToHash("Close"), 0);
 
         //attend un peu
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
         
         //ouvre le nouveau menu et ferme l'ancien
         newMenu.SetActive(true);
         oldMenu.SetActive(false);
         //attend un peu
         
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         //change le state
         gameState = newState;
@@ -293,11 +295,13 @@ public class MenuManager : MonoBehaviour
         {
             PlayerAttacks.instance.enabled = true;
             PlayerController.instance.enabled = true;
+            Time.timeScale = 1;
         }
         else
         {
             PlayerAttacks.instance.enabled = false;
             PlayerController.instance.enabled = false;
+            Time.timeScale = 0;
         }
     }
     public IEnumerator OpenMenu(GameObject newMenu, Animator newAnimator, GameState newState)
@@ -305,6 +309,7 @@ public class MenuManager : MonoBehaviour
         //to avoid movement
         PlayerAttacks.instance.enabled = false;
         PlayerController.instance.enabled = false;
+        Time.timeScale = 0;
         
         //bloque le changement de menu
         canChangeMenu = false;
@@ -314,7 +319,7 @@ public class MenuManager : MonoBehaviour
         newAnimator.CrossFadeInFixedTime(Animator.StringToHash("Open"), 0);
         //attend un peu
         
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         //change le state
         gameState = newState;
@@ -327,11 +332,13 @@ public class MenuManager : MonoBehaviour
         {
             PlayerAttacks.instance.enabled = true;
             PlayerController.instance.enabled = true;
+            Time.timeScale = 1;
         }
         else
         {
             PlayerAttacks.instance.enabled = false;
             PlayerController.instance.enabled = false;
+            Time.timeScale = 0;
         }
     }
     public IEnumerator CloseMenu(GameObject oldMenu, Animator oldAnimator, GameState newState)
@@ -343,7 +350,7 @@ public class MenuManager : MonoBehaviour
         oldAnimator.CrossFadeInFixedTime(Animator.StringToHash("Close"), 0);
 
         //attend un peu
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
         
         //ferme l'ancien
         oldMenu.SetActive(false);
@@ -359,6 +366,7 @@ public class MenuManager : MonoBehaviour
         {
             PlayerAttacks.instance.enabled = true;
             PlayerController.instance.enabled = true;
+            Time.timeScale = 1;
         }
         else
         {
@@ -410,10 +418,11 @@ public class MenuManager : MonoBehaviour
         SwitchState(GameState.Loading);
         PlayerController.instance.enabled = false;
         PlayerAttacks.instance.enabled = false;
+        Time.timeScale = 0;
 
         loadingUI.SetActive(true);
         //does nothing the first second
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSecondsRealtime(3);
         //change scene
         SceneManager.LoadScene("MainScene");
     }
@@ -424,14 +433,15 @@ public class MenuManager : MonoBehaviour
     {
         PlayerController.instance.enabled = false;
         PlayerAttacks.instance.enabled = false;
+        Time.timeScale = 0;
         deathPanel.SetActive(true);
         foreach (var button in deathPanelButtons)
         {
             button.SetActive(false);
         }
-        deathPanelAnimator.CrossFade(Animator.StringToHash("Open"), 0);
-        deathTitleAnimator.CrossFade(Animator.StringToHash("DeathTitleTraduction"), 0);
-        yield return new WaitForSeconds(1.3f);
+        deathPanelAnimator.CrossFadeInFixedTime(Animator.StringToHash("Open"), 0);
+        deathTitleAnimator.CrossFadeInFixedTime(Animator.StringToHash("DeathTitleTraduction"), 0);
+        yield return new WaitForSecondsRealtime(1.3f);
         foreach (var button in deathPanelButtons)
         {
             button.SetActive(true);
@@ -442,10 +452,11 @@ public class MenuManager : MonoBehaviour
         SwitchState(GameState.Loading);
         //waits for the level to start
         yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSecondsRealtime(2);
         //disables screen, enables character
         PlayerController.instance.enabled = true;
         PlayerAttacks.instance.enabled = true;
+        Time.timeScale = 1;
         loadingUI.SetActive(false);
         SwitchState(GameState.Play);
     }
@@ -617,5 +628,11 @@ public class MenuManager : MonoBehaviour
     }
     #endregion
 
+
+    public List<Enemy> enemiesInGame;
+    void StopAllEnemies()
+    {
+        //if 
+    }
 }
     

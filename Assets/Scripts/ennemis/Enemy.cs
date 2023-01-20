@@ -43,6 +43,8 @@ public class Enemy : MonoBehaviour
     private Image _healthSliderImage;
 
     [HideInInspector]public GameObject room;
+    public bool isFromStela;
+    public ParticleSystem stelaFx;
 
     private void Awake()
     {
@@ -66,6 +68,15 @@ public class Enemy : MonoBehaviour
         {
             HaunterIA ia = GetComponent<HaunterIA>();
             _isTank = ia.isTank;
+        }
+
+        if (isFromStela)
+        {
+            stelaFx.Play();
+        }
+        else
+        {
+            stelaFx.gameObject.SetActive(false);
         }
     }
     private void Update()
@@ -212,7 +223,7 @@ public class Enemy : MonoBehaviour
    private void HardcoreModeRegeneration()
    {
        //if hardcore mode and damage taken since too long, regens slowly (feedback needed)
-       if (GameManager.instance.hardcoreMode)
+       if (GameManager.instance.hardcoreMode || isFromStela)
        {
            //if hardcore mode, adds a timer to count since when the last hit has been made
            _takenDamageSinceTimer += Time.deltaTime;

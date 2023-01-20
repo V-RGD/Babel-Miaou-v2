@@ -64,7 +64,7 @@ public class Room : MonoBehaviour
     void Update()
     {
         _enemiesRemaining = enemyGroup.transform.childCount; //check how many enemies are still in the room
-        if (_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3)
+        if ((_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 )|| Input.GetKeyDown(KeyCode.F5))
         {
             _canChestSpawn = false;
             DoorUnlock();
@@ -74,7 +74,7 @@ public class Room : MonoBehaviour
             }
             //randomize chest spawn
             int randChest = Random.Range(0, 100);
-            if (randChest < 15)
+            if (randChest < 1)
             {
                 chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
             }
@@ -314,14 +314,16 @@ public class Room : MonoBehaviour
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.transform.parent = enemyGroup.transform;
             enemySpawning.transform.Rotate(0, -45, 0);
-            enemySpawning.GetComponent<Enemy>().room = gameObject;
+            Enemy enemyComponent = enemySpawning.GetComponent<Enemy>();
+            enemyComponent.room = gameObject;
             enemySpawning.SetActive(false);
 
             //sets variables
-            enemySpawning.GetComponent<Enemy>().health = _lm.stelaMatrices[enemyType].enemyValues[stage].x;
-            enemySpawning.GetComponent<Enemy>().damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
-            enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
-            enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
+            enemyComponent.health = _lm.stelaMatrices[enemyType].enemyValues[stage].x;
+            enemyComponent.damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
+            enemyComponent.eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
+            enemyComponent.speed = _lm.matrices[enemyType].enemyValues[stage].z;
+            enemyComponent.isFromStela = true;
         }
     }
 
@@ -426,6 +428,8 @@ public class Room : MonoBehaviour
         doorAnimator.CrossFade(Animator.StringToHash("Open"), 0);
         yield return new WaitForSeconds(1.5f);
         door.GetComponent<BoxCollider>().enabled = false;
+        yield return new WaitForSeconds(0.5f);
+        door.SetActive(false);
     }
     IEnumerator DoorCloseCoroutine(Animator doorAnimator, GameObject door)
     {

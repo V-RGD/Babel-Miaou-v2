@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class GameManager : MonoBehaviour
     public bool isDead;
     private bool isFreezed;
     public int currentLevel;
+
+    public Material hurtRenderMat;
 
     private void Awake()
     {
@@ -75,6 +78,8 @@ public class GameManager : MonoBehaviour
             _playerController.invincibleCounter = 1;
             cmShake.ShakeCamera(7, .1f);
             
+            hurtRenderMat.SetFloat("Strenght",  (1 - ((float) health / (float) maxHealth)));
+            Debug.Log((1 - ((float) health / (float) maxHealth))); 
             //ded
             if (health <= 0)
             {

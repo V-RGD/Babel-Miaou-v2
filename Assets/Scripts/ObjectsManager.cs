@@ -333,8 +333,6 @@ public class ObjectsManager : MonoBehaviour
             }
         }
         //then plays the vfx associated
-        Debug.Log(itemLocation);
         uiActivationFx[itemLocation].Play();
-        Debug.Log("activated fx ui");
     }
 }

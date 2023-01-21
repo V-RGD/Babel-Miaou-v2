@@ -24,7 +24,6 @@ public class GameMusic : MonoBehaviour
 
     private void Start()
     {
-        ChooseMusic();
     }
 
     public void ChooseMusic()

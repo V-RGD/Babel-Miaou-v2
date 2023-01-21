@@ -106,12 +106,12 @@ public class Enemy : MonoBehaviour
             if (_flipCounter is < 1 and > 0)
             {
                 _flipCounter = 1;
-                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1.5f, 1);
             }
             if (_flipCounter is > -1 and < 0)
             {
                 _flipCounter = -1;
-                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1.5f, 1);
             }
         }
     }
@@ -178,18 +178,26 @@ public class Enemy : MonoBehaviour
 
     private void FlipSprite()
     {
+        if (_flipCounter < -1)
+        {
+            _flipCounter = -1;
+        }
+        if (_flipCounter > 1)
+        {
+            _flipCounter = 1;
+        }
         Vector3 playerDir = _player.transform.position - transform.position;
         if (!isFlippingSprite)
         {
             if (playerDir.x > 0 && _flipCounter < 1)
             {
                 _flipCounter += Time.deltaTime * _turnSpeed;
-                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1.5f, 1);
             }
             if (playerDir.x < 0 && _flipCounter > -1)
             {
                 _flipCounter -= Time.deltaTime * _turnSpeed;
-                sprite.transform.localScale = new Vector3(-_flipCounter, 1, 1);
+                sprite.transform.localScale = new Vector3(-_flipCounter, 1.5f, 1);
             }
         }
     }

@@ -5,15 +5,29 @@ using UnityEngine;
 
 public class GameMusic : MonoBehaviour
 {
+    public static GameMusic instance;
+    
     public AudioClip[] musics;
     private AudioSource source;
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+
+        instance = this;
+        
         source = GetComponent<AudioSource>();
     }
 
     private void Start()
+    {
+        ChooseMusic();
+    }
+
+    public void ChooseMusic()
     {
         if (MenuManager.instance.gameState == MenuManager.GameState.MainMenu)
         {

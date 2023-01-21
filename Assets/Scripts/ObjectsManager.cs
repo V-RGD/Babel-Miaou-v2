@@ -325,7 +325,7 @@ public class ObjectsManager : MonoBehaviour
     {
         int itemLocation = 0;
         //check where the item is located
-        for (int i = 0; i < itemObjectsInventory.Count; i++)
+        for (int i = 0; i < itemObjectsInventory.Count - 1; i++)
         {
             if (itemUsed == itemObjectsInventory[i])
             {
@@ -333,6 +333,7 @@ public class ObjectsManager : MonoBehaviour
             }
         }
         //then plays the vfx associated
+        Debug.Log(itemLocation);
         uiActivationFx[itemLocation].Play();
         Debug.Log("activated fx ui");
     }

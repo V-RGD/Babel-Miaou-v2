@@ -14,6 +14,7 @@ public class ToNextLevel : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _lm.LoadNextLevel();
+            GameMusic.instance.ChooseMusic();
             Debug.Log("nextLev");
         }
     }

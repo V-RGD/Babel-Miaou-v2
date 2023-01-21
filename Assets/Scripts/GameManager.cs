@@ -95,6 +95,7 @@ public class GameManager : MonoBehaviour
                     //adds health
                     health = Mathf.CeilToInt(_gameVariables.catLuckResHp);
                     _uiManager.HealthBar(health);
+                    ObjectsManager.instance.PlayActivationVfx(4);
                 }
                 else
                 {
@@ -116,11 +117,13 @@ public class GameManager : MonoBehaviour
         if (_objectsManager.killingSpreeTimer > 0)
         {
             damage *= _gameVariables.killingSpreeDamage;
+            ObjectsManager.instance.PlayActivationVfx(0);
         }
         //if no hit, doubles damage
         if (_objectsManager.noHitStreak)
         {
             damage *= 1.3f;
+            ObjectsManager.instance.PlayActivationVfx(6);
         }
         enemy.health -= damage;
         //Debug.Log(damage);

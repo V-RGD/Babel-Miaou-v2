@@ -459,6 +459,7 @@ public class PlayerAttacks : MonoBehaviour
 
         if (ObjectsManager.instance.stinkyFish)
         {
+            ObjectsManager.instance.PlayActivationVfx(2);
             switch (smashPower)
             {
                 case 0 : 
@@ -475,6 +476,7 @@ public class PlayerAttacks : MonoBehaviour
 
         if (ObjectsManager.instance.earthQuake)
         {
+            ObjectsManager.instance.PlayActivationVfx(5);
             switch (smashPower)
             {
                 case 0 : 

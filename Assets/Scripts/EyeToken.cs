@@ -58,6 +58,7 @@ public class EyeToken : MonoBehaviour
             _gameManager.eyesInGame.Remove(transform);
             _gameManager.eyesInGame.Remove(transform);
             Destroy(gameObject);
+            ObjectsManager.instance.PlayActivationVfx(3);
         }
     }
 

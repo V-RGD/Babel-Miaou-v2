@@ -29,7 +29,7 @@ public class ObjectsManager : MonoBehaviour
     [Header("Assignations")] [Space]
     [SerializeField] private Room _currentRoom;
     public GameObject[] uiItemBoxes;
-    public GameObject[] uiActivationFx;
+    public ParticleSystem[] uiActivationFx;
     private GameManager _gameManager;
     private PlayerControls _playerControls;
     private InputAction moveUp;
@@ -101,11 +101,6 @@ public class ObjectsManager : MonoBehaviour
         PlayerAttacks.instance.dexterity = gameVariables.baseDexterity;
         _player.maxSpeed = gameVariables.baseSpeed;
         PlayerAttacks.instance.attackStat = gameVariables.baseAttack;
-
-        for (int i = 0; i < uiActivationFx.Length - 1; i++)
-        {
-            uiActivationFx[i].SetActive(false);
-        }
         AssignObjectInfos();
     }
 
@@ -170,12 +165,14 @@ public class ObjectsManager : MonoBehaviour
             killingSpreeTimer = gameVariables.killingSpreeLength;
             killingSpreeFx.gameObject.SetActive(true);
             killingSpreeFx.Play();
+            PlayActivationVfx(0);
         }
 
         if (sacredCross)
         {
             sacredCrossTimer = gameVariables.sacredCrossLength;
-            sacredCrossFx.Play();
+            sacredCrossFx.Play(); 
+            PlayActivationVfx(1);
         }
     }
     public void OnPlayerHit(int sourceDamage)
@@ -220,7 +217,7 @@ public class ObjectsManager : MonoBehaviour
 
                 if (i < itemObjectsInventory.Count - 1)
                 {
-                    uiActivationFx[i].SetActive(true);
+                    uiActivationFx[i].Play();
                 }
             }
             else
@@ -230,10 +227,6 @@ public class ObjectsManager : MonoBehaviour
                 uiItemBoxes[i].transform.GetChild(2).GetComponent<TMP_Text>().text = "";
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().sprite = objectSprites[^1];
                 uiItemBoxes[i].transform.GetChild(3).GetComponent<Image>().enabled = false;
-                if (i < itemObjectsInventory.Count)
-                {
-                    uiActivationFx[i].SetActive(false);
-                }
             }
         }
     }
@@ -327,4 +320,20 @@ public class ObjectsManager : MonoBehaviour
         confirm.Disable();
     }
     #endregion
+
+    public void PlayActivationVfx(int itemUsed)
+    {
+        int itemLocation = 0;
+        //check where the item is located
+        for (int i = 0; i < itemObjectsInventory.Count; i++)
+        {
+            if (itemUsed == itemObjectsInventory[i])
+            {
+                itemLocation = i;
+            }
+        }
+        //then plays the vfx associated
+        uiActivationFx[itemLocation].Play();
+        Debug.Log("activated fx ui");
+    }
 }

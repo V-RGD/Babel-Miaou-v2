@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public int money;
     public int maxHealth = 3;
     public int health;
+    public int initialMaxHealth;
     public float enemyHitShakeIntensity = 3;
 
     public int playerRoom;
@@ -59,6 +60,7 @@ public class GameManager : MonoBehaviour
         _uiManager = UIManager.instance;
         health = maxHealth;
         _uiManager.HealthBar(health);
+        initialMaxHealth = maxHealth;
     }
 
     IEnumerator FreezeFrame(float length)

@@ -71,10 +71,28 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public RectTransform healthBarBorder;
+    public RectTransform healthBarLimiter;
+    public RectTransform healthBarFill;
+    public RectTransform healthBarFlare;
+    public Animator healthBarFlareAnimator;
     public void HealthBar(float health)
     {
         //sets health bar length depending on the health remaining
         float healthRatio = health / GameManager.instance.maxHealth;
+
+        float initialBorderSize = 1000;
+        float initialLimiterSize = 1000;
+        float initialFillerSize = 1000;
+        
+        //rescales border
+        healthBarBorder.localScale = GameManager.instance;
+        //rescales limiter
+        //rescales filler
+        
+        //plays flare
+        healthBarFlareAnimator.CrossFade(Animator.StringToHash("Flare"), 0,0);
+
         //healthBarAmount.localScale = new Vector3(1 * healthRatio, 1 * healthRatio, 1);
         float barSize = 1000;
         healthBarAmount.localPosition = new Vector3(barSize * (-1 + 1 * healthRatio), 0, 0);

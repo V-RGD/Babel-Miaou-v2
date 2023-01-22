@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     public ParticleSystem healFx;
     public ParticleSystem maxHpFx;
     public Animator healthBarAnimator;
+    public Animator playerColorAnimator;
 
     public VolumeProfile[] globalVolumes;
     public Volume volume;
@@ -97,6 +98,7 @@ public class GameManager : MonoBehaviour
             _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
             healthBarAnimator.CrossFade("Shake", 0);
+            playerColorAnimator.CrossFade("Hurt", 0);
             StartCoroutine(ShakeCam());
             
             hurtRenderMat.SetFloat("_Strenght",  (1 - ((float) health / (float) maxHealth)));

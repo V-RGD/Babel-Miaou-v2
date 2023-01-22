@@ -14,10 +14,10 @@ public class ShopManager : MonoBehaviour
         _objectsManager = ObjectsManager.instance;
         itemsToChooseFrom = _objectsManager.itemList;
         
-        for (int i = 0; i < 3; i++)
-        {
-            spawnAreas.Add(transform.GetChild(i).transform);
-        }
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     spawnAreas.Add(transform.GetChild(i).transform);
+        // }
         //de la vie max (remplit aussi la vie)
         //du soin (en plus grande quantité)
         //2 bienfaits différents

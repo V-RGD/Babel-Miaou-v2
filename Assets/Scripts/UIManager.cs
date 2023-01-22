@@ -93,6 +93,7 @@ public class UIManager : MonoBehaviour
     public float healthRatio;
     public float barlength;
     public float fillLength;
+    public TMP_Text healthBarText;
 
     public void HealthBar(float health)
     {
@@ -121,6 +122,9 @@ public class UIManager : MonoBehaviour
         //
         // healthBarFlare.position = healthBarFill.position + new Vector3(30, 0, 0);
         
+        //sets bar max and min
+        healthBarText.text = GameManager.instance.health.ToString();
+        
         float initialBorderPos = 49;
         float initialBorderSize = 1894;
         float initialFillPos = 916;
@@ -135,23 +139,19 @@ public class UIManager : MonoBehaviour
         float barLength = initialBorderSize * ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
         float fillLength = initialFillSize * ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
         
-        //rescales border depending on initial maxhealth
-        healthBarBorder.sizeDelta = new Vector2(1 * maxHealthRatio * initialBorderSize, 541);
-        
-        //rescales limiter
-        healthBarLimiter.sizeDelta = new Vector2(1 * maxHealthRatio * initialBorderSize, 145);
+        // //rescales border depending on initial maxhealth
+        // healthBarBorder.sizeDelta = new Vector2(1 * maxHealthRatio * initialBorderSize, 541);
+        // //rescales limiter
+        // healthBarLimiter.sizeDelta = new Vector2(1 * maxHealthRatio * initialBorderSize, 145);
+        // //rescales filler
 
-        //rescales filler
+        // healthBarBorder.transform.localPosition = new Vector3(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth)), 0, 0);
+        // healthBarLimiter.transform.localPosition = new Vector3(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth)), 0, 0);
+        // healthBarFill.transform.localPosition = new Vector3(-(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth))) 
+        //                                                               + 23 + initialFillSize * (-1 + 1 * healthRatio * maxHealthRatio), 0, 0);
+        healthBarFill.localPosition = new Vector3(initialFillSize * (-1 + 1 * healthRatio), 0, 0);
         healthBarFill.sizeDelta = new Vector2(1 * healthRatio * maxHealthRatio * initialFillSize, 145);
-        Debug.Log(0 + (0.5f * fillLength * healthRatio * maxHealthRatio));
-
-        healthBarBorder.transform.localPosition = new Vector3(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth)), 0, 0);
-        healthBarLimiter.transform.localPosition = new Vector3(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth)), 0, 0);
-        healthBarFill.transform.localPosition = new Vector3(-(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth))) 
-                                                                      + 23 + initialFillSize * (-1 + 1 * healthRatio * maxHealthRatio), 0, 0);
-        
         healthBarFlare.position = healthBarFill.position + new Vector3(30, 0, 0);
-        
         //plays flare
         healthBarFlareAnimator.CrossFade(Animator.StringToHash("Flare"), 0,0);
         
@@ -252,4 +252,6 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+    
+    
 }

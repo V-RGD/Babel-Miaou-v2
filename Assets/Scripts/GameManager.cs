@@ -115,6 +115,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     isDead = true;
+                    hurtRenderMat.SetFloat("_Strenght",  0);
                 }
             }
         }

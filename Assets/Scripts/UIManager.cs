@@ -24,6 +24,13 @@ public class UIManager : MonoBehaviour
 
     public float transitionLenght;
     private float _panelAlpha;
+    
+    public RectTransform healthBarFill;
+    public RectTransform healthBarFlare;
+    public Animator healthBarFlareAnimator;
+    public Sprite healthSprite;
+    public Sprite maxHealthSprite;
+    public TMP_Text healthBarText;
 
     public bool canEscapeObjectMenu = true;
 
@@ -38,17 +45,6 @@ public class UIManager : MonoBehaviour
 
         _playerControls = new PlayerControls();
         mouseClick = _playerControls.Menus.MouseClick;
-    }
-
-    private void Start()
-    {
-        ObjectsManager.instance = ObjectsManager.instance;
-        GameManager.instance = GameManager.instance;
-
-        flareInitPos = healthBarFlare.transform.position;
-        borderInitPos = healthBarBorder.transform.position;
-        fillInitPos = healthBarFill.transform.position;
-        limiterInitPos = healthBarLimiter.transform.position;
     }
 
     void Update()
@@ -75,25 +71,6 @@ public class UIManager : MonoBehaviour
             lowHpPanel.localScale = new Vector3(4, 4, 1);
         }
     }
-
-    public RectTransform healthBarBorder;
-    public RectTransform healthBarLimiter;
-    public RectTransform healthBarFill;
-    public RectTransform healthBarFlare;
-
-    public Vector3 borderInitPos;
-    public Vector3 limiterInitPos;
-    public Vector3 fillInitPos;
-    public Vector3 flareInitPos;
-    
-    public Animator healthBarFlareAnimator;
-    public Sprite healthSprite;
-    public Sprite maxHealthSprite;
-    public Sprite[] itemSprites;
-    public float healthRatio;
-    public float barlength;
-    public float fillLength;
-    public TMP_Text healthBarText;
 
     public void HealthBar(float health)
     {

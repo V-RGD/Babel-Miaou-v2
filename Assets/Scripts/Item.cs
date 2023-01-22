@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -32,6 +33,7 @@ public class Item : MonoBehaviour
     public string itemName;
     public int itemCost;
     public int rarity;
+    public bool isDuplicate;
     public ItemType itemType;
     public enum ItemType
     {
@@ -57,7 +59,6 @@ public class Item : MonoBehaviour
         _menuManager = MenuManager.instance;
         _objectsManager = ObjectsManager.instance;
         //sets item cost on screen
-        costText.text = itemCost.ToString();
         //then sets item visuals
         switch (itemType)
         {
@@ -74,6 +75,26 @@ public class Item : MonoBehaviour
                 SetItemDrops(2);
                 break;
         }
+
+        if (!isDuplicate)
+        {
+            switch (itemType)
+            {
+                case ItemType.Heal :
+                    itemCost = 10;
+                    break;
+                case ItemType.MaxHealth :
+                    itemCost = 15;
+                    break;
+                case ItemType.Item :
+                    itemCost = 0;
+                    break;
+                case ItemType.RandomItem : 
+                    itemCost = 20;
+                    break;
+            }
+        }
+        costText.text = itemCost.ToString();
         pancarte.SetActive(false);
     }
 
@@ -85,6 +106,7 @@ public class Item : MonoBehaviour
 
     void ItemEffect()
     {
+
         switch (itemType)
         {
             case ItemType.Heal : 
@@ -97,6 +119,16 @@ public class Item : MonoBehaviour
                 }
                 _uiManager.HealthBar(gameManager.health);
                 gameManager.healFx.Play();
+                if (isFromAShop)
+                {
+                    GameObject healObject = Instantiate(_objectsManager.maxHealthItem, transform.position, Quaternion.Euler(0, -45, 0));
+                    healObject.GetComponent<Item>().isFromAShop = true;
+                    healObject.GetComponent<Item>().isDuplicate = true;
+                    healObject.GetComponent<Item>().itemCost = Mathf.CeilToInt(itemCost * 1.3f);
+                    healObject.transform.parent = transform;
+                    healObject.SetActive(true);
+                }
+                
                 break;
             case ItemType.MaxHealth :
                 int maxHealthAmount = 4;
@@ -153,6 +185,11 @@ public class Item : MonoBehaviour
         {
             if (gameManager.money >= itemCost)
             {
+                //can buy health if already max health
+                if (itemType == ItemType.Heal && gameManager.health >= gameManager.maxHealth)
+                {
+                    return;
+                }
                 //does gameobject effect
                 gameManager.money -= itemCost;
                 ItemEffect();

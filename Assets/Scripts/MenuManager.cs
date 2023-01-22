@@ -157,11 +157,6 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.Death);
             StartCoroutine(DeathPanel());
         }
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            StartCoroutine(DeathPanel());
-        }
     }
     public void MainMenu()
     {
@@ -452,6 +447,8 @@ public class MenuManager : MonoBehaviour
     }
     public IEnumerator StartLevel()
     {
+        PlayerController.instance.enabled = false;
+        PlayerAttacks.instance.enabled = false;
         SwitchState(GameState.Loading);
         //waits for the level to start
         yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);

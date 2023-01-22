@@ -12,6 +12,7 @@ public class Chest : MonoBehaviour
     private InputAction _collect;
     private GameObject _player;
     public GameObject messagePrompt;
+    public Animator animator;
 
     private void Awake()
     {
@@ -59,7 +60,8 @@ public class Chest : MonoBehaviour
                 quaternion.identity);
             eyes.SetActive(true);
         }
-        Destroy(gameObject);
+        
+        animator.CrossFade(Animator.StringToHash("Open"), 0, 0);
     }
 
     private void Update()

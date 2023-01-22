@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour
     public int money;
     public int maxHealth = 3;
     public int health;
+    public int initialMaxHealth;
     public float enemyHitShakeIntensity = 3;
 
     public int playerRoom;
@@ -29,6 +32,11 @@ public class GameManager : MonoBehaviour
     public int currentLevel;
 
     public Material hurtRenderMat;
+    public ParticleSystem healFx;
+    public ParticleSystem maxHpFx;
+
+    public VolumeProfile[] globalVolumes;
+    public Volume volume;
 
     private void Awake()
     {
@@ -52,6 +60,7 @@ public class GameManager : MonoBehaviour
         _uiManager = UIManager.instance;
         health = maxHealth;
         _uiManager.HealthBar(health);
+        initialMaxHealth = maxHealth;
     }
 
     IEnumerator FreezeFrame(float length)
@@ -156,5 +165,27 @@ public class GameManager : MonoBehaviour
             enemy.Death();
         }
         enemy.SliderUpdate();
+    }
+    
+    public void ChooseGlobalVolume()
+    {
+        if (MenuManager.instance.gameState == MenuManager.GameState.MainMenu)
+        {
+            volume.sharedProfile = globalVolumes[0];
+            return;
+        }
+        
+        switch (LevelManager.instance.currentLevel)
+        {
+            case 0 :
+                volume.sharedProfile = globalVolumes[1];
+                break;
+            case 1 : 
+                volume.sharedProfile = globalVolumes[2];
+                break;
+            case 2 : 
+                volume.sharedProfile = globalVolumes[3];
+                break;
+        }
     }
 }

@@ -21,15 +21,18 @@ public class ShopManager : MonoBehaviour
         //de la vie max (remplit aussi la vie)
         //du soin (en plus grande quantité)
         //2 bienfaits différents
-        GameObject healMax = Instantiate(_objectsManager.healItem, spawnAreas[0].position + Vector3.up, quaternion.identity);
-        GameObject healObject = Instantiate(_objectsManager.maxHealthItem, spawnAreas[1].position + Vector3.up, quaternion.identity);
-        GameObject randomItem = Instantiate(_objectsManager.randomItem, spawnAreas[2].position + Vector3.up, quaternion.identity);
+        GameObject healMax = Instantiate(_objectsManager.healItem, spawnAreas[0].position + Vector3.up * 5, Quaternion.Euler(0, -45, 0));
+        GameObject healObject = Instantiate(_objectsManager.maxHealthItem, spawnAreas[1].position + Vector3.up * 5, Quaternion.Euler(0, -45, 0));
+        GameObject randomItem = Instantiate(_objectsManager.randomItem, spawnAreas[2].position + Vector3.up * 5, Quaternion.Euler(0, -45, 0));
         healMax.GetComponent<Item>().isFromAShop = true;
         healObject.GetComponent<Item>().isFromAShop = true;
         randomItem.GetComponent<Item>().isFromAShop = true;
         randomItem.GetComponent<Item>().shopManager = this;
-        healMax.transform.parent = spawnAreas[0].transform;
-        healObject.transform.parent = spawnAreas[1].transform;
-        randomItem.transform.parent = spawnAreas[2].transform;
+        healMax.transform.parent = transform;
+        healObject.transform.parent = transform;
+        randomItem.transform.parent = transform;
+        healMax.SetActive(true);
+        healObject.SetActive(true);
+        randomItem.SetActive(true);
     }
 }

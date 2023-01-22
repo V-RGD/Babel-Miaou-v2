@@ -55,7 +55,7 @@ public class Item : MonoBehaviour
         _uiManager = UIManager.instance;
         _menuManager = MenuManager.instance;
         _objectsManager = ObjectsManager.instance;
-        costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
+        //costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
         costPrompt.SetActive(false);
     }
 
@@ -78,12 +78,15 @@ public class Item : MonoBehaviour
                     gameManager.health = gameManager.maxHealth;
                 }
                 _uiManager.HealthBar(gameManager.health);
+                gameManager.healFx.Play();
                 break;
             case ItemType.MaxHealth :
                 int maxHealthAmount = 4;
                 gameManager.maxHealth += maxHealthAmount;
                 gameManager.health += maxHealthAmount;
                 _uiManager.HealthBar(gameManager.health);
+                //enlarges healthbar
+                gameManager.maxHpFx.Play();
                 break;
             case ItemType.Item :
                 AccessToItemMenu();

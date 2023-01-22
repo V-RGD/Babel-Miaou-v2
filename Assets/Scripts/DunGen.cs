@@ -248,6 +248,8 @@ public class DunGen : MonoBehaviour
         yield return new WaitUntil(() => finishedGeneration);
         roomList.transform.Rotate(0, 45, 0);
         _navMeshSurface.BuildNavMesh();
+        GameMusic.instance.ChooseMusic();
+        GameManager.instance.ChooseGlobalVolume();
     }
     #endregion
 }

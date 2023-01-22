@@ -24,6 +24,13 @@ public class UIManager : MonoBehaviour
 
     public float transitionLenght;
     private float _panelAlpha;
+    
+    public RectTransform healthBarFill;
+    public RectTransform healthBarFlare;
+    public Animator healthBarFlareAnimator;
+    public Sprite healthSprite;
+    public Sprite maxHealthSprite;
+    public TMP_Text healthBarText;
 
     public bool canEscapeObjectMenu = true;
 
@@ -38,12 +45,6 @@ public class UIManager : MonoBehaviour
 
         _playerControls = new PlayerControls();
         mouseClick = _playerControls.Menus.MouseClick;
-    }
-
-    private void Start()
-    {
-        ObjectsManager.instance = ObjectsManager.instance;
-        GameManager.instance = GameManager.instance;
     }
 
     void Update()
@@ -71,31 +72,19 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public RectTransform healthBarBorder;
-    public RectTransform healthBarLimiter;
-    public RectTransform healthBarFill;
-    public RectTransform healthBarFlare;
-    public Animator healthBarFlareAnimator;
     public void HealthBar(float health)
     {
+        //sets bar max and min
+        healthBarText.text = (GameManager.instance.health * 10).ToString();
         //sets health bar length depending on the health remaining
-        float healthRatio = health / GameManager.instance.maxHealth;
-
-        float initialBorderSize = 1000;
-        float initialLimiterSize = 1000;
-        float initialFillerSize = 1000;
-        
-        //rescales border
-        healthBarBorder.localScale = GameManager.instance;
-        //rescales limiter
-        //rescales filler
-        
+        float initialFillPos = 916;
+        float initialFillSize = 1833;
+        float healthRatio = (float)health / (float)GameManager.instance.maxHealth;
+        healthBarFill.localPosition = new Vector3(initialFillSize * (-1 + 1 * healthRatio), 0, 0);
+        healthBarFill.sizeDelta = new Vector2(1 * healthRatio * initialFillSize, 145);
+        healthBarFlare.position = healthBarFill.position + new Vector3(30, 0, 0);
         //plays flare
         healthBarFlareAnimator.CrossFade(Animator.StringToHash("Flare"), 0,0);
-
-        //healthBarAmount.localScale = new Vector3(1 * healthRatio, 1 * healthRatio, 1);
-        float barSize = 1000;
-        healthBarAmount.localPosition = new Vector3(barSize * (-1 + 1 * healthRatio), 0, 0);
     }
 
     void Money()
@@ -174,4 +163,6 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+    
+    
 }

@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         health = maxHealth;
         _uiManager.HealthBar(health);
         initialMaxHealth = maxHealth;
+        hurtRenderMat.SetFloat("_Strenght",  0);
     }
 
     IEnumerator FreezeFrame(float length)
@@ -87,7 +88,7 @@ public class GameManager : MonoBehaviour
             _playerController.invincibleCounter = 1;
             cmShake.ShakeCamera(7, .1f);
             
-            hurtRenderMat.SetFloat("Strenght",  (1 - ((float) health / (float) maxHealth)));
+            hurtRenderMat.SetFloat("_Strenght",  (1 - ((float) health / (float) maxHealth)));
             Debug.Log((1 - ((float) health / (float) maxHealth))); 
             //ded
             if (health <= 0)
@@ -114,6 +115,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     isDead = true;
+                    hurtRenderMat.SetFloat("_Strenght",  0);
                 }
             }
         }

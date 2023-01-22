@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -18,8 +19,8 @@ public class Item : MonoBehaviour
     private UIManager _uiManager;
 
     private GameObject player;
-    private GameObject canvas;
-    public GameObject costPrompt;
+    public TMP_Text costText;
+    public GameObject pancarte;
 
     public bool isFromAShop;
     private bool isPlayerInRange;
@@ -32,6 +33,7 @@ public class Item : MonoBehaviour
     public string itemName;
     public int itemCost;
     public int rarity;
+    public bool isDuplicate;
     public ItemType itemType;
     public enum ItemType
     {
@@ -44,19 +46,56 @@ public class Item : MonoBehaviour
     private void Awake()
     {
         playerControls = new PlayerControls();
-        canvas = GameObject.Find("UI Canvas");
         player = GameObject.Find("Player");
     }
 
     private void Start()
     {
+        pancarte = transform.GetChild(0).transform.GetChild(0).gameObject;
+        costText = pancarte.transform.GetComponentInChildren<TMP_Text>();
         
         gameManager = GameManager.instance;
         _uiManager = UIManager.instance;
         _menuManager = MenuManager.instance;
         _objectsManager = ObjectsManager.instance;
-        //costPrompt.GetComponent<TMP_Text>().text = itemCost.ToString();
-        costPrompt.SetActive(false);
+        //sets item cost on screen
+        //then sets item visuals
+        switch (itemType)
+        {
+            case ItemType.Heal :
+                spriteRenderer1.sprite = _uiManager.healthSprite;
+                break;
+            case ItemType.MaxHealth :
+                spriteRenderer1.sprite = _uiManager.maxHealthSprite;
+                break;
+            case ItemType.Item :
+                SetItemDrops(1);
+                break;
+            case ItemType.RandomItem : 
+                SetItemDrops(2);
+                break;
+        }
+
+        if (!isDuplicate)
+        {
+            switch (itemType)
+            {
+                case ItemType.Heal :
+                    itemCost = 10;
+                    break;
+                case ItemType.MaxHealth :
+                    itemCost = 15;
+                    break;
+                case ItemType.Item :
+                    itemCost = 0;
+                    break;
+                case ItemType.RandomItem : 
+                    itemCost = 20;
+                    break;
+            }
+        }
+        costText.text = itemCost.ToString();
+        pancarte.SetActive(false);
     }
 
 
@@ -67,6 +106,7 @@ public class Item : MonoBehaviour
 
     void ItemEffect()
     {
+
         switch (itemType)
         {
             case ItemType.Heal : 
@@ -79,6 +119,16 @@ public class Item : MonoBehaviour
                 }
                 _uiManager.HealthBar(gameManager.health);
                 gameManager.healFx.Play();
+                if (isFromAShop)
+                {
+                    GameObject healObject = Instantiate(_objectsManager.maxHealthItem, transform.position, Quaternion.Euler(0, -45, 0));
+                    healObject.GetComponent<Item>().isFromAShop = true;
+                    healObject.GetComponent<Item>().isDuplicate = true;
+                    healObject.GetComponent<Item>().itemCost = Mathf.CeilToInt(itemCost * 1.3f);
+                    healObject.transform.parent = transform;
+                    healObject.SetActive(true);
+                }
+                
                 break;
             case ItemType.MaxHealth :
                 int maxHealthAmount = 4;
@@ -106,11 +156,11 @@ public class Item : MonoBehaviour
         {
             if (isPlayerInRange)
             {
-                costPrompt.SetActive(true);
+                pancarte.SetActive(true);
             }
             else
             {
-                costPrompt.SetActive(false);
+                pancarte.SetActive(false);
             }
             
             if ((player.transform.position - transform.position).magnitude <= grabDist)
@@ -126,7 +176,7 @@ public class Item : MonoBehaviour
         }
         else
         {
-            costPrompt.SetActive(false);
+            pancarte.SetActive(false);
         }
     }
     void Collect(InputAction.CallbackContext context)
@@ -135,6 +185,11 @@ public class Item : MonoBehaviour
         {
             if (gameManager.money >= itemCost)
             {
+                //can buy health if already max health
+                if (itemType == ItemType.Heal && gameManager.health >= gameManager.maxHealth)
+                {
+                    return;
+                }
                 //does gameobject effect
                 gameManager.money -= itemCost;
                 ItemEffect();
@@ -156,6 +211,7 @@ public class Item : MonoBehaviour
         _objectsManager.uiItemBoxes[3].SetActive(true);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
+        objectID = item1;
         int newItem = objectID;
         _objectsManager.itemObjectsInventory[3] = newItem;
         //updates it's id
@@ -178,18 +234,24 @@ public class Item : MonoBehaviour
         _menuManager.drawMenu.gameObject.SetActive(true);
         PlayerController.instance.enabled = false;
         PlayerAttacks.instance.enabled = false;
-        List<int> doNotChooseTheSameObjectList = new List<int>();
-        for (int i = 0; i < _objectsManager.itemList.Count; i++)
-        {
-            //add every possible item to the list
-            doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
-        }
+        // List<int> doNotChooseTheSameObjectList = new List<int>();
+        // for (int i = 0; i < _objectsManager.itemList.Count; i++)
+        // {
+        //     //add every possible item to the list
+        //     doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
+        // }
         //actives a canvas to choose 2 objects from
         for (int i = 0; i < 2; i++)
         {
-            //assigns box object with a random item
-            int item = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
-            doNotChooseTheSameObjectList.Remove(item);
+            int item = 0;
+            switch (i)
+            {
+                case 0 : item = item1; break;
+                case 1 : item = item2; break;
+            }
+            // //assigns box object with a random item
+            // int item = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
+            // doNotChooseTheSameObjectList.Remove(item);
             //update : box name, icon, description
             string name = _objectsManager.itemDataScriptable.names[item];
             Sprite icon = _objectsManager.objectSprites[item];
@@ -201,6 +263,53 @@ public class Item : MonoBehaviour
             _menuManager.drawMenu.boxVisuals[i].icon.sprite = icon;
             _menuManager.drawMenu.isMenuActive = true;
         }
+    }
+    public int item1;
+    public int item2;
+    public SpriteRenderer spriteRenderer1;
+    public SpriteRenderer spriteRenderer2;
+
+    private void SetItemDrops(int numberOfDrops)
+    {
+        if (numberOfDrops == 1)
+        {
+            //sets item
+            List<int> doNotChooseTheSameObjectList = new List<int>();
+            for (int i = 0; i < _objectsManager.itemList.Count; i++)
+            {
+                //add every possible item to the list
+                doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
+            }
+            //actives a canvas to choose 2 objects from
+            //assigns box object with a random item
+            item1 = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
+            doNotChooseTheSameObjectList.Remove(item1);
+            //updates icon
+            spriteRenderer1.sprite = _objectsManager.objectSprites[item1];
+        }
+
+        else if (numberOfDrops == 2)
+        {
+            //sets both loots
+            //sets item
+            List<int> doNotChooseTheSameObjectList = new List<int>();
+            for (int i = 0; i < _objectsManager.itemList.Count; i++)
+            {
+                //add every possible item to the list
+                doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
+            }
+            //actives a canvas to choose 2 objects from
+            //assigns box object with a random item
+            item1 = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
+            doNotChooseTheSameObjectList.Remove(item1);
+            item2 = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
+            doNotChooseTheSameObjectList.Remove(item2);
+            //updates icon
+            spriteRenderer1.sprite = _objectsManager.objectSprites[item1];
+            spriteRenderer2.sprite = _objectsManager.objectSprites[item2];
+        }
+        
+        
     }
 
     #region InputSystemRequirements

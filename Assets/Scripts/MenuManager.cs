@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -37,6 +38,8 @@ public class MenuManager : MonoBehaviour
     public GameObject optionMenu;
     public DrawItemBox drawMenu;
     public GameObject deathPanel;
+    public GameObject nextLevelPanel;
+    public TMP_Text nextLevelTxt;
 
     [Header("Buttons")]
     public int buttonPos;
@@ -452,7 +455,28 @@ public class MenuManager : MonoBehaviour
         SwitchState(GameState.Loading);
         //waits for the level to start
         yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
-        yield return new WaitForSecondsRealtime(2);
+        //changes next level text
+        switch (LevelManager.instance.currentLevel)
+        {
+            case 0 :
+                nextLevelTxt.text = "Floor I";
+                break;
+            case 1 : 
+                nextLevelTxt.text = "Floor II";
+                break;
+            case 2 : 
+                nextLevelTxt.text = "Floor III";
+                break;
+            case 3 : 
+                nextLevelTxt.text = "Big Meow's Lair";
+                break;
+        }
+        //loading screen
+        nextLevelPanel.SetActive(true);
+        nextLevelPanel.GetComponent<Animator>().CrossFade(Animator.StringToHash("Load"), 0, 0);
+        yield return new WaitForSeconds(6.5f);
+        nextLevelPanel.SetActive(false);
+        
         //disables screen, enables character
         PlayerController.instance.enabled = true;
         PlayerAttacks.instance.enabled = true;

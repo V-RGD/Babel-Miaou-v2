@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -61,7 +62,6 @@ public class LevelManager : MonoBehaviour
         
         _dunGen = DunGen.instance;
     }
-
     public void LoadNextLevel()
     {
         //keeps track of passed rooms : pass to next level

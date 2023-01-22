@@ -48,7 +48,7 @@ public class DunGen : MonoBehaviour
     #region Genpro
     public IEnumerator GenPro()
     {
-       _map = new int[100, 100];
+        _map = new int[100, 100];
        _roomNumberMap = new int[100, 100];
         
         //set un offset

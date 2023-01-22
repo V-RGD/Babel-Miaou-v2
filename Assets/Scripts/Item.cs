@@ -45,8 +45,6 @@ public class Item : MonoBehaviour
     {
         playerControls = new PlayerControls();
         player = GameObject.Find("Player");
-
-        
     }
 
     private void Start()
@@ -176,6 +174,7 @@ public class Item : MonoBehaviour
         _objectsManager.uiItemBoxes[3].SetActive(true);
         _menuManager.ObjectMenu();
         //puts it in the 6th box
+        objectID = item1;
         int newItem = objectID;
         _objectsManager.itemObjectsInventory[3] = newItem;
         //updates it's id
@@ -198,18 +197,24 @@ public class Item : MonoBehaviour
         _menuManager.drawMenu.gameObject.SetActive(true);
         PlayerController.instance.enabled = false;
         PlayerAttacks.instance.enabled = false;
-        List<int> doNotChooseTheSameObjectList = new List<int>();
-        for (int i = 0; i < _objectsManager.itemList.Count; i++)
-        {
-            //add every possible item to the list
-            doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
-        }
+        // List<int> doNotChooseTheSameObjectList = new List<int>();
+        // for (int i = 0; i < _objectsManager.itemList.Count; i++)
+        // {
+        //     //add every possible item to the list
+        //     doNotChooseTheSameObjectList.Add(_objectsManager.itemList[i]);
+        // }
         //actives a canvas to choose 2 objects from
         for (int i = 0; i < 2; i++)
         {
-            //assigns box object with a random item
-            int item = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
-            doNotChooseTheSameObjectList.Remove(item);
+            int item = 0;
+            switch (i)
+            {
+                case 0 : item = item1; break;
+                case 1 : item = item2; break;
+            }
+            // //assigns box object with a random item
+            // int item = doNotChooseTheSameObjectList[Random.Range(0, doNotChooseTheSameObjectList.Count)];
+            // doNotChooseTheSameObjectList.Remove(item);
             //update : box name, icon, description
             string name = _objectsManager.itemDataScriptable.names[item];
             Sprite icon = _objectsManager.objectSprites[item];

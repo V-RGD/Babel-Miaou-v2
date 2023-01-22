@@ -97,83 +97,17 @@ public class UIManager : MonoBehaviour
 
     public void HealthBar(float health)
     {
-        // float initialBorderPos = 49;
-        // float initialBorderSize = 1894;
-        // float initialFillPos = 916;
-        // float initialFillSize = 1833;
-        //
-        // //sets health bar length depending on the health remaining
-        // float healthRatio = (float)health / (float)GameManager.instance.maxHealth;
-        // float barLength = initialBorderSize * ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
-        // float fillLength = initialFillSize * ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
-        // this.healthRatio = healthRatio;
-        // barlength = barLength;
-        // this.fillLength = fillLength;
-        //
-        // //rescales border depending on initial maxhealth
-        // healthBarBorder.position = new Vector3(initialBorderPos + 0.5f * barLength, 0, 0);
-        // healthBarBorder.rect.width = new Vector2(barLength, 145);
-        // //rescales limiter
-        // healthBarLimiter.position = new Vector3(initialBorderPos + 0.5f * barLength, 0, 0);
-        // healthBarLimiter.sizeDelta = new Vector2(barLength, 145);
-        // //rescales filler
-        // healthBarFill.position = new Vector3(initialFillPos + 0.5f * fillLength * healthRatio, 0, 0);
-        // healthBarFill.sizeDelta = new Vector2(fillLength * healthRatio, 145);
-        //
-        // healthBarFlare.position = healthBarFill.position + new Vector3(30, 0, 0);
-        
         //sets bar max and min
-        healthBarText.text = GameManager.instance.health.ToString();
-        
-        float initialBorderPos = 49;
-        float initialBorderSize = 1894;
+        healthBarText.text = (GameManager.instance.health * 10).ToString();
+        //sets health bar length depending on the health remaining
         float initialFillPos = 916;
         float initialFillSize = 1833;
-        Rect borderRect = healthBarBorder.rect;
-        Rect fillRect = healthBarFill.rect;
-        Rect limitRect = healthBarLimiter.rect;
-        
-        //sets health bar length depending on the health remaining
         float healthRatio = (float)health / (float)GameManager.instance.maxHealth;
-        float maxHealthRatio = ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
-        float barLength = initialBorderSize * ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
-        float fillLength = initialFillSize * ((float)GameManager.instance.maxHealth / (float)GameManager.instance.initialMaxHealth);
-        
-        // //rescales border depending on initial maxhealth
-        // healthBarBorder.sizeDelta = new Vector2(1 * maxHealthRatio * initialBorderSize, 541);
-        // //rescales limiter
-        // healthBarLimiter.sizeDelta = new Vector2(1 * maxHealthRatio * initialBorderSize, 145);
-        // //rescales filler
-
-        // healthBarBorder.transform.localPosition = new Vector3(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth)), 0, 0);
-        // healthBarLimiter.transform.localPosition = new Vector3(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth)), 0, 0);
-        // healthBarFill.transform.localPosition = new Vector3(-(100 + (100 * ((float)GameManager.instance.maxHealth - (float)GameManager.instance.initialMaxHealth))) 
-        //                                                               + 23 + initialFillSize * (-1 + 1 * healthRatio * maxHealthRatio), 0, 0);
         healthBarFill.localPosition = new Vector3(initialFillSize * (-1 + 1 * healthRatio), 0, 0);
-        healthBarFill.sizeDelta = new Vector2(1 * healthRatio * maxHealthRatio * initialFillSize, 145);
+        healthBarFill.sizeDelta = new Vector2(1 * healthRatio * initialFillSize, 145);
         healthBarFlare.position = healthBarFill.position + new Vector3(30, 0, 0);
         //plays flare
         healthBarFlareAnimator.CrossFade(Animator.StringToHash("Flare"), 0,0);
-        
-        // //sets health bar length depending on the health remaining
-        // float healthRatio = health / GameManager.instance.maxHealth;
-        //
-        // float initialBorderSize = 1000;
-        // float initialLimiterSize = 1000;
-        // float initialFillerSize = 1000;
-        //
-        // //rescales border
-        // healthBarBorder.localScale = GameManager.instance;
-        // //rescales limiter
-        // //rescales filler
-        //
-        // //plays flare
-        // healthBarFlareAnimator.CrossFade(Animator.StringToHash("Flare"), 0,0);
-        //
-        // //healthBarAmount.localScale = new Vector3(1 * healthRatio, 1 * healthRatio, 1);
-        // float barSize = 1000;
-        // healthBarAmount.localPosition = new Vector3(barSize * (-1 + 1 * healthRatio), 0, 0);
-        
     }
 
     void Money()

@@ -30,10 +30,12 @@ public class GameManager : MonoBehaviour
     public bool isDead;
     private bool isFreezed;
     public int currentLevel;
+    public float aberrationTimer;
 
     public Material hurtRenderMat;
     public ParticleSystem healFx;
     public ParticleSystem maxHpFx;
+    public Animator healthBarAnimator;
 
     public VolumeProfile[] globalVolumes;
     public Volume volume;
@@ -47,7 +49,6 @@ public class GameManager : MonoBehaviour
         }
 
         instance = this;
-        
         cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
         _enemyHitFx = GetComponent<EnemyHitFx>();
     }
@@ -64,11 +65,20 @@ public class GameManager : MonoBehaviour
         hurtRenderMat.SetFloat("_Strenght",  0);
     }
 
+    public IEnumerator ShakeCam()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            cmShake.ShakeCamera(5 - i, .1f);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
     IEnumerator FreezeFrame(float length)
     {
         Time.timeScale = 0;
         yield return new WaitForSecondsRealtime(length);
-        Time.timeScale = 0;
+        Time.timeScale = 1;
         isFreezed = false;
     }
 
@@ -86,7 +96,8 @@ public class GameManager : MonoBehaviour
             _uiManager.HealthBar(health);
             _uiManager.HurtPanels();
             _playerController.invincibleCounter = 1;
-            cmShake.ShakeCamera(7, .1f);
+            healthBarAnimator.CrossFade("Shake", 0);
+            StartCoroutine(ShakeCam());
             
             hurtRenderMat.SetFloat("_Strenght",  (1 - ((float) health / (float) maxHealth)));
             Debug.Log((1 - ((float) health / (float) maxHealth))); 

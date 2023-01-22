@@ -76,6 +76,9 @@ public class UIManager : MonoBehaviour
     public RectTransform healthBarFill;
     public RectTransform healthBarFlare;
     public Animator healthBarFlareAnimator;
+    public Sprite healthSprite;
+    public Sprite maxHealthSprite;
+    public Sprite[] itemSprites;
     public void HealthBar(float health)
     {
         //sets health bar length depending on the health remaining
@@ -86,7 +89,7 @@ public class UIManager : MonoBehaviour
         float initialFillerSize = 1000;
         
         //rescales border
-        healthBarBorder.localScale = GameManager.instance;
+        //healthBarBorder.localScale = GameManager.instance;
         //rescales limiter
         //rescales filler
         

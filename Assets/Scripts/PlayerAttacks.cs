@@ -400,19 +400,19 @@ public class PlayerAttacks : MonoBehaviour
         if (smashPowerTimer < 0.66f)
         {
             smashPower = 0;
-            shakeStrengh = 8;
+            shakeStrengh = 3;
             smashPowerMultiplier = 0.4f;
         }
         else if (smashPowerTimer < 0.95f)
         {
             smashPower = 1;
-            shakeStrengh = 10;
+            shakeStrengh = 4;
             smashPowerMultiplier = 0.6f;
         }
         else
         {
             smashPower = 2;
-            shakeStrengh = 15;
+            shakeStrengh = 5;
             smashPowerMultiplier = 1f;
         }
         
@@ -507,11 +507,12 @@ public class PlayerAttacks : MonoBehaviour
                 break;
         }
         #endregion
-        GameManager.instance.cmShake.ShakeCamera(shakeStrengh, 0.1f);
+        StartCoroutine(GameManager.instance.ShakeCam(shakeStrengh));
         yield return new WaitForSeconds(activeLength);
         //------------recovery state
         //hitbox inactive, not invincible
         hitbox.SetActive(false);
+        smashState = SmashState.None;
         yield return new WaitForSeconds(recoverLength);
         //-----------can attack again
         //can walk again

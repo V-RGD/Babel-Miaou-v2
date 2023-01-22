@@ -45,6 +45,8 @@ public class ShooterIA : MonoBehaviour
     private static readonly int Attack = Animator.StringToHash("Attack");
     private static readonly int Stun = Animator.StringToHash("Stun");
 
+    public ParticleSystem stunFx;
+
     public ShooterStates shooterState;
     public enum ShooterStates
     {
@@ -348,6 +350,15 @@ public class ShooterIA : MonoBehaviour
             {
                 StartCoroutine(ShootProjectile());
             }
+        }
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        //if player hit
+        if (other.CompareTag("PlayerAttack"))
+        {
+            stunFx.Play();
         }
     }
 }

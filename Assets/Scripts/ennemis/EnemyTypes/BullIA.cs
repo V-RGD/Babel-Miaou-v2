@@ -135,9 +135,9 @@ public class BullIA : MonoBehaviour
         dashFactor = -0.1f;
         //adds force to character
         _isDashing = true;
-        _enemyTrigger.canTouchPlayer = true;
         //waits for the attack to start
         yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
+        _enemyTrigger.canTouchPlayer = true;
         _sprite.SetActive(false);
         dashFx.gameObject.SetActive(true);
         dashFactor = 1;
@@ -192,6 +192,11 @@ public class BullIA : MonoBehaviour
                 PlayerController.instance.stunCounter = 1.5f;
                 _player.GetComponent<Rigidbody>().AddForce(playerDir * enemyTypeData.bumpForce);
             }
+        }
+        if (other.CompareTag("PlayerAttack") && _isDashing && PlayerAttacks.instance.smashState != PlayerAttacks.SmashState.None)
+        {
+            _isTouchingWall = true;
+            Debug.Log("stopped by player");
         }
         
         if (other.CompareTag("Wall"))

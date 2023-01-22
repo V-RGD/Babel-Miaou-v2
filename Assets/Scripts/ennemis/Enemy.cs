@@ -159,16 +159,18 @@ public class Enemy : MonoBehaviour
             StartCoroutine(TakeDamageFeedback());
         }
         
-        //deals damage
-        if (other.CompareTag("Player") && canTouchPlayer 
-                                       //&& PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Active
-                                       )
-        {
-            GameManager.instance.DealDamageToPlayer(damage);
-        }
+        
     }
     private void OnTriggerStay(Collider other)
     {
+        //deals damage
+        if (other.CompareTag("Player") && canTouchPlayer 
+            //&& PlayerAttacks.instance.currentAttackState != PlayerAttacks.AttackState.Active
+        )
+        {
+            GameManager.instance.DealDamageToPlayer(damage);
+        }
+        
         if (other.CompareTag("Poison") && _poisonCounter <= 0) 
         {
             //gets poisoned

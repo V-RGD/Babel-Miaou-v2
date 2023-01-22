@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
     public Animator playerColorAnimator;
 
     public VolumeProfile[] globalVolumes;
+    public Animator hurtVolume;
     public Volume volume;
 
     private void Awake()
@@ -66,11 +67,11 @@ public class GameManager : MonoBehaviour
         hurtRenderMat.SetFloat("_Strenght",  0);
     }
 
-    public IEnumerator ShakeCam()
+    public IEnumerator ShakeCam(int apex)
     {
         for (int i = 0; i < 5; i++)
         {
-            cmShake.ShakeCamera(5 - i, .1f);
+            cmShake.ShakeCamera(apex - i, .1f);
             yield return new WaitForSeconds(0.1f);
         }
     }
@@ -99,7 +100,8 @@ public class GameManager : MonoBehaviour
             _playerController.invincibleCounter = 1;
             healthBarAnimator.CrossFade("Shake", 0);
             playerColorAnimator.CrossFade("Hurt", 0);
-            StartCoroutine(ShakeCam());
+            hurtVolume.CrossFade("Hurt", 0);
+            StartCoroutine(ShakeCam(3));
             
             hurtRenderMat.SetFloat("_Strenght",  (1 - ((float) health / (float) maxHealth)));
             Debug.Log((1 - ((float) health / (float) maxHealth))); 

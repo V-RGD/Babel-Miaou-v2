@@ -31,7 +31,7 @@ public class PlayerSounds : MonoBehaviour
     {
         if (instance != null)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
         instance = this;
     }

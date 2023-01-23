@@ -20,7 +20,7 @@ public class GameScore : MonoBehaviour
     {
         if (instance != null)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
 
         instance = this;

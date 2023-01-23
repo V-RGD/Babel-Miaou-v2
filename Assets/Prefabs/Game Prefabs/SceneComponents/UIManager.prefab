@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7835705940820459984}
   - component: {fileID: 7835705940820459985}
-  - component: {fileID: 7835705940820459999}
+  - component: {fileID: 230173573277886305}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -50,14 +50,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   enemyWarnings:
   - {fileID: 4861790597490935395, guid: 5f44af7d75961d045bf4104de2d8336b, type: 3}
-  - {fileID: 4861790597490935395, guid: 5f44af7d75961d045bf4104de2d8336b, type: 3}
-  - {fileID: 4861790597490935395, guid: 5f44af7d75961d045bf4104de2d8336b, type: 3}
-  - {fileID: 4861790597490935395, guid: 5f44af7d75961d045bf4104de2d8336b, type: 3}
-  - {fileID: 4861790597490935395, guid: 5f44af7d75961d045bf4104de2d8336b, type: 3}
+  - {fileID: 4861790597490935395, guid: 224a97c45609ea145bb1393d99973367, type: 3}
+  - {fileID: 4861790597490935395, guid: 9104de72c98510347b5c67037855edce, type: 3}
+  - {fileID: 4861790597490935395, guid: fa403bb74598f3e48a7b67adb12891db, type: 3}
+  - {fileID: 4861790597490935395, guid: a1e86cb292d616742b73ed7ca964ba06, type: 3}
   enemyWarningGroup: {fileID: 0}
   panel: {fileID: 0}
   hurtPanel: {fileID: 0}
@@ -66,8 +64,14 @@ MonoBehaviour:
   doWhiteout: 0
   doBlackout: 0
   transitionLenght: 2
+  healthBarFill: {fileID: 0}
+  healthBarFlare: {fileID: 0}
+  healthBarFlareAnimator: {fileID: 0}
+  healthSprite: {fileID: -118096627, guid: bd162b3425c18674daeac44b3b294654, type: 3}
+  maxHealthSprite: {fileID: 493391223, guid: bd162b3425c18674daeac44b3b294654, type: 3}
+  healthBarText: {fileID: 0}
   canEscapeObjectMenu: 1
---- !u!114 &7835705940820459999
+--- !u!114 &230173573277886305
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,27 +80,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7835705940820459998}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e50046d93ee9e624bac38cbbd6a4bab5, type: 3}
+  m_Script: {fileID: 11500000, guid: 21130298321948944abc1b04a80b941e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isLoading: 0
-  quitWarningActive: 0
-  gameIsPaused: 0
-  isInOptions: 0
-  quitMenu:
-    m_Name: Quit Menu
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: c7eee489-5440-4293-92be-4a412b9ecf26
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  loadingSlider: {fileID: 0}
-  quitWarning: {fileID: 0}
-  loadingUI: {fileID: 0}
-  pauseMenu: {fileID: 0}
-  optionMenu: {fileID: 0}
-  drawMenu: {fileID: 0}
-  deathPanel: {fileID: 0}
-  canEscapeObjectMenu: 1
+  objectID: 

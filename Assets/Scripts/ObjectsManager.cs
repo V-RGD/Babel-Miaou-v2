@@ -83,7 +83,7 @@ public class ObjectsManager : MonoBehaviour
     {
         if (instance != null)
         {
-            Destroy(this);
+            //Destroy(this);
         }
 
         instance = this;

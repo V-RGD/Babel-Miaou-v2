@@ -72,12 +72,19 @@ public class Room : MonoBehaviour
             {
                 //destroys stela
                 StartCoroutine(StelaFadeOut());
+                _uiManager.gameIndications.CrossFade(Animator.StringToHash("Room Cleared"), 0);
+                _uiManager.indicationTxt.text = "Level Cleared";
             }
-            //randomize chest spawn
-            int randChest = Random.Range(0, 100);
-            if (randChest < 100)
+            else
             {
-                chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+                UIManager.instance.gameIndications.CrossFade(Animator.StringToHash("Room Cleared"), 0);
+                UIManager.instance.indicationTxt.text = "Room Cleared";
+                //randomize chest spawn
+                int randChest = Random.Range(0, 100);
+                if (randChest < 100)
+                {
+                    chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+                }
             }
         }
 

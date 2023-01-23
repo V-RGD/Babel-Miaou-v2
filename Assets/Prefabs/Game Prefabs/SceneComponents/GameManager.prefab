@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 230173574124167564}
   - component: {fileID: 230173574124167565}
   - component: {fileID: 230173574124167566}
+  - component: {fileID: 230173574124167571}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -52,13 +53,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cmShake: {fileID: 0}
   eyesInGame: []
+  hardcoreMode: 0
   money: 0
-  maxHealth: 18
-  health: 0
+  maxHealth: 10
+  health: 10
+  initialMaxHealth: 10
   enemyHitShakeIntensity: 3
   playerRoom: 0
   isDead: 0
   currentLevel: 0
+  aberrationTimer: 0
+  hurtRenderMat: {fileID: 2100000, guid: 5b54b98495aa1a44eaa8a2aa3e890ddc, type: 2}
+  healFx: {fileID: 0}
+  maxHpFx: {fileID: 0}
+  healthBarAnimator: {fileID: 0}
+  playerColorAnimator: {fileID: 0}
+  globalVolumes:
+  - {fileID: 11400000, guid: 15bdaee8ecd885d43a2e4a01da4b8ca0, type: 2}
+  - {fileID: 11400000, guid: 15bdaee8ecd885d43a2e4a01da4b8ca0, type: 2}
+  - {fileID: 11400000, guid: 15bdaee8ecd885d43a2e4a01da4b8ca0, type: 2}
+  - {fileID: 11400000, guid: 15bdaee8ecd885d43a2e4a01da4b8ca0, type: 2}
+  hurtVolume: {fileID: 0}
+  volume: {fileID: 0}
 --- !u!114 &5855979421817110363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,20 +87,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b68c04eba6b6f834cb35895c518827cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemObjectsInventory: 00000000000000000000000000000000
+  itemObjectsInventory: e7030000e7030000e7030000e7030000
   itemList: 00000000010000000200000003000000040000000500000006000000
-  objectTemplate: {fileID: 8831286099785496761, guid: 80690f80272269e41b8cac8ae652cd3c,
+  objectTemplate: {fileID: 8831286099785496761, guid: e19e5981338bd934c92e62ac0315ec4c,
     type: 3}
   uiItemPrefab: {fileID: 7826557181551841645, guid: 974657974ae229f4489784919c782c27,
     type: 3}
   eyeCollector: {fileID: 7869526609446283328, guid: 3896f767567373945850b48efb360abe,
     type: 3}
   eyeToken: {fileID: 252159430993309912, guid: 2c5e1f53132f7af4ca93a0f5eef6409d, type: 3}
-  healItem: {fileID: 8831286099785496761, guid: 11a7e8859b0495b4ca76c6a176ea89d2,
+  healItem: {fileID: 8831286099785496761, guid: 8c647875bde76b54783c839dc39ffbc9,
     type: 3}
-  randomItem: {fileID: 8831286099785496761, guid: e19e5981338bd934c92e62ac0315ec4c,
+  randomItem: {fileID: 6594916006442236337, guid: 7a63c6e2991425247aecdc210695dd48,
     type: 3}
-  maxHealthItem: {fileID: 8831286099785496761, guid: 755894a6e8623b34cad91d9c23afbcd7,
+  maxHealthItem: {fileID: 8831286099785496761, guid: b76a9da6801783c49984c2772ca13d65,
     type: 3}
   _currentRoom: {fileID: 0}
   uiItemBoxes:
@@ -107,15 +123,16 @@ MonoBehaviour:
   - {fileID: -1065118073, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
   - {fileID: 1829918292, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
   - {fileID: -801784743, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
-  - {fileID: -1632679625, guid: 7dd5d6e0cbef3674aa7a220c16550cf4, type: 3}
+  - {fileID: 21300000, guid: 5cefcd4432218e347b8e725eb9a97571, type: 3}
   sacredCrossFx: {fileID: 0}
   killingSpreeFx: {fileID: 0}
   noHitFx: {fileID: 0}
   resurrectionFx: {fileID: 0}
   itemAmount: 25
   sacredCross: 0
-  killingSpree: 0
+  killingSpree: 1
   noHit: 0
+  eyeCollectorActive: 0
   catLuck: 0
   stinkyFish: 0
   earthQuake: 0
@@ -124,7 +141,7 @@ MonoBehaviour:
   noHitStreak: 0
   currentBoxPos: 0
   offsetDiff: 170
-  bonusBoxStartPos: {x: 0, y: 0, z: 0}
+  bonusBoxStartPos: {x: 1234, y: 346, z: -2123}
   canReplaceItem: 0
 --- !u!114 &5855979421817110362
 MonoBehaviour:
@@ -206,6 +223,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 271f4729d66ec22459ec33fe9290c4a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noHitMaster: 0
+  noObject: 0
+  pureSpeed: 0
+  godlike: 0
+  eyelionnaire: 0
+  achievementCards: []
+  achievementPanel: {fileID: 0}
 --- !u!114 &230173574124167566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,3 +243,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elapsedTime: 0
+--- !u!114 &230173574124167571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5855979421817110367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21130298321948944abc1b04a80b941e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectID: 

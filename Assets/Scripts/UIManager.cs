@@ -31,6 +31,8 @@ public class UIManager : MonoBehaviour
     public Sprite healthSprite;
     public Sprite maxHealthSprite;
     public TMP_Text healthBarText;
+    public Animator gameIndications;
+    public TMP_Text indicationTxt;
 
     public bool canEscapeObjectMenu = true;
 
@@ -38,7 +40,7 @@ public class UIManager : MonoBehaviour
     {
         if (instance != null)
         {
-            Destroy(this);
+            //Destroy(this);
         }
 
         instance = this;

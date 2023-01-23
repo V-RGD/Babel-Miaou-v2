@@ -7,6 +7,7 @@ public class ToNextLevel : MonoBehaviour
     {
         if (other.CompareTag("Player") && isActive)
         {
+            SaveProgression.instance.SetGameValues();
             LevelManager.instance.LoadNextLevel();
             GameMusic.instance.ChooseMusic();
             Debug.Log("nextLev");

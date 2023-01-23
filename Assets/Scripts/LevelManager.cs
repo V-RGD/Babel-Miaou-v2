@@ -7,9 +7,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
-
-    public List<GameObject> DDOL;
-
+    
     //manages all prefab instanciations
     //updates infos regarding the level progression
     [Header("Generic Prefabs")]
@@ -62,14 +60,6 @@ public class LevelManager : MonoBehaviour
         instance = this;
         
         DunGen.instance = DunGen.instance;
-    }
-
-    private void Start()
-    {
-        foreach (var variable in DDOL)
-        {
-            DontDestroyOnLoad(variable);
-        }
     }
 
     public void LoadNextLevel()

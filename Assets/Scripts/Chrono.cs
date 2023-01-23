@@ -9,7 +9,7 @@ public class Chrono : MonoBehaviour
     {
         if (instance != null)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
 
         instance = this;

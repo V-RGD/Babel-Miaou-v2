@@ -121,7 +121,7 @@ public class PlayerAttacks : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this);
+            //Destroy(this);
         }
 
         instance = this;

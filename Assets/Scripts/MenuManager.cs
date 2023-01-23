@@ -87,46 +87,18 @@ public class MenuManager : MonoBehaviour
         
         Death
     }
-    private void OnEnable()
-    {
-        _menu = _playerControls.Menus.Menu;
-        _menu.performed += MenuShortcut;
-        _menu.Enable();
-        
-        _cancel = _playerControls.Menus.Cancel;
-        _cancel.performed += EscapeButton;
-        _cancel.Enable();
-        
-        _confirm = _playerControls.Menus.Confirm;
-        _confirm.performed += ConfirmButton;
-        _confirm.Enable();
-        
-        _upArrow = _playerControls.Menus.UpArrow;
-        _upArrow.performed += UpButton;
-        _upArrow.Enable();
-        
-        _downArrow = _playerControls.Menus.DownArrow;
-        _downArrow.performed += DownButton;
-        _downArrow.Enable();
-        
-        _commandLine = _playerControls.Menus.Console;
-        _commandLine.performed += CommandLineShortcut;
-        _commandLine.Enable();
-        
-    }
-    private void OnDisable()
-    {
-        _menu.Disable();
-        _confirm.Disable();
-        _upArrow.Disable();
-        _downArrow.Disable();
-        _commandLine.Disable();
-    }
+
+    private PlayerController _playerController;
+    private PlayerAttacks _playerAttacks;
+    
     private void Awake()
     {
         if (instance != null)
         {
-            Destroy(gameObject);
+            if (gameObject != null)
+            {
+                Destroy(gameObject);
+            }
             return;
         }
 
@@ -143,6 +115,8 @@ public class MenuManager : MonoBehaviour
         _objectsManager = ObjectsManager.instance;
         _uiManager = UIManager.instance;
         _cheatManager = CheatManager.instance;
+        _playerController = PlayerController.instance;
+        _playerAttacks = PlayerAttacks.instance;
 
         if (isLoading)
         {
@@ -261,8 +235,8 @@ public class MenuManager : MonoBehaviour
         //to regain movement
         if (newState != GameState.Play)
         {
-            PlayerAttacks.instance.enabled = false;
-            PlayerController.instance.enabled = false;
+            _playerAttacks.enabled = false;
+            _playerController.enabled = false;
             Time.timeScale = 0;
         }
         
@@ -291,22 +265,22 @@ public class MenuManager : MonoBehaviour
         //to regain movement
         if (gameState == GameState.Play)
         {
-            PlayerAttacks.instance.enabled = true;
-            PlayerController.instance.enabled = true;
+            _playerAttacks.enabled = true;
+            _playerController.enabled = true;
             Time.timeScale = 1;
         }
         else
         {
-            PlayerAttacks.instance.enabled = false;
-            PlayerController.instance.enabled = false;
+            _playerAttacks.enabled = false;
+            _playerController.enabled = false;
             Time.timeScale = 0;
         }
     }
     public IEnumerator OpenMenu(GameObject newMenu, Animator newAnimator, GameState newState)
     {
         //to avoid movement
-        PlayerAttacks.instance.enabled = false;
-        PlayerController.instance.enabled = false;
+        _playerAttacks.enabled = false;
+        _playerController.enabled = false;
         Time.timeScale = 0;
         
         //bloque le changement de menu
@@ -328,14 +302,14 @@ public class MenuManager : MonoBehaviour
         //to regain movement
         if (gameState == GameState.Play)
         {
-            PlayerAttacks.instance.enabled = true;
-            PlayerController.instance.enabled = true;
+            _playerAttacks.enabled = true;
+            _playerController.enabled = true;
             Time.timeScale = 1;
         }
         else
         {
-            PlayerAttacks.instance.enabled = false;
-            PlayerController.instance.enabled = false;
+            _playerAttacks.enabled = false;
+            _playerController.enabled = false;
             Time.timeScale = 0;
         }
     }
@@ -362,14 +336,14 @@ public class MenuManager : MonoBehaviour
         //to regain movement
         if (gameState == GameState.Play)
         {
-            PlayerAttacks.instance.enabled = true;
-            PlayerController.instance.enabled = true;
+            _playerAttacks.enabled = true;
+            _playerController.enabled = true;
             Time.timeScale = 1;
         }
         else
         {
-            PlayerAttacks.instance.enabled = false;
-            PlayerController.instance.enabled = false;
+            _playerAttacks.enabled = false;
+            _playerController.enabled = false;
         }
     }
     void CheckGameActive()
@@ -385,15 +359,15 @@ public class MenuManager : MonoBehaviour
             or GameState.QuitToMainMenuPrompt)
         {
             //disables playercontroller + enemies
-            PlayerAttacks.instance.enabled = false;
-            PlayerController.instance.enabled = false;
+            _playerAttacks.enabled = false;
+            _playerController.enabled = false;
             Time.timeScale = 0;
         }
         else
         {
             //disables playercontroller + enemies
-            PlayerAttacks.instance.enabled = true;
-            PlayerController.instance.enabled = true;
+            _playerAttacks.enabled = true;
+            _playerController.enabled = true;
             Time.timeScale = 1;
         }
     }
@@ -414,8 +388,8 @@ public class MenuManager : MonoBehaviour
     IEnumerator LoadingScreen()
     {
         SwitchState(GameState.Loading);
-        PlayerController.instance.enabled = false;
-        PlayerAttacks.instance.enabled = false;
+        _playerController.enabled = false;
+        _playerAttacks.enabled = false;
         Time.timeScale = 0;
 
         loadingUI.SetActive(true);
@@ -429,8 +403,8 @@ public class MenuManager : MonoBehaviour
     public Animator deathTitleAnimator;
     private IEnumerator DeathPanel()
     {
-        PlayerController.instance.enabled = false;
-        PlayerAttacks.instance.enabled = false;
+        _playerController.enabled = false;
+        _playerAttacks.enabled = false;
         Time.timeScale = 0;
         deathPanel.SetActive(true);
         foreach (var button in deathPanelButtons)
@@ -447,8 +421,22 @@ public class MenuManager : MonoBehaviour
     }
     public IEnumerator StartLevel()
     {
-        PlayerController.instance.enabled = false;
-        PlayerAttacks.instance.enabled = false;
+        // SaveProgression saveProgression = GameObject.Find("SaveProgression").GetComponent<SaveProgression>();
+        //
+        // GameManager.instance.health = saveProgression.health;
+        // GameManager.instance.maxHealth = saveProgression.maxHealth;
+        // GameManager.instance.initialMaxHealth = saveProgression.initialMaxHealth;
+        // LevelManager.instance.currentLevel = saveProgression.currentLevel;
+        //
+        // GameManager.instance.money = saveProgression.money;
+        //
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     ObjectsManager.instance.itemObjectsInventory[i] = saveProgression.itemObjectsInventory[i];
+        // }
+        
+        _playerController.enabled = false;
+        _playerAttacks.enabled = false;
         SwitchState(GameState.Loading);
         //waits for the level to start
         yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
@@ -473,11 +461,15 @@ public class MenuManager : MonoBehaviour
         nextLevelPanel.SetActive(true);
         nextLevelPanel.GetComponent<Animator>().CrossFade(Animator.StringToHash("Load"), 0, 0);
         yield return new WaitForSeconds(6.5f);
+
+        
+        
         nextLevelPanel.SetActive(false);
         
         //disables screen, enables character
-        PlayerController.instance.enabled = true;
-        PlayerAttacks.instance.enabled = true;
+        GameObject player = GameObject.Find("Player");
+        player.GetComponent<PlayerController>().enabled = true;
+        player.GetComponent<PlayerAttacks>().enabled = true;
         Time.timeScale = 1;
         loadingUI.SetActive(false);
         SwitchState(GameState.Play);
@@ -655,6 +647,41 @@ public class MenuManager : MonoBehaviour
     void StopAllEnemies()
     {
         //if 
+    }
+    private void OnEnable()
+    {
+        _menu = _playerControls.Menus.Menu;
+        _menu.performed += MenuShortcut;
+        _menu.Enable();
+        
+        _cancel = _playerControls.Menus.Cancel;
+        _cancel.performed += EscapeButton;
+        _cancel.Enable();
+        
+        _confirm = _playerControls.Menus.Confirm;
+        _confirm.performed += ConfirmButton;
+        _confirm.Enable();
+        
+        _upArrow = _playerControls.Menus.UpArrow;
+        _upArrow.performed += UpButton;
+        _upArrow.Enable();
+        
+        _downArrow = _playerControls.Menus.DownArrow;
+        _downArrow.performed += DownButton;
+        _downArrow.Enable();
+        
+        _commandLine = _playerControls.Menus.Console;
+        _commandLine.performed += CommandLineShortcut;
+        _commandLine.Enable();
+        
+    }
+    private void OnDisable()
+    {
+        _menu.Disable();
+        _confirm.Disable();
+        _upArrow.Disable();
+        _downArrow.Disable();
+        _commandLine.Disable();
     }
 }
     

@@ -197,6 +197,8 @@ public class ObjectsManager : MonoBehaviour
         {
             itemObjectsInventory[i] = 999;
         }
+
+        killingSpree = false;
     }
     public void UiItemBoxesUpdate()
     {

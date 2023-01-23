@@ -97,6 +97,17 @@ public class Enemy : MonoBehaviour
             poisonedFx.Stop();
         }
 
+        if (sprite.transform.localScale.x > 1)
+        {
+            sprite.transform.localScale = new Vector3(1, sprite.transform.localScale.y, sprite.transform.localScale.z);
+            _flipCounter = 1;
+        }
+        if (sprite.transform.localScale.x < -1)
+        {
+            sprite.transform.localScale = new Vector3(-1, sprite.transform.localScale.y, sprite.transform.localScale.z);
+            _flipCounter = -1;
+        }
+
         if (canTouchPlayer || canFlip)
         {
             FlipSprite();

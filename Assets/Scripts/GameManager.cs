@@ -40,9 +40,9 @@ public class GameManager : MonoBehaviour
     public Animator healthBarAnimator;
     public Animator playerColorAnimator;
 
-    public VolumeProfile[] globalVolumes;
+    public GameObject[] globalVolumes;
+    public GameObject[] lights;
     public Animator hurtVolume;
-    public Volume volume;
 
     private void Awake()
     {
@@ -206,23 +206,34 @@ public class GameManager : MonoBehaviour
     
     public void ChooseGlobalVolume()
     {
-        if (MenuManager.instance.gameState == MenuManager.GameState.MainMenu)
-        {
-            volume.sharedProfile = globalVolumes[0];
-            return;
-        }
-        
+        //replaces lights and volumes accordingly
         switch (LevelManager.instance.currentLevel)
         {
             case 0 :
-                volume.sharedProfile = globalVolumes[1];
+                globalVolumes[0].SetActive(true);
+                globalVolumes[1].SetActive(false);
+                globalVolumes[2].SetActive(false);
+                lights[0].SetActive(true);
+                lights[1].SetActive(false);
+                lights[2].SetActive(false);
                 break;
             case 1 : 
-                volume.sharedProfile = globalVolumes[2];
+                globalVolumes[0].SetActive(false);
+                globalVolumes[1].SetActive(true);
+                globalVolumes[2].SetActive(false);
+                lights[0].SetActive(false);
+                lights[1].SetActive(true);
+                lights[2].SetActive(false);
                 break;
             case 2 : 
-                volume.sharedProfile = globalVolumes[3];
+                globalVolumes[0].SetActive(false);
+                globalVolumes[1].SetActive(false);
+                globalVolumes[2].SetActive(true);
+                lights[0].SetActive(false);
+                lights[1].SetActive(false);
+                lights[2].SetActive(true);
                 break;
         }
+        
     }
 }

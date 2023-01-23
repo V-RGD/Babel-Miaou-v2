@@ -19,6 +19,7 @@ public class TpToBoss : MonoBehaviour
 
     private IEnumerator OnTriggerEnter(Collider other)
     {
+        
         if (other.CompareTag("Player"))
         {
             if (_gameManager.currentLevel < 4)

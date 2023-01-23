@@ -16,7 +16,6 @@ public class Room : MonoBehaviour
     [HideInInspector] public List<Animator> doorsAnimators;
 
     //components
-    private LevelManager _lm;
     private UIManager _uiManager;
     private DunGen _dunGen;
     private GameManager _gameManager;
@@ -33,6 +32,7 @@ public class Room : MonoBehaviour
     [SerializeField]private GameObject visuals;
     [SerializeField]private GameObject empty;
     [HideInInspector]public GameObject enemyGroup;
+    private GameObject stela;
     [HideInInspector]public bool isStelaActive;
     private int _enemiesRemaining;
     private bool _canChestSpawn = true;
@@ -44,13 +44,13 @@ public class Room : MonoBehaviour
     {
         //component assignations
         _player = GameObject.Find("Player");
-        _lm = LevelManager.instance;
+        LevelManager.instance = LevelManager.instance;
         _dunGen = DunGen.instance;
         _objectsManager = ObjectsManager.instance;
         _gameManager = GameManager.instance;
         enemyGroup = transform.GetChild(0).gameObject;
-        chest = _lm.chest;
-        doorPrefab = _lm.door;
+        chest = LevelManager.instance.chest;
+        doorPrefab = LevelManager.instance.door;
         _roomInfo = GetComponent<RoomInfo>();
         GameObject group = Instantiate(empty, transform);
         enemyGroup = group;
@@ -72,8 +72,8 @@ public class Room : MonoBehaviour
             {
                 //destroys stela
                 StartCoroutine(StelaFadeOut());
-                _uiManager.gameIndications.CrossFade(Animator.StringToHash("Room Cleared"), 0);
-                _uiManager.indicationTxt.text = "Level Cleared";
+                UIManager.instance.gameIndications.CrossFade(Animator.StringToHash("Room Cleared"), 0);
+                UIManager.instance.indicationTxt.text = "Level Cleared";
             }
             else
             {
@@ -146,18 +146,18 @@ public class Room : MonoBehaviour
             difficulty = 2;
         }
         //determine le nombre d'ennemis devant spawn
-        int enemyNumber = _lm.roomSpawnAmountMatrix[difficulty + stageBonus];
+        int enemyNumber = LevelManager.instance.roomSpawnAmountMatrix[difficulty + stageBonus];
         //pour chaque ennemi
         for (int i = 0; i < enemyNumber; i++)
         {
             //determine les pourcentages d'apparition pour chacun
             int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis
-            int wandererCeil = _lm.matrices[0].spawnMatrix[difficulty + stage];
-            int bullCeil = _lm.matrices[1].spawnMatrix[difficulty + stage];
-            int shooterCeil = _lm.matrices[2].spawnMatrix[difficulty + stage];
-            int tankCeil = _lm.matrices[3].spawnMatrix[difficulty + stage];
-            int mkCeil = _lm.matrices[4].spawnMatrix[difficulty + stage];
+            int wandererCeil = LevelManager.instance.matrices[0].spawnMatrix[difficulty + stage];
+            int bullCeil = LevelManager.instance.matrices[1].spawnMatrix[difficulty + stage];
+            int shooterCeil = LevelManager.instance.matrices[2].spawnMatrix[difficulty + stage];
+            int tankCeil = LevelManager.instance.matrices[3].spawnMatrix[difficulty + stage];
+            int mkCeil = LevelManager.instance.matrices[4].spawnMatrix[difficulty + stage];
             
             List<int> randomEnemyType = new List<int>();
             //adds every enemy type
@@ -181,7 +181,7 @@ public class Room : MonoBehaviour
             }
 
             int enemyType = randomEnemyType[rand];
-            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
+            GameObject enemySpawning = Instantiate(LevelManager.instance.basicEnemies[enemyType], enemyGroup.transform);
             
             //determines position
             //calculates a random position where the enemy will spawn
@@ -196,22 +196,25 @@ public class Room : MonoBehaviour
             enemySpawning.SetActive(false);
             
             //sets variables
-            enemySpawning.GetComponent<Enemy>().health = _lm.matrices[enemyType].enemyValues[stage].x;
-            enemySpawning.GetComponent<Enemy>().damage = _lm.matrices[enemyType].enemyValues[stage].y;
-            enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
-            enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
+            enemySpawning.GetComponent<Enemy>().health = LevelManager.instance.matrices[enemyType].enemyValues[stage].x;
+            enemySpawning.GetComponent<Enemy>().damage = LevelManager.instance.matrices[enemyType].enemyValues[stage].y;
+            enemySpawning.GetComponent<Enemy>().speed = LevelManager.instance.matrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy>().eyesLooted = LevelManager.instance.matrices[enemyType].enemyValues[stage].w;
         }
     }
     IEnumerator StelaFadeOut()
     {
-        _lm.stela.transform.GetChild(1).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fade"), 0);
+        LevelManager.instance.stela.transform.GetChild(1).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fade"), 0);
         yield return new WaitForSeconds(1);
-        Destroy(_lm.stela);
+        stela.SetActive(false);
         //activates colis stratégique des escaliers
-        _lm.exit.SetActive(true);
-        _lm.exit.GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
+        
+        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
+            quaternion.identity);
+        stairs.SetActive(true);
+        stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
         yield return new WaitForSeconds(0.4f);
-        _lm.exit.transform.GetChild(5).GetComponent<ToNextLevel>().isActive = true;
+        stairs.transform.GetChild(0).GetComponent<ToNextLevel>().isActive = true;
     }
     
     void RoomType()
@@ -241,7 +244,7 @@ public class Room : MonoBehaviour
         switch (roomType)
         {
             case 0 : //start room
-                _lm.entrance.transform.position = roomCenter.position;
+                LevelManager.instance.entrance.transform.position = roomCenter.position;
                 PlacePlayerAtSpawnPoint();
                 break;
             case 1 : //normal room
@@ -250,22 +253,23 @@ public class Room : MonoBehaviour
             case 2 : //special room
                 break;
             case 3 : //shop room
-                _lm.currentShopPosition = transform.position;
+                LevelManager.instance.currentShopPosition = transform.position;
                 //ShopSpawn();
                 break;
             case 4 : //mini-boss room
-                GameObject stela = Instantiate(_lm.stela, roomCenter.position, Quaternion.identity);
+                stela = Instantiate(LevelManager.instance.stela, roomCenter.position, Quaternion.identity);
                 stela.GetComponent<ActiveStela>().room = this;
-                _lm.currentStelaPosition = stela.transform.position;
-                GameObject exitPrefab = Instantiate(_lm.exit, roomCenter.position, Quaternion.identity);
-                _lm.exit = exitPrefab;
-                _lm.exit.SetActive(false);
+                LevelManager.instance.currentStelaPosition = stela.transform.position;
+                //GameObject exitPrefab = Instantiate(LevelManager.instance.exit, roomCenter.position, Quaternion.identity);
+                //LevelManager.instance.exit = exitPrefab;
+                //LevelManager.instance.exit.SetActive(false);
                 StelaSpawn();
                 break;
             case 5 : //final boss room
                 break;
         }
     }
+
 
     public void StelaSpawn()
     {
@@ -293,11 +297,11 @@ public class Room : MonoBehaviour
             //determine les pourcentages d'apparition pour chacun
             int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis
-            int wandererCeil = _lm.stelaMatrices[0].spawnMatrix[stage];
-            int bullCeil = _lm.stelaMatrices[1].spawnMatrix[stage];
-            int shooterCeil = _lm.stelaMatrices[2].spawnMatrix[stage];
-            int tankCeil = _lm.stelaMatrices[3].spawnMatrix[stage];
-            int mkCeil = _lm.stelaMatrices[4].spawnMatrix[stage];
+            int wandererCeil = LevelManager.instance.stelaMatrices[0].spawnMatrix[stage];
+            int bullCeil = LevelManager.instance.stelaMatrices[1].spawnMatrix[stage];
+            int shooterCeil = LevelManager.instance.stelaMatrices[2].spawnMatrix[stage];
+            int tankCeil = LevelManager.instance.stelaMatrices[3].spawnMatrix[stage];
+            int mkCeil = LevelManager.instance.stelaMatrices[4].spawnMatrix[stage];
 
             List<int> randomEnemyType = new List<int>();
             //adds every enemy type
@@ -321,7 +325,7 @@ public class Room : MonoBehaviour
             }
 
             int enemyType = randomEnemyType[rand];
-            GameObject enemySpawning = Instantiate(_lm.basicEnemies[enemyType], enemyGroup.transform);
+            GameObject enemySpawning = Instantiate(LevelManager.instance.basicEnemies[enemyType], enemyGroup.transform);
 
             //determines position
             //calculates a random position where the enemy will spawn
@@ -338,27 +342,27 @@ public class Room : MonoBehaviour
             enemySpawning.SetActive(false);
 
             //sets variables
-            enemyComponent.health = _lm.stelaMatrices[enemyType].enemyValues[stage].x;
-            enemyComponent.damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
-            enemyComponent.eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
-            enemyComponent.speed = _lm.matrices[enemyType].enemyValues[stage].z;
+            enemyComponent.health = LevelManager.instance.stelaMatrices[enemyType].enemyValues[stage].x;
+            enemyComponent.damage = LevelManager.instance.stelaMatrices[enemyType].enemyValues[stage].y;
+            enemyComponent.eyesLooted = LevelManager.instance.stelaMatrices[enemyType].enemyValues[stage].z;
+            enemyComponent.speed = LevelManager.instance.matrices[enemyType].enemyValues[stage].z;
             enemyComponent.isFromStela = true;
         }
     }
 
     void ShopSpawn()
     {
-        Instantiate(_lm.shop, roomCenter.position + Vector3.up * 7, quaternion.identity);
+        Instantiate(LevelManager.instance.shop, roomCenter.position + Vector3.up * 7, quaternion.identity);
     }
 
     void CheckPlayerPresence()
     {
         _gameManager.playerRoom = currentRoom;
         var position = roomCenter.position;
-        var roomDetectionXMax = position.x + _lm.roomSize * RoomDetectZoneSize;
-        var roomDetectionXMin = position.x - _lm.roomSize * RoomDetectZoneSize;
-        var roomDetectionZMax = position.z + _lm.roomSize * RoomDetectZoneSize;
-        var roomDetectionZMin = position.z - _lm.roomSize * RoomDetectZoneSize;
+        var roomDetectionXMax = position.x + LevelManager.instance.roomSize * RoomDetectZoneSize;
+        var roomDetectionXMin = position.x - LevelManager.instance.roomSize * RoomDetectZoneSize;
+        var roomDetectionZMax = position.z + LevelManager.instance.roomSize * RoomDetectZoneSize;
+        var roomDetectionZMin = position.z - LevelManager.instance.roomSize * RoomDetectZoneSize;
         
         if (_player.transform.position.x < roomDetectionXMax && _player.transform.position.x > roomDetectionXMin && 
             _player.transform.position.z > roomDetectionZMin && _player.transform.position.z < roomDetectionZMax )

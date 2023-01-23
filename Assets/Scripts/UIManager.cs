@@ -40,10 +40,12 @@ public class UIManager : MonoBehaviour
     {
         if (instance != null)
         {
-            //Destroy(this);
+            Destroy(gameObject);
+            return;
         }
 
         instance = this;
+        DontDestroyOnLoad(gameObject);
 
         _playerControls = new PlayerControls();
         mouseClick = _playerControls.Menus.MouseClick;
@@ -141,6 +143,11 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
+        if (mouseClick == null)
+        {
+            return;
+        }
+        
         mouseClick.Disable();
     }
 

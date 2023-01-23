@@ -70,12 +70,14 @@ public class PlayerController : MonoBehaviour
     }
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (instance != null)
         {
-            //Destroy(this);
+            Destroy(gameObject);
+            return;
         }
 
         instance = this;
+        DontDestroyOnLoad(this);
         
         canMove = true;
         
@@ -121,12 +123,12 @@ public class PlayerController : MonoBehaviour
         
         if (isDashing)
         {
-            //HoleDashCheck();
+            HoleDashCheck();
         }
 
         if (isDashingOverHole)
         {
-            //HoleDashForce();
+            HoleDashForce();
         }
     }
 
@@ -476,6 +478,11 @@ public class PlayerController : MonoBehaviour
         }
     private void OnDisable()
     {
+        if (_move == null)
+        {
+            return;
+        }
+        
         _move.Disable();
         _dash.Disable();
     }

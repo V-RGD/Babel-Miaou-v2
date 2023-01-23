@@ -46,13 +46,14 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (instance != null)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
 
         instance = this;
+        DontDestroyOnLoad(gameObject);
         cmShake = GameObject.Find("TestCam").GetComponent<CinemachineShake>();
         _enemyHitFx = GetComponent<EnemyHitFx>();
     }
@@ -124,7 +125,6 @@ public class GameManager : MonoBehaviour
             StartCoroutine(ShakeCam(3));
             
             hurtRenderMat.SetFloat("_Strenght",  (1 - ((float) health / (float) maxHealth)));
-            Debug.Log((1 - ((float) health / (float) maxHealth))); 
             //ded
             if (health <= 0)
             {
@@ -206,6 +206,10 @@ public class GameManager : MonoBehaviour
     
     public void ChooseGlobalVolume()
     {
+        if (globalVolumes == null)
+        {
+            return;
+        }
         //replaces lights and volumes accordingly
         switch (LevelManager.instance.currentLevel)
         {

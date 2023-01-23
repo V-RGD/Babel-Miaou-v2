@@ -95,14 +95,12 @@ public class MenuManager : MonoBehaviour
     {
         if (instance != null)
         {
-            if (gameObject != null)
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
             return;
         }
 
         instance = this;
+        DontDestroyOnLoad(gameObject);
 
         _playerControls = new PlayerControls();
 
@@ -677,6 +675,11 @@ public class MenuManager : MonoBehaviour
     }
     private void OnDisable()
     {
+        if (_menu == null)
+        {
+            return;
+        }
+        
         _menu.Disable();
         _confirm.Disable();
         _upArrow.Disable();

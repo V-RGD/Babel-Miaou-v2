@@ -53,13 +53,13 @@ public class LevelManager : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
 
         instance = this;
+        DontDestroyOnLoad(this);
         
-        DunGen.instance = DunGen.instance;
     }
 
     public void LoadNextLevel()
@@ -77,20 +77,5 @@ public class LevelManager : MonoBehaviour
             //don't destroy on load everything
             SceneManager.LoadScene("BossScene");
         }
-        
-
-        //reload scene
-
-        // //disables all current rooms
-        // for (int i = 0; i < roomList.Count; i++)
-        // {
-        //     GameObject objectToRemove = roomList[i];
-        //     roomList.Remove(roomList[i]);
-        //     Destroy(objectToRemove);
-        // }
-        // //builds new level
-        // DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
-        // //places player in first room
-        // GameObject.Find("Player").transform.position = new Vector3(entrance.transform.position.x, 1, entrance.transform.position.z);
     }
 }

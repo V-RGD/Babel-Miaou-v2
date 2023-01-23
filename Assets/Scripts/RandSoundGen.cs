@@ -38,6 +38,11 @@ public class RandSoundGen : MonoBehaviour
         //removes it to shuffle
         soundList.Remove(soundList[randInt]);
         //assigns, then plays sound
+        if (_outputSource == null)
+        {
+            return;
+        }
+        
         _outputSource.clip = clip;
         _outputSource.PlayOneShot(_outputSource.clip);
     }

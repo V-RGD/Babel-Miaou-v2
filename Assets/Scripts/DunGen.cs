@@ -29,9 +29,9 @@ public class DunGen : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (instance != null)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
 
@@ -48,6 +48,8 @@ public class DunGen : MonoBehaviour
     #region Genpro
     public IEnumerator GenPro()
     {
+        roomList.transform.localEulerAngles = new Vector3(0, 0, 0);
+        
         _map = new int[100, 100];
        _roomNumberMap = new int[100, 100];
         
@@ -245,8 +247,14 @@ public class DunGen : MonoBehaviour
         }
         #endregion
         finishedGeneration = true;
-        yield return new WaitUntil(() => finishedGeneration);
-        roomList.transform.Rotate(0, 45, 0);
+        // yield return new WaitUntil(() => finishedGeneration);
+        //roomList.transform.localEulerAngles = new Vector3(0, 90, 0);
+        yield return null;
+        if (roomList.transform.localEulerAngles.y < 45)
+        {
+            roomList.transform.Rotate(0, 45, 0);
+        }
+        
         _navMeshSurface.BuildNavMesh();
         GameMusic.instance.ChooseMusic();
         GameManager.instance.ChooseGlobalVolume();

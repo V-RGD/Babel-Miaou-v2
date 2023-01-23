@@ -119,9 +119,10 @@ public class PlayerAttacks : MonoBehaviour
     #endregion
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (instance != null)
         {
-            //Destroy(this);
+            Destroy(gameObject);
+            return;
         }
 
         instance = this;
@@ -702,9 +703,9 @@ public class PlayerAttacks : MonoBehaviour
     public void InterruptAttack()
     {
         //to make sure any attack is disabled
-        StopCoroutine(AttackCoroutine());
-        StopCoroutine(SpinSlashes());
-        StopCoroutine(SmashCoroutine());
+        StopCoroutine(nameof(AttackCoroutine));
+        StopCoroutine(nameof(SpinSlashes));
+        StopCoroutine(nameof(SmashCoroutine));
         //-----------can attack again
         SetAttackState(AttackState.Default);
         //can walk again
@@ -737,6 +738,11 @@ public class PlayerAttacks : MonoBehaviour
     }
     private void OnDisable()
     {
+        if (_mouseHold == null)
+        {
+            return;
+        }
+        
         _mouseHold.Disable();
         _rightClick.Disable();
     }

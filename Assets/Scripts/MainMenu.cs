@@ -14,6 +14,7 @@ public class MainMenu : MonoBehaviour
     public GameObject quitWarning;
     public GameObject loadingUI;
     public GameObject optionMenu;
+    public GameObject leaderBoardMenu;
     private void OnEnable()
     {
         quitMenu = playerControls.Menus.Menu;
@@ -33,6 +34,11 @@ public class MainMenu : MonoBehaviour
         if (isInOptions)
         {
             SettingsMenu();
+        }
+
+        if (leaderBoardMenu.activeInHierarchy)
+        {
+            leaderBoardMenu.SetActive(false);
         }
     }
     public void StartGame()
@@ -73,5 +79,17 @@ public class MainMenu : MonoBehaviour
     {
         quitWarningActive = false;
         quitWarning.SetActive(false);
+    }
+
+    public void ShowLeaderBoards()
+    {
+        if (leaderBoardMenu.activeInHierarchy)
+        {
+            leaderBoardMenu.SetActive(false);
+        }
+        else
+        {
+            leaderBoardMenu.SetActive(true);
+        }
     }
 }

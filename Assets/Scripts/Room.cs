@@ -64,17 +64,18 @@ public class Room : MonoBehaviour
     void Update()
     {
         _enemiesRemaining = enemyGroup.transform.childCount; //check how many enemies are still in the room
-        if ((_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 )|| Input.GetKeyDown(KeyCode.F5))
+        if ((_enemiesRemaining == 0 && _canChestSpawn && roomType != 0 && roomType != 3 ))
         {
             _canChestSpawn = false;
             DoorUnlock();
             if (roomType == 4)
             {
-                _lm.exit.SetActive(true);
+                //destroys stela
+                StartCoroutine(StelaFadeOut());
             }
             //randomize chest spawn
             int randChest = Random.Range(0, 100);
-            if (randChest < 1)
+            if (randChest < 100)
             {
                 chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
             }
@@ -193,6 +194,17 @@ public class Room : MonoBehaviour
             enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
             enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
         }
+    }
+    IEnumerator StelaFadeOut()
+    {
+        _lm.stela.transform.GetChild(1).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fade"), 0);
+        yield return new WaitForSeconds(1);
+        Destroy(_lm.stela);
+        //activates colis stratégique des escaliers
+        _lm.exit.SetActive(true);
+        _lm.exit.GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
+        yield return new WaitForSeconds(0.4f);
+        _lm.exit.transform.GetChild(5).GetComponent<ToNextLevel>().isActive = true;
     }
     
     void RoomType()

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -24,7 +25,7 @@ public class Item : MonoBehaviour
 
     public bool isFromAShop;
     private bool isPlayerInRange;
-    private bool canBeTaken = true;
+    public bool canBeTaken = false;
     private float grabDist = 5;
     
     //object info
@@ -49,8 +50,18 @@ public class Item : MonoBehaviour
         player = GameObject.Find("Player");
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
+        if (isFromAShop)
+        {
+            canBeTaken = true;
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.2f);
+            canBeTaken = true;
+        }
+        
         pancarte = transform.GetChild(0).transform.GetChild(0).gameObject;
         costText = pancarte.transform.GetComponentInChildren<TMP_Text>();
         
@@ -106,7 +117,6 @@ public class Item : MonoBehaviour
 
     void ItemEffect()
     {
-
         switch (itemType)
         {
             case ItemType.Heal : 
@@ -152,9 +162,10 @@ public class Item : MonoBehaviour
     void ShopItem()
     {
         //check whether the item is from the shop or not
+
         if (isFromAShop)
         {
-            if (isPlayerInRange)
+            if (isPlayerInRange && itemCost == 0)
             {
                 pancarte.SetActive(true);
             }
@@ -181,7 +192,7 @@ public class Item : MonoBehaviour
     }
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange && isFromAShop)
+        if (isPlayerInRange && canBeTaken)
         {
             if (gameManager.money >= itemCost)
             {

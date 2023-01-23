@@ -2,13 +2,10 @@ using UnityEngine;
 
 public class ToNextLevel : MonoBehaviour
 {
-    private void Awake()
+    public bool isActive;
+    private void OnTriggerStay(Collider other)
     {
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && isActive)
         {
             LevelManager.instance.LoadNextLevel();
             GameMusic.instance.ChooseMusic();

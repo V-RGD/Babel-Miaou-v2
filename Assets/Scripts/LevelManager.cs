@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
-    
+
+    public List<GameObject> DDOL;
+
     //manages all prefab instanciations
     //updates infos regarding the level progression
     [Header("Generic Prefabs")]
@@ -47,9 +50,7 @@ public class LevelManager : MonoBehaviour
 
     public List<EnemyMatrix> matrices;
     public List<EnemyStelaMatrix> stelaMatrices;
-
-    private DunGen _dunGen;
-
+    
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -60,22 +61,46 @@ public class LevelManager : MonoBehaviour
 
         instance = this;
         
-        _dunGen = DunGen.instance;
+        DunGen.instance = DunGen.instance;
     }
+
+    private void Start()
+    {
+        foreach (var variable in DDOL)
+        {
+            DontDestroyOnLoad(variable);
+        }
+    }
+
     public void LoadNextLevel()
     {
         //keeps track of passed rooms : pass to next level
-        currentLevel++;
-        //disables all current rooms
-        for (int i = 0; i < roomList.Count; i++)
+        if (currentLevel < 2)
         {
-            GameObject objectToRemove = roomList[i];
-            roomList.Remove(roomList[i]);
-            Destroy(objectToRemove);
+            currentLevel++;
+            //don't destroy on load everything
+            SceneManager.LoadScene("MainScene");
         }
-        //builds new level
-        _dunGen.StartCoroutine(_dunGen.GenPro());
-        //places player in first room
-        GameObject.Find("Player").transform.position = new Vector3(entrance.transform.position.x, 1, entrance.transform.position.z);
+        else
+        {
+            currentLevel++;
+            //don't destroy on load everything
+            SceneManager.LoadScene("BossScene");
+        }
+        
+
+        //reload scene
+
+        // //disables all current rooms
+        // for (int i = 0; i < roomList.Count; i++)
+        // {
+        //     GameObject objectToRemove = roomList[i];
+        //     roomList.Remove(roomList[i]);
+        //     Destroy(objectToRemove);
+        // }
+        // //builds new level
+        // DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
+        // //places player in first room
+        // GameObject.Find("Player").transform.position = new Vector3(entrance.transform.position.x, 1, entrance.transform.position.z);
     }
 }

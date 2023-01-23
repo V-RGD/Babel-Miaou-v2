@@ -13,6 +13,7 @@ public class Chest : MonoBehaviour
     private GameObject _player;
     public GameObject messagePrompt;
     public Animator animator;
+    public bool canOpen;
 
     private void Awake()
     {
@@ -21,14 +22,17 @@ public class Chest : MonoBehaviour
         _collect = _playerControls.Player.Interact;
     }
 
-    private void Start()
-    {
+    private IEnumerator Start()
+    {            
+        messagePrompt.SetActive(false);
         ObjectsManager.instance = ObjectsManager.instance;
+        yield return new WaitForSeconds(1);
+        canOpen = true;
     }
 
     void Collect(InputAction.CallbackContext context)
     {
-        if (isPlayerInRange)
+        if (isPlayerInRange && canOpen)
         {
             StartCoroutine(ChestLoot());
         }
@@ -44,6 +48,7 @@ public class Chest : MonoBehaviour
             GameObject item = Instantiate(ObjectsManager.instance.objectTemplate, transform.position, Quaternion.identity);
             //checks which items are already equipped and remove them from the possible items
             item.GetComponent<Item>().objectID = ObjectsManager.instance.itemList[Random.Range(0, ObjectsManager.instance.itemList.Count)];
+            item.GetComponent<Item>().itemCost = 0;
             item.SetActive(true);
             float randDir = Random.Range(0, 1f);
             Vector3 pushDir = Vector3.up * 10 + new Vector3(0.5f - randDir, 0, 0.5f + randDir)* 5;
@@ -54,6 +59,11 @@ public class Chest : MonoBehaviour
             //heal,eyes
             GameObject heal = Instantiate(ObjectsManager.instance.healItem, lootDropPos + Vector3.left,
                 quaternion.identity);
+            heal.GetComponent<Item>().itemCost = 0;
+            heal.GetComponent<Item>().isDuplicate = false;
+            heal.GetComponent<Item>().isFromAShop = false;
+            heal.GetComponent<Item>().costText.text = "0";
+            Debug.Log("heal set to 0 coins");
             heal.SetActive(true);
             yield return new WaitForSeconds(0.5f);
             GameObject eyes = Instantiate(ObjectsManager.instance.eyeToken, lootDropPos + Vector3.right,
@@ -62,11 +72,12 @@ public class Chest : MonoBehaviour
         }
         
         animator.CrossFade(Animator.StringToHash("Open"), 0, 0);
+        canOpen = false;
     }
 
     private void Update()
     {
-        if ((_player.transform.position - transform.position).magnitude <= _openDist)
+        if ((_player.transform.position - transform.position).magnitude <= _openDist && canOpen)
         {
             //show message prompt
             isPlayerInRange = true;

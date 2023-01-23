@@ -70,6 +70,7 @@ public class LevelManager : MonoBehaviour
             currentLevel++;
             //don't destroy on load everything
             SceneManager.LoadScene("MainScene");
+            DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
         }
         else
         {

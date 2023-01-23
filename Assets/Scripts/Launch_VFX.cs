@@ -10,10 +10,10 @@ public class Launch_VFX : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            fx.Play();
-            pc.Play();
-        }
+        // if (Input.GetKeyDown(KeyCode.A))
+        // {
+        //     fx.Play();
+        //     pc.Play();
+        // }
     }
 }

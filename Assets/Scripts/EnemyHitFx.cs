@@ -30,10 +30,10 @@ public class EnemyHitFx : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            StartCoroutine(PlaceNewVfx(_player.transform.position));
-        }
+        // if (Input.GetKeyDown(KeyCode.G))
+        // {
+        //     StartCoroutine(PlaceNewVfx(_player.transform.position));
+        // }
     }
 
     public IEnumerator PlaceNewVfx(Vector3 enemyPos)

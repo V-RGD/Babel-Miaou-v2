@@ -18,10 +18,10 @@ public class TextTranslation : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            StartCoroutine(TranslateText());
-        }
+        // if (Input.GetKeyDown(KeyCode.A))
+        // {
+        //     StartCoroutine(TranslateText());
+        // }
     }
 
     public IEnumerator TranslateText()

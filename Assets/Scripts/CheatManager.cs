@@ -257,20 +257,19 @@ public class CheatManager : MonoBehaviour
     public void TpToStela()
     {
         PlayerController.instance.gameObject.transform.position = new Vector3(
-            LevelManager.instance.roomList[^1].transform.position.x, 
+            LevelManager.instance.roomList[1].transform.position.x, 
             PlayerController.instance.gameObject.transform.position.y,
-            LevelManager.instance.roomList[^1].transform.position.z);
+            LevelManager.instance.roomList[1].transform.position.z);
         StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
             MenuManager.GameState.Play));
-
     }
 
     public void TpToShop()
     {
         PlayerController.instance.gameObject.transform.position = new Vector3(
-            LevelManager.instance.roomList[^2].transform.position.x, 
+            LevelManager.instance.roomList[2].transform.position.x, 
             PlayerController.instance.gameObject.transform.position.y,
-            LevelManager.instance.roomList[^2].transform.position.z);
+            LevelManager.instance.roomList[2].transform.position.z);
         StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
             MenuManager.GameState.Play));
     }

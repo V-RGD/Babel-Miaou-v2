@@ -208,6 +208,11 @@ public class PlayerController : MonoBehaviour
         }
 
         _rb.velocity = new Vector3(_rb.velocity.x * _frictionMultiplier, _rb.velocity.y, _rb.velocity.z * _frictionMultiplier);
+        
+        if (currentState == PlayerStates.Run &&  movementDir == Vector2.zero)
+        {
+            _rb.velocity = Vector3.zero;
+        }
     }
     void InputDash(InputAction.CallbackContext context)
     {

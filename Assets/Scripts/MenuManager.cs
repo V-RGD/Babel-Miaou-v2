@@ -452,6 +452,7 @@ public class MenuManager : MonoBehaviour
         SwitchState(GameState.Loading);
         //waits for the level to start
         yield return new WaitUntil(()=> DunGen.instance.finishedGeneration);
+        loadingUI.SetActive(false);
         //changes next level text
         switch (LevelManager.instance.currentLevel)
         {

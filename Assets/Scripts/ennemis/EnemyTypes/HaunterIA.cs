@@ -140,19 +140,22 @@ public class HaunterIA : MonoBehaviour
             //add current damage stat to weapon
             _jabDamage.damage = _enemyTrigger.damage;
             //warmup
-            yield return new WaitForSeconds(_enemyTypeData.shootWarmup);
+            yield return new WaitForSeconds(_enemyTypeData.shootWarmup - 0.2f);
+            Vector3 attackLocation = new Vector3(_player.transform.position.x, _attackAnchor.transform.position.y, _player.transform.position.z);
+            yield return new WaitForSeconds(0.2f);
             //determine où l'attaque va se faire
-            _attackAnchor.transform.LookAt(_player.transform.position);
+            _attackAnchor.transform.LookAt(attackLocation);
             //actives weapon
             _enemyTrigger.canTouchPlayer = true;
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             clawFx.Play();
             _rb.velocity = Vector3.zero;
-            Vector3 pushedDir = _playerDir;
+            Vector3 pushedDir = (attackLocation - transform.position).normalized;
             _rb.AddForce(pushedDir * force, ForceMode.Impulse);
             //plays animation
             //attack duration : time when the player can actually be hit
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.3f);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
             _enemyTrigger.canTouchPlayer = false;
             //waits cooldown depending on the attack used

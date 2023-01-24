@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 public class DunGen : MonoBehaviour
 {
     public static DunGen instance;
+    public bool stopGen;
     
     public int goldenPathLength = 8;
 
@@ -49,6 +50,10 @@ public class DunGen : MonoBehaviour
     public IEnumerator GenPro()
     {
         yield return null;
+        if (stopGen)
+        {
+            yield break;
+        }
         
         roomList.transform.localEulerAngles = new Vector3(0, 0, 0);
         

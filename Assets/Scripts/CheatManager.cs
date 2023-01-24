@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Scene = UnityEditor.SearchService.Scene;
 
 public class CheatManager : MonoBehaviour
 {
@@ -252,7 +253,21 @@ public class CheatManager : MonoBehaviour
 
     public void TpToBoss()
     {
-        
+        //increases level
+        GameManager.instance.currentLevel++;
+        //desactivates all current rooms
+        foreach (var room in LevelManager.instance.roomList)
+        {
+            Destroy(room);
+        }
+        LevelManager.instance.roomList.Clear();
+        DunGen.instance.dungeonSize = DunGen.instance.goldenPathLength;
+        DunGen.instance.finishedGeneration = false;
+        //builds new level
+        DunGen.instance.stopGen = true;
+        SceneManager.LoadScene("BossRoom_Dev");
+        GameMusic.instance.ChooseMusic();
+        Debug.Log("totoboss");
     }
 
     public void TpToStela()

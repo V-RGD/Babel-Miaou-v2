@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -68,6 +69,11 @@ public class GameManager : MonoBehaviour
         _uiManager.HealthBar(health);
         initialMaxHealth = maxHealth;
         hurtRenderMat.SetFloat("_Strenght",  0);
+    }
+
+    private void Update()
+    {
+        
     }
 
     public IEnumerator ShakeCam(int apex)

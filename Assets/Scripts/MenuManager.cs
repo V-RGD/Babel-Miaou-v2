@@ -448,8 +448,6 @@ public class MenuManager : MonoBehaviour
         nextLevelPanel.GetComponent<Animator>().CrossFade(Animator.StringToHash("Load"), 0, 0);
         yield return new WaitForSeconds(6.5f);
 
-        
-        
         nextLevelPanel.SetActive(false);
         
         //disables screen, enables character

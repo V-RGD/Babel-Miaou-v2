@@ -259,7 +259,8 @@ public class Room : MonoBehaviour
             case 4 : //mini-boss room
                 stela = Instantiate(LevelManager.instance.stela, roomCenter.position, Quaternion.identity);
                 stela.GetComponent<ActiveStela>().room = this;
-                LevelManager.instance.currentStelaPosition = stela.transform.position;
+                LevelManager.instance.currentStelaPosition = roomCenter.position;
+                //LevelManager.instance.currentStela = stela;
                 //GameObject exitPrefab = Instantiate(LevelManager.instance.exit, roomCenter.position, Quaternion.identity);
                 //LevelManager.instance.exit = exitPrefab;
                 //LevelManager.instance.exit.SetActive(false);
@@ -368,6 +369,7 @@ public class Room : MonoBehaviour
             _player.transform.position.z > roomDetectionZMin && _player.transform.position.z < roomDetectionZMax )
         {
             _hasPlayerEnteredRoom = true;
+            LevelManager.instance.currentRoom = this.gameObject;
         }
         else
         {

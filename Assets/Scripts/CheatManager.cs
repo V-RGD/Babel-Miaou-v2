@@ -250,28 +250,55 @@ public class CheatManager : MonoBehaviour
         }
     }
 
-    void TpToBoss()
+    public void TpToBoss()
     {
         
     }
 
     public void TpToStela()
     {
-        PlayerController.instance.gameObject.transform.position = new Vector3(
-            LevelManager.instance.roomList[1].transform.position.x, 
-            PlayerController.instance.gameObject.transform.position.y,
-            LevelManager.instance.roomList[1].transform.position.z);
+        GameObject stela = LevelManager.instance.stela;
+        GameObject player = PlayerController.instance.gameObject;
+        Vector3 stelaPos = new Vector3(LevelManager.instance.currentStelaPosition.x, player.transform.position.y, LevelManager.instance.currentStelaPosition.z);
+        player.transform.position = stelaPos;
+        PlayerController.instance._rb.velocity = Vector3.zero;
         StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
             MenuManager.GameState.Play));
     }
 
     public void TpToShop()
     {
-        PlayerController.instance.gameObject.transform.position = new Vector3(
-            LevelManager.instance.roomList[2].transform.position.x, 
-            PlayerController.instance.gameObject.transform.position.y,
-            LevelManager.instance.roomList[2].transform.position.z);
+        GameObject shop = GameObject.Find("Shop");
+        GameObject player = PlayerController.instance.gameObject;
+        Vector3 shopPos = new Vector3(shop.transform.position.x, player.transform.position.y,
+            shop.transform.position.z);
+        player.transform.position = shopPos;
         StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
             MenuManager.GameState.Play));
+    }
+    
+    public void TpBackToRoom()
+    {
+        GameObject room = LevelManager.instance.currentRoom;
+        GameObject player = PlayerController.instance.gameObject;
+        Vector3 roomPos = new Vector3(room.transform.position.x, player.transform.position.y,
+            room.transform.position.z);
+        player.transform.position = roomPos;
+        PlayerController.instance._rb.velocity = Vector3.zero;
+        StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
+            MenuManager.GameState.Play));
+        
+        //gets back to room
+    }
+
+    public void GetInfiniteHealth()
+    {
+        _gameManager.maxHealth = 10000;
+        _gameManager.health = 10000;
+    }
+    
+    public void GetInfiniteAttack()
+    {
+        PlayerAttacks.instance.attackStat = 1000;
     }
 }

@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     public PlayerStates currentState;
     #endregion
     #region Components
-    private Rigidbody _rb;
+    [HideInInspector]public Rigidbody _rb;
     private RandSoundGen _stepSounds;
     [HideInInspector] public SpriteRenderer spriteRenderer;
     private PlayerControls _playerControls;

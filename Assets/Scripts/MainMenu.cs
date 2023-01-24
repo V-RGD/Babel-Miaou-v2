@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
+
 public class MainMenu : MonoBehaviour
 {
     public bool quitWarningActive;
@@ -15,6 +18,12 @@ public class MainMenu : MonoBehaviour
     public GameObject loadingUI;
     public GameObject optionMenu;
     public GameObject leaderBoardMenu;
+    public GameObject mainMenuPanel;
+    public GameObject tuto;
+    public TMP_Text[] scoreTxt;
+    public TMP_Text loadingAdvice;
+    public string[] loadingAdvices;
+    private AudioSource _audioSource;
     private void OnEnable()
     {
         quitMenu = playerControls.Menus.Menu;
@@ -28,6 +37,7 @@ public class MainMenu : MonoBehaviour
     private void Awake()
     {
         playerControls = new PlayerControls();
+        _audioSource = GetComponent<AudioSource>();
     }
     private void EscapeButton(InputAction.CallbackContext context)
     {
@@ -44,6 +54,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         StartCoroutine(LoadingScreen());
+        _audioSource.Play();
     }
     public void RestartLevel()
     {
@@ -70,6 +81,7 @@ public class MainMenu : MonoBehaviour
     IEnumerator LoadingScreen()
     {
         loadingUI.SetActive(true);
+        loadingAdvice.text = loadingAdvices[Random.Range(0, loadingAdvices.Length)];
         //does nothing the first second
         yield return new WaitForSeconds(3);
         //change scene
@@ -80,16 +92,33 @@ public class MainMenu : MonoBehaviour
         quitWarningActive = false;
         quitWarning.SetActive(false);
     }
-
-    public void ShowLeaderBoards()
+    public void DisplayLeaderBoards()
     {
         if (leaderBoardMenu.activeInHierarchy)
         {
             leaderBoardMenu.SetActive(false);
+            mainMenuPanel.SetActive(true);
+            return;
         }
-        else
+        
+        leaderBoardMenu.SetActive(true);
+        mainMenuPanel.SetActive(false);
+        //updates scores
+        scoreTxt[0].text = PlayerPrefs.GetInt("Score1").ToString();
+        scoreTxt[1].text = PlayerPrefs.GetInt("Score2").ToString();
+        scoreTxt[2].text = PlayerPrefs.GetInt("Score3").ToString();
+        scoreTxt[3].text = PlayerPrefs.GetInt("Score4").ToString();
+        scoreTxt[4].text = PlayerPrefs.GetInt("Score5").ToString();
+    }
+    public void DisplayTutorial()
+    {
+        if (tuto.activeInHierarchy)
         {
-            leaderBoardMenu.SetActive(true);
+            tuto.SetActive(false);
+            mainMenuPanel.SetActive(true);
+            return;
         }
+        tuto.SetActive(true);
+        mainMenuPanel.SetActive(false);
     }
 }

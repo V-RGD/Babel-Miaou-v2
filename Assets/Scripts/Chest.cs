@@ -47,7 +47,7 @@ public class Chest : MonoBehaviour
         int randLoot = Random.Range(0, 100);
         if (randLoot <= 15)
         {
-            GameObject item = Instantiate(ObjectsManager.instance.objectTemplate, transform.position, Quaternion.identity);
+            GameObject item = Instantiate(ObjectsManager.instance.objectTemplate, transform.position + Vector3.up * 2, Quaternion.identity);
             //checks which items are already equipped and remove them from the possible items
             item.GetComponent<Item>().objectID = ObjectsManager.instance.itemList[Random.Range(0, ObjectsManager.instance.itemList.Count)];
             item.GetComponent<Item>().itemCost = 0;

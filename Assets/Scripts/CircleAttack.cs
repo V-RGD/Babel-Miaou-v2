@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.VFX;
+
 public class CircleAttack : MonoBehaviour
 {
     public bool isActive;
@@ -13,11 +15,13 @@ public class CircleAttack : MonoBehaviour
     public float speed;
     public float detectionOffset = 0.05f;
     private SpriteRenderer _spriteRenderer;
+    public VisualEffect fx;
     private void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _player = GameObject.Find("Player");
         _gameManager = GameManager.instance;
+        fx = transform.GetChild(0).GetComponent<VisualEffect>();
     }
 
     private void Update()
@@ -53,9 +57,12 @@ public class CircleAttack : MonoBehaviour
         _spriteRenderer.enabled = true;
         //sets detector at 0, circle at 0 size
         _sizeTimer = 0;
+        fx.gameObject.SetActive(true);
+        fx.Play();
         //waits until circle is out of screen
         yield return new WaitUntil((() => _sizeTimer * speed > 100));
         //disables
+        fx.gameObject.SetActive(false);
         isActive = false;
         _spriteRenderer.enabled = false;
     }

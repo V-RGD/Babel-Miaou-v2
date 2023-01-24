@@ -8,7 +8,7 @@ public class GameMusic : MonoBehaviour
     public static GameMusic instance;
     
     public AudioClip[] musics;
-    private AudioSource source;
+    public AudioSource source;
 
     private void Awake()
     {

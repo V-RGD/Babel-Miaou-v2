@@ -29,6 +29,7 @@ public class FinalBossIA : MonoBehaviour
     public RectTransform healthBar;
     //public Animator pancarteName;
     public Animator healthBarAnim;
+    public AudioSource bossMusic;
     #endregion
     
     #region M_Laser
@@ -380,7 +381,7 @@ public class FinalBossIA : MonoBehaviour
 
         yield return new WaitForSeconds(attackCooldown);
 
-        StartCoroutine(H_Laser());
+        StartCoroutine(CircleTrap());
         yield break;
 
         float meleeRange = 25;
@@ -563,18 +564,21 @@ public class FinalBossIA : MonoBehaviour
     {
         // StartCoroutine(BossApparitionSequence());
         //replaces player
-        _player.transform.position =
-            new Vector3(roomCenter.position.x, _player.transform.position.y, roomCenter.position.z);
+        _player.GetComponent<Rigidbody>().velocity = Vector3.zero;
         //laughts
         PlayerAttacks.instance.enabled = false;
         PlayerController.instance.enabled = false;
+        bossMusic.Play();
+        GameMusic.instance.source.Stop();
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         yield return new WaitForSeconds(1);
         //post process spoopy
         GameManager.instance.hurtVolume.CrossFade("Hurt", 0);
-        //name
-        //pancarteName.CrossFade("Appear", 0);
+        
+        healthBarAnim.gameObject.SetActive(true);
+
+            healthBarAnim.CrossFade("Appear", 0);
         yield return new WaitForSeconds(3);
         //not name
         healthBarAnim.CrossFade("Appear", 0);

@@ -131,6 +131,10 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.Death);
             StartCoroutine(DeathPanel());
         }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            StartCoroutine(MenuManager.instance.EndGame());
+        }
     }
     public void MainMenu()
     {
@@ -484,6 +488,22 @@ public class MenuManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public IEnumerator EndGame()
+    {
+        Debug.Log("killed boss");
+        _playerAttacks.enabled = false;
+        _playerController.enabled = false;
+        Time.timeScale = 0;
+        MenuManager.instance.winScreen.gameObject.SetActive(true);
+        MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
+        yield return new WaitForSecondsRealtime(4);
+        MenuManager.instance.winScreen.gameObject.SetActive(false);
+        StartCoroutine(MenuManager.instance.OpenMenu(MenuManager.instance.leaderBoardScreen.gameObject,
+            MenuManager.instance.leaderBoardScreen, MenuManager.GameState.LeaderBoard));
+        StartCoroutine(GameScore.instance.ShowLeaderBoards());
+        //successes check
     }
     #region Shortcuts
     private void ConfirmButton(InputAction.CallbackContext context)

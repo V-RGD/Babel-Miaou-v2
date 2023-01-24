@@ -482,7 +482,7 @@ public class Room : MonoBehaviour
 
     IEnumerator StairSpawn()
     {
-        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
+        GameObject stairs = Instantiate(LevelManager.instance.exit, safeSpot.position,
             quaternion.identity);
         stairs.SetActive(true);
         stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);

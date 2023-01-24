@@ -48,6 +48,8 @@ public class DunGen : MonoBehaviour
     #region Genpro
     public IEnumerator GenPro()
     {
+        yield return null;
+        
         roomList.transform.localEulerAngles = new Vector3(0, 0, 0);
         
         _map = new int[100, 100];

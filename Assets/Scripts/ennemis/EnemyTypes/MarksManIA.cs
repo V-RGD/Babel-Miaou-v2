@@ -188,7 +188,7 @@ public class MarksManIA : MonoBehaviour
             //check if player touches laser
             if (Physics.Raycast(transform.position, _attackDir, 1000, _playerLayerMask))
             {
-                Debug.Log("hit player");
+                //Debug.Log("hit player");
                 //deals damage
                 _gameManager.DealDamageToPlayer(_enemyTrigger.damage);
                 //can touch laser twice

@@ -113,7 +113,7 @@ public class LittleShit : MonoBehaviour
         //teleports to player if too far away
         if ((_player.transform.position - transform.position).magnitude > 20)
         {
-            Debug.Log("tped to player");
+            //Debug.Log("tped to player");
             agent.enabled = false;
             transform.position = new Vector3(_player.transform.position.x, 0, _player.transform.position.z);
             agent.enabled = true;
@@ -168,7 +168,7 @@ public class LittleShit : MonoBehaviour
                     bumpLength = 0.7f;
                 }
             }
-            Debug.Log("hit by player");
+            //Debug.Log("hit by player");
             Vector3 bumpDir = other.transform.position - transform.position;
             _rb.AddForce(force * -bumpDir.normalized, ForceMode.Impulse);
             _rb.AddForce(force/2 * Vector3.up, ForceMode.Impulse);

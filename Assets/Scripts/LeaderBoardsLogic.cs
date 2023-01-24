@@ -34,7 +34,7 @@ public class LeaderBoardsLogic : MonoBehaviour
             {
                 if (currentScore < scoreBoard[i])
                 {
-                    Debug.Log("currentScore lower to score" + i);
+                    //Debug.Log("currentScore lower to score" + i);
                 }
                 editedScoreBoard.Add(scoreBoard[i]);
             }
@@ -54,7 +54,7 @@ public class LeaderBoardsLogic : MonoBehaviour
         for (int i = 0; i < editedScoreBoard.Count(); i++)
         {
             PlayerPrefs.SetFloat("score" + i, editedScoreBoard[i]);
-            Debug.Log("saved" + i);
+            //Debug.Log("saved" + i);
         }
         Start();
         

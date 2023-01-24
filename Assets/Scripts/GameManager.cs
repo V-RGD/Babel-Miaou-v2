@@ -165,7 +165,6 @@ public class GameManager : MonoBehaviour
             ObjectsManager.instance.PlayActivationVfx(6);
         }
         enemy.health -= damage;
-        //Debug.Log(damage);
         cmShake.ShakeCamera(enemyHitShakeIntensity, .1f);
         //applies killing effects
         if (enemy.health <= 0)

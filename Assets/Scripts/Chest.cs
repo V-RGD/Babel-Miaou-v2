@@ -66,7 +66,6 @@ public class Chest : MonoBehaviour
             heal.GetComponent<Item>().isDuplicate = false;
             heal.GetComponent<Item>().isFromAShop = false;
             heal.GetComponent<Item>().costText.text = "0";
-            Debug.Log("heal set to 0 coins");
             heal.SetActive(true);
             yield return new WaitForSeconds(0.5f);
             GameObject eyes = Instantiate(ObjectsManager.instance.eyeToken, lootDropPos + Vector3.right,

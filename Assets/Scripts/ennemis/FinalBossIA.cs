@@ -471,7 +471,7 @@ public class FinalBossIA : MonoBehaviour
                 //hLaserSparksFx.gameObject.SetActive(true);
                 //hLaserSparksFx.Play();
                 //hLaserSparksFx.transform.position = hit.point;
-                Debug.Log("places fx");
+                //Debug.Log("places fx");
             }
             else
             {
@@ -507,7 +507,7 @@ public class FinalBossIA : MonoBehaviour
 
     private IEnumerator FinalBossDeath()
     {
-        Debug.Log("killed boss");
+        //Debug.Log("killed boss");
         MenuManager.instance.winScreen.gameObject.SetActive(true);
         MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
         yield return new WaitForSeconds(1);
@@ -529,7 +529,7 @@ public class FinalBossIA : MonoBehaviour
     public IEnumerator GoToLocation(Vector3 location)
     {
         source.PlayOneShot(GameSounds.instance.invocation);
-        Debug.Log("switching location");
+        //Debug.Log("switching location");
         //fais apparaitre un vfx
         isChangingPos = true;
         //replacingPulling.StartCoroutine(replacingPulling.PlaceNewVfx(replacingPulling.vfxList[0], transform.position, true));

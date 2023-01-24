@@ -142,7 +142,7 @@ public class RoomGeneration : MonoBehaviour
     }
     void PropGeneration()
     {
-        Debug.Log("played generation");
+        //Debug.Log("played generation");
         GenerateProps(_lm.propsProfile.colliderProps, colPropsGroup);
         GenerateProps(_lm.propsProfile.groundProps, groundPropsGroup);
         GenerateProps(_lm.propsProfile.outProps, outPropsGroup);
@@ -153,7 +153,7 @@ public class RoomGeneration : MonoBehaviour
         for (int i = 0; i < group.transform.childCount; i++)
         {
             spawners.Add(group.transform.GetChild(i).transform);
-            Debug.Log("added spawner");
+            //Debug.Log("added spawner");
         }
         //pour chaque spawner de chaque type
         foreach(Transform spawner in spawners)
@@ -166,7 +166,7 @@ public class RoomGeneration : MonoBehaviour
             Vector3 spawnPoint = new Vector3(spawner.transform.position.x, 1, spawner.transform.position.z);
             objectSpawning.transform.rotation = Quaternion.Euler(50, 0, transform.rotation.z);
             objectSpawning.transform.position = spawnPoint + Vector3.up * prop.averageSize;
-            Debug.Log("spawned object");
+            //Debug.Log("spawned object");
         }
     }
     void RoomType()
@@ -239,7 +239,7 @@ public class RoomGeneration : MonoBehaviour
         //pour chaque ennemi
         for (int i = 0; i < enemyNumber; i++)
         {
-            Debug.Log("stela spawned enemy");
+            //Debug.Log("stela spawned enemy");
             //determine les pourcentages d'apparition pour chacun
             int rand = Random.Range(0, 100);
             //determines les plafonds d'apparition pour les ennemis

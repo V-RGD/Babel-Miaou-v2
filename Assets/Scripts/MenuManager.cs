@@ -171,7 +171,6 @@ public class MenuManager : MonoBehaviour
     {
         if (gameState == GameState.Inventory)
         {
-            Debug.Log("tried to escape object menu");
             //deletes 6th box object
             _objectsManager.itemObjectsInventory[3] = 999;
             //disables menu
@@ -445,7 +444,6 @@ public class MenuManager : MonoBehaviour
 
     public IEnumerator EndGame()
     {
-        Debug.Log("killed boss");
         _playerAttacks.enabled = false;
         _playerController.enabled = false;
         Time.timeScale = 0;

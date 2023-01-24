@@ -69,7 +69,7 @@ public class GameScore : MonoBehaviour
                 scorePosition--;
             }
         }
-        Debug.Log(scorePosition);
+        //Debug.Log(scorePosition);
 
         //if score is in the leaderboard
         if (scorePosition < 5)

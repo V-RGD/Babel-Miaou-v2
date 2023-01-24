@@ -49,7 +49,7 @@ public class DissolveWall : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = new Ray(transform.position, cam.transform.position - transform.position);
-        Debug.DrawRay(transform.position, cam.transform.position - transform.position, Color.red);
+        //ebug.DrawRay(transform.position, cam.transform.position - transform.position, Color.red);
 
         if (Physics.Raycast(ray, out hit, 1000, ~_wallLayerMask))
         {

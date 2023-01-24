@@ -75,7 +75,7 @@ public class KnitBall : MonoBehaviour
         RaycastHit hit = new RaycastHit();
         if (Physics.Raycast(transform.position, Vector3.down, out hit, 3.2f, ~_layerMask))
         {
-            Debug.DrawRay(transform.position, Vector3.down * 3.2f, Color.yellow);
+            //Debug.DrawRay(transform.position, Vector3.down * 3.2f, Color.yellow);
             _isGrounded = true;
         }
         else

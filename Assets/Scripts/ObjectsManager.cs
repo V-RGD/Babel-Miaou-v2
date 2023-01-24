@@ -120,7 +120,7 @@ public class ObjectsManager : MonoBehaviour
     public void OnObjectEquip(int item)
     {
         itemList.Remove(item);
-        Debug.Log("equiped Item#" + item);
+        //Debug.Log("equiped Item#" + item);
         //check the ID of the object to add additional effects
         switch (item)
         {
@@ -142,7 +142,7 @@ public class ObjectsManager : MonoBehaviour
             itemList.Add(item);
         }
         
-        Debug.Log("unequiped Item#" + item);
+        //Debug.Log("unequiped Item#" + item);
         //check the ID of the object to remove additional effects
         switch (item)
         {
@@ -293,7 +293,7 @@ public class ObjectsManager : MonoBehaviour
         OnObjectUnEquip(oldItem);
         //adds new one
         int newItem = item;
-        Debug.Log(box);
+        //Debug.Log(box);
         itemObjectsInventory[box] = newItem;
         OnObjectEquip(newItem);
         _uiManager.UpdateHUDIcons();

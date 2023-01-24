@@ -38,7 +38,7 @@ public class ToNextLevel : MonoBehaviour
             
             SaveProgression.instance.SetGameValues();
             GameMusic.instance.ChooseMusic();
-            Debug.Log("nextLev");
+            //Debug.Log("nextLev");
         }
     }
 }

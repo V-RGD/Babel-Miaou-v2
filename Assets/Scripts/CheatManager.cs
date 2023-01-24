@@ -266,7 +266,6 @@ public class CheatManager : MonoBehaviour
         DunGen.instance.stopGen = true;
         SceneManager.LoadScene("BossRoom_Dev");
         GameMusic.instance.ChooseMusic();
-        Debug.Log("totoboss");
         StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
             MenuManager.GameState.Play));
     }

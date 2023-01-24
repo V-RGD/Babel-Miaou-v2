@@ -62,7 +62,7 @@ public class DrawItemBox : MonoBehaviour
     
     public void MoveCursor(int dir)
     {
-        Debug.Log("moved cursor");
+        //Debug.Log("moved cursor");
         int pos;
         //if it goes beyond max
         if (currentCursorPos + dir > 1)

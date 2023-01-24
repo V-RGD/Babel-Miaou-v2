@@ -205,7 +205,6 @@ public class BullIA : MonoBehaviour
         if (other.CompareTag("PlayerAttack") && _isDashing && PlayerAttacks.instance.smashState != PlayerAttacks.SmashState.None)
         {
             _isTouchingWall = true;
-            Debug.Log("stopped by player");
         }
         
         if (other.CompareTag("Wall"))
@@ -219,7 +218,7 @@ public class BullIA : MonoBehaviour
 
     void WallCheck()
     {
-        Debug.DrawRay(transform.position + Vector3.down * 1.5f, (attackDir  ) * 6 ,Color.red);
+        //Debug.DrawRay(transform.position + Vector3.down * 1.5f, (attackDir  ) * 6 ,Color.red);
         if (Physics.Raycast(transform.position + Vector3.down * 1.5f, (attackDir  ), 6, wallLayerMask))
         {
             _isTouchingWall = true;

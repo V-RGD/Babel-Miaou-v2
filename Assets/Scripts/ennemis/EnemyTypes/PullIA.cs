@@ -81,7 +81,7 @@ public class PullIA : MonoBehaviour
     
     IEnumerator ShootProjectile()
     {
-        Debug.Log("active");
+        //Debug.Log("active");
         //actives projo
         _projeciles[0].SetActive(true);
         _projeciles[1].SetActive(true);
@@ -98,7 +98,7 @@ public class PullIA : MonoBehaviour
         _projeciles[2].transform.position =  transform.position + Vector3.left * 5;
         _projeciles[3].transform.position =  transform.position + Vector3.right * 5;
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
-        Debug.Log("shoots");
+        //Debug.Log("shoots");
         //gives it proper force
         _projeciles[0].GetComponent<Rigidbody>().AddForce(new Vector3(20, 0, 20) * enemyTypeData.projectileForce);
         _projeciles[1].GetComponent<Rigidbody>().AddForce(new Vector3(-20, 0, -20) * enemyTypeData.projectileForce);
@@ -126,7 +126,7 @@ public class PullIA : MonoBehaviour
         Vector3 tpPoint = transform.position + new Vector3(randPosX, _player.transform.position.y + 5, randPosY);
         transform.position = tpPoint;
 
-        Debug.Log("rappelle");
+        //Debug.Log("rappelle");
         //rappelle ses projectiles
         _projeciles[0].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[0].transform.position) * enemyTypeData.projectileForce);
         _projeciles[1].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[1].transform.position) * enemyTypeData.projectileForce);
@@ -134,7 +134,7 @@ public class PullIA : MonoBehaviour
         _projeciles[3].GetComponent<Rigidbody>().AddForce((transform.position - _projeciles[3].transform.position) * enemyTypeData.projectileForce);
 
         yield return new WaitForSeconds(1.5f);
-        Debug.Log("desactive");
+        //Debug.Log("desactive");
         //sets projectiles inactive
         _projeciles[0].SetActive(false);
         _projeciles[1].SetActive(false);

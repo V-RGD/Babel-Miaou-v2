@@ -74,6 +74,7 @@ public class Room : MonoBehaviour
                 StartCoroutine(StelaFadeOut());
                 UIManager.instance.gameIndications.CrossFade(Animator.StringToHash("Room Cleared"), 0);
                 UIManager.instance.indicationTxt.text = "Level Cleared";
+                //spawns stairs
             }
             else
             {
@@ -208,13 +209,7 @@ public class Room : MonoBehaviour
         yield return new WaitForSeconds(1);
         stela.SetActive(false);
         //activates colis stratégique des escaliers
-        
-        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
-            quaternion.identity);
-        stairs.SetActive(true);
-        stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
-        yield return new WaitForSeconds(0.4f);
-        stairs.transform.GetChild(0).GetComponent<ToNextLevel>().isActive = true;
+        StartCoroutine(StairSpawn());
     }
     
     void RoomType()
@@ -478,5 +473,15 @@ public class Room : MonoBehaviour
         {
             visuals.SetActive(false);
         }
+    }
+
+    IEnumerator StairSpawn()
+    {
+        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
+            quaternion.identity);
+        stairs.SetActive(true);
+        stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
+        yield return new WaitForSeconds(0.4f);
+        stairs.transform.GetChild(0).GetComponent<ToNextLevel>().isActive = true;
     }
 }

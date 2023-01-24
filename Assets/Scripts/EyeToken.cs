@@ -5,7 +5,6 @@ using UnityEngine;
 public class EyeToken : MonoBehaviour
 {
     public GameObject player;
-    private GameManager _gameManager;
     public Rigidbody rb;
 
     private float _pickupDist = 6;
@@ -44,8 +43,8 @@ public class EyeToken : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             //player collects coin
-            _gameManager.money++;
-            _gameManager.eyesInGame.Remove(transform);
+            GameManager.instance.money++;
+            GameManager.instance.eyesInGame.Remove(transform);
             PlayerSounds.instance.eyeSource.PlayOneShot(PlayerSounds.instance.eyeSource.clip);
             Destroy(gameObject);
         }
@@ -54,8 +53,8 @@ public class EyeToken : MonoBehaviour
             LittleShit.instance.animator.CrossFade(LittleShit.instance.Eat, 0, 0);
             //enemy collects it
             LittleShit.instance.eyesInInventory++;
-            _gameManager.eyesInGame.Remove(transform);
-            _gameManager.eyesInGame.Remove(transform);
+            GameManager.instance.eyesInGame.Remove(transform);
+            GameManager.instance.eyesInGame.Remove(transform);
             Destroy(gameObject);
             ObjectsManager.instance.PlayActivationVfx(3);
         }

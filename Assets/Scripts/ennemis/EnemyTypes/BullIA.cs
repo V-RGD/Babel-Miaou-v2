@@ -151,7 +151,7 @@ public class BullIA : MonoBehaviour
         yield return new WaitUntil(() => _isTouchingWall);
         chargeSource.Stop();
         _audioSource.PlayOneShot(GameSounds.instance.bullHurt[0]);
-        _audioSource.PlayOneShot(GameSounds.instance.bullKnock[Random.Range(0,GameSounds.instance.bullKnock.Length)]);
+        _audioSource.PlayOneShot(GameSounds.instance.bossRock[0]);
         stunFx.gameObject.SetActive(true);
         stunFx.Play();
         _sprite.SetActive(true);

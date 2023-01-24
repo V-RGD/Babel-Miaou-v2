@@ -1,9 +1,22 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ToNextLevel : MonoBehaviour
 {
     public bool isActive;
+    public AudioSource _audioSource;
+
+    private void Awake()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
+        _audioSource.PlayOneShot(GameSounds.instance.bossRock[0]);
+    }
+
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player") && isActive)

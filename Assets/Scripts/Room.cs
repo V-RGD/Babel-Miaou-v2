@@ -56,6 +56,10 @@ public class Room : MonoBehaviour
         group.transform.Rotate(0, 45, 0);
         enemyGroup = group;
         group.name = gameObject.name + "Enemy Group";
+        if (safeSpot == null)
+        {
+            safeSpot = roomCenter;
+        }
 
         DoorSpawn();
         yield return new WaitUntil(()=> _dunGen.finishedGeneration);
@@ -86,7 +90,7 @@ public class Room : MonoBehaviour
                 int randChest = Random.Range(0, 100);
                 if (randChest < 100)
                 {
-                    chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+                    chest = Instantiate(chest, safeSpot.position + Vector3.up, quaternion.identity);
                 }
             }
         }
@@ -254,9 +258,9 @@ public class Room : MonoBehaviour
                 //ShopSpawn();
                 break;
             case 4 : //mini-boss room
-                stela = Instantiate(LevelManager.instance.stela, roomCenter.position, Quaternion.identity);
+                stela = Instantiate(LevelManager.instance.stela, safeSpot.position, Quaternion.identity);
                 stela.GetComponent<ActiveStela>().room = this;
-                LevelManager.instance.currentStelaPosition = roomCenter.position;
+                LevelManager.instance.currentStelaPosition = safeSpot.position;
                 //LevelManager.instance.currentStela = stela;
                 //GameObject exitPrefab = Instantiate(LevelManager.instance.exit, roomCenter.position, Quaternion.identity);
                 //LevelManager.instance.exit = exitPrefab;
@@ -461,7 +465,7 @@ public class Room : MonoBehaviour
 
     void PlacePlayerAtSpawnPoint()
     {
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 2.1f;
+        _player.transform.position = safeSpot.transform.position + Vector3.up * 2.1f;
     }
 
     void ActiveEffects()

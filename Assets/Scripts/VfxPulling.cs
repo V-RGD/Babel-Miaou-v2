@@ -223,6 +223,7 @@ public class VfxPulling : MonoBehaviour
         particle.gameObject.SetActive(true);
         particle.Stop();
         particle.Play();
+
         yield return new WaitForSeconds(newParticle.duration);
         particle.gameObject.SetActive(false);
         //dissapears far away

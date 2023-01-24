@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameSounds : MonoBehaviour
 {
+    public static GameSounds instance;
+    
     [Header("Enemies")]
     public AudioClip[] enemyInvocation;
     public AudioClip[] enemyDeath;
@@ -39,4 +42,16 @@ public class GameSounds : MonoBehaviour
     public AudioClip[] coinEarned;
     [Header("Environment")]
     public AudioClip[] braseroFireplace;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 }

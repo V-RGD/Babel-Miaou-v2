@@ -22,6 +22,7 @@ public class Room : MonoBehaviour
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
     public Transform roomCenter;
+    public Transform safeSpot;
 
     //room info
     public int roomType;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,7 +19,9 @@ public class UIManager : MonoBehaviour
     public Animator hurtPanel;
     public RectTransform lowHpPanel;
     public RectTransform healthBarAmount;
-    public RectTransform bossHealthBar;
+    public Animator bossHealthBar;
+    public RectTransform bossHealthFill;
+    public RectTransform bossHealthBG;
 
     [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;

@@ -458,6 +458,24 @@ public class MenuManager : MonoBehaviour
         StartCoroutine(GameScore.instance.ShowLeaderBoards());
         //successes check
     }
+
+    public GameObject credits;
+
+    public void Credits()
+    {
+        StartCoroutine(ShowCredits());
+    }
+    public IEnumerator ShowCredits()
+    {
+        GameScore.instance.leaderboardMenu.SetActive(false);
+        credits.SetActive(true);
+        credits.GetComponent<Animator>().CrossFade(Animator.StringToHash("crédits"), 0);
+        yield return new WaitForSecondsRealtime(41);
+        credits.SetActive(false);
+        DestroyScene.instance.DestroyEverything();
+        SwitchState(GameState.MainMenu);
+        SceneManager.LoadScene("MainMenu");
+    }
     #region Shortcuts
     private void ConfirmButton(InputAction.CallbackContext context)
     {

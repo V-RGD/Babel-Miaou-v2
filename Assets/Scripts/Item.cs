@@ -23,6 +23,7 @@ public class Item : MonoBehaviour
     private bool isPlayerInRange;
     public bool canBeTaken = false;
     private float grabDist = 10;
+    private AudioSource source;
     
     //object info
     public int objectID;
@@ -42,6 +43,7 @@ public class Item : MonoBehaviour
 
     private void Awake()
     {
+        source = GetComponent<AudioSource>();
         playerControls = new PlayerControls();
         player = GameObject.Find("Player");
     }
@@ -119,6 +121,7 @@ public class Item : MonoBehaviour
                 {
                     GameManager.instance.health = GameManager.instance.maxHealth;
                 }
+                source.PlayOneShot(GameSounds.instance.playerHeal[0]);
                 UIManager.instance.HealthBar(GameManager.instance.health);
                 GameManager.instance.healFx.Play();
                 if (isFromAShop)
@@ -195,6 +198,10 @@ public class Item : MonoBehaviour
                 }
                 //does gameobject effect
                 GameManager.instance.money -= itemCost;
+                if (isFromAShop)
+                {
+                    source.PlayOneShot(GameSounds.instance.itemPurchased[0]);
+                }
                 ItemEffect();
             }
         }

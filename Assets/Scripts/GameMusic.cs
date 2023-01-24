@@ -47,8 +47,7 @@ public class GameMusic : MonoBehaviour
                 source.Play();
                 break;
             case 2 : 
-                source.clip = musics[3];
-                source.Play();
+                //source.Play();
                 break;
         }
     }

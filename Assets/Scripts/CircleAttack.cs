@@ -12,7 +12,7 @@ public class CircleAttack : MonoBehaviour
     private GameManager _gameManager;
     private float _playerDist;
     public float damage;
-    public float speed;
+    public float speed = 10.1f;
     public float detectionOffset = 0.05f;
     private SpriteRenderer _spriteRenderer;
     public VisualEffect fx;
@@ -21,7 +21,6 @@ public class CircleAttack : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _player = GameObject.Find("Player");
         _gameManager = GameManager.instance;
-        fx = transform.GetChild(0).GetComponent<VisualEffect>();
     }
 
     private void Update()
@@ -54,7 +53,7 @@ public class CircleAttack : MonoBehaviour
     public IEnumerator CircleActivation()
     {
         isActive = true;
-        _spriteRenderer.enabled = true;
+        _spriteRenderer.enabled = false;
         //sets detector at 0, circle at 0 size
         _sizeTimer = 0;
         fx.gameObject.SetActive(true);
@@ -64,6 +63,6 @@ public class CircleAttack : MonoBehaviour
         //disables
         fx.gameObject.SetActive(false);
         isActive = false;
-        _spriteRenderer.enabled = false;
+        // _spriteRenderer.enabled = false;
     }
 }

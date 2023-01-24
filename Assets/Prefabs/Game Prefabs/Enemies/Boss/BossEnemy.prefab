@@ -1259,7 +1259,7 @@ GameObject:
   - component: {fileID: 1102201791992558243}
   - component: {fileID: 1102201791992558245}
   - component: {fileID: 1102201791992558246}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: BossEnemy
   m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
@@ -1303,7 +1303,6 @@ MonoBehaviour:
   canDie: 0
   values: {fileID: 11400000, guid: 91a95b89130e0db44837bdab9a0e4590, type: 2}
   healthBar: {fileID: 0}
-  pancarteName: {fileID: 0}
   healthBarAnim: {fileID: 0}
   attackAnchor: {fileID: 8982400145615322328}
   clawL: {fileID: 8982400145206118634}
@@ -1347,7 +1346,7 @@ MonoBehaviour:
   - {fileID: 0}
   hLaserVfx: {fileID: 9123270318991972678}
   hLaserChargeFx: {fileID: 2013310931068875691}
-  hLaserSparksFx: {fileID: 0}
+  paulinUWU: {fileID: 0}
   rockPrefab: {fileID: 0}
   animator: {fileID: 3708811126162606735}
   waypoints:
@@ -1360,11 +1359,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  sparks: {fileID: 0}
   isChangingPos: 0
   lerpPosTimer: 0
   replacingPulling: {fileID: 1102201791992558246}
   goUnderground: 0
   digSpeed: 1.5
+  sprite: {fileID: 0}
 --- !u!195 &1102201791992558241
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1477,7 +1478,7 @@ GameObject:
   - component: {fileID: 1102201792153466531}
   - component: {fileID: 1102201792153466528}
   - component: {fileID: 1102201792153466529}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: LeftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1839,7 +1840,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1102201792839015103}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Attacks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1877,7 +1878,7 @@ GameObject:
   - component: {fileID: 1102201792896463654}
   - component: {fileID: 1102201792896463649}
   - component: {fileID: 1102201792896463652}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: ClawL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1992,7 +1993,7 @@ GameObject:
   - component: {fileID: 1102201793191833101}
   - component: {fileID: 1102201793191833106}
   - component: {fileID: 1102201793191833107}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: RightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8543,7 +8544,7 @@ GameObject:
   - component: {fileID: 8982400145206118638}
   - component: {fileID: 8982400145206118637}
   - component: {fileID: 8982400145206118636}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: ClawR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9851,7 +9852,7 @@ PrefabInstance:
     - target: {fileID: 1262031124565700420, guid: 8ba2c387233d75546bf5b4414e81ead2,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8ba2c387233d75546bf5b4414e81ead2, type: 3}

@@ -22,7 +22,7 @@ public class Item : MonoBehaviour
     public bool isFromAShop;
     private bool isPlayerInRange;
     public bool canBeTaken = false;
-    private float grabDist = 5;
+    private float grabDist = 10;
     
     //object info
     public int objectID;

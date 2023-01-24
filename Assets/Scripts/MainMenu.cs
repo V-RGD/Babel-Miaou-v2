@@ -23,6 +23,7 @@ public class MainMenu : MonoBehaviour
     public TMP_Text[] scoreTxt;
     public TMP_Text loadingAdvice;
     public string[] loadingAdvices;
+    private AudioSource _audioSource;
     private void OnEnable()
     {
         quitMenu = playerControls.Menus.Menu;
@@ -36,6 +37,7 @@ public class MainMenu : MonoBehaviour
     private void Awake()
     {
         playerControls = new PlayerControls();
+        _audioSource = GetComponent<AudioSource>();
     }
     private void EscapeButton(InputAction.CallbackContext context)
     {
@@ -52,6 +54,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         StartCoroutine(LoadingScreen());
+        _audioSource.Play();
     }
     public void RestartLevel()
     {

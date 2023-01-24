@@ -2354,6 +2354,37 @@ Transform:
   m_Father: {fileID: 3764290813347528238}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &770600843233356843
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6092060375090795540}
+  m_Layer: 0
+  m_Name: safeSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6092060375090795540
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 770600843233356843}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 15, y: 0, z: -16}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2559936159213990487}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &814858771769519768
 GameObject:
   m_ObjectHideFlags: 0
@@ -6931,6 +6962,7 @@ Transform:
   - {fileID: 1031643833881086753}
   - {fileID: 25285593446214517}
   - {fileID: 359588574679606053}
+  - {fileID: 6092060375090795540}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6969,6 +7001,7 @@ MonoBehaviour:
   doorsObjects: []
   doorsAnimators: []
   roomCenter: {fileID: 2559936159987096636}
+  safeSpot: {fileID: 6092060375090795540}
   roomType: 0
   currentRoom: 0
   visuals: {fileID: 0}

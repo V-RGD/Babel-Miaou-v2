@@ -5,7 +5,6 @@ using UnityEngine;
 public class EyeToken : MonoBehaviour
 {
     public GameObject player;
-    private GameManager _gameManager;
     public Rigidbody rb;
 
     private float _pickupDist = 6;
@@ -16,14 +15,13 @@ public class EyeToken : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("Player");
-        _gameManager = GameManager.instance;
         rb = GetComponent<Rigidbody>();
         _littleShit = ObjectsManager.instance.eyeCollector;
         
         {
-            _gameManager.eyesInGame.Add(gameObject.transform);
+            GameManager.instance.eyesInGame.Add(gameObject.transform);
             //sort list
-            _gameManager.eyesInGame = _gameManager.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
+            GameManager.instance.eyesInGame = GameManager.instance.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
         }
     }
 
@@ -45,8 +43,8 @@ public class EyeToken : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             //player collects coin
-            _gameManager.money++;
-            _gameManager.eyesInGame.Remove(transform);
+            GameManager.instance.money++;
+            GameManager.instance.eyesInGame.Remove(transform);
             PlayerSounds.instance.eyeSource.PlayOneShot(PlayerSounds.instance.eyeSource.clip);
             Destroy(gameObject);
         }
@@ -55,8 +53,8 @@ public class EyeToken : MonoBehaviour
             LittleShit.instance.animator.CrossFade(LittleShit.instance.Eat, 0, 0);
             //enemy collects it
             LittleShit.instance.eyesInInventory++;
-            _gameManager.eyesInGame.Remove(transform);
-            _gameManager.eyesInGame.Remove(transform);
+            GameManager.instance.eyesInGame.Remove(transform);
+            GameManager.instance.eyesInGame.Remove(transform);
             Destroy(gameObject);
             ObjectsManager.instance.PlayActivationVfx(3);
         }

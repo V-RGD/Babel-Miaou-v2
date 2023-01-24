@@ -22,6 +22,7 @@ public class Room : MonoBehaviour
     private ObjectsManager _objectsManager;
     private RoomInfo _roomInfo;
     public Transform roomCenter;
+    public Transform safeSpot;
 
     //room info
     public int roomType;
@@ -48,12 +49,17 @@ public class Room : MonoBehaviour
         _dunGen = DunGen.instance;
         _objectsManager = ObjectsManager.instance;
         _gameManager = GameManager.instance;
-        enemyGroup = transform.GetChild(0).gameObject;
         chest = LevelManager.instance.chest;
         doorPrefab = LevelManager.instance.door;
         _roomInfo = GetComponent<RoomInfo>();
-        GameObject group = Instantiate(empty, transform);
+        GameObject group = Instantiate(empty);
+        group.transform.Rotate(0, 45, 0);
         enemyGroup = group;
+        group.name = gameObject.name + "Enemy Group";
+        if (safeSpot == null)
+        {
+            safeSpot = roomCenter;
+        }
 
         DoorSpawn();
         yield return new WaitUntil(()=> _dunGen.finishedGeneration);
@@ -74,6 +80,7 @@ public class Room : MonoBehaviour
                 StartCoroutine(StelaFadeOut());
                 UIManager.instance.gameIndications.CrossFade(Animator.StringToHash("Room Cleared"), 0);
                 UIManager.instance.indicationTxt.text = "Level Cleared";
+                //spawns stairs
             }
             else
             {
@@ -83,7 +90,7 @@ public class Room : MonoBehaviour
                 int randChest = Random.Range(0, 100);
                 if (randChest < 100)
                 {
-                    chest = Instantiate(chest, roomCenter.position + Vector3.up, quaternion.identity);
+                    chest = Instantiate(chest, safeSpot.position + Vector3.up, quaternion.identity);
                 }
             }
         }
@@ -208,13 +215,7 @@ public class Room : MonoBehaviour
         yield return new WaitForSeconds(1);
         stela.SetActive(false);
         //activates colis stratégique des escaliers
-        
-        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
-            quaternion.identity);
-        stairs.SetActive(true);
-        stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
-        yield return new WaitForSeconds(0.4f);
-        stairs.transform.GetChild(0).GetComponent<ToNextLevel>().isActive = true;
+        StartCoroutine(StairSpawn());
     }
     
     void RoomType()
@@ -257,9 +258,10 @@ public class Room : MonoBehaviour
                 //ShopSpawn();
                 break;
             case 4 : //mini-boss room
-                stela = Instantiate(LevelManager.instance.stela, roomCenter.position, Quaternion.identity);
+                stela = Instantiate(LevelManager.instance.stela, safeSpot.position, Quaternion.identity);
                 stela.GetComponent<ActiveStela>().room = this;
-                LevelManager.instance.currentStelaPosition = stela.transform.position;
+                LevelManager.instance.currentStelaPosition = safeSpot.position;
+                //LevelManager.instance.currentStela = stela;
                 //GameObject exitPrefab = Instantiate(LevelManager.instance.exit, roomCenter.position, Quaternion.identity);
                 //LevelManager.instance.exit = exitPrefab;
                 //LevelManager.instance.exit.SetActive(false);
@@ -368,6 +370,7 @@ public class Room : MonoBehaviour
             _player.transform.position.z > roomDetectionZMin && _player.transform.position.z < roomDetectionZMax )
         {
             _hasPlayerEnteredRoom = true;
+            LevelManager.instance.currentRoom = this.gameObject;
         }
         else
         {
@@ -391,7 +394,6 @@ public class Room : MonoBehaviour
             enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
         }
-        
     }
 
     void DoorSpawn()
@@ -463,7 +465,7 @@ public class Room : MonoBehaviour
 
     void PlacePlayerAtSpawnPoint()
     {
-        _player.transform.position = roomCenter.transform.position + Vector3.up * 2.1f;
+        _player.transform.position = safeSpot.transform.position + Vector3.up * 2.1f;
     }
 
     void ActiveEffects()
@@ -476,5 +478,15 @@ public class Room : MonoBehaviour
         {
             visuals.SetActive(false);
         }
+    }
+
+    IEnumerator StairSpawn()
+    {
+        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
+            quaternion.identity);
+        stairs.SetActive(true);
+        stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
+        yield return new WaitForSeconds(0.4f);
+        stairs.transform.GetChild(0).GetComponent<ToNextLevel>().isActive = true;
     }
 }

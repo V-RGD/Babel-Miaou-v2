@@ -188,32 +188,32 @@ public class MenuManager : MonoBehaviour
     {
         quitWarning.SetActive(false);
     }
-    private void EscapeInventory()
-    {
-        ObjectMenu();
-        if (!_objectsManager.canReplaceItem)
-        {
-            bool slotsFilled = true;
-            foreach (var slot in _objectsManager.itemObjectsInventory)
-            {
-                if (slot == 999)
-                {
-                    slotsFilled = false;
-                    break;
-                }
-            }
-            if ((_objectsManager.canReplaceItem && slotsFilled) )
-            {
-                if (gameState == GameState.Inventory)
-                {
-                    //resets every position
-                    //then closes menu
-                    return;
-                }
-                // PauseMenu();
-            }
-        }
-    }
+    // private void EscapeInventory()
+    // {
+    //     ObjectMenu();
+    //     if (!_objectsManager.canReplaceItem)
+    //     {
+    //         bool slotsFilled = true;
+    //         foreach (var slot in _objectsManager.itemObjectsInventory)
+    //         {
+    //             if (slot == 999)
+    //             {
+    //                 slotsFilled = false;
+    //                 break;
+    //             }
+    //         }
+    //         if ((_objectsManager.canReplaceItem && slotsFilled) )
+    //         {
+    //             if (gameState == GameState.Inventory)
+    //             {
+    //                 //resets every position
+    //                 //then closes menu
+    //                 return;
+    //             }
+    //             // PauseMenu();
+    //         }
+    //     }
+    // }
     public void SwitchState(GameState newState)
     {
         gameState = newState;
@@ -346,31 +346,31 @@ public class MenuManager : MonoBehaviour
             _playerController.enabled = false;
         }
     }
-    void CheckGameActive()
-    {
-        if (gameState is GameState.Death 
-            or GameState.Console 
-            or GameState.Draw 
-            or GameState.Inventory
-            or GameState.Option 
-            or GameState.Pause 
-            or GameState.DiscardDraw 
-            or GameState.DiscardInventory 
-            or GameState.QuitToMainMenuPrompt)
-        {
-            //disables playercontroller + enemies
-            _playerAttacks.enabled = false;
-            _playerController.enabled = false;
-            Time.timeScale = 0;
-        }
-        else
-        {
-            //disables playercontroller + enemies
-            _playerAttacks.enabled = true;
-            _playerController.enabled = true;
-            Time.timeScale = 1;
-        }
-    }
+    // void CheckGameActive()
+    // {
+    //     if (gameState is GameState.Death 
+    //         or GameState.Console 
+    //         or GameState.Draw 
+    //         or GameState.Inventory
+    //         or GameState.Option 
+    //         or GameState.Pause 
+    //         or GameState.DiscardDraw 
+    //         or GameState.DiscardInventory 
+    //         or GameState.QuitToMainMenuPrompt)
+    //     {
+    //         //disables playercontroller + enemies
+    //         _playerAttacks.enabled = false;
+    //         _playerController.enabled = false;
+    //         Time.timeScale = 0;
+    //     }
+    //     else
+    //     {
+    //         //disables playercontroller + enemies
+    //         _playerAttacks.enabled = true;
+    //         _playerController.enabled = true;
+    //         Time.timeScale = 1;
+    //     }
+    // }
     public void UseSelectedButton(Button[] buttonList)
     {
         //uses currently selected button
@@ -421,20 +421,6 @@ public class MenuManager : MonoBehaviour
     }
     public IEnumerator StartLevel()
     {
-        // SaveProgression saveProgression = GameObject.Find("SaveProgression").GetComponent<SaveProgression>();
-        //
-        // GameManager.instance.health = saveProgression.health;
-        // GameManager.instance.maxHealth = saveProgression.maxHealth;
-        // GameManager.instance.initialMaxHealth = saveProgression.initialMaxHealth;
-        // LevelManager.instance.currentLevel = saveProgression.currentLevel;
-        //
-        // GameManager.instance.money = saveProgression.money;
-        //
-        // for (int i = 0; i < 3; i++)
-        // {
-        //     ObjectsManager.instance.itemObjectsInventory[i] = saveProgression.itemObjectsInventory[i];
-        // }
-        
         _playerController.enabled = false;
         _playerAttacks.enabled = false;
         SwitchState(GameState.Loading);
@@ -462,8 +448,6 @@ public class MenuManager : MonoBehaviour
         nextLevelPanel.GetComponent<Animator>().CrossFade(Animator.StringToHash("Load"), 0, 0);
         yield return new WaitForSeconds(6.5f);
 
-        
-        
         nextLevelPanel.SetActive(false);
         
         //disables screen, enables character
@@ -480,6 +464,21 @@ public class MenuManager : MonoBehaviour
     }
     public void RestartLevel()
     {
+        deathPanel.SetActive(false);
+        
+        GameManager.instance.maxHealth = GameManager.instance.initialMaxHealth;
+        GameManager.instance.health = GameManager.instance.initialMaxHealth;
+        GameManager.instance.money = 0;
+        GameScore.instance.tempScore = 0;
+
+        for (int i = 0; i < ObjectsManager.instance.itemObjectsInventory.Count; i++)
+        {
+            ObjectsManager.instance.itemObjectsInventory[i] = 999;
+        }
+        
+        UIManager.instance.HealthBar(GameManager.instance.health);
+        loadingUI.SetActive(true);
+        StartCoroutine(StartLevel());
         SceneManager.LoadScene("MainScene");
     }
     public void QuitGame()
@@ -623,7 +622,6 @@ public class MenuManager : MonoBehaviour
             case GameState.Play or GameState.Pause: 
                 //activates pause
                 PauseMenu();
-                Debug.Log("found function");
                 break;
             case GameState.QuitToMainMenuPrompt :
                 //disables warning
@@ -641,13 +639,6 @@ public class MenuManager : MonoBehaviour
         //CheckGameActive();
     }
     #endregion
-
-
-    public List<Enemy> enemiesInGame;
-    void StopAllEnemies()
-    {
-        //if 
-    }
     private void OnEnable()
     {
         _menu = _playerControls.Menus.Menu;

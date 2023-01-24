@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class MarksManIA : MonoBehaviour
 {
@@ -34,6 +35,7 @@ public class MarksManIA : MonoBehaviour
     private Enemy _enemyTrigger;
     [SerializeField]private LineRenderer _lineRenderer;
     public ParticleSystem laserFx;
+    private AudioSource _audioSource;
     
     [SerializeField]private Animator _animator;
     public int currentAnimatorState;
@@ -49,6 +51,7 @@ public class MarksManIA : MonoBehaviour
         _enemyTrigger = GetComponent<Enemy>();
         laserMaterial = _lineRenderer.material;
         enemyTypeData = _enemyTrigger.enemyTypeData;
+        _audioSource = GetComponent<AudioSource>();
 
         _playerLayerMask = LayerMask.GetMask("Player");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
@@ -150,7 +153,8 @@ public class MarksManIA : MonoBehaviour
         
         //shoots laser
         _canLaserTouchPlayer = true;
-        
+        _audioSource.PlayOneShot(GameSounds.instance.marksmanShoot[Random.Range(0, GameSounds.instance.marksmanShoot.Length)]);
+
         //laser set inactive
         yield return new WaitForSeconds(_laserLength);
         laserFx.Stop();

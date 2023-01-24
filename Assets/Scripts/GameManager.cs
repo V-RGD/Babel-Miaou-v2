@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -72,20 +73,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F6))
-        {
-            StartCoroutine(TestStairs());
-        }
-    }
-
-    public IEnumerator TestStairs()
-    {
-        GameObject stairs = Instantiate(LevelManager.instance.exit, GameObject.Find("Player").transform.position,
-            quaternion.identity);
-        stairs.SetActive(true);
-        stairs.transform.GetChild(1).transform.GetChild(0).GetComponent<Animator>().CrossFade(Animator.StringToHash("Fall"), 0);
-        yield return new WaitForSeconds(0.4f);
-        stairs.transform.GetChild(0).GetComponent<ToNextLevel>().isActive = true;
+        
     }
 
     public IEnumerator ShakeCam(int apex)

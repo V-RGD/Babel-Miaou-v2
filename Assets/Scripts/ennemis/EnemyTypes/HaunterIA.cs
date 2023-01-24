@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.VFX;
+using Random = UnityEngine.Random;
 
 public class HaunterIA : MonoBehaviour
 {
@@ -39,6 +40,8 @@ public class HaunterIA : MonoBehaviour
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Attack = Animator.StringToHash("Attack");
     [SerializeField] private VisualEffect clawFx;
+
+    private AudioSource _audioSource;
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -49,6 +52,7 @@ public class HaunterIA : MonoBehaviour
         _enemyTypeData = _enemyTrigger.enemyTypeData;
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
         _jabDamage = _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -147,6 +151,7 @@ public class HaunterIA : MonoBehaviour
             _attackAnchor.transform.LookAt(attackLocation);
             //actives weapon
             _enemyTrigger.canTouchPlayer = true;
+            _audioSource.PlayOneShot(GameSounds.instance.wandererClaw[Random.Range(0, GameSounds.instance.wandererClaw.Length)]);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             clawFx.Play();
             _rb.velocity = Vector3.zero;

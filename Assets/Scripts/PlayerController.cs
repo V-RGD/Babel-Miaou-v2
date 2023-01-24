@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     public PlayerStates currentState;
     #endregion
     #region Components
-    private Rigidbody _rb;
+    [HideInInspector]public Rigidbody _rb;
     private RandSoundGen _stepSounds;
     [HideInInspector] public SpriteRenderer spriteRenderer;
     private PlayerControls _playerControls;
@@ -287,7 +287,6 @@ public class PlayerController : MonoBehaviour
     IEnumerator DashOverHole(Vector3 dashDir, Vector3 groundHit)
     {
         isDashingOverHole = true;
-        Debug.Log("tried to ashed over");
         PlayerAttacks.instance.InterruptAttack();
         SwitchState(PlayerStates.Dash);
         isDashing = true;
@@ -312,7 +311,6 @@ public class PlayerController : MonoBehaviour
         
         dashOverDir = Vector3.zero;
         isDashingOverHole = false;
-        Debug.Log("found ground");
         _boxCollider.enabled = true;
         
         dashTrail.Stop();
@@ -327,7 +325,6 @@ public class PlayerController : MonoBehaviour
             invincibleCounter = dashLenght + 0.25f;
         }
         SwitchState(PlayerStates.Run);
-        Debug.Log("dashed over hole");
     }
 
     IEnumerator DashSecurity(Vector3 securePoint, Vector3 gap)
@@ -335,7 +332,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(gap.magnitude * dashCheatCoef);
         if (isDashingOverHole)
         {
-            Debug.Log("dashSecurity");
             transform.position = new Vector3(securePoint.x, transform.position.y, securePoint.z);
         }
     }

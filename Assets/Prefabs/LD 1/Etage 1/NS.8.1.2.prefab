@@ -4016,6 +4016,7 @@ Transform:
   - {fileID: 2789039815712854609}
   - {fileID: 8448715882099926136}
   - {fileID: 2965103895165561096}
+  - {fileID: 7934058215643151843}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4052,7 +4053,9 @@ MonoBehaviour:
   chest: {fileID: 0}
   doorPrefab: {fileID: 0}
   doorsObjects: []
+  doorsAnimators: []
   roomCenter: {fileID: 1170114557548545108}
+  safeSpot: {fileID: 7934058215643151843}
   roomType: 0
   currentRoom: 0
   visuals: {fileID: 0}
@@ -21180,6 +21183,37 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 8, y: 40, z: 8}
   m_Center: {x: 37, y: 0, z: 28.91832}
+--- !u!1 &7352818835400764223
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7934058215643151843}
+  m_Layer: 0
+  m_Name: safeSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7934058215643151843
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7352818835400764223}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 24, y: 0, z: -20}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1170114557636780991}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7354834913684025346
 GameObject:
   m_ObjectHideFlags: 0

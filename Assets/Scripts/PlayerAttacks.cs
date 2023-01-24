@@ -95,6 +95,8 @@ public class PlayerAttacks : MonoBehaviour
     private static readonly int SpinAttack = Animator.StringToHash("Spin_Attack");
     private static readonly int SmashPrepare = Animator.StringToHash("SmashPrepare");
     private static readonly int SmashRelease = Animator.StringToHash("SmashRelease");
+
+    private AudioSource _source;
     // public bool canInterruptAnimation;
     #endregion
 
@@ -136,6 +138,7 @@ public class PlayerAttacks : MonoBehaviour
         _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody>();
         _playerControls = new PlayerControls();
+        _source = GetComponent<AudioSource>();
     }
     private void Start() => _pc = PlayerController.instance;
     private void Update()
@@ -358,6 +361,7 @@ public class PlayerAttacks : MonoBehaviour
             rocksVfxPulling.StartCoroutine(rocksVfxPulling.PlaceNewVfx(rocksVfxPulling.particleList[power], rocksOffsetPos, true));
             StartCoroutine(DelayRockShake(shakePower, 0.15f));
             //waits a bit before spawning another one
+            _source.PlayOneShot(GameSounds.instance.bossRock[0]);
             yield return new WaitForSeconds(rocksPlacementInterval);
         }
     }

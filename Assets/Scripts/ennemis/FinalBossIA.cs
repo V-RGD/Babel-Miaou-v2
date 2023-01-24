@@ -111,9 +111,10 @@ public class FinalBossIA : MonoBehaviour
         _player = GameObject.Find("Player");
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
-    IEnumerator Start()
+    void Start()
     {
         GameManager.instance = GameManager.instance;
+        healthBar = UIManager.instance.bossHealthBar;
         healthBar.transform.parent.gameObject.SetActive(true);
 
         handAttackCount = 0;
@@ -143,16 +144,6 @@ public class FinalBossIA : MonoBehaviour
             eyeChainsExternal.Add(externalList[i].GetComponent<EyeChain>());
             eyeChainsExternal[i].ia = this;
         }
-
-        StartCoroutine(BossApparitionSequence());
-
-        yield return new WaitForSeconds(5);
-
-        StartCoroutine(ChooseNextAttack());
-
-        //replaces player
-        _player.transform.position =
-            new Vector3(roomCenter.position.x, _player.transform.position.y, roomCenter.position.z);
     }
     void Update()
     {
@@ -563,6 +554,10 @@ public class FinalBossIA : MonoBehaviour
 
     public IEnumerator BossApparitionSequence()
     {
+        StartCoroutine(BossApparitionSequence());
+        //replaces player
+        _player.transform.position =
+            new Vector3(roomCenter.position.x, _player.transform.position.y, roomCenter.position.z);
         //laughts
         PlayerAttacks.instance.enabled = false;
         PlayerController.instance.enabled = false;
@@ -579,5 +574,7 @@ public class FinalBossIA : MonoBehaviour
         //active
         PlayerAttacks.instance.enabled = true;
         PlayerController.instance.enabled = true;
+        yield return new WaitForSeconds(2);
+        StartCoroutine(ChooseNextAttack());
     }
 }

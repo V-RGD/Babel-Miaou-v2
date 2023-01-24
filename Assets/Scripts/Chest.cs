@@ -14,19 +14,21 @@ public class Chest : MonoBehaviour
     public GameObject messagePrompt;
     public Animator animator;
     public bool canOpen;
+    private AudioSource _audioSource;
 
     private void Awake()
     {
         _playerControls = new PlayerControls();
         _player = GameObject.Find("Player");
         _collect = _playerControls.Player.Interact;
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private IEnumerator Start()
     {            
         messagePrompt.SetActive(false);
-        ObjectsManager.instance = ObjectsManager.instance;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.2f);
+        _audioSource.PlayOneShot(GameSounds.instance.bossRock[0]);
         canOpen = true;
     }
 

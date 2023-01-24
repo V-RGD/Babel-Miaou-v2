@@ -17,6 +17,8 @@ public class LevelManager : MonoBehaviour
     public GameObject shop;
     public GameObject door;
     public GameObject stela;
+    public GameObject currentRoom;
+    public GameObject currentStela;
     
     [HideInInspector] public Vector3 currentShopPosition;
     [HideInInspector] public Vector3 currentStelaPosition;
@@ -69,6 +71,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel++;
             //don't destroy on load everything
+            StartCoroutine(MenuManager.instance.StartLevel());
             SceneManager.LoadScene("MainScene");
             DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
         }
@@ -76,7 +79,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel++;
             //don't destroy on load everything
-            SceneManager.LoadScene("BossScene");
+            CheatManager.instance.TpToBoss();
         }
     }
 }

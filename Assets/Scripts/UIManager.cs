@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     public Animator hurtPanel;
     public RectTransform lowHpPanel;
     public RectTransform healthBarAmount;
+    public RectTransform bossHealthBar;
 
     [HideInInspector] public bool doWhiteout;
     [HideInInspector] public bool doBlackout;

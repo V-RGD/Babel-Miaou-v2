@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ShooterIA : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class ShooterIA : MonoBehaviour
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
     private Enemy _enemyTrigger;
+    private AudioSource _audioSource;
 
     private Animator _animator;
     public int currentAnimatorState;
@@ -64,6 +66,7 @@ public class ShooterIA : MonoBehaviour
         _enemyTrigger = GetComponent<Enemy>();
         enemyTypeData = _enemyTrigger.enemyTypeData;
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
 
         wallLayerMask = LayerMask.GetMask("Wall");
         GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
@@ -88,15 +91,6 @@ public class ShooterIA : MonoBehaviour
             _speedFactor = 0;
             _rb.velocity = Vector3.zero;
         }
-        
-        // //if the enemy is in range, and not too far
-        // if (_playerDist > _desiredRange && _playerDist < enemyTypeData.attackRange)
-        // {
-        //     //attaque et agit normalement
-        //     _speedFactor = 0;
-        //     attackCooldown = enemyTypeData.attackCooldown;
-        //     _agent.SetDestination(transform.position);
-        // }
     }
 
     private void Start()
@@ -216,7 +210,9 @@ public class ShooterIA : MonoBehaviour
         SwitchState(ShooterStates.Attack);
         _animator.CrossFade(Attack, 0, 0);
         currentAnimatorState = Attack;
+        _audioSource.PlayOneShot(GameSounds.instance.bullHurt[Random.Range(0, GameSounds.instance.bullHurt.Length)]);
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
+        _audioSource.PlayOneShot(GameSounds.instance.shooterProjectile[Random.Range(0, GameSounds.instance.shooterProjectile.Length)]);
         //shoots a projectile depending on the current level
         switch (LevelManager.instance.currentLevel)
         {

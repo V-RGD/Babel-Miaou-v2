@@ -27,7 +27,7 @@ public class FinalBossIA : MonoBehaviour
     private NavMeshSurface _navMeshSurface;
     private GameObject _player;
     public RectTransform healthBar;
-    public Animator pancarteName;
+    //public Animator pancarteName;
     public Animator healthBarAnim;
     #endregion
     
@@ -115,7 +115,7 @@ public class FinalBossIA : MonoBehaviour
     {
         GameManager.instance = GameManager.instance;
         healthBar = UIManager.instance.bossHealthBar;
-        healthBar.transform.parent.gameObject.SetActive(true);
+        healthBarAnim = healthBar.transform.parent.GetComponent<Animator>();
 
         handAttackCount = 0;
         canActiveFirstLaser = true;
@@ -554,7 +554,7 @@ public class FinalBossIA : MonoBehaviour
 
     public IEnumerator BossApparitionSequence()
     {
-        StartCoroutine(BossApparitionSequence());
+        // StartCoroutine(BossApparitionSequence());
         //replaces player
         _player.transform.position =
             new Vector3(roomCenter.position.x, _player.transform.position.y, roomCenter.position.z);
@@ -567,7 +567,7 @@ public class FinalBossIA : MonoBehaviour
         //post process spoopy
         GameManager.instance.hurtVolume.CrossFade("Hurt", 0);
         //name
-        pancarteName.CrossFade("Appear", 0);
+        //pancarteName.CrossFade("Appear", 0);
         yield return new WaitForSeconds(3);
         //not name
         healthBarAnim.CrossFade("Appear", 0);

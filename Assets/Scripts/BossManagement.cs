@@ -12,16 +12,17 @@ public class BossManagement : MonoBehaviour
         player = GameObject.Find("Player");
         player.transform.position =
             new Vector3(replacePlayerPoint.position.x, player.transform.position.y, replacePlayerPoint.position.z);
-        bossDoor.gameObject.SetActive(false);
+        bossDoor.transform.parent.transform.parent.gameObject.SetActive(false);
     }
 
     //when entering the room, closes the door
 
     private void OnTriggerEnter(Collider other)
     {
-        if (canActivateBossFight)
+        if (canActivateBossFight && other.CompareTag("Player"))
         {
-            bossDoor.gameObject.SetActive(true);
+            Debug.Log("activated boss");
+            bossDoor.transform.parent.transform.parent.gameObject.SetActive(true);
             canActivateBossFight = false;
             StartCoroutine(FinalBossIA.instance.BossApparitionSequence());
             bossDoor.CrossFade(Animator.StringToHash("Close"), 0);

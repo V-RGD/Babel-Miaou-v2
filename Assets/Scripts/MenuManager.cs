@@ -40,6 +40,8 @@ public class MenuManager : MonoBehaviour
     public GameObject deathPanel;
     public GameObject nextLevelPanel;
     public TMP_Text nextLevelTxt;
+    public Animator winScreen;
+    public Animator leaderBoardScreen;
 
     [Header("Buttons")]
     public int buttonPos;

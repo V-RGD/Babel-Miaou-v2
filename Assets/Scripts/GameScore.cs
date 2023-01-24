@@ -30,12 +30,7 @@ public class GameScore : MonoBehaviour
     public IEnumerator ShowLeaderBoards()
     {
         playerEnteredName = false;
-        //shows leaderboard screen
-        leaderboardMenu.SetActive(true);
         //freezes player and game
-        Time.timeScale = 0;
-        PlayerController.instance.enabled = false;
-        PlayerAttacks.instance.enabled = false;
         mainMenuButton.enabled = false;
         nameInput.gameObject.SetActive(true);
         currentScore.text = tempScore.ToString();

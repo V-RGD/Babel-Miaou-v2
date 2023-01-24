@@ -18,6 +18,7 @@ public class FinalBossIA : MonoBehaviour
     private float _handRespawnTimer;
     private float _roomSize = 20;
     private int handAttackCount;
+    public bool canDie;
     #endregion
 
     #region Assignations
@@ -26,6 +27,8 @@ public class FinalBossIA : MonoBehaviour
     private NavMeshSurface _navMeshSurface;
     private GameObject _player;
     public RectTransform healthBar;
+    public Animator pancarteName;
+    public Animator healthBarAnim;
     #endregion
     
     #region M_Laser
@@ -108,7 +111,7 @@ public class FinalBossIA : MonoBehaviour
         _player = GameObject.Find("Player");
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
-    void Start()
+    IEnumerator Start()
     {
         GameManager.instance = GameManager.instance;
         healthBar.transform.parent.gameObject.SetActive(true);
@@ -116,6 +119,7 @@ public class FinalBossIA : MonoBehaviour
         handAttackCount = 0;
         canActiveFirstLaser = true;
         canActiveSecondLaser = true;
+        canDie = true;
         _navMeshSurface.BuildNavMesh();
         hLaserVfx.Stop();
         _circleNumber = 1;
@@ -140,13 +144,28 @@ public class FinalBossIA : MonoBehaviour
             eyeChainsExternal[i].ia = this;
         }
 
+        StartCoroutine(BossApparitionSequence());
+
+        yield return new WaitForSeconds(5);
+
         StartCoroutine(ChooseNextAttack());
+
+        //replaces player
+        _player.transform.position =
+            new Vector3(roomCenter.position.x, _player.transform.position.y, roomCenter.position.z);
     }
     void Update()
     {
         _playerDist = (_player.transform.position - transform.position).magnitude;
         H_LaserCheck();
         LerpPosition();
+
+        if (health <= 0 && canDie)
+        {
+            canDie = false;
+            StartCoroutine(FinalBossDeath());
+        }
+        
     }
     IEnumerator M_Laser()
     {
@@ -376,9 +395,6 @@ public class FinalBossIA : MonoBehaviour
 
         float meleeRange = 25;
         float handsAvailable = 2;
-
-        StartCoroutine(H_Laser());
-        yield break;
         
         //---------------------checks before if it must shoot the Huge Laser
         if (healthRatio is < 0.66f and > 0.33f && canActiveFirstLaser)
@@ -488,12 +504,14 @@ public class FinalBossIA : MonoBehaviour
         }
     }
 
-    private void FinalBossDeath()
+    private IEnumerator FinalBossDeath()
     {
-        //whiteout
-        //plays fx
-        //destroys gameobject
-        //leaderboards menu appears
+        MenuManager.instance.winScreen.gameObject.SetActive(true);
+        MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
+        yield return new WaitForSeconds(1);
+        MenuManager.instance.winScreen.gameObject.SetActive(false);
+        StartCoroutine(MenuManager.instance.OpenMenu(MenuManager.instance.leaderBoardScreen.gameObject,
+            MenuManager.instance.leaderBoardScreen, MenuManager.GameState.LeaderBoard));
         StartCoroutine(GameScore.instance.ShowLeaderBoards());
         //successes check
     }
@@ -541,5 +559,25 @@ public class FinalBossIA : MonoBehaviour
             lerpPosTimer -= Time.deltaTime * digSpeed;
         }
         
+    }
+
+    public IEnumerator BossApparitionSequence()
+    {
+        //laughts
+        PlayerAttacks.instance.enabled = false;
+        PlayerController.instance.enabled = false;
+        animator.CrossFade(Invocation, 0, 0);
+        _currentAnimatorState = Invocation;
+        yield return new WaitForSeconds(1);
+        //post process spoopy
+        GameManager.instance.hurtVolume.CrossFade("Hurt", 0);
+        //name
+        pancarteName.CrossFade("Appear", 0);
+        yield return new WaitForSeconds(3);
+        //not name
+        healthBarAnim.CrossFade("Appear", 0);
+        //active
+        PlayerAttacks.instance.enabled = true;
+        PlayerController.instance.enabled = true;
     }
 }

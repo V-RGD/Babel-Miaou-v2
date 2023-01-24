@@ -210,7 +210,7 @@ public class ShooterIA : MonoBehaviour
         SwitchState(ShooterStates.Attack);
         _animator.CrossFade(Attack, 0, 0);
         currentAnimatorState = Attack;
-        _audioSource.PlayOneShot(GameSounds.instance.shooterRecharge[Random.Range(0, GameSounds.instance.shooterRecharge.Length)]);
+        _audioSource.PlayOneShot(GameSounds.instance.bullHurt[Random.Range(0, GameSounds.instance.bullHurt.Length)]);
         yield return new WaitForSeconds(enemyTypeData.shootWarmup);
         _audioSource.PlayOneShot(GameSounds.instance.shooterProjectile[Random.Range(0, GameSounds.instance.shooterProjectile.Length)]);
         //shoots a projectile depending on the current level

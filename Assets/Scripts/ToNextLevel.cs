@@ -4,7 +4,7 @@ using UnityEngine;
 public class ToNextLevel : MonoBehaviour
 {
     public bool isActive;
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player") && isActive)
         {

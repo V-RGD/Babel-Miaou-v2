@@ -49,12 +49,13 @@ public class Room : MonoBehaviour
         _dunGen = DunGen.instance;
         _objectsManager = ObjectsManager.instance;
         _gameManager = GameManager.instance;
-        enemyGroup = transform.GetChild(0).gameObject;
         chest = LevelManager.instance.chest;
         doorPrefab = LevelManager.instance.door;
         _roomInfo = GetComponent<RoomInfo>();
-        GameObject group = Instantiate(empty, transform);
+        GameObject group = Instantiate(empty);
+        group.transform.Rotate(0, 45, 0);
         enemyGroup = group;
+        group.name = gameObject.name + "Enemy Group";
 
         DoorSpawn();
         yield return new WaitUntil(()=> _dunGen.finishedGeneration);
@@ -389,7 +390,6 @@ public class Room : MonoBehaviour
             enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
         }
-        
     }
 
     void DoorSpawn()

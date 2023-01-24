@@ -45,6 +45,7 @@ public class BullIA : MonoBehaviour
     public GameObject dashFx;
     public ParticleSystem stunFx;
     private AudioSource _audioSource;
+    public AudioSource chargeSource;
 
     private void Awake()
     {
@@ -140,16 +141,17 @@ public class BullIA : MonoBehaviour
         _isDashing = true;
         //waits for the attack to start
         yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
-        _audioSource.clip = GameSounds.instance.bullDash[Random.Range(0, GameSounds.instance.bullDash.Length)];
-        _audioSource.Play();
+        chargeSource.clip = GameSounds.instance.bullDash[0];
+        chargeSource.Play();
         _enemyTrigger.canTouchPlayer = true;
         _sprite.SetActive(false);
         dashFx.gameObject.SetActive(true);
         dashFactor = 1;
         //fonce jusuqu'a toucher un mur
         yield return new WaitUntil(() => _isTouchingWall);
-        _audioSource.Stop();
-        _audioSource.PlayOneShot(GameSounds.instance.bullHurt[Random.Range(0, GameSounds.instance.bullHurt.Length)]);
+        chargeSource.Stop();
+        _audioSource.PlayOneShot(GameSounds.instance.bullHurt[0]);
+        _audioSource.PlayOneShot(GameSounds.instance.bullKnock[Random.Range(0,GameSounds.instance.bullKnock.Length)]);
         stunFx.gameObject.SetActive(true);
         stunFx.Play();
         _sprite.SetActive(true);

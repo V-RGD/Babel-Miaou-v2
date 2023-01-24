@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
+using DG.Tweening;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -27,9 +29,12 @@ public class FinalBossIA : MonoBehaviour
     private NavMeshSurface _navMeshSurface;
     private GameObject _player;
     public RectTransform healthBar;
+    public RectTransform healthBarBG;
     //public Animator pancarteName;
     public Animator healthBarAnim;
     public AudioSource bossMusic;
+    public AudioSource source;
+    public CinemachineVirtualCamera cvCam;
     #endregion
     
     #region M_Laser
@@ -110,14 +115,17 @@ public class FinalBossIA : MonoBehaviour
         _laserVisualsR = transform.GetChild(1).GetComponent<LaserVisuals>();
         _leftHandClawFx = clawL.transform.GetChild(0).GetComponent<VisualEffect>();
         _rightHandClawFx = clawR.transform.GetChild(0).GetComponent<VisualEffect>();
+        source = GetComponent<AudioSource>();
 
         _player = GameObject.Find("Player");
         _navMeshSurface = GameObject.Find("NavMeshSurface").GetComponent<NavMeshSurface>();
     }
     void Start()
     {
+        cvCam = GameObject.Find("TestCam").GetComponent<CinemachineVirtualCamera>();
         GameManager.instance = GameManager.instance;
-        healthBar = UIManager.instance.bossHealthBar;
+        healthBar = UIManager.instance.bossHealthFill;
+        healthBarBG = UIManager.instance.bossHealthBG;
         healthBarAnim = healthBar.transform.parent.GetComponent<Animator>();
 
         handAttackCount = 0;
@@ -159,9 +167,6 @@ public class FinalBossIA : MonoBehaviour
             canDie = false;
             StartCoroutine(FinalBossDeath());
         }
-
-        
-        
     }
     IEnumerator M_Laser()
     {
@@ -180,7 +185,6 @@ public class FinalBossIA : MonoBehaviour
     {
         StartCoroutine(GoToLocation(_player.transform.position));
         yield return new WaitUntil(() => !isChangingPos);
-
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         Vector3 playerPos = new Vector3(_player.transform.position.x, transform.position.y, _player.transform.position.z);
@@ -193,9 +197,11 @@ public class FinalBossIA : MonoBehaviour
         clawL.transform.GetChild(1).gameObject.SetActive(false);
         clawR.transform.GetChild(1).gameObject.SetActive(false);
         //left claw
+        source.PlayOneShot(GameSounds.instance.wandererClaw[0]);
         clawL.GetComponent<BoxCollider>().enabled = true;
         clawL.transform.GetChild(0).GetComponent<VisualEffect>().Play();
         yield return new WaitForSeconds(0.5f);
+        source.PlayOneShot(GameSounds.instance.wandererClaw[0]);
         //right claw
         clawL.GetComponent<BoxCollider>().enabled = false;
         clawR.GetComponent<BoxCollider>().enabled = true;
@@ -232,6 +238,7 @@ public class FinalBossIA : MonoBehaviour
             enemy.room = gameObject;
             enemy.enabled = true;
             enemy.StartCoroutine(enemy.EnemyApparition());
+            source.PlayOneShot(GameSounds.instance.invocation);
             yield return new WaitForSeconds(values.wandererSpawnInterval);
         }
         yield return new WaitForSeconds(2);
@@ -239,6 +246,7 @@ public class FinalBossIA : MonoBehaviour
     }
     IEnumerator CircleTrap()
     {
+        source.PlayOneShot(GameSounds.instance.invocation);
         StartCoroutine(GoToLocation(roomCenter.position));
         yield return new WaitUntil(() => !isChangingPos);
         yield return new WaitForSeconds(2f);
@@ -325,6 +333,7 @@ public class FinalBossIA : MonoBehaviour
         {
             StartCoroutine(eye.CheckConnection());
         }
+        source.PlayOneShot(GameSounds.instance.invocation);
         yield return new WaitForSeconds(4);
 
         StartCoroutine(ChooseNextAttack());    
@@ -338,11 +347,13 @@ public class FinalBossIA : MonoBehaviour
         _currentAnimatorState = Invocation;
         Vector3 rockSpawnPoint = roomCenter.position + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 4, Random.Range(-_roomSize/2, _roomSize/2));
         GameObject rock = Instantiate(rockPrefab, rockSpawnPoint, Quaternion.identity);
+        source.PlayOneShot(GameSounds.instance.bossRock[0]);
         yield return new WaitForSeconds(1.2f);
         hLaserChargeFx.Play();
         animator.CrossFade(HugeLaser, 0, 0);
         _currentAnimatorState = HugeLaser;
         yield return new WaitForSeconds(values.hugeLaserWarmup);
+        source.PlayOneShot(GameSounds.instance.marksmanShoot[0]); // play huge laser
         hLaserChargeFx.Stop();
         hLaserVfx.Play();
         sparks.Play();
@@ -380,10 +391,7 @@ public class FinalBossIA : MonoBehaviour
         }
 
         yield return new WaitForSeconds(attackCooldown);
-
-        StartCoroutine(CircleTrap());
-        yield break;
-
+        
         float meleeRange = 25;
         float handsAvailable = 2;
         
@@ -474,6 +482,7 @@ public class FinalBossIA : MonoBehaviour
     }
     void TakeDamage(float damageDealt) //when enemy takes hit
     {
+        source.PlayOneShot(GameSounds.instance.bullHurt[0]); // play huge laser
         var position = transform.position;
         EnemyVfx.instance.hitFx.StartCoroutine(EnemyVfx.instance.hitFx.PlaceNewVfx(EnemyVfx.instance.hitFx.particleList[0], position, true));
         EnemyVfx.instance.hitFx.StartCoroutine(EnemyVfx.instance.hitFx.PlaceNewVfx(EnemyVfx.instance.hitFx.particleList[1], position, true));
@@ -485,6 +494,7 @@ public class FinalBossIA : MonoBehaviour
         health -= damage;
         GameManager.instance.cmShake.ShakeCamera(4, .1f);
         healthBar.sizeDelta = new Vector2(1323.4f * health / maxHealth, 12.95f);
+        healthBarBG.sizeDelta = new Vector2(1323.4f * health / maxHealth, 12.95f);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -518,6 +528,7 @@ public class FinalBossIA : MonoBehaviour
     public GameObject sprite;
     public IEnumerator GoToLocation(Vector3 location)
     {
+        source.PlayOneShot(GameSounds.instance.invocation);
         Debug.Log("switching location");
         //fais apparaitre un vfx
         isChangingPos = true;
@@ -566,8 +577,9 @@ public class FinalBossIA : MonoBehaviour
         //replaces player
         _player.GetComponent<Rigidbody>().velocity = Vector3.zero;
         //laughts
-        PlayerAttacks.instance.enabled = false;
-        PlayerController.instance.enabled = false;
+        cvCam.m_Lens.OrthographicSize = 16;
+        // PlayerAttacks.instance.enabled = false;
+        // PlayerController.instance.enabled = false;
         bossMusic.Play();
         GameMusic.instance.source.Stop();
         animator.CrossFade(Invocation, 0, 0);

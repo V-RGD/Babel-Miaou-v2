@@ -15,6 +15,7 @@ public class ToNextLevel : MonoBehaviour
     private void Start()
     {
         _audioSource.PlayOneShot(GameSounds.instance.bossRock[0]);
+        GameManager.instance.cmShake.ShakeCamera(7, 0.1f);
     }
 
     private void OnTriggerStay(Collider other)

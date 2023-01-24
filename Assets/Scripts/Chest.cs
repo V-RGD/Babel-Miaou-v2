@@ -29,6 +29,7 @@ public class Chest : MonoBehaviour
         messagePrompt.SetActive(false);
         yield return new WaitForSeconds(0.2f);
         _audioSource.PlayOneShot(GameSounds.instance.bossRock[0]);
+        GameManager.instance.cmShake.ShakeCamera(7, 0.1f);
         canOpen = true;
     }
 

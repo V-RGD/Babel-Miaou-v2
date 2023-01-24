@@ -19,6 +19,7 @@ public class LaserVisuals : MonoBehaviour
 
     private ParticleSystem _chargeFx;
     private ParticleSystem _laserFx;
+    private AudioSource _source;
 
     private void Awake()
     {
@@ -93,11 +94,11 @@ public class LaserVisuals : MonoBehaviour
         _lineRenderer.enabled = true;
         _isCharging = true;
         _laserTimer = 0;
-
         _chargeFx.Play();
         yield return new WaitForSeconds(FinalBossIA.instance.values.m_laserWarmup);
         _chargeFx.Stop();
         _laserFx.Play();
+        _source.PlayOneShot(GameSounds.instance.marksmanShoot[0]);
         _laserFx.gameObject.transform.LookAt(_player.transform);
         _isCharging = false;
         //waits a bit for the player to avoid the laser

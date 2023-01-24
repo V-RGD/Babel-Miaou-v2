@@ -41,6 +41,7 @@ public class Enemy : MonoBehaviour
     private Animator _healthBarAnimator;
     public Slider healthBarSlider;
     private Image _healthSliderImage;
+    private AudioSource _source;
 
     [HideInInspector]public GameObject room;
     public bool isFromStela;
@@ -51,6 +52,7 @@ public class Enemy : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _agent = GetComponent<NavMeshAgent>();
         _healthSliderImage = healthBarSlider.fillRect.gameObject.GetComponent<Image>();
+        _source = transform.GetChild(0).GetComponent<AudioSource>();
     }
     void Start()
     {
@@ -135,6 +137,7 @@ public class Enemy : MonoBehaviour
     }
     public IEnumerator EnemyApparition()
     {
+        _source.PlayOneShot(GameSounds.instance.invocation);
         sprite.SetActive(false);
         //vfx plays
         spawnVfx.Play();

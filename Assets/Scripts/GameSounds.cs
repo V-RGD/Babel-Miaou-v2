@@ -43,6 +43,8 @@ public class GameSounds : MonoBehaviour
     [Header("Environment")]
     public AudioClip[] braseroFireplace;
 
+    public AudioClip invocation;
+
     private void Awake()
     {
         if (instance != null)

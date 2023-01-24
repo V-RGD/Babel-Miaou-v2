@@ -40,6 +40,7 @@ public class LittleShit : MonoBehaviour
         }
 
         instance = this;
+        DontDestroyOnLoad(gameObject);
 
         _rb = GetComponent<Rigidbody>();
         _player = GameObject.Find("Player");

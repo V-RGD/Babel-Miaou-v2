@@ -16,14 +16,13 @@ public class EyeToken : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("Player");
-        _gameManager = GameManager.instance;
         rb = GetComponent<Rigidbody>();
         _littleShit = ObjectsManager.instance.eyeCollector;
         
         {
-            _gameManager.eyesInGame.Add(gameObject.transform);
+            GameManager.instance.eyesInGame.Add(gameObject.transform);
             //sort list
-            _gameManager.eyesInGame = _gameManager.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
+            GameManager.instance.eyesInGame = GameManager.instance.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
         }
     }
 

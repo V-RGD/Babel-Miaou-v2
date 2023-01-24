@@ -623,7 +623,6 @@ public class MenuManager : MonoBehaviour
             case GameState.Play or GameState.Pause: 
                 //activates pause
                 PauseMenu();
-                Debug.Log("found function");
                 break;
             case GameState.QuitToMainMenuPrompt :
                 //disables warning

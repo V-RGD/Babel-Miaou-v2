@@ -273,6 +273,7 @@ public class CheatManager : MonoBehaviour
         Vector3 shopPos = new Vector3(shop.transform.position.x, player.transform.position.y,
             shop.transform.position.z);
         player.transform.position = shopPos;
+        PlayerController.instance._rb.velocity = Vector3.zero;
         StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
             MenuManager.GameState.Play));
     }
@@ -295,10 +296,14 @@ public class CheatManager : MonoBehaviour
     {
         _gameManager.maxHealth = 10000;
         _gameManager.health = 10000;
+        StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
+            MenuManager.GameState.Play));
     }
     
     public void GetInfiniteAttack()
     {
         PlayerAttacks.instance.attackStat = 1000;
+        StartCoroutine(MenuManager.instance.CloseMenu(MenuManager.instance.pauseMenu, MenuManager.instance.pauseMenuAnimator,
+            MenuManager.GameState.Play));
     }
 }

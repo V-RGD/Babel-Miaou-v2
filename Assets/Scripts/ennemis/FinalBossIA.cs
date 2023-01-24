@@ -158,6 +158,8 @@ public class FinalBossIA : MonoBehaviour
             canDie = false;
             StartCoroutine(FinalBossDeath());
         }
+
+        
         
     }
     IEnumerator M_Laser()
@@ -334,17 +336,8 @@ public class FinalBossIA : MonoBehaviour
         animator.CrossFade(Invocation, 0, 0);
         _currentAnimatorState = Invocation;
         Vector3 rockSpawnPoint = roomCenter.position + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 4, Random.Range(-_roomSize/2, _roomSize/2));
-        //rock warning
         GameObject rock = Instantiate(rockPrefab, rockSpawnPoint, Quaternion.identity);
-        //rockWarning.SetActive(true);
-        //rockWarning.transform.position = rockSpawnPoint;
         yield return new WaitForSeconds(1.2f);
-        //rock
-        //rockWarning.SetActive(false);
-        //rockPrefab.SetActive(true);
-        //rockPrefab.transform.position = rockSpawnPoint;
-        //laser warning
-        //hLaserWarning.SetActive(true);
         hLaserChargeFx.Play();
         animator.CrossFade(HugeLaser, 0, 0);
         _currentAnimatorState = HugeLaser;
@@ -352,14 +345,11 @@ public class FinalBossIA : MonoBehaviour
         hLaserChargeFx.Stop();
         hLaserVfx.Play();
         sparks.Play();
-        //hLaserWarning.SetActive(false);
         yield return new WaitForSeconds(0.6f);
-        //laser 
         _hLaserActive = true;
         yield return new WaitForSeconds(values.hugeLaserDuration);
         _hLaserActive = false;
         sparks.Stop();
-        //rockPrefab.SetActive(false);
         Destroy(rock);
         hLaserVfx.Stop();
         yield return new WaitForSeconds(values.m_laserCooldown);
@@ -506,6 +496,7 @@ public class FinalBossIA : MonoBehaviour
 
     private IEnumerator FinalBossDeath()
     {
+        Debug.Log("killed boss");
         MenuManager.instance.winScreen.gameObject.SetActive(true);
         MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
         yield return new WaitForSeconds(1);
@@ -515,6 +506,7 @@ public class FinalBossIA : MonoBehaviour
         StartCoroutine(GameScore.instance.ShowLeaderBoards());
         //successes check
     }
+
     public bool isChangingPos;
     public float lerpPosTimer;
     public VfxPulling replacingPulling;

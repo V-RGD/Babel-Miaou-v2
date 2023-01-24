@@ -394,6 +394,18 @@ public class Room : MonoBehaviour
             enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
         }
+        for (int i = 0; i < enemyGroup.transform.childCount; i++)
+        {
+            if (!enemyGroup.transform.GetChild(i).gameObject.activeInHierarchy)
+            {
+                enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
+                enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
+                Enemy enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>();
+                enemy.enabled = true;
+                enemy.StartCoroutine(enemy.EnemyApparition());
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
     }
 
     void DoorSpawn()

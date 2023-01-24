@@ -92,7 +92,6 @@ public class MenuManager : MonoBehaviour
 
     private PlayerController _playerController;
     private PlayerAttacks _playerAttacks;
-    
     private void Awake()
     {
         if (instance != null)
@@ -131,10 +130,13 @@ public class MenuManager : MonoBehaviour
             SwitchState(GameState.Death);
             StartCoroutine(DeathPanel());
         }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            StartCoroutine(MenuManager.instance.EndGame());
-        }
+    }
+
+    public void GoToMainMenu()
+    {
+        DestroyScene.instance.DestroyEverything();
+        SwitchState(GameState.MainMenu);
+        SceneManager.LoadScene("MainMenu");
     }
     public void MainMenu()
     {
@@ -192,32 +194,6 @@ public class MenuManager : MonoBehaviour
     {
         quitWarning.SetActive(false);
     }
-    // private void EscapeInventory()
-    // {
-    //     ObjectMenu();
-    //     if (!_objectsManager.canReplaceItem)
-    //     {
-    //         bool slotsFilled = true;
-    //         foreach (var slot in _objectsManager.itemObjectsInventory)
-    //         {
-    //             if (slot == 999)
-    //             {
-    //                 slotsFilled = false;
-    //                 break;
-    //             }
-    //         }
-    //         if ((_objectsManager.canReplaceItem && slotsFilled) )
-    //         {
-    //             if (gameState == GameState.Inventory)
-    //             {
-    //                 //resets every position
-    //                 //then closes menu
-    //                 return;
-    //             }
-    //             // PauseMenu();
-    //         }
-    //     }
-    // }
     public void SwitchState(GameState newState)
     {
         gameState = newState;
@@ -350,31 +326,6 @@ public class MenuManager : MonoBehaviour
             _playerController.enabled = false;
         }
     }
-    // void CheckGameActive()
-    // {
-    //     if (gameState is GameState.Death 
-    //         or GameState.Console 
-    //         or GameState.Draw 
-    //         or GameState.Inventory
-    //         or GameState.Option 
-    //         or GameState.Pause 
-    //         or GameState.DiscardDraw 
-    //         or GameState.DiscardInventory 
-    //         or GameState.QuitToMainMenuPrompt)
-    //     {
-    //         //disables playercontroller + enemies
-    //         _playerAttacks.enabled = false;
-    //         _playerController.enabled = false;
-    //         Time.timeScale = 0;
-    //     }
-    //     else
-    //     {
-    //         //disables playercontroller + enemies
-    //         _playerAttacks.enabled = true;
-    //         _playerController.enabled = true;
-    //         Time.timeScale = 1;
-    //     }
-    // }
     public void UseSelectedButton(Button[] buttonList)
     {
         //uses currently selected button
@@ -402,9 +353,11 @@ public class MenuManager : MonoBehaviour
         //change scene
         SceneManager.LoadScene("MainScene");
     }
+    
     public GameObject[] deathPanelButtons;
     public Animator deathPanelAnimator;
     public Animator deathTitleAnimator;
+    
     private IEnumerator DeathPanel()
     {
         _playerController.enabled = false;
@@ -497,8 +450,8 @@ public class MenuManager : MonoBehaviour
         _playerController.enabled = false;
         Time.timeScale = 0;
         MenuManager.instance.winScreen.gameObject.SetActive(true);
-        MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
-        yield return new WaitForSecondsRealtime(4);
+        MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Open"), 0);
+        yield return new WaitForSecondsRealtime(3.2f);
         MenuManager.instance.winScreen.gameObject.SetActive(false);
         StartCoroutine(MenuManager.instance.OpenMenu(MenuManager.instance.leaderBoardScreen.gameObject,
             MenuManager.instance.leaderBoardScreen, MenuManager.GameState.LeaderBoard));

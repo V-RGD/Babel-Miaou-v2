@@ -7,15 +7,15 @@ using UnityEngine.UI;
 public class GameScore : MonoBehaviour
 {
     public static GameScore instance;
-    public string tempName;
+    //public string tempName;
     public int tempScore;
     public TMP_Text currentScore;
-    public TMP_Text[] users;
     public TMP_Text[] scoreTxt;
-    public TMP_InputField nameInput;
     public GameObject leaderboardMenu;
     public Button mainMenuButton;
-    public bool playerEnteredName;
+    //public TMP_Text[] users;
+    //public TMP_InputField nameInput;
+    //public bool playerEnteredName;
     private void Awake()
     {
         if (instance != null)
@@ -29,10 +29,11 @@ public class GameScore : MonoBehaviour
 
     public IEnumerator ShowLeaderBoards()
     {
-        playerEnteredName = false;
+        Time.timeScale = 1;
+        //playerEnteredName = false;
         //freezes player and game
         mainMenuButton.enabled = false;
-        nameInput.gameObject.SetActive(true);
+        //nameInput.gameObject.SetActive(true);
         currentScore.text = tempScore.ToString();
         //updates scores
         int[] scoreList = new int[5];
@@ -56,7 +57,7 @@ public class GameScore : MonoBehaviour
         nameList[4] = PlayerPrefs.GetString("Name5");
         for (int i = 0; i < 5; i++)
         {
-            users[i].text = nameList[i];
+            //users[i].text = nameList[i];
         }
         
         //checks if user score is in the top 5
@@ -74,14 +75,14 @@ public class GameScore : MonoBehaviour
         if (scorePosition < 5)
         {
             //wait till player adds it's name
-            yield return new WaitUntil(() => playerEnteredName);
+            //yield return new WaitUntil(() => playerEnteredName);
 
             //once it's done, applies score and decreases each other score below
             int tempDelayedScore = scoreList[scorePosition];
             string tempDelayedName = nameList[scorePosition];
             //applies current score to the position
             scoreList[scorePosition] = tempScore;
-            nameList[scorePosition] = nameInput.text;
+            //nameList[scorePosition] = nameInput.text;
 
             //if temp delayed score can be in the leaderboard, add it
             if (scorePosition + 1 < 5)
@@ -127,25 +128,27 @@ public class GameScore : MonoBehaviour
             nameList[4] = PlayerPrefs.GetString("Name5");
             for (int i = 0; i < 5; i++)
             {
-                users[i].text = nameList[i];
+                //users[i].text = nameList[i];
             }
 
             //return to menu
             mainMenuButton.enabled = true;
-            nameInput.gameObject.SetActive(false);
+            //nameInput.gameObject.SetActive(false);
         }
         else
         {
             //enables button to go back to the main menu
             mainMenuButton.enabled = true;
-            nameInput.gameObject.SetActive(false);
+            //nameInput.gameObject.SetActive(false);
         }
+
+        yield return null;
     }
     
     public void TypeName()
     {
         //get name from field
-        playerEnteredName = true;
+        //playerEnteredName = true;
     }
 
     public void AddScore(int scoreAdded)

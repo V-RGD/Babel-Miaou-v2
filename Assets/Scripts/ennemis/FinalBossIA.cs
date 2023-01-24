@@ -563,8 +563,7 @@ public class FinalBossIA : MonoBehaviour
     {
         // StartCoroutine(BossApparitionSequence());
         //replaces player
-        _player.transform.position =
-            new Vector3(roomCenter.position.x, _player.transform.position.y, roomCenter.position.z);
+        _player.GetComponent<Rigidbody>().velocity = Vector3.zero;
         //laughts
         PlayerAttacks.instance.enabled = false;
         PlayerController.instance.enabled = false;
@@ -573,8 +572,9 @@ public class FinalBossIA : MonoBehaviour
         yield return new WaitForSeconds(1);
         //post process spoopy
         GameManager.instance.hurtVolume.CrossFade("Hurt", 0);
-        //name
-        //pancarteName.CrossFade("Appear", 0);
+        
+        
+            healthBarAnim.CrossFade("Appear", 0);
         yield return new WaitForSeconds(3);
         //not name
         healthBarAnim.CrossFade("Appear", 0);

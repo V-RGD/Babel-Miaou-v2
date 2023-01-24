@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.VFX;
+using Random = UnityEngine.Random;
 
 public class HaunterIA : MonoBehaviour
 {
@@ -150,7 +151,7 @@ public class HaunterIA : MonoBehaviour
             _attackAnchor.transform.LookAt(attackLocation);
             //actives weapon
             _enemyTrigger.canTouchPlayer = true;
-            _audioSource.PlayOneShot(GameSounds.instance);
+            _audioSource.PlayOneShot(GameSounds.instance.wandererClaw[Random.Range(0, GameSounds.instance.wandererClaw.Length)]);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             clawFx.Play();
             _rb.velocity = Vector3.zero;

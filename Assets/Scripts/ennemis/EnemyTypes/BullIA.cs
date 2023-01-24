@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.VFX;
+using Random = UnityEngine.Random;
 
 public class BullIA : MonoBehaviour
 {
@@ -43,9 +44,11 @@ public class BullIA : MonoBehaviour
     private static readonly int Stun = Animator.StringToHash("Stun");
     public GameObject dashFx;
     public ParticleSystem stunFx;
+    private AudioSource _audioSource;
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
@@ -137,12 +140,16 @@ public class BullIA : MonoBehaviour
         _isDashing = true;
         //waits for the attack to start
         yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
+        _audioSource.clip = GameSounds.instance.bullDash[Random.Range(0, GameSounds.instance.bullDash.Length)];
+        _audioSource.Play();
         _enemyTrigger.canTouchPlayer = true;
         _sprite.SetActive(false);
         dashFx.gameObject.SetActive(true);
         dashFactor = 1;
         //fonce jusuqu'a toucher un mur
         yield return new WaitUntil(() => _isTouchingWall);
+        _audioSource.Stop();
+        _audioSource.PlayOneShot(GameSounds.instance.bullHurt[Random.Range(0, GameSounds.instance.bullHurt.Length)]);
         stunFx.gameObject.SetActive(true);
         stunFx.Play();
         _sprite.SetActive(true);

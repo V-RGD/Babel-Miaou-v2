@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 1, g: 0.7971698, b: 0.7991971, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -4330,6 +4330,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 636838229}
   m_CullTransparentMesh: 1
+--- !u!1001 &637437120
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 809984192}
+    m_Modifications:
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242353, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8480714572383242354, guid: 5815f56b915e9f94289d24b42a9f2642,
+        type: 3}
+      propertyPath: m_Name
+      value: VFX_KIllingSpree
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5815f56b915e9f94289d24b42a9f2642, type: 3}
+--- !u!198 &637437121 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8480714572383242351, guid: 5815f56b915e9f94289d24b42a9f2642,
+    type: 3}
+  m_PrefabInstance: {fileID: 637437120}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &637447473
 GameObject:
   m_ObjectHideFlags: 0
@@ -5603,6 +5678,12 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 1342896226897775915, guid: 67bb42976821bfa4abc026bf7d5f7a7d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 67bb42976821bfa4abc026bf7d5f7a7d, type: 3}
+--- !u!4 &809984192 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2042313316750518230, guid: 67bb42976821bfa4abc026bf7d5f7a7d,
+    type: 3}
+  m_PrefabInstance: {fileID: 809984191}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &886632443
 GameObject:
   m_ObjectHideFlags: 0
@@ -10083,12 +10164,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1668036127}
   m_CullTransparentMesh: 1
---- !u!198 &1713258233 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 8608545806028120939, guid: 67bb42976821bfa4abc026bf7d5f7a7d,
-    type: 3}
-  m_PrefabInstance: {fileID: 809984191}
-  m_PrefabAsset: {fileID: 0}
 --- !u!95 &1738813873 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 1738813873, guid: 67bb42976821bfa4abc026bf7d5f7a7d,
@@ -35366,8 +35441,13 @@ PrefabInstance:
       objectReference: {fileID: 4334208605989961285}
     - target: {fileID: 5855979421817110363, guid: fc45989e2e2110c42b13c73d2820a6fe,
         type: 3}
-      propertyPath: killingSpree
+      propertyPath: sacredCross
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5855979421817110363, guid: fc45989e2e2110c42b13c73d2820a6fe,
+        type: 3}
+      propertyPath: killingSpree
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5855979421817110363, guid: fc45989e2e2110c42b13c73d2820a6fe,
         type: 3}
@@ -35378,7 +35458,7 @@ PrefabInstance:
         type: 3}
       propertyPath: killingSpreeFx
       value: 
-      objectReference: {fileID: 1713258233}
+      objectReference: {fileID: 637437121}
     - target: {fileID: 5855979421817110363, guid: fc45989e2e2110c42b13c73d2820a6fe,
         type: 3}
       propertyPath: uiItemBoxes.Array.data[0]

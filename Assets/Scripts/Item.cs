@@ -121,7 +121,7 @@ public class Item : MonoBehaviour
                 {
                     GameManager.instance.health = GameManager.instance.maxHealth;
                 }
-                source.PlayOneShot(GameSounds.instance.playerHeal[0]);
+                //source.PlayOneShot(GameSounds.instance.playerHeal[0]);
                 UIManager.instance.HealthBar(GameManager.instance.health);
                 GameManager.instance.healFx.Play();
                 if (isFromAShop)

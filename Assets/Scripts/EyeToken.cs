@@ -21,7 +21,7 @@ public class EyeToken : MonoBehaviour
         {
             GameManager.instance.eyesInGame.Add(gameObject.transform);
             //sort list
-            GameManager.instance.eyesInGame = GameManager.instance.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
+            //GameManager.instance.eyesInGame = GameManager.instance.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
         }
     }
 

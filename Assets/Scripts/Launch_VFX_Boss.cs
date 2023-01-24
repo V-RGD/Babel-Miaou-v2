@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class Launch_VFX_Boss : MonoBehaviour
     public float delay3;
     public ParticleSystem pc4;
 
-    IEnumerator VfxDelay()
+    public IEnumerator BossFxSequence()
     {
         pc.Play();
         yield return new WaitForSeconds(delay1); 
@@ -30,16 +31,17 @@ public class Launch_VFX_Boss : MonoBehaviour
         fx.Play();
         yield return new WaitForSeconds(delay2);
         pc3.Play();
+        GameManager.instance.hurtVolume.CrossFade(Animator.StringToHash("Hurt"), 0);
         //anim1.Play();
         yield return new WaitForSeconds(delay3);
         pc4.Play();
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            StartCoroutine(VfxDelay());
+            StartCoroutine(BossFxSequence());
         }
     }
 }

@@ -35,8 +35,7 @@ public class ToNextLevel : MonoBehaviour
             DunGen.instance.finishedGeneration = false;
             //builds new level
             LevelManager.instance.LoadNextLevel();
-            
-            SaveProgression.instance.SetGameValues();
+            //SaveProgression.instance.SetGameValues();
             GameMusic.instance.ChooseMusic();
             //Debug.Log("nextLev");
         }

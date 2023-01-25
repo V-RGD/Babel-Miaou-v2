@@ -82,4 +82,23 @@ public class LevelManager : MonoBehaviour
             CheatManager.instance.TpToBoss();
         }
     }
+
+    public void LoadFirstLevel()
+    {
+        //keeps track of passed rooms : pass to next level
+        if (currentLevel < 2)
+        {
+            currentLevel = 0;
+            //don't destroy on load everything
+            StartCoroutine(MenuManager.instance.StartLevel());
+            SceneManager.LoadScene("MainScene");
+            DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
+        }
+        else
+        {
+            currentLevel++;
+            //don't destroy on load everything
+            CheatManager.instance.TpToBoss();
+        }
+    }
 }

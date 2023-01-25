@@ -48,6 +48,8 @@ public class DrawItemBox : MonoBehaviour
 
     public void AccessToItemMenu(int id)
     {
+        //GameObject box = GameObject.Find("GameManager").GetComponent<ObjectsManager>().uiItemBoxes[3];
+        //box.SetActive(true);
         ObjectsManager.instance.uiItemBoxes[3].SetActive(true);
         MenuManager.instance.ObjectMenu();
         //puts it in the 6th box

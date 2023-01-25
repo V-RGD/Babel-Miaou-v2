@@ -403,7 +403,7 @@ public class MenuManager : MonoBehaviour
         //loading screen
         nextLevelPanel.SetActive(true);
         nextLevelPanel.GetComponent<Animator>().CrossFade(Animator.StringToHash("Load"), 0, 0);
-        yield return new WaitForSeconds(6.5f);
+        yield return new WaitForSeconds(5f);
 
         nextLevelPanel.SetActive(false);
         
@@ -422,12 +422,15 @@ public class MenuManager : MonoBehaviour
     public void RestartLevel()
     {
         deathPanel.SetActive(false);
-	Time.timeScale = 1;
-        
-        GameManager.instance.maxHealth = GameManager.instance.initialMaxHealth;
-        GameManager.instance.health = GameManager.instance.initialMaxHealth;
+        GameManager.instance.isDead = false;
+        SwitchState(GameState.Loading);
+	    Time.timeScale = 1;
+        GameManager.instance.maxHealth = 10;
+        GameManager.instance.health = 10;
         GameManager.instance.money = 0;
         GameScore.instance.tempScore = 0;
+        GameManager.instance.currentLevel = 0; ;
+        LevelManager.instance.currentLevel = 0;
 
         for (int i = 0; i < ObjectsManager.instance.itemObjectsInventory.Count; i++)
         {
@@ -436,8 +439,28 @@ public class MenuManager : MonoBehaviour
         
         UIManager.instance.HealthBar(GameManager.instance.health);
         loadingUI.SetActive(true);
-        StartCoroutine(StartLevel());
+
+        //desactivates all current rooms
+        List<GameObject> oldRooms = new List<GameObject>(LevelManager.instance.roomList);
+        foreach (var room in LevelManager.instance.roomList)
+        {
+            Destroy(room);
+        }
+        LevelManager.instance.roomList.Clear();
+        DunGen.instance.dungeonSize = DunGen.instance.goldenPathLength;
+        DunGen.instance.finishedGeneration = false;
+        //builds new level
+        //don't destroy on load everything
+        StartCoroutine(MenuManager.instance.StartLevel());
         SceneManager.LoadScene("MainScene");
+        DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
+        //SaveProgression.instance.SetGameValues();
+        GameMusic.instance.ChooseMusic();
+        //Debug.Log("nextLev");
+
+
+
+
     }
     public void QuitGame()
     {
@@ -470,7 +493,7 @@ public class MenuManager : MonoBehaviour
         GameScore.instance.leaderboardMenu.SetActive(false);
         credits.SetActive(true);
         credits.GetComponent<Animator>().CrossFade(Animator.StringToHash("crédits"), 0);
-        yield return new WaitForSecondsRealtime(41);
+        yield return new WaitForSecondsRealtime(40);
         credits.SetActive(false);
         DestroyScene.instance.DestroyEverything();
         SwitchState(GameState.MainMenu);

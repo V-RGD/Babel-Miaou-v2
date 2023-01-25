@@ -329,8 +329,8 @@ public class MenuManager : MonoBehaviour
     public void UseSelectedButton(Button[] buttonList)
     {
         //uses currently selected button
-        buttonList[buttonPos].onClick.Invoke();
-        buttonPos = 0;
+        //buttonList[buttonPos].onClick.Invoke();
+        //buttonPos = 0;
     }
     void ReplaceObjectInInventory()
     {
@@ -492,7 +492,15 @@ public class MenuManager : MonoBehaviour
                 break;
             case GameState.Draw :
                 //select draw item
-                drawMenu.AccessToItemMenu(drawMenu.items[buttonPos]);
+                if(buttonPos == 0)
+                {
+                    drawMenu.OnDrawBoxClick1();
+                }
+                if (buttonPos == 1)
+                {
+                    drawMenu.OnDrawBoxClick2();
+                }
+                //drawMenu.AccessToItemMenu(drawMenu.items[buttonPos]);
                 break;
             case GameState.Console : 
                 //use console
@@ -512,7 +520,7 @@ public class MenuManager : MonoBehaviour
                 ReplaceObjectInInventory();
                 break;
             case GameState.DiscardInventory : 
-                UseSelectedButton(buttonsDiscardInventory);
+                //UseSelectedButton(buttonsDiscardInventory);
                 break;
             case GameState.Death : 
                 UseSelectedButton(buttonsDeath);

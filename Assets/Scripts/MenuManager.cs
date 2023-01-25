@@ -134,6 +134,7 @@ public class MenuManager : MonoBehaviour
 
     public void GoToMainMenu()
     {
+	Time.timeScale = 1;
         DestroyScene.instance.DestroyEverything();
         SwitchState(GameState.MainMenu);
         SceneManager.LoadScene("MainMenu");
@@ -279,7 +280,7 @@ public class MenuManager : MonoBehaviour
         canChangeMenu = true;
 
         //to regain movement
-        if (gameState == GameState.Play)
+        if (gameState == GameState.Play || gameState == GameState.MainMenu)
         {
             _playerAttacks.enabled = true;
             _playerController.enabled = true;
@@ -313,7 +314,7 @@ public class MenuManager : MonoBehaviour
         canChangeMenu = true;
 
         //to regain movement
-        if (gameState == GameState.Play)
+        if (gameState == GameState.Play || gameState == GameState.MainMenu)
         {
             _playerAttacks.enabled = true;
             _playerController.enabled = true;
@@ -421,6 +422,7 @@ public class MenuManager : MonoBehaviour
     public void RestartLevel()
     {
         deathPanel.SetActive(false);
+	Time.timeScale = 1;
         
         GameManager.instance.maxHealth = GameManager.instance.initialMaxHealth;
         GameManager.instance.health = GameManager.instance.initialMaxHealth;

@@ -114,7 +114,7 @@ public class Item : MonoBehaviour
         switch (itemType)
         {
             case ItemType.Heal : 
-                int healAmount = 8;
+                int healAmount = 50;
                 GameManager.instance.health += healAmount;
                 //caps health to the max amount
                 if (GameManager.instance.health > GameManager.instance.maxHealth)

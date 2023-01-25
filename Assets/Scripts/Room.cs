@@ -88,7 +88,7 @@ public class Room : MonoBehaviour
                 UIManager.instance.indicationTxt.text = "Room Cleared";
                 //randomize chest spawn
                 int randChest = Random.Range(0, 100);
-                if (randChest < 100)
+                if (randChest < 50)
                 {
                     chest = Instantiate(chest, safeSpot.position + Vector3.up, quaternion.identity);
                 }

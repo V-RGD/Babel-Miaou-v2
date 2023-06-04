@@ -20,7 +20,7 @@ namespace Player
             instance = this;
         }
 
-        void TakeDamage(int amount)
+        public void TakeDamage(int amount)
         {
             //if this is a deadly hit, health capped at zero and player dies
             if (health - amount <= 0)

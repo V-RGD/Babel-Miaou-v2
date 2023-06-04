@@ -41,7 +41,7 @@ namespace Player
             Movement();
         }
 
-        void InputDash()
+        public void InputDash()
         {
             if (_dashTimer > 0) return;
             Dash();

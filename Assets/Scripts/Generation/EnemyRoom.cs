@@ -86,7 +86,7 @@ namespace Generation
             //spawn enemies
             foreach (var enemy in _enemies)
             {
-                enemy.Spawn();
+                StartCoroutine(enemy.Spawn());
                 yield return new WaitForSeconds(0.5f);
             }
         }

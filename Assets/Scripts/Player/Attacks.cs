@@ -40,7 +40,7 @@ namespace Player
             instance = this;
         }
 
-        void InputAttack(int index)
+        public void InputAttack()
         {
             //blocks attacking if an attack is pending
             if (_cooldownTimer > 0) return;

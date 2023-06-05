@@ -67,7 +67,6 @@ namespace Player
             
             //orientates attack anchor towards direction point
             attackAnchor.transform.LookAt(Maths.IgnoreY(Controller.instance.direction * 1000 + transform.position, transform.position));  
-            Vector3 goal = Vector3.IgnoreY()
             
             //sets counter to reflect attack used
             _comboCounter = Maths.NextOfList(_comboCounter, baseComboAttacks.Count);

@@ -11,7 +11,7 @@ namespace Player
         public Vector2 inputDir;
         public Vector3 direction;
 
-        [SerializeField] private Rigidbody rb;
+        private Rigidbody _rb;
 
         [SerializeField] private float dashRange;
         [SerializeField] private float dashLength;
@@ -29,6 +29,7 @@ namespace Player
             }
 
             instance = this;
+            _rb = GetComponent<Rigidbody>();
         }
 
         private void Update()
@@ -50,7 +51,7 @@ namespace Player
         void Movement()
         {
             //clamps speed to match maximum allowed
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+            _rb.velocity = Vector3.ClampMagnitude(_rb.velocity, maxSpeed);
 
             //if the player isn't allowed to move, do not calculate direction nor do apply velocity
             if (!canMove) return;
@@ -62,13 +63,13 @@ namespace Player
             if (inputDir == Vector2.zero) return;
             
             //moves body in the desired direction
-            rb.AddForce(direction * walkSpeed);
+            _rb.AddForce(direction * walkSpeed);
         }
 
         void Dash()
         {
             _dashTimer = dashLength;
-            rb.AddForce(direction * dashForce);
+            _rb.AddForce(direction * dashForce);
         }
     }
 }

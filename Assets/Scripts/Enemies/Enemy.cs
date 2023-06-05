@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-
 namespace Enemies
 {
+    [SelectionBase]
     public class Enemy : MonoBehaviour
     {
         //basic properties that every enemy shares
@@ -68,7 +68,7 @@ namespace Enemies
         {
             if (other.CompareTag("PlayerAttack"))
             {
-                health -= other.GetComponent<PlayerAttackHitbox>().damage;
+                TakeDamage(other.GetComponent<PlayerAttackHitbox>().damage);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Enemies
 
         #region Movement
 
-        public void Movement()
+        protected void Movement()
         {
             //movement is applied when the enemy isn't attacking
             if (isAttacking) return;
@@ -95,7 +95,7 @@ namespace Enemies
             }
         }
 
-        public void Targeting()
+        protected void Targeting()
         {
             //manages direction and target
         }
@@ -104,7 +104,7 @@ namespace Enemies
 
         #region IA/Attacks
 
-        public void Behaviour()
+        protected void Behaviour()
         {
             playerDir = _playerTransform.position - transform.position;
             _playerDist = playerDir.magnitude;
@@ -128,6 +128,19 @@ namespace Enemies
             _navMeshAgent.speed = movementSpeed;
         }
 
+        private void TakeDamage(int damage)
+        {
+            health -= damage;
+            if(health <= 0) Death();
+        }
+
+        private void Death()
+        {
+            _isActive = false;
+            Destroy(gameObject);
+            return;
+        }
+
         public virtual IEnumerator AttackBehaviour()
         {
             yield return null;
@@ -136,12 +149,12 @@ namespace Enemies
 
         #region Animator
 
-        public void PlayAnimation(int animation)
+        protected void PlayAnimation(int anim)
         {
-            if (currentAnimatorState != animation)
+            if (currentAnimatorState != anim)
             {
-                currentAnimatorState = animation;
-                animator.CrossFade(animation, 0, 0);
+                currentAnimatorState = anim;
+                animator.CrossFade(anim, 0, 0);
             }
         }
 

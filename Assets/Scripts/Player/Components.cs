@@ -6,8 +6,8 @@ namespace Player
     {
         public static Components instance;
 
-        public Rigidbody rb;
-        public Animator animator;
+        [HideInInspector] public Rigidbody rb;
+        [HideInInspector] public Animator animator;
 
         private void Awake()
         {

@@ -18,7 +18,7 @@ namespace Generation
         private bool _isCompleted;
 
         [Header("References")]
-        [SerializeField] private EnemyGenerationProperties genProperties;
+        [SerializeField] private EnemyGenProperties genProperties;
         [SerializeField] private GameObject chestPrefab;
         private List<Enemies.Enemy> _enemies;
         private Animator _doorsAnimator;

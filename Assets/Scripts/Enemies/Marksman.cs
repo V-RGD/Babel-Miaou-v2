@@ -19,10 +19,10 @@ namespace Enemies
             _lineRenderer = GetComponent<LineRenderer>();
         }
         
-        public IEnumerator Shoot()
+        public override IEnumerator AttackBehaviour()
         {
             //prepares
-            Vector3 dir = playerDir;
+            _laserDir = playerDir;
 
             yield return new WaitForSeconds(attackPreparation);
 
@@ -49,6 +49,7 @@ namespace Enemies
             Behaviour();
             Targeting();
             Laser();
+            LineRenderer();
         }
 
         public override void FixedUpdate()
@@ -67,6 +68,11 @@ namespace Enemies
                 //deals damage
                 Player.HealthSystem.instance.TakeDamage(attackValue);
             }
+        }
+
+        void LineRenderer()
+        {
+            _lineRenderer.enabled = isAttacking;
         }
     }
 }

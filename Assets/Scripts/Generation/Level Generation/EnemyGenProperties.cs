@@ -5,7 +5,7 @@ namespace Generation
     [CreateAssetMenu(fileName = "NewEnemyGenerationProperties", menuName = "EnemyGenerationProperties")]
     //This is a compilation of every enemy type in the game, including presets for each
     //Think this as an encyclopedia of the stats of the bestiary including every variants like the bokoblins and moblins in botw
-    public class EnemyGenerationProperties : ScriptableObject
+    public class EnemyGenProperties : ScriptableObject
     {
         //for each enemy, manages health, damage, and spawn rates
         public class EnemyType

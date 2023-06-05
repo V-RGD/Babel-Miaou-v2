@@ -5,7 +5,7 @@ namespace Enemies
 {
     public class Bull : Enemy
     {
-        [Header("Dashing")]
+        [Header("--Dashing--")]
         [SerializeField] private float dashSpeed;
         [SerializeField] private float dashMaxSpeed;
         [SerializeField] private GameObject visuals;
@@ -16,7 +16,7 @@ namespace Enemies
         private bool _wallCollision;
         private Vector3 _dashDir;
         
-        public IEnumerator Dash()
+        public override IEnumerator AttackBehaviour()
         {
             //prepares
             Vector3 dir = playerDir;

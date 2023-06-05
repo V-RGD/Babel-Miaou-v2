@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Utilities.Code;
 
 namespace Player
 {
@@ -23,12 +24,15 @@ namespace Player
 
         [SerializeField] private List<Attack> baseComboAttacks;
         
-        [Header("AttackSystem")]
+        [Header("--AttackSystem--")]
         private int _comboCounter;
         private float _comboTimer;
         private float _timeToCombo;
         private float _cooldownTimer;
-        
+
+        [Header("--References--")] 
+        [SerializeField] private Transform attackAnchor;
+
         private void Awake()
         {
             if (instance != null)
@@ -61,8 +65,12 @@ namespace Player
             Collider hitbox = attack.hitbox;
             hitbox.enabled = true;
             
+            //orientates attack anchor towards direction point
+            attackAnchor.transform.LookAt(Maths.IgnoreY(Controller.instance.direction * 1000 + transform.position, transform.position));  
+            Vector3 goal = Vector3.IgnoreY()
+            
             //sets counter to reflect attack used
-            _comboCounter = Utilities.Code.Maths.NextOfList(_comboCounter, baseComboAttacks.Count);
+            _comboCounter = Maths.NextOfList(_comboCounter, baseComboAttacks.Count);
             //sets combo counter for the possibility to combo if the player inputs fast enough
             _comboTimer = _timeToCombo;
             

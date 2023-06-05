@@ -8,27 +8,27 @@ namespace Enemies
     public class Enemy : MonoBehaviour
     {
         //basic properties that every enemy shares
-        [Header("HealthSystem")]
+        [Header("--HealthSystem--")]
         public int maxHealth;
         [SerializeField] private int health;
         
-        [Header("Attack Values")]
-        [HideInInspector] public int attackValue;
+        [Header("--Attack Values--")]
+        public int attackValue;
         [SerializeField] private float attackRange;
         public float attackPreparation;
         public float attackLength;
         public float attackCooldown;
         public bool isAttacking;
-        private Transform _playerTransform;
+        [HideInInspector] public Transform playerTransform;
         [HideInInspector] public Vector3 playerDir;
         
-        [Header("Movement Values")] 
+        [Header("--Movement Values--")] 
         [SerializeField] private float movementSpeed;
         private bool _canMove;
         private float _playerDist;
         protected bool _isActive;
 
-        [Header("References")]
+        [Header("--References--")]
         [HideInInspector] public Animator animator;
         [HideInInspector] public Rigidbody rb;
         private Collider _collider;
@@ -36,7 +36,7 @@ namespace Enemies
         private ParticleSystem _spawnFx;
         private SpriteRenderer _spriteRenderer;
         
-        [Header("Animation")]
+        [Header("--Animation--")]
         [HideInInspector] public int currentAnimatorState;
         public static readonly int Walk = Animator.StringToHash("Walk");
         public static readonly int Attack = Animator.StringToHash("Attack");
@@ -87,7 +87,7 @@ namespace Enemies
             //if it is too far from the player, gets closer
             if (_playerDist >= attackRange + 1)
             {
-                _navMeshAgent.SetDestination(_playerTransform.position);
+                _navMeshAgent.SetDestination(playerTransform.position);
             }
             else
             {
@@ -106,7 +106,7 @@ namespace Enemies
 
         protected void Behaviour()
         {
-            playerDir = _playerTransform.position - transform.position;
+            playerDir = playerTransform.position - transform.position;
             _playerDist = playerDir.magnitude;
             //if an attack isn't pending and the enemy is close enough, starts attacking
             if (!isAttacking && _playerDist <= attackRange + 1)

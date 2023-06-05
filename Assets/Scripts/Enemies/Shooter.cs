@@ -8,6 +8,7 @@ namespace Enemies
 {
     public class Shooter : Enemy
     {
+        [Header("--References--")]
         [SerializeField] private float projectileForce;
         [SerializeField] private Rigidbody bulletPrefab;
         private List<Rigidbody> _bullets;

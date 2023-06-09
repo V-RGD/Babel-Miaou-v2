@@ -1004,7 +1004,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1003895629}
   - component: {fileID: 1003895632}
-  - component: {fileID: 1003895631}
+  - component: {fileID: 1003895634}
   - component: {fileID: 1003895633}
   m_Layer: 0
   m_Name: LevelCreation
@@ -1028,18 +1028,6 @@ Transform:
   m_Father: {fileID: 774542166}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1003895631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1003895628}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f77ede5249fdb0d4d89713126942aed1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1003895632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1053,10 +1041,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generate: 0
-  levelParent: {fileID: 1735013267}
-  buildingBlock: {fileID: 5423794343761024264, guid: fbd6236341669b94ebce7710984955d4,
-    type: 3}
-  gridSize: {x: 1000, y: 1000}
+  startingRoomValues:
+    size: {x: 0, y: 0}
+    type: 0
+  fightingRoomValues:
+    size: {x: 0, y: 0}
+    type: 1
+  shopRoomValues:
+    size: {x: 0, y: 0}
+    type: 2
+  bossRoomValues:
+    size: {x: 0, y: 0}
+    type: 3
+  stairsRoomValues:
+    size: {x: 0, y: 0}
+    type: 4
+  roomDistance: {x: 0, y: 0}
+  fightRoomsAmount: {x: 0, y: 0}
+  highestConsecutiveFights: 0
 --- !u!114 &1003895633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1066,9 +1068,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1003895628}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95ba34d109718c44eb9e65f982922cdc, type: 3}
+  m_Script: {fileID: 11500000, guid: cb0b13c1e9dcdb64d997dcef08b6b3a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brickSize: 0
+  levelParent: {fileID: 0}
+  brick: {fileID: 0}
+--- !u!114 &1003895634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1003895628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72dda63546d2f56438cc3c2c66e5751a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomShape: 0
+  bridgeWidth: 0
 --- !u!1 &1022294797
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Player;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,9 +13,7 @@ namespace Generation
         public static GenProPlanner instance;
         private GenProShaper _shaper;
         private GenProBuilder _builder;
-
-        public bool generate;
-
+        
         #region References
         [Header("--RoomValues--")]
         [SerializeField] private RoomGenerationValues startingRoomValues;
@@ -55,14 +54,10 @@ namespace Generation
             _shaper = GetComponent<GenProShaper>();
             _builder = GetComponent<GenProBuilder>();
         }
-        
-        private void Update()
+
+        private void Start()
         {
-            if (generate)
-            {
-                generate = false;
-                ProceduralLevelGeneration();
-            }
+            ProceduralLevelGeneration();
         }
 
         //builds terrain
@@ -82,6 +77,16 @@ namespace Generation
         {
             //destroys level instance if a level is already built
             _builder.DestroyLevelInstance();
+            //sets the max grid size at the theoritical max distance that can be reached
+            int maxGridSize = 0;
+            maxGridSize += startingRoomValues.size.y;
+            maxGridSize += fightingRoomValues.size.y * fightRoomsAmount.y;
+            maxGridSize += shopRoomValues.size.y * ((fightRoomsAmount.y / highestConsecutiveFights) + 1);
+            maxGridSize += bossRoomValues.size.y;
+            maxGridSize += stairsRoomValues.size.y;
+            int bridgesDist = roomDistance.y * (1 + fightRoomsAmount.y + (fightRoomsAmount.y / highestConsecutiveFights) + 1 + 1);
+            maxGridSize += bridgesDist;
+            _builder.buildingGrid = new int[maxGridSize, maxGridSize];
         }
         
         void BuildRoomBuffer()
@@ -138,7 +143,8 @@ namespace Generation
 
         void PlaceRooms()
         {
-            _nextRoomPos = new Vector2Int(0, 0);
+            int baseOffset = Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[0].generationValues.size.y;
+            _nextRoomPos = Vector2Int.one * baseOffset;
             
             //sets the center position of each
             for (int i = 0; i < roomBuffer.Count; i++)
@@ -147,9 +153,10 @@ namespace Generation
                 int dir = Random.Range(0, 2);
                 //Step 2 : updates the position depending on the direction taken
                 //if goes up
-                if (dir == 0) _nextRoomPos += new Vector2Int(0, Random.Range(roomDistance.x, roomDistance.y));
+                int distanceToPlace = Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[i].generationValues.size.y;
+                if (dir == 0) _nextRoomPos += new Vector2Int(0, distanceToPlace);
                 //if goes right
-                if (dir == 1) _nextRoomPos += new Vector2Int(Random.Range(roomDistance.x, roomDistance.y), 0);
+                if (dir == 1) _nextRoomPos += new Vector2Int(distanceToPlace, 0);
                 //then sets the position
                 roomBuffer[i].centerPosition = _nextRoomPos;
             }

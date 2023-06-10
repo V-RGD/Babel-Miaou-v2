@@ -39,7 +39,6 @@ namespace Enemies
             yield return new WaitForSeconds(attackCooldown);
             //cooldown until moves or attacks
             isAttacking = false;
-
         }
 
         IEnumerator DisableBullet(int bullet)

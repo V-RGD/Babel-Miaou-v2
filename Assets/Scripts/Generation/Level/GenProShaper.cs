@@ -6,6 +6,7 @@ namespace Generation
 {
     public class GenProShaper : MonoBehaviour
     {
+        //this script uses the info given by the planner to shape rooms and bridges
         [Header("---Variables---")] [SerializeField]
         private Shape roomShape;
 
@@ -18,13 +19,7 @@ namespace Generation
         }
 
         private GenProBuilder _builder;
-
         private GenProPlanner _planner;
-        //this script uses the info given by the planner to shape rooms and bridges
-
-        //this script is used to store genpro functions that helps with shaping good level and rooms
-        //then creates areas for each room, and builds then procedurally (random edges for variety, sizes that varies)
-        //creates a round shape with points, and randomised a bit the edges and the center based on the chaos variable
         private void Awake()
         {
             _builder = GetComponent<GenProBuilder>();
@@ -54,6 +49,8 @@ namespace Generation
             GenProPlanner.RoomGenerationInfo info = _planner.roomBuffer[index];
             Vector2Int centerPos = info.centerPosition;
             int size = Random.Range(info.generationValues.size.x, info.generationValues.size.y);
+            //room size has to be an uneven number
+            if (size % 2 == 0) size++;
 
             switch (roomShape)
             {
@@ -70,8 +67,10 @@ namespace Generation
         {
             //create a new mask to shape the room
             int[,] mask = Masks.RectangularMask(new Vector2Int(size, size), 1);
+            int offset = -(size - 1) / 2;
+            Vector2Int pos = centerPos + new Vector2Int(offset, offset);
             //then applies it
-            ApplyMask(mask, centerPos);
+            ApplyMask(mask, pos, true);
         }
 
         void AddBridges()
@@ -90,7 +89,7 @@ namespace Generation
 
                 //if the next room is on the right, bridge length is on the X axis (and the width is on the Y)
                 //the mask will be applied below the starting point
-                Vector2Int size;
+                Vector2Int size = Vector2Int.zero;
                 if (distance.x > distance.y)
                 {
                     size = new Vector2Int(distance.x, bridgeWidth);
@@ -101,24 +100,19 @@ namespace Generation
                 //the mask will be applied on the left of the starting point
                 if (distance.y > distance.x)
                 {
-                    size = new Vector2Int(distance.x, bridgeWidth);
-                    maskPlacementOffset = new Vector2Int(1, -((bridgeWidth - 1) / 2));
+                    size = new Vector2Int(bridgeWidth, distance.y);
+                    maskPlacementOffset = new Vector2Int(-((bridgeWidth - 1) / 2), 1);
                 }
 
                 if (distance.y == distance.x) Debug.LogError("Failed to compare room distances");
 
-                int[,] bridgeMask = Masks.RectangularMask(new Vector2Int(distance.x, bridgeWidth), 2);
-                ApplyMask(bridgeMask, roomCenter + maskPlacementOffset);
-
-                int width;
-                int length;
-                
+                int[,] bridgeMask = Masks.RectangularMask(size, 2);
+                ApplyMask(bridgeMask, roomCenter + maskPlacementOffset, false);
                 //add noise to destroy some parts, but make sure that the bridge hasn't got any holes
             }
-
         }
 
-        void ApplyMask(int[,] mask, Vector2Int location)
+        void ApplyMask(int[,] mask, Vector2Int location, bool hasPriority)
         {
             int xLength = mask.GetLength(0);
             int yLength = mask.GetLength(1);
@@ -128,10 +122,16 @@ namespace Generation
             {
                 for (int j = 0; j < yLength; j++)
                 {
+                    
                     //if the tile isn't defined, leave the tile unchanged
                     if (mask[i, j] == 0) continue;
+                    
                     //if the tile is defined, replace the one on the grid by the one on the mask
                     Vector2Int tilePos = location + new Vector2Int(i, j);
+
+                    //if this mask has no priority over other masks, it will not replace a tile that's already defined
+                    if (!hasPriority && _builder.buildingGrid[tilePos.x, tilePos.y] != 0) continue;
+                    
                     _builder.buildingGrid[tilePos.x, tilePos.y] = mask[i, j];
                 }
             }

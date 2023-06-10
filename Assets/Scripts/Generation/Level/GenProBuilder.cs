@@ -1,101 +1,110 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Generation
+namespace Generation.Level
 {
     //this scripts uses grid information to build a level with bricks, colliders, rooms, etc...
     public class GenProBuilder : MonoBehaviour
     {
+        public static GenProBuilder instance;
+
+        [Header("--Values--")] 
+        [SerializeField] private float tileSize;
+
         [Header("--References--")] 
-        [SerializeField] private Vector3 tileSize;
-
-        [Header("--References--")]
         [SerializeField] private Transform levelParent;
-
-        [Header("--BuildingAssets--")] 
-        [SerializeField] private GameObject proceduralObjectPrefab;
         
-        [Header("---Grids---")]
+        [Header("--BuildingAssets--")]
+        [SerializeField] private GameObject groundTile;
+        [SerializeField] private GameObject wallBelowGroundTile;
+        [SerializeField] private GameObject exteriorWallsTile;
+
+        [Header("--Tiles--")] [Header("---Grids---")]
         public int[,] buildingGrid;
         public int[,] heightMap;
         
-        [Header("--Debug Bricks--")]
-        [SerializeField] private GameObject brick;
-        [SerializeField] private Material bridgeMat;
-        [SerializeField] private Material centerMat;
-        [SerializeField] private Material brickMat;
+        private void Awake()
+        {
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+        }
+
         public void BuildLevel()
         {
-            //initiates grid size
-            InitiateGrid();
-            //builds a buffer for each part of the level that will be built
-            CraftParts();
-            VisualiseGrid();
-            return;
-            
-            //Step 1 : define textures and mesh
-            DefineVisuals();
-            //Step 2 : set collisions throughout the level
-            SetCollisions();
-            //Step 3 : add game components necessary for the game to work
+            //builds level tiles
+            BuildGroundTiles();
+            BuildBelowFloor();
+            BuildExteriorWalls();
+            //add game components necessary for the game to work
             AddGameComponents();
-            //uses grid to build the floor of the level, then adds a procedural collider to match the mesh
-            //sets the grid size to reflect the actual max positions on the rooms
         }
 
-        public void InitiateGrid()
+        void BuildGroundTiles()
         {
-            //match building grid size with the max positions of the planner
-        }
-
-        public void CraftParts()
-        {
-            
-        }
-
-        public void VisualiseGrid()
-        {
-            for (int i = 0; i < buildingGrid.GetLength(0); i++)
+            //gets ground tiles
+            Vector2Int[] groundTiles = GetTilesOfIndex(1);
+            foreach (var tile in groundTiles)
             {
-                for (int j = 0; j < buildingGrid.GetLength(1); j++)
+                CreateTile(groundTile, tile);
+            }
+        }
+
+        void BuildBelowFloor()
+        {
+            Vector2Int[] groundTiles = GetTilesOfIndex(1);
+            GenerateWalls(wallBelowGroundTile, groundTiles, 1);
+        }
+
+        void BuildExteriorWalls()
+        {
+            Vector2Int[] wallTiles = GetTilesOfIndex(3);
+            GenerateWalls(exteriorWallsTile, wallTiles, 3);
+        }
+
+        void GenerateWalls(GameObject wallPrefab, Vector2Int[] wallTiles, int filter)
+        {
+            //for each tile, checks if the surrounding tiles are tiles of the same type
+            foreach (var tile in wallTiles)
+            {
+                List<Vector2Int> surroundingTiles = new List<Vector2Int>{tile + Vector2Int.down, tile + Vector2Int.left};
+               
+                foreach (var analysedTile in surroundingTiles)
                 {
-                    if (buildingGrid[i, j] != 0)
-                    {
-                        Vector3 pos = new Vector3(i * tileSize.x, 0 * tileSize.y, j * tileSize.z);
-                        GameObject newBrick = Instantiate(brick, pos, Quaternion.identity);
-                        newBrick.transform.localScale = new Vector3(tileSize.x, tileSize.y, tileSize.z);
-                        newBrick.transform.parent = levelParent;
-                        Material mat = brickMat;
-                        switch (buildingGrid[i, j])
-                        {
-                            case 1 : mat = brickMat; break;
-                            case 2 : mat = bridgeMat; break;
-                            case 3 : mat = centerMat; break;
-                        }
-                        newBrick.GetComponent<MeshRenderer>().material = mat;
-                    }
+                    if (buildingGrid[analysedTile.x, analysedTile.y] == filter) continue;
+                    
+                    //if the tile is next to a different type, spawns a wall underneath facing void
+                    Vector3 tilePosition = new Vector3(tile.x, heightMap[tile.x, tile.y], tile.y);
+                    Vector3 voidTilePosition = new Vector3(analysedTile.x, heightMap[analysedTile.x, analysedTile.y], analysedTile.y);
+                    Vector3 direction = voidTilePosition - tilePosition;
+                    
+                    //creates a new wall tile
+                    GameObject newWall = Instantiate(wallPrefab);
+                    
+                    //place it below the tile facing void
+                    newWall.transform.position = tilePosition + 0.5f * tileSize * direction.normalized;
+                    newWall.transform.LookAt(newWall.transform.position + direction * 1000);
+                    break;
                 }
             }
         }
 
-        public GameObject ProceduralObject(Vector2Int[] gridVertices, Material material)
+        public void AddGameComponents()
         {
-            // //creates object
-            // GameObject newObject = Instantiate(proceduralObjectPrefab);
-            // MeshFilter filter = newObject.GetComponent<MeshFilter>();
-            // MeshRenderer meshRenderer = newObject.GetComponent<MeshRenderer>();
-            // MeshCollider collider = newObject.GetComponent<MeshCollider>();
-            //
-            // Vector3[] vertices = new Vector3[gridVertices.Length];
-            // //convert vertices from grid position to world position to match desired scale
-            // for (int i = 0; i < vertices.Length; i++)
-            // {
-            //     vertices[i] = new Vector3()
-            // }
-            //
-            // //creates mesh using vertices
-            // //updates collider
-            // //adds material
-            return brick;
+            //add room components
+
+            //instantiates shops
+
+            //builds stairs
+
+            //generates enemies
+
+            //place player
         }
 
         public void DestroyLevelInstance()
@@ -106,16 +115,60 @@ namespace Generation
                 DestroyImmediate(child);
             }
         }
-        
-        public void DefineVisuals()
+
+        Vector2Int[] GetTilesOfIndex(int index)
         {
-            //builds the level with the corresponding building blocks of the scene : floor tiles, pillars, bridges, etc...
+            List<Vector2Int> tiles = new List<Vector2Int>();
+            //for each tile of the grid
+            for (int x = 0; x < buildingGrid.GetLength(0); x++)
+            {
+                for (int y = 0; y < buildingGrid.GetLength(1); y++)
+                {
+                    //checks if the tile matches the searched index
+                    if (buildingGrid[x, y] == index)
+                    {
+                        tiles.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+            //returns all of the tiles that match
+            return tiles.ToArray();
         }
-        public void SetCollisions()
+
+        Vector3 TileToWorldPos(Vector2Int tilePos)
         {
+            return new Vector3(tilePos.x, 0, tilePos.y) * tileSize;
         }
-        public void AddGameComponents()
+
+        void CreateTile(GameObject tile, Vector2Int position, Vector3 rotation)
         {
+            Vector3 pos = TileToWorldPos(position);
+            GameObject newTile = Instantiate(tile, pos, Quaternion.identity);
+            newTile.transform.localScale = Vector3.one * tileSize;
+            newTile.transform.parent = levelParent;
+            newTile.transform.rotation = Quaternion.Euler(rotation);
+        }
+        void CreateTile(GameObject tile, Vector2Int position)
+        {
+            Vector3 pos = TileToWorldPos(position);
+            GameObject newTile = Instantiate(tile, pos, Quaternion.identity);
+            newTile.transform.localScale = Vector3.one * tileSize;
+            newTile.transform.parent = levelParent;
+        }
+
+        void GroundTileMap()
+        {
+            int[,] groundGrid = buildingGrid;
+            
+            
+            int rockIndex = 3;
+            int semiSandIndex = 3;
+            int sandIndex = 3;
+            
+            
+            
+            
+            //then checks for the tiles 
         }
     }
 }

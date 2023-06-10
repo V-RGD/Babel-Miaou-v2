@@ -1,47 +1,51 @@
-using System;
 using System.Collections.Generic;
-using Player;
-using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Generation
+namespace Generation.Level
 {
     //this script is about deciding which rooms will be made, and where
     public class GenProPlanner : MonoBehaviour
     {
         public static GenProPlanner instance;
-        private GenProShaper _shaper;
-        private GenProBuilder _builder;
-        
+
         #region References
-        [Header("--RoomValues--")]
-        [SerializeField] private RoomGenerationValues startingRoomValues;
+
+        [Header("--RoomValues--")] [SerializeField]
+        private RoomGenerationValues startingRoomValues;
+
         [SerializeField] private RoomGenerationValues fightingRoomValues;
         [SerializeField] private RoomGenerationValues shopRoomValues;
         [SerializeField] private RoomGenerationValues bossRoomValues;
         [SerializeField] private RoomGenerationValues stairsRoomValues;
+
         #endregion
-        
+
         #region Values
-        [Header("--Generation Values--")]
-        [SerializeField] private Vector2Int roomDistance;
+
+        [Header("--Generation Values--")] [SerializeField]
+        private Vector2Int roomDistance;
+
         [SerializeField] private Vector2Int fightRoomsAmount;
         [SerializeField] private int highestConsecutiveFights;
+
         #endregion
 
         #region InternVariables
+
         public List<RoomGenerationInfo> roomBuffer;
+
         public class RoomGenerationInfo
         {
             public RoomGenerationValues generationValues;
             public Vector2Int centerPosition;
             public float chaos;
         }
-        
+
         private Vector2Int _nextRoomPos;
+
         #endregion
-        
+
         private void Awake()
         {
             if (instance != null)
@@ -51,8 +55,6 @@ namespace Generation
             }
 
             instance = this;
-            _shaper = GetComponent<GenProShaper>();
-            _builder = GetComponent<GenProBuilder>();
         }
 
         private void Start()
@@ -70,13 +72,13 @@ namespace Generation
             //Step 3 : place each one of them on the grid in their respective positions
             PlaceRooms();
             //Step 4 : Send info to the Shaper
-            _shaper.ShapeLevel();
+            GenProShaper.instance.ShapeLevel();
         }
 
         void Initiate()
         {
             //destroys level instance if a level is already built
-            _builder.DestroyLevelInstance();
+            GenProBuilder.instance.DestroyLevelInstance();
             //sets the max grid size at the theoritical max distance that can be reached
             int maxGridSize = 0;
             maxGridSize += startingRoomValues.size.y;
@@ -84,21 +86,22 @@ namespace Generation
             maxGridSize += shopRoomValues.size.y * ((fightRoomsAmount.y / highestConsecutiveFights) + 1);
             maxGridSize += bossRoomValues.size.y;
             maxGridSize += stairsRoomValues.size.y;
-            int bridgesDist = roomDistance.y * (1 + fightRoomsAmount.y + (fightRoomsAmount.y / highestConsecutiveFights) + 1 + 1);
+            int bridgesDist = roomDistance.y *
+                              (1 + fightRoomsAmount.y + (fightRoomsAmount.y / highestConsecutiveFights) + 1 + 1);
             maxGridSize += bridgesDist;
-            _builder.buildingGrid = new int[maxGridSize, maxGridSize];
+            GenProBuilder.instance.buildingGrid = new int[maxGridSize, maxGridSize];
         }
-        
+
         void BuildRoomBuffer()
         {
             //resets buffer
             roomBuffer = new List<RoomGenerationInfo>();
-            
+
             //calculates the number of fight rooms to create for this level
             int fightRoomsCount = Random.Range(fightRoomsAmount.x, fightRoomsAmount.y);
-            
+
             //then creates sections to distributes them evenly, to avoid encountering too many at once
-            int sectionsAmount = Mathf.CeilToInt((float)fightRoomsCount / (float)highestConsecutiveFights);
+            int sectionsAmount = Mathf.CeilToInt((float) fightRoomsCount / (float) highestConsecutiveFights);
             int[] sections = new int[sectionsAmount];
             //then distributes them
             int roomsLeft = fightRoomsCount;
@@ -110,17 +113,17 @@ namespace Generation
                     sections[i] = roomsLeft;
                     break;
                 }
-                
+
                 //if enough rooms left for the section, adds them
                 sections[i] = highestConsecutiveFights;
                 roomsLeft -= highestConsecutiveFights;
             }
-            
+
             //-----------------------------Repartition-----------------------------------------
-            
+
             //- one room for the start 
             AddNewRoom(startingRoomValues);
-            
+
             //- several rooms where fights occur + shops
             //for each section
             for (int i = 0; i < sectionsAmount; i++)
@@ -130,13 +133,14 @@ namespace Generation
                 {
                     AddNewRoom(fightingRoomValues);
                 }
+
                 //then adds a shop
                 AddNewRoom(shopRoomValues);
             }
-            
+
             //- one boss room at the end
             AddNewRoom(bossRoomValues);
-            
+
             //- and one for the end with the stairs
             AddNewRoom(stairsRoomValues);
         }
@@ -145,7 +149,7 @@ namespace Generation
         {
             int baseOffset = Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[0].generationValues.size.y;
             _nextRoomPos = Vector2Int.one * baseOffset;
-            
+
             //sets the center position of each
             for (int i = 0; i < roomBuffer.Count; i++)
             {
@@ -153,7 +157,8 @@ namespace Generation
                 int dir = Random.Range(0, 2);
                 //Step 2 : updates the position depending on the direction taken
                 //if goes up
-                int distanceToPlace = Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[i].generationValues.size.y;
+                int distanceToPlace =
+                    Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[i].generationValues.size.y;
                 if (dir == 0) _nextRoomPos += new Vector2Int(0, distanceToPlace);
                 //if goes right
                 if (dir == 1) _nextRoomPos += new Vector2Int(distanceToPlace, 0);

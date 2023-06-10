@@ -1,20 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MaskConverter : MonoBehaviour
+namespace Generation.Level
 {
-    //when a sprite mask is input, checks colors and indexes the pixel grid base on it
-    [Header("Tile Indexes")] 
-    [SerializeField] private int groundIndex = 1;
-    [SerializeField] private int bridgeIndex = 2;
-    [SerializeField] private int doorIndex = 3;
-    [SerializeField] private int wallIndex = 4;
-    [Header("Color ID")]
-    [SerializeField] private Color groundColor = Color.green;
-    [SerializeField] private Color wallColor = Color.blue;
-    [SerializeField] private Color bridgeColor = Color.yellow;
-    [SerializeField] private Color doorColor = Color.red;
-    
-    int[,] SpriteToMask
+    public class MaskConverter : MonoBehaviour
+    {
+        public static MaskConverter instance;
+
+        private void Awake()
+        {
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+        }
+        //when a sprite mask is input, checks colors and indexes the pixel grid base on it
+
+        int[,] MaskToGrid(Texture2D mask)
+        {
+            int[,] grid = new int[mask.width, mask.height];
+
+            //loops through every pixel on the sprite
+            for (int i = 0; i < mask.width; i++)
+            {
+                for (int j = 0; j < mask.height; j++)
+                {
+                    Color pixelColor = mask.GetPixel(i, j);
+                    //checks pixel color, indexes pixel with corresponding id
+                    foreach (var type in GridInterpreter.instance.pixelTypes)
+                    {
+                        if (pixelColor == type.color) grid[i, j] = type.index;
+                    }
+                }
+            }
+
+            return grid;
+        }
+    }
 }

@@ -1,9 +1,31 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridInterpreter : MonoBehaviour
+namespace Generation.Level
 {
-    //checks every pixel on the grid and interprets it to build level tile by tile
-    
+    public class GridInterpreter : MonoBehaviour
+    {
+        public static GridInterpreter instance;
+
+        public List<PixelType> pixelTypes;
+
+        [Serializable]
+        public class PixelType
+        {
+            public int index;
+            public Color color;
+        }
+
+        private void Awake()
+        {
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+        }
+    }
 }

@@ -17,7 +17,7 @@ namespace Generation
                     mask[i, j] = type;
                 }
             }
-
+        
             return mask;
         }
     }

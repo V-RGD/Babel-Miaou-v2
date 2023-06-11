@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,44 +10,60 @@ namespace Generation.Level
     {
         public static GenProPlanner instance;
 
-        #region References
-
         [Header("--RoomValues--")] [SerializeField]
-        private RoomGenerationValues startingRoomValues;
+        List<Sprite> startRoomPlans;
 
-        [SerializeField] private RoomGenerationValues fightingRoomValues;
-        [SerializeField] private RoomGenerationValues shopRoomValues;
-        [SerializeField] private RoomGenerationValues bossRoomValues;
-        [SerializeField] private RoomGenerationValues stairsRoomValues;
-
-        #endregion
-
-        #region Values
+        [SerializeField] List<Sprite> fightRoomPlans;
+        [SerializeField] List<Sprite> shopRoomPlans;
+        [SerializeField] List<Sprite> bossRoomPlans;
+        [SerializeField] List<Sprite> stairsRoomPlans;
 
         [Header("--Generation Values--")] [SerializeField]
-        private Vector2Int roomDistance;
+        Vector2Int roomDistance;
 
-        [SerializeField] private Vector2Int fightRoomsAmount;
-        [SerializeField] private int highestConsecutiveFights;
-
-        #endregion
-
-        #region InternVariables
+        [SerializeField] Vector2Int fightRoomsAmount;
+        [SerializeField] int highestConsecutiveFights;
 
         public List<RoomGenerationInfo> roomBuffer;
 
         public class RoomGenerationInfo
         {
-            public RoomGenerationValues generationValues;
-            public Vector2Int centerPosition;
-            public float chaos;
+            public RoomType type;
+
+            //these are used to store room info in local coordinates
+            public Vector2Int entryPos;
+            public Vector2Int exitPos;
+            //this is used to store the position where the room is supposed to generate
+            public Vector2Int generationPos;
+            public Sprite plan;
         }
 
-        private Vector2Int _nextRoomPos;
+        public enum RoomType
+        {
+            StartingPoint,
+            FightArea,
+            ShopRoom,
+            BossRoom,
+            ExitStairs
+        }
 
-        #endregion
+        enum RoomExitDir
+        {
+            Up,
+            Right
+        }
 
-        private void Awake()
+        public enum RoomEntranceDir
+        {
+            Down,
+            Left
+        }
+
+        RoomExitDir _lastRoomExitDir;
+        Vector2Int _nextRoomPos;
+        Vector2Int _lastRoomExit;
+
+        void Awake()
         {
             if (instance != null)
             {
@@ -57,7 +74,7 @@ namespace Generation.Level
             instance = this;
         }
 
-        private void Start()
+        void Start()
         {
             ProceduralLevelGeneration();
         }
@@ -79,17 +96,8 @@ namespace Generation.Level
         {
             //destroys level instance if a level is already built
             GenProBuilder.instance.DestroyLevelInstance();
-            //sets the max grid size at the theoritical max distance that can be reached
-            int maxGridSize = 0;
-            maxGridSize += startingRoomValues.size.y;
-            maxGridSize += fightingRoomValues.size.y * fightRoomsAmount.y;
-            maxGridSize += shopRoomValues.size.y * ((fightRoomsAmount.y / highestConsecutiveFights) + 1);
-            maxGridSize += bossRoomValues.size.y;
-            maxGridSize += stairsRoomValues.size.y;
-            int bridgesDist = roomDistance.y *
-                              (1 + fightRoomsAmount.y + (fightRoomsAmount.y / highestConsecutiveFights) + 1 + 1);
-            maxGridSize += bridgesDist;
-            GenProBuilder.instance.buildingGrid = new int[maxGridSize, maxGridSize];
+            //sets the max grid size at the max distance that can be reached
+            GenProBuilder.instance.buildingGrid = new int[400, 400];
         }
 
         void BuildRoomBuffer()
@@ -122,7 +130,7 @@ namespace Generation.Level
             //-----------------------------Repartition-----------------------------------------
 
             //- one room for the start 
-            AddNewRoom(startingRoomValues);
+            AddNewRoom(RoomType.StartingPoint);
 
             //- several rooms where fights occur + shops
             //for each section
@@ -131,46 +139,100 @@ namespace Generation.Level
                 //adds every fight rooms supposed to appear
                 for (int j = 0; j < sections[i]; j++)
                 {
-                    AddNewRoom(fightingRoomValues);
+                    AddNewRoom(RoomType.FightArea);
                 }
 
                 //then adds a shop
-                AddNewRoom(shopRoomValues);
+                AddNewRoom(RoomType.ShopRoom);
             }
 
             //- one boss room at the end
-            AddNewRoom(bossRoomValues);
+            AddNewRoom(RoomType.BossRoom);
 
             //- and one for the end with the stairs
-            AddNewRoom(stairsRoomValues);
+            AddNewRoom(RoomType.ExitStairs);
         }
 
         void PlaceRooms()
         {
-            int baseOffset = Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[0].generationValues.size.y;
-            _nextRoomPos = Vector2Int.one * baseOffset;
-
-            //sets the center position of each
-            for (int i = 0; i < roomBuffer.Count; i++)
+            //takes the room type
+            foreach (var room in roomBuffer)
             {
-                //Step 1 : chooses between up or right to place the next room
-                int dir = Random.Range(0, 2);
-                //Step 2 : updates the position depending on the direction taken
-                //if goes up
-                int distanceToPlace =
-                    Random.Range(roomDistance.x, roomDistance.y) + roomBuffer[i].generationValues.size.y;
-                if (dir == 0) _nextRoomPos += new Vector2Int(0, distanceToPlace);
-                //if goes right
-                if (dir == 1) _nextRoomPos += new Vector2Int(distanceToPlace, 0);
-                //then sets the position
-                roomBuffer[i].centerPosition = _nextRoomPos;
+                Sprite plan = startRoomPlans[0];
+                //checks the last room orientation
+                RoomEntranceDir neededDir = RoomEntranceDir.Down;
+                switch (_lastRoomExitDir)
+                {
+                    case RoomExitDir.Up:
+                        neededDir = RoomEntranceDir.Down;
+                        break;
+                    case RoomExitDir.Right:
+                        neededDir = RoomEntranceDir.Left;
+                        break;
+                }
+
+                //picks a random plan between those available of the corresponding type
+                switch (room.type)
+                {
+                    case RoomType.StartingPoint:
+                        plan = startRoomPlans[Random.Range(0, startRoomPlans.Count)];
+                        break;
+                    case RoomType.FightArea:
+                        plan = GridUtilities.FindSpriteOfEntranceType(fightRoomPlans, neededDir);
+                        break;
+                    case RoomType.ShopRoom:
+                        plan = GridUtilities.FindSpriteOfEntranceType(shopRoomPlans, neededDir);
+                        break;
+                    case RoomType.BossRoom:
+                        plan = GridUtilities.FindSpriteOfEntranceType(bossRoomPlans, neededDir);
+                        break;
+                    case RoomType.ExitStairs:
+                        plan = GridUtilities.FindSpriteOfEntranceType(stairsRoomPlans, neededDir);
+                        break;
+                }
+
+                //scans the plan to find the entry and exit tiles
+                int[,] grid = MaskConverter.MaskToGrid(plan.texture);
+                Vector2Int entryTile = Vector2Int.zero;
+                Vector2Int exitTile = Vector2Int.zero;
+                if (room.type != RoomType.StartingPoint)
+                {
+                    entryTile = GridUtilities.GetTilesOfIndex(grid, 2)[0];
+                }
+
+                if (room.type != RoomType.ExitStairs)
+                {
+                    exitTile = GridUtilities.GetTilesOfIndex(grid, 3)[0];
+                }
+                
+                //selects a tile at a reasonable distance from the last exit)
+                Vector2Int posToCreate = Vector2Int.zero;
+                //the first room is placed at the very beginning
+                if (room.type != RoomType.StartingPoint)
+                {
+                    int distance = Random.Range(roomDistance.x, roomDistance.y);
+                    if (_lastRoomExitDir == RoomExitDir.Right)
+                    {
+                        posToCreate = _lastRoomExit + new Vector2Int(distance, 0);
+                    }
+                    if (_lastRoomExitDir == RoomExitDir.Up)
+                    {
+                        posToCreate = _lastRoomExit + new Vector2Int(0, distance);
+                    }
+                }
+                
+                //send info to the buffer
+                room.entryPos = entryTile;
+                room.exitPos = exitTile;
+                room.generationPos = posToCreate;
+                room.plan = plan;
             }
         }
 
-        public void AddNewRoom(RoomGenerationValues roomValues)
+        void AddNewRoom(RoomType type)
         {
             RoomGenerationInfo newInfo = new RoomGenerationInfo();
-            newInfo.generationValues = roomValues;
+            newInfo.type = type;
             roomBuffer.Add(newInfo);
         }
     }

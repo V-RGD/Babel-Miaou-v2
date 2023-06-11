@@ -4,21 +4,9 @@ namespace Generation.Level
 {
     public class MaskConverter : MonoBehaviour
     {
-        public static MaskConverter instance;
-
-        private void Awake()
-        {
-            if (instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            instance = this;
-        }
-        //when a sprite mask is input, checks colors and indexes the pixel grid base on it
-
-        int[,] MaskToGrid(Texture2D mask)
+        
+        //checks colors and indexes the pixel grid based on it
+        public static int[,] MaskToGrid(Texture2D mask)
         {
             int[,] grid = new int[mask.width, mask.height];
 

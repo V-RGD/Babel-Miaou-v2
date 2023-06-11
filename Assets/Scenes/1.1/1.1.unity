@@ -1090,6 +1090,7 @@ GameObject:
   - component: {fileID: 1003895632}
   - component: {fileID: 1003895634}
   - component: {fileID: 1003895633}
+  - component: {fileID: 1003895635}
   m_Layer: 0
   m_Name: LevelCreation
   m_TagString: Untagged
@@ -1124,22 +1125,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3ac39b3bc8b9f45bae011a74e75808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingRoomValues:
-    size: {x: 5, y: 5}
-    type: 0
-  fightingRoomValues:
-    size: {x: 9, y: 20}
-    type: 1
-  shopRoomValues:
-    size: {x: 6, y: 6}
-    type: 2
-  bossRoomValues:
-    size: {x: 6, y: 6}
-    type: 3
-  stairsRoomValues:
-    size: {x: 5, y: 5}
-    type: 4
-  roomDistance: {x: 5, y: 10}
+  startRoomPlans:
+  - {fileID: 21300000, guid: ca0eeda982b2e7d4c9e1d079099ce757, type: 3}
+  - {fileID: 21300000, guid: 27ab650ba631c1d4ba97b5b481cc1847, type: 3}
+  fightRoomPlans:
+  - {fileID: 21300000, guid: ab805d8df7006634b974779480485271, type: 3}
+  - {fileID: 21300000, guid: ba4457a823991e04ca99d8c1d5fed422, type: 3}
+  - {fileID: 21300000, guid: aa8248c816beeaa40b2d2af6d694056d, type: 3}
+  - {fileID: 21300000, guid: da186897fcf335a4eac2ec68ed34b706, type: 3}
+  - {fileID: 21300000, guid: 0ee22063e85de8649b6f1575b62eecaa, type: 3}
+  - {fileID: 21300000, guid: 5b0cc3b2044ae964ba6256dbf1321124, type: 3}
+  shopRoomPlans:
+  - {fileID: 21300000, guid: 63032798ed832db45961faf0c96fa71c, type: 3}
+  - {fileID: 21300000, guid: 63d9ace9f22ad9e4890c7972e41e08ca, type: 3}
+  - {fileID: 21300000, guid: 79a332807a1126240b575f50cf27993f, type: 3}
+  - {fileID: 21300000, guid: faf5eab129f1bf54fa970d59e53e1729, type: 3}
+  bossRoomPlans:
+  - {fileID: 21300000, guid: 6e474751bc05d3d4e968285f6c7f9965, type: 3}
+  - {fileID: 21300000, guid: 275c7a3538441394ebb9182d15d7b24c, type: 3}
+  - {fileID: 21300000, guid: 97d9cc6fadd24ba40bb8b15500a7e38a, type: 3}
+  - {fileID: 21300000, guid: fa2dce225e4e1e3448af7ad6ab8a183c, type: 3}
+  stairsRoomPlans:
+  - {fileID: 21300000, guid: c8b8d39ea1a891c44a16169f1f7ac349, type: 3}
+  - {fileID: 21300000, guid: 16194ff3fe744f042b5953e80cc72fcd, type: 3}
+  roomDistance: {x: 8, y: 11}
   fightRoomsAmount: {x: 5, y: 7}
   highestConsecutiveFights: 3
 --- !u!114 &1003895633
@@ -1154,12 +1163,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0b13c1e9dcdb64d997dcef08b6b3a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileSize: 0
+  tileSize: 1
   levelParent: {fileID: 1735013267}
-  groundTile: {fileID: 0}
-  wallTiles: []
-  door: {fileID: 0}
-  pillar: {fileID: 0}
+  groundTile: {fileID: 3998199089665229468, guid: 0facc3c5e09b50f4aabf38f846b328c6,
+    type: 3}
+  wallBelowGroundTile: {fileID: 2258195360027419985, guid: f0600c77dc7767441a5067eb6801f29e,
+    type: 3}
+  exteriorWallsTile: {fileID: 3662482360895690994, guid: 1dee1ddd023ef1a4b8dc634751f1749a,
+    type: 3}
 --- !u!114 &1003895634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1172,8 +1183,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72dda63546d2f56438cc3c2c66e5751a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomShape: 1
   bridgeWidth: 3
+--- !u!114 &1003895635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1003895628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb73637799b3fa499f6ee0e4f40e85c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pixelTypes:
+  - index: 1
+    color: {r: 0, g: 1, b: 0, a: 1}
+  - index: 2
+    color: {r: 1, g: 0, b: 1, a: 1}
+  - index: 3
+    color: {r: 1, g: 1, b: 0, a: 1}
+  - index: 4
+    color: {r: 0, g: 0, b: 1, a: 1}
+  - index: 5
+    color: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &1022294797
 GameObject:
   m_ObjectHideFlags: 0

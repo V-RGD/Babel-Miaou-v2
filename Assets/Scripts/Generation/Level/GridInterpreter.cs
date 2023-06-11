@@ -17,7 +17,7 @@ namespace Generation.Level
             public Color color;
         }
 
-        private void Awake()
+        void Awake()
         {
             if (instance != null)
             {
@@ -27,5 +27,7 @@ namespace Generation.Level
 
             instance = this;
         }
+        
+        
     }
 }

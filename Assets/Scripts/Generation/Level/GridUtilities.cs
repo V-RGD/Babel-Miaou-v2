@@ -48,7 +48,7 @@ namespace Generation.Level
             return tiles.ToArray();
         }
         
-        public static Vector2Int[] GetTilesOfIndexes(int[,] grid, List<int> indexes)
+        public static Vector2Int[] GetTilesOfIndices(int[,] grid, List<int> indexes)
         {
             List<Vector2Int> tiles = new List<Vector2Int>();
             //for each tile of the grid
@@ -83,10 +83,10 @@ namespace Generation.Level
         {
             List<Sprite> validSprites = new List<Sprite>();
             //for each sprite on the list
-            for (int i = 0; i < list.Count; i++)
+            foreach (var plan in list)
             {
                 //converts sprite to grid
-                int[,] grid = MaskConverter.MaskToGrid(list[i].texture);
+                int[,] grid = MaskConverter.MaskToGrid(plan.texture);
                 //finds the entrance
                 Vector2Int entryTile = GetTilesOfIndex(grid, 2)[0];
                 //checks whether the entrance matches the requirements or not
@@ -134,7 +134,7 @@ namespace Generation.Level
                 }
 
                 if (spriteEntranceType != type) continue;
-                validSprites.Add(list[i]);
+                validSprites.Add(plan);
                 break;
             }
 

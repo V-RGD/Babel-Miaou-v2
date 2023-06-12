@@ -163,7 +163,7 @@ namespace Generation.Level
             {
                 Sprite plan = startRoomPlans[0];
                 //checks the last room orientation
-                RoomEntranceDir neededDir = RoomEntranceDir.Down;
+                RoomEntranceDir neededDir = RoomEntranceDir.Error;
                 switch (_lastRoomExitDir)
                 {
                     case RoomExitDir.Up:

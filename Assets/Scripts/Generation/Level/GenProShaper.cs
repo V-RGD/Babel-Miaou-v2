@@ -79,7 +79,7 @@ namespace Generation.Level
 
                 if (distance.y == distance.x) Debug.LogError("Failed to compare room distances");
 
-                int[,] bridgeMask = Masks.RectangularMask(size, 2);
+                int[,] bridgeMask = Masks.RectangularMask(size, 6);
                 GridUtilities.ApplyMask(bridgeMask, exit + maskPlacementOffset, false);
             }
         }

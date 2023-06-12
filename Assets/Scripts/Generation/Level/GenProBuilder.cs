@@ -47,7 +47,7 @@ namespace Generation.Level
         void BuildGroundTiles()
         {
             //gets ground tiles
-            Vector2Int[] groundTiles = GridUtilities.GetTilesOfIndexes(buildingGrid, new List<int>(){1, 2, 3, 4});
+            Vector2Int[] groundTiles = GridUtilities.GetTilesOfIndexes(buildingGrid, new List<int>(){1, 2, 3, 4, 5});
             foreach (var tile in groundTiles)
             {
                 CreateTile(groundTile, tile, new Vector3(90, 0, 0));

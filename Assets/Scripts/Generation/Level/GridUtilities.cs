@@ -141,5 +141,59 @@ namespace Generation.Level
             //then picks a random sprite from the list
             return validSprites[Random.Range(0, validSprites.Count)];
         }
+        
+        public static GenProPlanner.RoomExitDir CheckExitType(Sprite plan)
+        {
+            //converts sprite to grid
+            int[,] grid = MaskConverter.MaskToGrid(plan.texture);
+            //finds the exit
+            Vector2Int exitTile = GetTilesOfIndex(grid, 3)[0];
+            //checks whether the entrance matches the requirements or not
+            Vector2Int[] surroundingTiles = GetSurroundingTiles(exitTile);
+            Vector2Int voidTile = new Vector2Int(9999, 9999);
+            //for each of the surrounding tiles
+            foreach (Vector2Int tile in surroundingTiles)
+            {
+                //checks if the tile exists
+                int tileValue;
+                if (tile.x >= grid.GetLength(0) || tile.y >= grid.GetLength(1) || tile.x < 0 || tile.y < 0)
+                {
+                    tileValue = 0;
+                }
+                else
+                {
+                    tileValue = grid[tile.x, tile.y];
+                }
+
+                //checks if the tile index corresponds to void
+                if (tileValue != 0) continue;
+
+                //if it does, this tile is considered at the void tile
+                voidTile = tile;
+            }
+                
+            //checks where the void is located compared to the entrance tile
+            GenProPlanner.RoomExitDir spriteExitType;
+
+            Vector2Int positionDiff = voidTile - exitTile;
+
+            if (positionDiff == Vector2Int.right)
+            {
+                spriteExitType = GenProPlanner.RoomExitDir.Right;
+            }
+
+            else if (positionDiff == Vector2Int.up)
+            {
+                spriteExitType = GenProPlanner.RoomExitDir.Up;
+            }
+
+            else
+            {
+                Debug.LogError("Didn't Find the exit type of the room");
+                return GenProPlanner.RoomExitDir.Error;
+            }
+
+            return spriteExitType;
+        }
     }
 }

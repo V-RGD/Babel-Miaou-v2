@@ -42,7 +42,7 @@ namespace Generation.Level
                 //converts sprite plan to mask
                 int[,] mask = MaskConverter.MaskToGrid(info.plan.texture);
                 //match mask offset with generation position
-                Vector2Int pos = info.generationPos - info.entryPos;
+                Vector2Int pos = info.generationPos;
                 //apply mask
                 GridUtilities.ApplyMask(mask, pos, true);
             }
@@ -54,8 +54,8 @@ namespace Generation.Level
             for (int i = 0; i < GenProPlanner.instance.roomBuffer.Count - 1; i++)
             {
                 //calculates distance between both rooms
-                Vector2Int exit = GenProPlanner.instance.roomBuffer[i].exitPos + GenProPlanner.instance.roomBuffer[i].generationPos;
-                Vector2Int entrance = GenProPlanner.instance.roomBuffer[i+1].entryPos + GenProPlanner.instance.roomBuffer[i+1].generationPos;
+                Vector2Int exit = GenProPlanner.instance.roomBuffer[i].exitPos;
+                Vector2Int entrance = GenProPlanner.instance.roomBuffer[i+1].entryPos;
                 Vector2Int distance = entrance - exit;
 
                 Vector2Int maskPlacementOffset = Vector2Int.zero;

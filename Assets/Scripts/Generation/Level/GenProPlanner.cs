@@ -47,16 +47,18 @@ namespace Generation.Level
             ExitStairs
         }
 
-        enum RoomExitDir
+        public enum RoomExitDir
         {
             Up,
-            Right
+            Right,
+            Error
         }
 
         public enum RoomEntranceDir
         {
             Down,
-            Left
+            Left,
+            Error
         }
 
         RoomExitDir _lastRoomExitDir;
@@ -170,6 +172,9 @@ namespace Generation.Level
                     case RoomExitDir.Right:
                         neededDir = RoomEntranceDir.Left;
                         break;
+                    case RoomExitDir.Error :
+                        Debug.LogError("Error initializing last room exit dir");
+                        break;
                 }
 
                 //picks a random plan between those available of the corresponding type
@@ -207,31 +212,37 @@ namespace Generation.Level
                 }
                 
                 //selects a tile at a reasonable distance from the last exit)
-                Vector2Int posToCreate = Vector2Int.zero;
+                Vector2Int roomEntrance = Vector2Int.zero;
                 //the first room is placed at the very beginning
                 if (room.type != RoomType.StartingPoint)
                 {
                     int distance = Random.Range(roomDistance.x, roomDistance.y);
                     if (_lastRoomExitDir == RoomExitDir.Right)
                     {
-                        posToCreate = _lastRoomExit + new Vector2Int(distance, 0);
+                        roomEntrance = _lastRoomExit + new Vector2Int(distance, 0);
                     }
                     if (_lastRoomExitDir == RoomExitDir.Up)
                     {
-                        posToCreate = _lastRoomExit + new Vector2Int(0, distance);
+                        roomEntrance = _lastRoomExit + new Vector2Int(0, distance);
                     }
                 }
-                Debug.Log("Bridge will end at : " + posToCreate);
-                Debug.Log("Instantiation at : " + (posToCreate - entryTile));
-                Debug.Log("Entry is :" + entryTile);
-                Debug.Log("Exit is :" + exitTile);
+                
+                Vector2Int instantiationPosition = roomEntrance - entryTile;
+                Vector2Int roomExit = instantiationPosition + exitTile;
+
                 //send info to the buffer
-                room.entryPos = entryTile;
-                room.exitPos = exitTile;
-                room.generationPos = posToCreate;
+                
+                //the position where the bridge is supposed to end at : entry pos
+                room.entryPos = roomEntrance;
+                //the position where the room will be instantiated : position where the bridge stops - the offset of the entrance
+                room.generationPos = instantiationPosition;
+                //the position where the exit of the room is located : instantiation pos + exit offset
+                room.exitPos = roomExit;
+                
                 room.plan = plan;
                 //updates planning info to create the next room at the right position
-                _lastRoomExit = posToCreate + exitTile;
+                _lastRoomExit = roomExit;
+                if (room.type != RoomType.ExitStairs) _lastRoomExitDir = GridUtilities.CheckExitType(room.plan);
             }
         }
 

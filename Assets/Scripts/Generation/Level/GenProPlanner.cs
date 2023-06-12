@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -22,7 +21,7 @@ namespace Generation.Level
         Vector2Int roomDistance;
 
         [SerializeField] Vector2Int fightRoomsAmount;
-        [SerializeField] int highestConsecutiveFights;
+        [SerializeField] int highestConsecutiveFights = 3;
 
         public List<RoomGenerationInfo> roomBuffer;
 
@@ -30,11 +29,12 @@ namespace Generation.Level
         {
             public RoomType type;
 
-            //these are used to store room info in local coordinates
-            public Vector2Int entryPos;
-            public Vector2Int exitPos;
+            //these are used to store room info in world grid coordinates
+            public Vector2Int entryTile;
+            public Vector2Int exitTile;
             //this is used to store the position where the room is supposed to generate
-            public Vector2Int generationPos;
+            public Vector2Int instantiationTile;
+            public Vector2Int centerTile;
             public Sprite plan;
         }
 
@@ -228,16 +228,20 @@ namespace Generation.Level
                 }
                 
                 Vector2Int instantiationPosition = roomEntrance - entryTile;
+                Vector2Int centerTile = GridUtilities.GetTilesOfIndex(grid, 4)[0];
+                Vector2Int roomCenter = instantiationPosition + centerTile;
                 Vector2Int roomExit = instantiationPosition + exitTile;
 
                 //send info to the buffer
                 
                 //the position where the bridge is supposed to end at : entry pos
-                room.entryPos = roomEntrance;
+                room.entryTile = roomEntrance;
                 //the position where the room will be instantiated : position where the bridge stops - the offset of the entrance
-                room.generationPos = instantiationPosition;
+                room.instantiationTile = instantiationPosition;
                 //the position where the exit of the room is located : instantiation pos + exit offset
-                room.exitPos = roomExit;
+                room.exitTile = roomExit;
+                //the tile at the center of the room
+                room.centerTile = roomCenter;
                 
                 room.plan = plan;
                 //updates planning info to create the next room at the right position

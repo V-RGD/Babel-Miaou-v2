@@ -8,7 +8,7 @@ namespace Generation.Level
 
         //this script uses the info given by the planner to shape rooms and bridges
         [Header("---Variables---")]
-        [SerializeField] int bridgeWidth;
+        [SerializeField] int bridgeWidth = 1;
 
         void Awake()
         {
@@ -42,7 +42,7 @@ namespace Generation.Level
                 //converts sprite plan to mask
                 int[,] mask = MaskConverter.MaskToGrid(info.plan.texture);
                 //match mask offset with generation position
-                Vector2Int pos = info.generationPos;
+                Vector2Int pos = info.instantiationTile;
                 //apply mask
                 GridUtilities.ApplyMask(mask, pos, true);
             }
@@ -54,8 +54,8 @@ namespace Generation.Level
             for (int i = 0; i < GenProPlanner.instance.roomBuffer.Count - 1; i++)
             {
                 //calculates distance between both rooms
-                Vector2Int exit = GenProPlanner.instance.roomBuffer[i].exitPos;
-                Vector2Int entrance = GenProPlanner.instance.roomBuffer[i+1].entryPos;
+                Vector2Int exit = GenProPlanner.instance.roomBuffer[i].exitTile;
+                Vector2Int entrance = GenProPlanner.instance.roomBuffer[i+1].entryTile;
                 Vector2Int distance = entrance - exit;
 
                 Vector2Int maskPlacementOffset = Vector2Int.zero;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Generation.Components;
 using UnityEngine;
 
 namespace Generation.Level
@@ -9,11 +10,11 @@ namespace Generation.Level
         public static GenProBuilder instance;
 
         [Header("--Values--")]
-        [SerializeField] float tileSize;
+        [SerializeField] float tileSize = 10;
 
-        [SerializeField] float wallTopOffset;
-        [SerializeField] float exteriorWallsOffset;
-        [SerializeField] float groundWallOffset;
+        [SerializeField] float wallTopOffset = 20;
+        [SerializeField] float exteriorWallsOffset = -5;
+        [SerializeField] float groundWallOffset = 10;
 
         [Header("--References--")] [SerializeField]
         Transform levelParent;
@@ -47,7 +48,7 @@ namespace Generation.Level
             //builds level tiles
             BuildTiles();
             //add game components necessary for the game to work
-            AddGameComponents();
+            ComponentsGeneration.instance.CreateRoomComponents();
         }
 
         void BuildTiles()
@@ -116,18 +117,7 @@ namespace Generation.Level
             }
         }
 
-        public void AddGameComponents()
-        {
-            //add room components
-
-            //instantiates shops
-
-            //builds stairs
-
-            //generates enemies
-
-            //place player
-        }
+        
 
         public void DestroyLevelInstance()
         {

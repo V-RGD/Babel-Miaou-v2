@@ -142,29 +142,11 @@ namespace Generation.Level
         {
             return new Vector3(tilePos.x, 0, tilePos.y) * tileSize;
         }
-        
-        
 
-        void CreateTile(GameObject tile, Vector2Int position, Vector3 rotation)
-        {
-            Vector3 pos = TileToWorldPos(position);
-            GameObject newTile = Instantiate(tile, pos, Quaternion.Euler(rotation));
-            newTile.transform.localScale = Vector3.one * tileSize / 8;
-            newTile.transform.parent = levelParent;
-        }
-        
         void CreateTile(GameObject tile, Vector2Int position, Vector3 rotation, Vector3 offset)
         {
             Vector3 pos = TileToWorldPos(position) + offset;
             GameObject newTile = Instantiate(tile, pos, Quaternion.Euler(rotation));
-            newTile.transform.localScale = Vector3.one * tileSize / 8;
-            newTile.transform.parent = levelParent;
-        }
-
-        void CreateTile(GameObject tile, Vector2Int position)
-        {
-            Vector3 pos = TileToWorldPos(position);
-            GameObject newTile = Instantiate(tile, pos, Quaternion.identity);
             newTile.transform.localScale = Vector3.one * tileSize / 8;
             newTile.transform.parent = levelParent;
         }

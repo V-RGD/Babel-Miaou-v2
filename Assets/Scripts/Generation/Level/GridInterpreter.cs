@@ -27,7 +27,5 @@ namespace Generation.Level
 
             instance = this;
         }
-        
-        
     }
 }

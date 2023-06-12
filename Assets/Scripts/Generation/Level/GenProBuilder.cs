@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Generation.Level
@@ -20,7 +21,7 @@ namespace Generation.Level
         [SerializeField] GameObject exteriorWallsTile;
 
         [Header("---Grids---")] public int[,] buildingGrid;
-        int[,] _heightMap;
+        public int[,] heightMap;
 
         void Awake()
         {
@@ -37,8 +38,8 @@ namespace Generation.Level
         {
             //builds level tiles
             BuildGroundTiles();
-            BuildBelowFloor();
-            BuildExteriorWalls();
+            //BuildBelowFloor();
+            //BuildExteriorWalls();
             //add game components necessary for the game to work
             AddGameComponents();
         }
@@ -46,10 +47,10 @@ namespace Generation.Level
         void BuildGroundTiles()
         {
             //gets ground tiles
-            Vector2Int[] groundTiles = GridUtilities.GetTilesOfIndex(buildingGrid, 1);
+            Vector2Int[] groundTiles = GridUtilities.GetTilesOfIndexes(buildingGrid, new List<int>(){1, 2, 3, 4});
             foreach (var tile in groundTiles)
             {
-                CreateTile(groundTile, tile);
+                CreateTile(groundTile, tile, new Vector3(90, 0, 0));
             }
         }
 
@@ -78,8 +79,8 @@ namespace Generation.Level
                     if (buildingGrid[analysedTile.x, analysedTile.y] == filter) continue;
 
                     //if the tile is next to a different type, spawns a wall underneath facing void
-                    Vector3 tilePosition = new Vector3(tile.x, _heightMap[tile.x, tile.y], tile.y);
-                    Vector3 voidTilePosition = new Vector3(analysedTile.x, _heightMap[analysedTile.x, analysedTile.y], analysedTile.y);
+                    Vector3 tilePosition = new Vector3(tile.x, heightMap[tile.x, tile.y], tile.y);
+                    Vector3 voidTilePosition = new Vector3(analysedTile.x, heightMap[analysedTile.x, analysedTile.y], analysedTile.y);
                     Vector3 direction = voidTilePosition - tilePosition;
 
                     //creates a new wall tile
@@ -124,7 +125,7 @@ namespace Generation.Level
         {
             Vector3 pos = TileToWorldPos(position);
             GameObject newTile = Instantiate(tile, pos, Quaternion.Euler(rotation));
-            newTile.transform.localScale = Vector3.one * tileSize;
+            newTile.transform.localScale = Vector3.one * tileSize / 8;
             newTile.transform.parent = levelParent;
         }
 
@@ -132,7 +133,7 @@ namespace Generation.Level
         {
             Vector3 pos = TileToWorldPos(position);
             GameObject newTile = Instantiate(tile, pos, Quaternion.identity);
-            newTile.transform.localScale = Vector3.one * tileSize;
+            newTile.transform.localScale = Vector3.one * tileSize / 8;
             newTile.transform.parent = levelParent;
         }
     }

@@ -98,6 +98,7 @@ namespace Generation.Level
             GenProBuilder.instance.DestroyLevelInstance();
             //sets the max grid size at the max distance that can be reached
             GenProBuilder.instance.buildingGrid = new int[400, 400];
+            GenProBuilder.instance.heightMap = new int[400, 400];
         }
 
         void BuildRoomBuffer()
@@ -220,12 +221,17 @@ namespace Generation.Level
                         posToCreate = _lastRoomExit + new Vector2Int(0, distance);
                     }
                 }
-                
+                Debug.Log("Bridge will end at : " + posToCreate);
+                Debug.Log("Instantiation at : " + (posToCreate - entryTile));
+                Debug.Log("Entry is :" + entryTile);
+                Debug.Log("Exit is :" + exitTile);
                 //send info to the buffer
                 room.entryPos = entryTile;
                 room.exitPos = exitTile;
                 room.generationPos = posToCreate;
                 room.plan = plan;
+                //updates planning info to create the next room at the right position
+                _lastRoomExit = posToCreate + exitTile;
             }
         }
 

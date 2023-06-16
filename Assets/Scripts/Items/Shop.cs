@@ -35,7 +35,7 @@ namespace Items
             
             //the object is randomized
             newItem.id = Random.Range(0, itemProfiles.Length);
-            Debug.LogError("The shop has actually no way of knowing what items are held by the player, so it can and will drop useless items");
+            Debug.LogWarning("The shop has actually no way of knowing what items are held by the player, so it can and will drop useless items");
         }
 
         //when a potion is consumed, creates another one but with an increased price

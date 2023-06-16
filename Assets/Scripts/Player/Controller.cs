@@ -6,21 +6,21 @@ namespace Player
     {
         public static Controller instance;
 
-        [SerializeField] private float maxSpeed;
-        [SerializeField] private float walkSpeed;
+        [SerializeField] float maxSpeed;
+        [SerializeField] float walkSpeed;
         public Vector2 inputDir;
         public Vector3 direction;
 
-        private Rigidbody _rb;
+        Rigidbody _rb;
 
-        [SerializeField] private float dashRange;
-        [SerializeField] private float dashLength;
-        [SerializeField] private float dashForce;
-        private float _dashTimer;
+        [SerializeField] float dashRange;
+        [SerializeField] float dashLength;
+        [SerializeField] float dashForce;
+        float _dashTimer;
 
         public bool canMove;
 
-        private void Awake()
+        void Awake()
         {
             if (instance != null)
             {
@@ -32,12 +32,12 @@ namespace Player
             _rb = GetComponent<Rigidbody>();
         }
 
-        private void Update()
+        void Update()
         {
             if (_dashTimer > 0) _dashTimer -= Time.deltaTime;
         }
 
-        private void FixedUpdate()
+        void FixedUpdate()
         {
             Movement();
         }

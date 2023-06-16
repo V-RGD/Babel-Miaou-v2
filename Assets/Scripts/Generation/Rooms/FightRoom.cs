@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Generation.Level;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,23 +14,20 @@ namespace Generation
         [Header("Variables")]
         [SerializeField] float chestDropRate = 1;
         [SerializeField] float playerDetectionDist = 20;
+        [SerializeField] float enemySpawnOffset;
         float _playerDist;
         int _killCount;
         bool _hasBeenEntered;
         bool _isCompleted;
 
         [Header("References")]
-        [SerializeField] EnemyGenProperties genProperties;
         [SerializeField] GameObject chestPrefab;
         public List<Enemies.Enemy> enemies;
-        Animator _doorsAnimator;
-        Transform _playerTransform; 
-        EnemyGenerationInfo _genInfos;
-
+        Transform _playerTransform;
+        [HideInInspector] public Animator[] doors;
+        [HideInInspector] public Vector2Int[] groundTiles;
         public override void OnGeneration()
         {
-            //generates enemies when created
-            EnemyGeneration();
             _playerTransform = Player.Controller.instance.transform;
         }
 
@@ -57,41 +56,29 @@ namespace Generation
         void OnComplete()
         {
             //unlocks doors and spawns a chest
-            _doorsAnimator.CrossFade("Open", 0, 0);
-            if (Random.Range(0f, 1f) < chestDropRate) Instantiate(chestPrefab, transform.position, quaternion.identity);
-        }
-
-        void EnemyGeneration()
-        {
-            //for each enemy in it
-            // foreach (var VARIABLE in COLLECTION)
-            // {
-            //     
-            // }
-            
-            //instantiates enemies as asked, then applies values depending on the presets chosen for each
-            foreach (var info in _genInfos.spawnInfos)
+            foreach (var door in doors)
             {
-                //instantiates enemy
-                Enemies.Enemy newEnemy = Instantiate(info.prefab, transform);
-                //gives it corresponding info
-                newEnemy.attackValue = info.attack;
-                newEnemy.maxHealth = info.health;
-                //adds it to the room list
-                enemies.Add(newEnemy);
-                //disables enemy until entering room
-                newEnemy.gameObject.SetActive(false);
+                door.CrossFade("Open", 0, 0);
             }
+
+            if (Random.Range(0f, 1f) < chestDropRate) Instantiate(chestPrefab, transform.position, quaternion.identity);
         }
 
         IEnumerator EnemySpawning()
         {
             //locks doors
-            _doorsAnimator.CrossFade("Close", 0, 0);
+            foreach (var door in doors)
+            {
+                door.CrossFade("Close", 0, 0);
+            }
+            //places each enemy on one of the tiles of the room
+            List<Vector2Int> groundTilesAvailable = groundTiles.ToList();
             
             //spawn enemies
             foreach (var enemy in enemies)
             {
+                Vector2Int tile = groundTilesAvailable[Random.Range(0, groundTilesAvailable.Count)];
+                Vector3 spawnPoint = GenProBuilder.instance.TileToWorldPos(tile) + Vector3.up * enemySpawnOffset;
                 StartCoroutine(enemy.Spawn());
                 yield return new WaitForSeconds(0.5f);
             }

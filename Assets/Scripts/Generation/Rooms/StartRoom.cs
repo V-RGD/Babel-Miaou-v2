@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Generation.Rooms
@@ -8,9 +9,9 @@ namespace Generation.Rooms
         public override void OnGeneration()
         {
             //places player at the center of the start room
-            PlayerController.instance.transform.position = roomCenter + spawnOffset;
+            Player.Controller.instance.transform.position = roomCenter + spawnOffset;
             //when the generation ends, gives control to the player
-            PlayerController.instance.canMove = true;
+            Player.Controller.instance.canMove = true;
         }
     }
 }

@@ -7,13 +7,13 @@ namespace Player
 {
     public class InputManager : MonoBehaviour
     {
-        private PlayerControls _inputActions;
+        PlayerControls _inputActions;
 
-        private InputAction _move;
-        private InputAction _dash;
-        private InputAction _confirm;
-        private InputAction _menu;
-        private InputAction _attack;
+        InputAction _move;
+        InputAction _dash;
+        InputAction _confirm;
+        InputAction _menu;
+        InputAction _attack;
         
         public enum PlayMode
         {
@@ -32,7 +32,12 @@ namespace Player
         public PlayMode playMode;
         public MenuMode menuMode;
 
-        private void Update()
+        void Awake()
+        {
+            _inputActions = new PlayerControls();
+        }
+
+        void Update()
         {
             //updates player direction depending on input
             Vector2 dir = _move.ReadValue<Vector2>();
@@ -86,7 +91,7 @@ namespace Player
             }
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
             _move = _inputActions.Player.Move;
             _dash = _inputActions.Player.Dash;
@@ -106,7 +111,7 @@ namespace Player
             _attack.Enable();
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             _inputActions.Disable();
         }

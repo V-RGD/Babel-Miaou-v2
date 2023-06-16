@@ -10,7 +10,7 @@ namespace Generation.Rooms
         public override void OnGeneration()
         {
             //spawns stairs / end of the level
-            Instantiate(stairs, roomCenter + stairsOffset, Quaternion.identity);
+            Instantiate(stairs, roomCenter + stairsOffset, quaternion.identity);
         }
     }
 }

@@ -128,9 +128,18 @@ namespace Generation.Level
             }
         }
 
-        Vector3 TileToWorldPos(Vector2Int tilePos)
+        public Vector3 TileToWorldPos(Vector2Int tilePos)
         {
-            return new Vector3(tilePos.x, 0, tilePos.y) * tileSize;
+            float heightValue = 0;
+            if (tilePos.x >= buildingGrid.GetLength(0) || tilePos.y >= buildingGrid.GetLength(1) || tilePos.x < 0 || tilePos.y < 0)
+            {
+                heightValue = 0;
+            }
+            else
+            {
+                heightValue = heightMap[tilePos.x, tilePos.y];
+            }
+            return new Vector3(tilePos.x, heightValue, tilePos.y) * tileSize;
         }
 
         void CreateTile(GameObject tile, Vector2Int position, Vector3 rotation, Vector3 offset)

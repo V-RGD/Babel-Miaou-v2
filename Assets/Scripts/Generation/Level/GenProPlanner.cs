@@ -36,6 +36,9 @@ namespace Generation.Level
             public Vector2Int instantiationTile;
             public Vector2Int centerTile;
             public Sprite plan;
+
+            public Vector2Int[] groundTiles;
+            public Vector2Int[] doorTiles;
         }
 
         public enum RoomType
@@ -100,7 +103,7 @@ namespace Generation.Level
             GenProBuilder.instance.DestroyLevelInstance();
             //sets the max grid size at the max distance that can be reached
             GenProBuilder.instance.buildingGrid = new int[400, 400];
-            GenProBuilder.instance.heightMap = new int[400, 400];
+            GenProBuilder.instance.heightMap = new int[500, 500];
         }
 
         void BuildRoomBuffer()
@@ -244,6 +247,11 @@ namespace Generation.Level
                 room.centerTile = roomCenter;
                 
                 room.plan = plan;
+
+                //sends the ground tiles to the buffer for further use
+                room.groundTiles = GridUtilities.GetTilesOfIndices(grid, new List<int>{1,4});
+                room.doorTiles = GridUtilities.GetTilesOfIndices(grid, new List<int>{2,3});
+                
                 //updates planning info to create the next room at the right position
                 _lastRoomExit = roomExit;
                 if (room.type != RoomType.ExitStairs) _lastRoomExitDir = GridUtilities.CheckExitType(room.plan);

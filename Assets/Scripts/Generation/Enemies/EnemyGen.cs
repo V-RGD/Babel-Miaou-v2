@@ -28,6 +28,8 @@ namespace Generation
         {
             public EnemyType enemy;
             public Vector2Int amountToSpawn;
+            public int health;
+            public int attack;
         }
         
         [Serializable] public class EnemyBatch  
@@ -35,7 +37,7 @@ namespace Generation
             public List<EnemyToGenerate> enemiesAvailable;
         }
 
-        public List<EnemyBatch> generationVariables;
+        public List<EnemyBatch> enemiesToSpawnPerRoom;
         void Awake()
         {
             if (instance != null)
@@ -50,7 +52,7 @@ namespace Generation
         public void GenerateEnemies(FightRoom fightRoom)
         {
             //selects a batch of enemies
-            EnemyBatch batch = generationVariables[_roomGenerated];
+            EnemyBatch batch = enemiesToSpawnPerRoom[_roomGenerated];
             _roomGenerated++;
             
             //for each type of enemies in it
@@ -79,6 +81,9 @@ namespace Generation
                 for (int i = 0; i < amount; i++)
                 {
                     Enemies.Enemy newEnemy = Instantiate(enemyPrefab, fightRoom.transform);
+                    //sets corresponding values
+                    newEnemy.maxHealth = enemy.health;
+                    newEnemy.attackValue = enemy.attack;
                     fightRoom.enemies.Add(newEnemy);
                 }
             }

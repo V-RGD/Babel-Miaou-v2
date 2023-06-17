@@ -19,7 +19,7 @@ namespace Player
             public float force;
             [Header("References")]
             public Collider hitbox;
-            public AnimationClip animation;
+            public string animationClip;
         }
 
         [SerializeField] private List<Attack> baseComboAttacks;
@@ -59,7 +59,7 @@ namespace Player
             Controller.instance.canMove = false;
             
             //plays corresponding animation
-            Components.instance.animator.CrossFade(attack.animation.name, 0, 0);
+            Components.instance.animator.CrossFade(attack.animationClip, 0, 0);
 
             //enables hitbox
             Collider hitbox = attack.hitbox;

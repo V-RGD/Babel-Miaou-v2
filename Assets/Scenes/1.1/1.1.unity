@@ -555,7 +555,7 @@ PrefabInstance:
     - target: {fileID: 4656138864899141285, guid: 915f26012c9b67f48bbab37d8bc39261,
         type: 3}
       propertyPath: orthographic size
-      value: 12
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 4656138864899141287, guid: 915f26012c9b67f48bbab37d8bc39261,
         type: 3}
@@ -719,6 +719,51 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[0].name
+      value: Simple Slash
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[1].name
+      value: Second Slash
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[0].force
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[1].force
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[0].cooldown
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[1].cooldown
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[0].activeLength
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866239609845606631, guid: 22393f5ddb24df040912bfbb8bc275dd,
+        type: 3}
+      propertyPath: baseComboAttacks.Array.data[1].activeLength
+      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22393f5ddb24df040912bfbb8bc275dd, type: 3}
@@ -1251,21 +1296,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileSize: 10
-  wallTopOffset: 20
+  tileSizeRatio: 0.1
+  wallTopOffset: 25
   exteriorWallsOffset: -5
   groundWallOffset: 10
   levelParent: {fileID: 803882330}
-  groundTile: {fileID: 3998199089665229468, guid: 0facc3c5e09b50f4aabf38f846b328c6,
+  groundTile: {fileID: 2082115090561566657, guid: a31207917a230b943922150860d4adf5,
     type: 3}
-  wallBelowGroundTile: {fileID: 7538942243576268251, guid: 703cffd6c49a4e44e9877f199a94cf1f,
+  topWallTile: {fileID: 2082115090561566657, guid: a31207917a230b943922150860d4adf5,
     type: 3}
-  topWallTile: {fileID: 3212038258958048365, guid: faf0a83174999514aa767f22d2a4b713,
+  bridgeTile: {fileID: 2082115090561566657, guid: a31207917a230b943922150860d4adf5,
     type: 3}
-  exteriorWallsTile: {fileID: 3677092646358399364, guid: bfeab772f40e91f4b8eccf3b395d410b,
+  groundWallTile: {fileID: 9177998558735512867, guid: 3077dc2bb7abc624dafff0f2300a604a,
     type: 3}
-  bridgeTile: {fileID: 808629977702546808, guid: 29236dec2e2359c4aa7a414708788973,
+  exteriorWallsTile: {fileID: 1203610388910874496, guid: 2cbfb49bfc0dcc442931b2d6c8883c9e,
     type: 3}
-  bridgeWallTile: {fileID: 7982082721249510961, guid: 1047e53a25578a746af2064cf44d474a,
+  bridgeWallTile: {fileID: 9177998558735512867, guid: 3077dc2bb7abc624dafff0f2300a604a,
     type: 3}
 --- !u!114 &1003895634
 MonoBehaviour:

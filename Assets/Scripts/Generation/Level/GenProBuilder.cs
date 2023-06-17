@@ -11,6 +11,7 @@ namespace Generation.Level
 
         [Header("--Values--")]
         [SerializeField] float tileSize = 10;
+        [SerializeField] float tileSizeRatio = 0.8f;
 
         [SerializeField] float wallTopOffset = 20;
         [SerializeField] float exteriorWallsOffset = -5;
@@ -20,16 +21,19 @@ namespace Generation.Level
         Transform levelParent;
 
         [Header("--Tiles--")] 
+        
+        [Header("--Grounds--")]
         [SerializeField] GameObject groundTile;
-        [SerializeField] GameObject wallBelowGroundTile;
-        
         [SerializeField] GameObject topWallTile;
-        [SerializeField] GameObject exteriorWallsTile;
-        
         [SerializeField] GameObject bridgeTile;
+        
+        [Header("--Walls--")]
+        [SerializeField] GameObject groundWallTile;
+        [SerializeField] GameObject exteriorWallsTile;
         [SerializeField] GameObject bridgeWallTile;
 
-        [Header("---Grids---")] public int[,] buildingGrid;
+        [Header("---Grids---")] 
+        public int[,] buildingGrid;
         public int[,] heightMap;
 
         void Awake()
@@ -54,7 +58,7 @@ namespace Generation.Level
         void BuildTiles()
         {
             //ground
-            GenerateLayer(new List<int>{1, 2, 3, 4}, groundTile, wallBelowGroundTile, 0, groundWallOffset);
+            GenerateLayer(new List<int>{1, 2, 3, 4}, groundTile, groundWallTile, 0, groundWallOffset);
             //bridges
             GenerateLayer(new List<int>{6}, bridgeTile, bridgeWallTile, 0, groundWallOffset);
             //exterior walls
@@ -66,7 +70,7 @@ namespace Generation.Level
             Vector2Int[] wallTiles = GridUtilities.GetTilesOfIndices(buildingGrid, indices);
             foreach (var tile in wallTiles)
             {
-                CreateTile(groundTile, tile, new Vector3(90, 0, 0), new Vector3(0, offsetFromGround, 0)); 
+                CreateTile(groundTile, tile, new Vector3(0, 0, 0), new Vector3(0, offsetFromGround, 0)); 
             }
             GenerateWalls(wallTile, wallTiles, indices, wallOffsetFromGround);
         }
@@ -107,12 +111,12 @@ namespace Generation.Level
                     Vector3 offsetFromGround = offsetFromLayer * Vector3.down + tileSize/2 * wallDirection;
                     Vector3 wallPosition = tilePosition + offsetFromGround;
                     
-                    newWall.transform.localScale = Vector3.one * tileSize / 10;
+                    newWall.transform.localScale = newWall.transform.localScale * tileSize * tileSizeRatio;
                     newWall.transform.position = wallPosition;
 
                     //rotates the wall towards the void
-                    if(wallDirection == Vector3.left) newWall.transform.rotation = Quaternion.Euler(0, -90, 0);
-                    if(wallDirection == Vector3.back) newWall.transform.rotation = Quaternion.Euler(0, 180, 0);
+                    if(wallDirection == Vector3.left) newWall.transform.rotation = Quaternion.Euler(90, -90, 0);
+                    if(wallDirection == Vector3.back) newWall.transform.rotation = Quaternion.Euler(90, 180, 0);
                 }
             }
         }
@@ -146,7 +150,7 @@ namespace Generation.Level
         {
             Vector3 pos = TileToWorldPos(position) + offset;
             GameObject newTile = Instantiate(tile, pos, Quaternion.Euler(rotation));
-            newTile.transform.localScale = Vector3.one * tileSize / 8;
+            newTile.transform.localScale = Vector3.one * tileSize * tileSizeRatio;
             newTile.transform.parent = levelParent;
         }
     }

@@ -1,30 +1,19 @@
 using System.Collections.Generic;
+using Generation.Level.Data;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Generation.Level
 {
     //this script is about deciding which rooms will be made, and where
-    public class GenProPlanner : MonoBehaviour
+    public class LevelPlanner : MonoBehaviour
     {
-        public static GenProPlanner instance;
+        public static LevelPlanner instance;
 
-        [Header("--RoomValues--")] [SerializeField]
-        List<Sprite> startRoomPlans;
-
-        [SerializeField] List<Sprite> fightRoomPlans;
-        [SerializeField] List<Sprite> shopRoomPlans;
-        [SerializeField] List<Sprite> bossRoomPlans;
-        [SerializeField] List<Sprite> stairsRoomPlans;
-
-        [Header("--Generation Values--")] [SerializeField]
-        Vector2Int roomDistance;
-
-        [SerializeField] Vector2Int fightRoomsAmount;
-        [SerializeField] int highestConsecutiveFights = 3;
+        [SerializeField] RoomPlans roomPlans;
+        public GenerationSettings generationSettings;
 
         public List<RoomGenerationInfo> roomBuffer;
-
         public class RoomGenerationInfo
         {
             public RoomType type;
@@ -94,16 +83,16 @@ namespace Generation.Level
             //Step 3 : place each one of them on the grid in their respective positions
             PlaceRooms();
             //Step 4 : Send info to the Shaper
-            GenProShaper.instance.ShapeLevel();
+            LevelShaper.instance.ShapeLevel();
         }
 
         void Initiate()
         {
             //destroys level instance if a level is already built
-            GenProBuilder.instance.DestroyLevelInstance();
+            LevelBuilder.instance.DestroyLevelInstance();
             //sets the max grid size at the max distance that can be reached
-            GenProBuilder.instance.buildingGrid = new int[400, 400];
-            GenProBuilder.instance.heightMap = new int[500, 500];
+            LevelBuilder.instance.buildingGrid = new int[400, 400];
+            LevelBuilder.instance.heightMap = new int[500, 500];
         }
 
         void BuildRoomBuffer()
@@ -112,25 +101,25 @@ namespace Generation.Level
             roomBuffer = new List<RoomGenerationInfo>();
 
             //calculates the number of fight rooms to create for this level
-            int fightRoomsCount = Random.Range(fightRoomsAmount.x, fightRoomsAmount.y);
+            int fightRoomsCount = Random.Range(generationSettings.fightRoomsAmount.x, generationSettings.fightRoomsAmount.y);
 
             //then creates sections to distributes them evenly, to avoid encountering too many at once
-            int sectionsAmount = Mathf.CeilToInt((float) fightRoomsCount / (float) highestConsecutiveFights);
+            int sectionsAmount = Mathf.CeilToInt((float) fightRoomsCount / (float) generationSettings.highestConsecutiveFights);
             int[] sections = new int[sectionsAmount];
             //then distributes them
             int roomsLeft = fightRoomsCount;
             for (int i = 0; i < sectionsAmount; i++)
             {
                 //if not enough rooms for the section, just adds the ones left
-                if (roomsLeft < highestConsecutiveFights)
+                if (roomsLeft < generationSettings.highestConsecutiveFights)
                 {
                     sections[i] = roomsLeft;
                     break;
                 }
 
                 //if enough rooms left for the section, adds them
-                sections[i] = highestConsecutiveFights;
-                roomsLeft -= highestConsecutiveFights;
+                sections[i] = generationSettings.highestConsecutiveFights;
+                roomsLeft -= generationSettings.highestConsecutiveFights;
             }
 
             //-----------------------------Repartition-----------------------------------------
@@ -164,7 +153,7 @@ namespace Generation.Level
             //takes the room type
             foreach (var room in roomBuffer)
             {
-                Sprite plan = startRoomPlans[0];
+                Sprite plan = roomPlans.startRooms[0];
                 //checks the last room orientation
                 RoomEntranceDir neededDir = RoomEntranceDir.Error;
                 switch (_lastRoomExitDir)
@@ -184,19 +173,19 @@ namespace Generation.Level
                 switch (room.type)
                 {
                     case RoomType.StartingPoint:
-                        plan = startRoomPlans[Random.Range(0, startRoomPlans.Count)];
+                        plan = roomPlans.startRooms[Random.Range(0, roomPlans.startRooms.Count)];
                         break;
                     case RoomType.FightArea:
-                        plan = GridUtilities.FindSpriteOfEntranceType(fightRoomPlans, neededDir);
+                        plan = GridUtilities.FindSpriteOfEntranceType(roomPlans.fightRooms, neededDir);
                         break;
                     case RoomType.ShopRoom:
-                        plan = GridUtilities.FindSpriteOfEntranceType(shopRoomPlans, neededDir);
+                        plan = GridUtilities.FindSpriteOfEntranceType(roomPlans.shopRooms, neededDir);
                         break;
                     case RoomType.BossRoom:
-                        plan = GridUtilities.FindSpriteOfEntranceType(bossRoomPlans, neededDir);
+                        plan = GridUtilities.FindSpriteOfEntranceType(roomPlans.bossRooms, neededDir);
                         break;
                     case RoomType.ExitStairs:
-                        plan = GridUtilities.FindSpriteOfEntranceType(stairsRoomPlans, neededDir);
+                        plan = GridUtilities.FindSpriteOfEntranceType(roomPlans.stairsRooms, neededDir);
                         break;
                 }
 
@@ -219,7 +208,7 @@ namespace Generation.Level
                 //the first room is placed at the very beginning
                 if (room.type != RoomType.StartingPoint)
                 {
-                    int distance = Random.Range(roomDistance.x, roomDistance.y);
+                    int distance = Random.Range(generationSettings.roomDistance.x, generationSettings.roomDistance.y);
                     if (_lastRoomExitDir == RoomExitDir.Right)
                     {
                         roomEntrance = _lastRoomExit + new Vector2Int(distance, 0);

@@ -2,13 +2,11 @@ using UnityEngine;
 
 namespace Generation.Level
 {
-    public class GenProShaper : MonoBehaviour
+    public class LevelShaper : MonoBehaviour
     {
-        public static GenProShaper instance;
+        public static LevelShaper instance;
 
         //this script uses the info given by the planner to shape rooms and bridges
-        [Header("---Variables---")]
-        [SerializeField] int bridgeWidth = 1;
 
         void Awake()
         {
@@ -28,7 +26,7 @@ namespace Generation.Level
             //Step 6 : links each room with a bridge
             AddBridges();
             //Step 7 : send info to the builder to create the level
-            GenProBuilder.instance.BuildLevel();
+            LevelBuilder.instance.BuildLevel();
             Debug.Log("Created level grid");
 
             //create a room using a mask available of this type
@@ -37,7 +35,7 @@ namespace Generation.Level
         void CreateRooms()
         {
             //builds every room
-            foreach (GenProPlanner.RoomGenerationInfo info in GenProPlanner.instance.roomBuffer)
+            foreach (LevelPlanner.RoomGenerationInfo info in LevelPlanner.instance.roomBuffer)
             {
                 //converts sprite plan to mask
                 int[,] mask = MaskConverter.MaskToGrid(info.plan.texture);
@@ -51,12 +49,13 @@ namespace Generation.Level
         void AddBridges()
         {
             //for each connection between rooms, builds a bridge between exits and entrances
-            for (int i = 0; i < GenProPlanner.instance.roomBuffer.Count - 1; i++)
+            for (int i = 0; i < LevelPlanner.instance.roomBuffer.Count - 1; i++)
             {
                 //calculates distance between both rooms
-                Vector2Int exit = GenProPlanner.instance.roomBuffer[i].exitTile;
-                Vector2Int entrance = GenProPlanner.instance.roomBuffer[i+1].entryTile;
+                Vector2Int exit = LevelPlanner.instance.roomBuffer[i].exitTile;
+                Vector2Int entrance = LevelPlanner.instance.roomBuffer[i+1].entryTile;
                 Vector2Int distance = entrance - exit;
+                int bridgeWidth = LevelPlanner.instance.generationSettings.bridgeWidth;
 
                 Vector2Int maskPlacementOffset = Vector2Int.zero;
 

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Generation.Level;
+using Generation.Level.Data;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,36 +10,13 @@ namespace Generation
     public class EnemyGen : MonoBehaviour
     {
         public static EnemyGen instance;
+        
+        GenerationSettings _settings;
+        public EnemySpawnTable enemySpawnTable;
 
         int _roomGenerated;
 
-        [SerializeField] Enemies.Enemy wanderer;
-        [SerializeField] Enemies.Enemy bull;
-        [SerializeField] Enemies.Enemy shooter;
-        [SerializeField] Enemies.Enemy mk;
-        
         //this needs a great pacing if we want a balanced and interesting game
-        public enum EnemyType
-        {
-            Wanderer,
-            Bull,
-            Shooter,
-            Mk
-        }
-        [Serializable] public class EnemyToGenerate
-        {
-            public EnemyType enemy;
-            public Vector2Int amountToSpawn;
-            public int health;
-            public int attack;
-        }
-        
-        [Serializable] public class EnemyBatch  
-        {
-            public List<EnemyToGenerate> enemiesAvailable;
-        }
-
-        public List<EnemyBatch> enemiesToSpawnPerRoom;
         void Awake()
         {
             if (instance != null)
@@ -47,33 +26,36 @@ namespace Generation
             }
 
             instance = this;
+            _settings = LevelPlanner.instance.generationSettings;
         }
 
         public void GenerateEnemies(FightRoom fightRoom)
         {
+            /*
+            
             //selects a batch of enemies
-            EnemyBatch batch = enemiesToSpawnPerRoom[_roomGenerated];
+            EnemySpawnTable.FightRoomGenerationSettings room = enemySpawnTable.enemyRepartition[_roomGenerated];
             _roomGenerated++;
             
             //for each type of enemies in it
-            foreach (var enemy in batch.enemiesAvailable)
+            foreach (var enemy in room.enemiesAvailable)
             {
                 //picks a random amount
                 int amount = Random.Range(enemy.amountToSpawn.x, enemy.amountToSpawn.y);
-                Enemies.Enemy enemyPrefab = wanderer;
+                Enemies.Enemy enemyPrefab = _settings.wanderer;
                 switch (enemy.enemy)
                 {
-                    case EnemyType.Wanderer:
-                        enemyPrefab = wanderer;
+                    case EnemySpawnTable.FightRoomGenerationSettings.EnemyAvailable.EnemyType.Wanderer:
+                        enemyPrefab = _settings.wanderer;
                         break;
-                    case EnemyType.Bull:
-                        enemyPrefab = bull;
+                    case EnemySpawnTable.FightRoomGenerationSettings.EnemyAvailable.EnemyType.Bull:
+                        enemyPrefab = _settings.bull;
                         break;
-                    case EnemyType.Shooter:
-                        enemyPrefab = shooter;
+                    case EnemySpawnTable.FightRoomGenerationSettings.EnemyAvailable.EnemyType.Shooter:
+                        enemyPrefab = _settings.shooter;
                         break;
-                    case EnemyType.Mk:
-                        enemyPrefab = mk;
+                    case EnemySpawnTable.FightRoomGenerationSettings.EnemyAvailable.EnemyType.Mk:
+                        enemyPrefab = _settings.mk;
                         break;
                 }
 
@@ -87,6 +69,7 @@ namespace Generation
                     fightRoom.enemies.Add(newEnemy);
                 }
             }
+            */
         }
     }
 }

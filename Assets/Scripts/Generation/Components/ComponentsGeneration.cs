@@ -10,25 +10,7 @@ namespace Generation.Components
     {
         public static ComponentsGeneration instance;
         
-        [Header("---Values---")] 
-        [SerializeField] float doorHeightOffset = 1;
-        [Header("---References---")] 
-        
-        [Header("---Parents---")] 
-        [SerializeField] Transform roomsParent;
-        [SerializeField] Transform doorParent;
-        [SerializeField] public Transform shopParent;
-        [SerializeField] public Transform interactionsParent;
-        
-        
-        [Header("---Components---")]
-        [SerializeField] StartRoom startRoomPrefab;
-        [SerializeField] FightRoom fightRoomPrefab;
-        [SerializeField] ShopRoom shopRoomPrefab;
-        [SerializeField] BossRoom bossRoomPrefab;
-        [SerializeField] StairsRoom stairsRoomPrefab;
-        [SerializeField] Animator doorPrefab;
-
+        GenerationSettings _settings;
         void Awake()
         {
             if (instance != null)
@@ -38,11 +20,12 @@ namespace Generation.Components
             }
 
             instance = this;
+            _settings = LevelPlanner.instance.generationSettings;
         }
 
         public void CreateRoomComponents()
         {
-            List<GenProPlanner.RoomGenerationInfo> buffer = GenProPlanner.instance.roomBuffer;
+            List<LevelPlanner.RoomGenerationInfo> buffer = LevelPlanner.instance.roomBuffer;
 
             int fightRoomsIndex = 0;
             int shopRoomsIndex = 0;
@@ -51,48 +34,48 @@ namespace Generation.Components
             {
                 switch (room.type)
                 {
-                    case GenProPlanner.RoomType.StartingPoint:
-                        StartRoom startRoom = InitiateRoom(startRoomPrefab, room);
+                    case LevelPlanner.RoomType.StartingPoint:
+                        StartRoom startRoom = InitiateRoom(_settings.startRoomPrefab, room);
                         break;
-                    case GenProPlanner.RoomType.FightArea:
+                    case LevelPlanner.RoomType.FightArea:
                         fightRoomsIndex++;
                         InitiateFightRoom(fightRoomsIndex, room);
                         break;
-                    case GenProPlanner.RoomType.ShopRoom:
+                    case LevelPlanner.RoomType.ShopRoom:
                         shopRoomsIndex++;
                         InitiateShop(shopRoomsIndex, room);
                         break;
-                    case GenProPlanner.RoomType.BossRoom:
-                        BossRoom bossRoom = InitiateRoom(bossRoomPrefab, room);
+                    case LevelPlanner.RoomType.BossRoom:
+                        BossRoom bossRoom = InitiateRoom(_settings.bossRoomPrefab, room);
                         break;
-                    case GenProPlanner.RoomType.ExitStairs:
-                        StairsRoom exitRoom = InitiateRoom(stairsRoomPrefab, room);
+                    case LevelPlanner.RoomType.ExitStairs:
+                        StairsRoom exitRoom = InitiateRoom(_settings.stairsRoomPrefab, room);
                         break;
                 }
             }
         }
 
         //creates a room and assigns useful info to the script
-        T InitiateRoom<T>(T prefab, GenProPlanner.RoomGenerationInfo roomInfo) where T : Room
+        T InitiateRoom<T>(T prefab, LevelPlanner.RoomGenerationInfo roomInfo) where T : Room
         {
-            T room = Instantiate(prefab, roomsParent);
-            room.transform.parent = roomsParent;
+            T room = Instantiate(prefab, LevelBuilder.instance.roomsParent);
+            room.transform.parent = LevelBuilder.instance.roomsParent;
             room.roomCenter = GridUtilities.TileToWorldPos(roomInfo.centerTile);
             room.OnGeneration();
             return room;
         }
 
         //creates a shop and renames it
-        void InitiateShop(int index, GenProPlanner.RoomGenerationInfo roomInfo)
+        void InitiateShop(int index, LevelPlanner.RoomGenerationInfo roomInfo)
         {
-            ShopRoom shopRoom = InitiateRoom(shopRoomPrefab, roomInfo);
+            ShopRoom shopRoom = InitiateRoom(_settings.shopRoomPrefab, roomInfo);
             shopRoom.name = "ShopRoom " + index;
         }
 
         //creates a fight room, renames it, then generates enemies and door
-        void InitiateFightRoom(int index, GenProPlanner.RoomGenerationInfo roomInfo)
+        void InitiateFightRoom(int index, LevelPlanner.RoomGenerationInfo roomInfo)
         {
-            FightRoom fightRoom = InitiateRoom(fightRoomPrefab, roomInfo);
+            FightRoom fightRoom = InitiateRoom(_settings.fightRoomPrefab, roomInfo);
             fightRoom.name = "FightRoom " + index;
             //generates enemies for the room
             EnemyGen.instance.GenerateEnemies(fightRoom);
@@ -100,15 +83,15 @@ namespace Generation.Components
             fightRoom.doors = CreateDoors(roomInfo);
         }
 
-        Animator[] CreateDoors(GenProPlanner.RoomGenerationInfo room)
+        Animator[] CreateDoors(LevelPlanner.RoomGenerationInfo room)
         {
             //creates and assigns doors depending on orientation
             Animator[] doors = new Animator[2];
             for (int i = 0; i < 2; i++)
             {
                 //creates door
-                Animator door = Instantiate(doorPrefab, GridUtilities.TileToWorldPos(room.doorTiles[i] + room.instantiationTile) + Vector3.up * doorHeightOffset, Quaternion.identity);
-                door.transform.parent = doorParent;
+                Animator door = Instantiate(_settings.doorPrefab, GridUtilities.TileToWorldPos(room.doorTiles[i] + room.instantiationTile) + Vector3.up * _settings.doorHeightOffset, Quaternion.identity);
+                door.transform.parent = LevelBuilder.instance.doorParent;
                 doors[i] = door;
             }
 

@@ -21,9 +21,9 @@ namespace Generation.Level
                     //if the tile is defined, replace the one on the grid by the one on the mask
                     Vector2Int tilePos = location + new Vector2Int(i, j);
                     //if this mask has no priority over other masks, it will not replace a tile that's already defined
-                    if (!hasPriority && GenProBuilder.instance.buildingGrid[tilePos.x, tilePos.y] != 0) continue;
+                    if (!hasPriority && LevelBuilder.instance.buildingGrid[tilePos.x, tilePos.y] != 0) continue;
 
-                    GenProBuilder.instance.buildingGrid[tilePos.x, tilePos.y] = mask[i, j];
+                    LevelBuilder.instance.buildingGrid[tilePos.x, tilePos.y] = mask[i, j];
                 }
             }
         }
@@ -79,7 +79,7 @@ namespace Generation.Level
         }
 
         //scans every sprite on the list to see which are the ones that matches the requirements
-        public static Sprite FindSpriteOfEntranceType(List<Sprite> list, GenProPlanner.RoomEntranceDir type)
+        public static Sprite FindSpriteOfEntranceType(List<Sprite> list, LevelPlanner.RoomEntranceDir type)
         {
             List<Sprite> validSprites = new List<Sprite>();
             //for each sprite on the list
@@ -114,18 +114,18 @@ namespace Generation.Level
                 }
                 
                 //checks where the void is located compared to the entrance tile
-                GenProPlanner.RoomEntranceDir spriteEntranceType;
+                LevelPlanner.RoomEntranceDir spriteEntranceType;
 
                 Vector2Int positionDiff = voidTile - entryTile;
 
                 if (positionDiff == Vector2Int.left)
                 {
-                    spriteEntranceType = GenProPlanner.RoomEntranceDir.Left;
+                    spriteEntranceType = LevelPlanner.RoomEntranceDir.Left;
                 }
 
                 else if (positionDiff == Vector2Int.down)
                 {
-                    spriteEntranceType = GenProPlanner.RoomEntranceDir.Down;
+                    spriteEntranceType = LevelPlanner.RoomEntranceDir.Down;
                 }
 
                 else
@@ -142,7 +142,7 @@ namespace Generation.Level
             return validSprites[Random.Range(0, validSprites.Count)];
         }
         
-        public static GenProPlanner.RoomExitDir CheckExitType(Sprite plan)
+        public static LevelPlanner.RoomExitDir CheckExitType(Sprite plan)
         {
             //converts sprite to grid
             int[,] grid = MaskConverter.MaskToGrid(plan.texture);
@@ -173,24 +173,24 @@ namespace Generation.Level
             }
                 
             //checks where the void is located compared to the entrance tile
-            GenProPlanner.RoomExitDir spriteExitType;
+            LevelPlanner.RoomExitDir spriteExitType;
 
             Vector2Int positionDiff = voidTile - exitTile;
 
             if (positionDiff == Vector2Int.right)
             {
-                spriteExitType = GenProPlanner.RoomExitDir.Right;
+                spriteExitType = LevelPlanner.RoomExitDir.Right;
             }
 
             else if (positionDiff == Vector2Int.up)
             {
-                spriteExitType = GenProPlanner.RoomExitDir.Up;
+                spriteExitType = LevelPlanner.RoomExitDir.Up;
             }
 
             else
             {
                 Debug.LogError("Didn't Find the exit type of the room");
-                return GenProPlanner.RoomExitDir.Error;
+                return LevelPlanner.RoomExitDir.Error;
             }
 
             return spriteExitType;
@@ -198,9 +198,9 @@ namespace Generation.Level
         
         public static Vector3 TileToWorldPos(Vector2Int tilePos)
         {
-            int[,] buildingGrid = GenProBuilder.instance.buildingGrid;
-            int[,] heightMap = GenProBuilder.instance.heightMap;
-            float tileSize = GenProBuilder.instance.tileSize;
+            int[,] buildingGrid = LevelBuilder.instance.buildingGrid;
+            int[,] heightMap = LevelBuilder.instance.heightMap;
+            float tileSize = LevelPlanner.instance.generationSettings.tileSize;
             float heightValue;
             if (tilePos.x >= buildingGrid.GetLength(0) || tilePos.y >= buildingGrid.GetLength(1) || tilePos.x < 0 || tilePos.y < 0)
             {

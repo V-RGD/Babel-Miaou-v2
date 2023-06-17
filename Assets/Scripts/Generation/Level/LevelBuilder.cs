@@ -1,39 +1,24 @@
 using System.Collections.Generic;
 using Generation.Components;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Generation.Level
 {
     //this scripts uses grid information to build a level with bricks, colliders, rooms, etc...
-    public class GenProBuilder : MonoBehaviour
+    public class LevelBuilder : MonoBehaviour
     {
-        public static GenProBuilder instance;
-
-        [Header("--Values--")]
-        [SerializeField]
-        public float tileSize = 10;
-        [SerializeField] float tileSizeRatio = 0.8f;
-
-        [SerializeField] float wallTopOffset = 20;
-        [SerializeField] float exteriorWallsOffset = -5;
-        [SerializeField] float groundWallOffset = 10;
-
-        [Header("--References--")] [SerializeField]
-        Transform levelParent;
-
-        [Header("--Tiles--")] 
+        public static LevelBuilder instance;
+        GenerationSettings _settings;
         
-        [Header("--Grounds--")]
-        [SerializeField] GameObject groundTile;
-        [SerializeField] GameObject topWallTile;
-        [SerializeField] GameObject bridgeTile;
-        
-        [Header("--Walls--")]
-        [SerializeField] GameObject groundWallTile;
-        [SerializeField] GameObject exteriorWallsTile;
-        [SerializeField] GameObject bridgeWallTile;
+        [Title("--- Parents ---", "Where the elements will be placed in the hierarchy", TitleAlignments.Centered)]
+        public Transform tilesParent;
+        public Transform roomsParent;
+        public Transform doorParent;
+        public Transform shopParent;
+        public Transform miscParent;
+        public Transform consumablesParent;
 
-        [Header("---Grids---")] 
         public int[,] buildingGrid;
         public int[,] heightMap;
 
@@ -46,6 +31,7 @@ namespace Generation.Level
             }
 
             instance = this;
+            _settings = LevelPlanner.instance.generationSettings;
         }
 
         public void BuildLevel()
@@ -59,11 +45,11 @@ namespace Generation.Level
         void BuildTiles()
         {
             //ground
-            GenerateLayer(new List<int>{1, 2, 3, 4}, groundTile, groundWallTile, 0, groundWallOffset);
+            GenerateLayer(new List<int>{1, 2, 3, 4}, _settings.groundTile, _settings.groundWallTile, 0, _settings.groundWallOffset);
             //bridges
-            GenerateLayer(new List<int>{6}, bridgeTile, bridgeWallTile, 0, groundWallOffset);
+            GenerateLayer(new List<int>{6}, _settings.bridgeTile, _settings.bridgeWallTile, 0, _settings.groundWallOffset);
             //exterior walls
-            GenerateLayer(new List<int>{5}, topWallTile, exteriorWallsTile, wallTopOffset, exteriorWallsOffset);
+            GenerateLayer(new List<int>{5}, _settings.topWallTile, _settings.exteriorWallsTile, _settings.wallTopOffset, _settings.exteriorWallsOffset);
         }
 
         void GenerateLayer(List<int> indices, GameObject groundTile, GameObject wallTile, float offsetFromGround, float wallOffsetFromGround)
@@ -106,13 +92,13 @@ namespace Generation.Level
                     Vector3 wallDirection = (voidTilePosition - tilePosition).normalized;
 
                     //creates a new wall tile
-                    GameObject newWall = Instantiate(wallPrefab, levelParent);
+                    GameObject newWall = Instantiate(wallPrefab, tilesParent);
                     
                     //places the wall below the ground tile at a certain offset
-                    Vector3 offsetFromGround = offsetFromLayer * Vector3.down + tileSize/2 * wallDirection;
+                    Vector3 offsetFromGround = offsetFromLayer * Vector3.down + _settings.tileSize/2 * wallDirection;
                     Vector3 wallPosition = tilePosition + offsetFromGround;
                     
-                    newWall.transform.localScale = newWall.transform.localScale * tileSize * tileSizeRatio;
+                    newWall.transform.localScale = newWall.transform.localScale * _settings.tileSize * _settings.tileSizeRatio;
                     newWall.transform.position = wallPosition;
 
                     //rotates the wall towards the void
@@ -125,20 +111,18 @@ namespace Generation.Level
         public void DestroyLevelInstance()
         {
             //destroys grid and level
-            foreach (Transform child in levelParent)
+            foreach (Transform child in tilesParent)
             {
                 DestroyImmediate(child);
             }
         }
-
         
-
         void CreateTile(GameObject tile, Vector2Int position, Vector3 rotation, Vector3 offset)
         {
             Vector3 pos = GridUtilities.TileToWorldPos(position) + offset;
             GameObject newTile = Instantiate(tile, pos, Quaternion.Euler(rotation));
-            newTile.transform.localScale = Vector3.one * tileSize * tileSizeRatio;
-            newTile.transform.parent = levelParent;
+            newTile.transform.localScale = Vector3.one * _settings.tileSize * _settings.tileSizeRatio;
+            newTile.transform.parent = tilesParent;
         }
     }
 }

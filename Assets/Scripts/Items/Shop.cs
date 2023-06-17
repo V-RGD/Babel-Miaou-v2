@@ -1,4 +1,5 @@
 using Generation.Components;
+using Generation.Level;
 using Interactions;
 using Unity.Mathematics;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Items
             MaxPotion newMaxPotion = Instantiate(maxPotion, itemSpawnPoints[1].position, quaternion.identity);
             Interactions.Item newItem = Instantiate(item, itemSpawnPoints[2].position, quaternion.identity);
 
-            Transform parent = ComponentsGeneration.instance.interactionsParent.GetChild(0);
+            Transform parent = LevelBuilder.instance.consumablesParent;
             newPotion.transform.parent = parent;
             newMaxPotion.transform.parent = parent;
             newItem.transform.parent = parent;

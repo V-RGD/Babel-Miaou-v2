@@ -827,13 +827,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 461825451}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2054958787}
-  m_RootOrder: 0
+  m_Father: {fileID: 1735013267}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &481574557 stripped
 GameObject:
@@ -847,6 +847,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6202921473313062626}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &573727609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 573727610}
+  m_Layer: 0
+  m_Name: Misc
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &573727610
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573727609}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1735013267}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &598212797
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,7 +1171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 803882330}
   m_Layer: 0
-  m_Name: BuildingBlocks
+  m_Name: Tiles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1159,7 +1190,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1735013267}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &844033887 stripped
 GameObject:
@@ -1325,32 +1356,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3ac39b3bc8b9f45bae011a74e75808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startRoomPlans:
-  - {fileID: 21300000, guid: ca0eeda982b2e7d4c9e1d079099ce757, type: 3}
-  - {fileID: 21300000, guid: 27ab650ba631c1d4ba97b5b481cc1847, type: 3}
-  fightRoomPlans:
-  - {fileID: 21300000, guid: 5b0cc3b2044ae964ba6256dbf1321124, type: 3}
-  - {fileID: 21300000, guid: da186897fcf335a4eac2ec68ed34b706, type: 3}
-  - {fileID: 21300000, guid: 0ee22063e85de8649b6f1575b62eecaa, type: 3}
-  - {fileID: 21300000, guid: ba4457a823991e04ca99d8c1d5fed422, type: 3}
-  - {fileID: 21300000, guid: aa8248c816beeaa40b2d2af6d694056d, type: 3}
-  - {fileID: 21300000, guid: ab805d8df7006634b974779480485271, type: 3}
-  shopRoomPlans:
-  - {fileID: 21300000, guid: 63032798ed832db45961faf0c96fa71c, type: 3}
-  - {fileID: 21300000, guid: 63d9ace9f22ad9e4890c7972e41e08ca, type: 3}
-  - {fileID: 21300000, guid: 79a332807a1126240b575f50cf27993f, type: 3}
-  - {fileID: 21300000, guid: faf5eab129f1bf54fa970d59e53e1729, type: 3}
-  bossRoomPlans:
-  - {fileID: 21300000, guid: 6e474751bc05d3d4e968285f6c7f9965, type: 3}
-  - {fileID: 21300000, guid: 275c7a3538441394ebb9182d15d7b24c, type: 3}
-  - {fileID: 21300000, guid: 97d9cc6fadd24ba40bb8b15500a7e38a, type: 3}
-  - {fileID: 21300000, guid: fa2dce225e4e1e3448af7ad6ab8a183c, type: 3}
-  stairsRoomPlans:
-  - {fileID: 21300000, guid: c8b8d39ea1a891c44a16169f1f7ac349, type: 3}
-  - {fileID: 21300000, guid: 16194ff3fe744f042b5953e80cc72fcd, type: 3}
-  roomDistance: {x: 8, y: 11}
-  fightRoomsAmount: {x: 5, y: 7}
-  highestConsecutiveFights: 3
+  roomPlans: {fileID: 11400000, guid: f028705abc24a2a4cbac45ea57c46a06, type: 2}
+  generationSettings: {fileID: 11400000, guid: f2d77638b86f6f14f83ec8429eb9fb30, type: 2}
 --- !u!114 &1003895633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1363,24 +1370,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0b13c1e9dcdb64d997dcef08b6b3a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileSize: 10
-  tileSizeRatio: 0.1
-  wallTopOffset: 25
-  exteriorWallsOffset: -5
-  groundWallOffset: 10
-  levelParent: {fileID: 803882330}
-  groundTile: {fileID: 2082115090561566657, guid: a31207917a230b943922150860d4adf5,
-    type: 3}
-  topWallTile: {fileID: 2082115090561566657, guid: a31207917a230b943922150860d4adf5,
-    type: 3}
-  bridgeTile: {fileID: 2082115090561566657, guid: a31207917a230b943922150860d4adf5,
-    type: 3}
-  groundWallTile: {fileID: 9177998558735512867, guid: 3077dc2bb7abc624dafff0f2300a604a,
-    type: 3}
-  exteriorWallsTile: {fileID: 1203610388910874496, guid: 2cbfb49bfc0dcc442931b2d6c8883c9e,
-    type: 3}
-  bridgeWallTile: {fileID: 9177998558735512867, guid: 3077dc2bb7abc624dafff0f2300a604a,
-    type: 3}
+  tilesParent: {fileID: 803882330}
+  roomsParent: {fileID: 1791396680}
+  doorParent: {fileID: 1760517753}
+  shopParent: {fileID: 1405304155}
+  miscParent: {fileID: 573727610}
+  consumablesParent: {fileID: 461825452}
 --- !u!114 &1003895634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1393,7 +1388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72dda63546d2f56438cc3c2c66e5751a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bridgeWidth: 1
 --- !u!114 &1003895635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1769,150 +1763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f77ede5249fdb0d4d89713126942aed1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderer: {fileID: 2892269760286180089, guid: 90f03575d68636c43acba6d28b5fb701,
-    type: 3}
-  bull: {fileID: 9066231922996600387, guid: 284abf46c1f7d5541921b06cd7df7e6c, type: 3}
-  shooter: {fileID: 1551293881952958385, guid: de3b9569e089f024c83a8dfa06b1b6b9, type: 3}
-  mk: {fileID: 4561855123607808388, guid: f7505128fa497d14694853f85c8cd2f8, type: 3}
-  enemiesToSpawnPerRoom:
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 1
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 1
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-  - enemiesAvailable:
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
-    - enemy: 0
-      amountToSpawn: {x: 0, y: 0}
-      health: 0
-      attack: 0
+  enemySpawnTable: {fileID: 11400000, guid: 0d18f468dfab3194091438cb57c22fe2, type: 2}
 --- !u!4 &1371681887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8708487223316370203, guid: 779730d72c557bb45b8efae1eb20dc74,
@@ -2326,10 +2177,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1791396680}
-  - {fileID: 2054958787}
   - {fileID: 803882330}
-  - {fileID: 1405304155}
   - {fileID: 1760517753}
+  - {fileID: 1405304155}
+  - {fileID: 573727610}
+  - {fileID: 461825452}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2412,7 +2264,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1735013267}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1765261812 stripped
 GameObject:
@@ -2504,7 +2356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1791396680}
   m_Layer: 0
-  m_Name: RoomScripts
+  m_Name: Room Scripts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2625,23 +2477,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2c89dd80c3746746acfcd6b8ec5efc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorHeightOffset: 5
-  roomsParent: {fileID: 1791396680}
-  doorParent: {fileID: 1760517753}
-  shopParent: {fileID: 1405304155}
-  interactionsParent: {fileID: 2054958787}
-  startRoomPrefab: {fileID: 3197304166401297889, guid: eb559f0356dec9d48824a0b3ab954be0,
-    type: 3}
-  fightRoomPrefab: {fileID: 7657303412816458807, guid: 110c534becb18c14e8185117d9b78536,
-    type: 3}
-  shopRoomPrefab: {fileID: 4865392869472626548, guid: 352c3aa658026ed42a630adb72debae3,
-    type: 3}
-  bossRoomPrefab: {fileID: 8708487223316370212, guid: 779730d72c557bb45b8efae1eb20dc74,
-    type: 3}
-  stairsRoomPrefab: {fileID: 8996893861347087639, guid: 7b5b5d5518a0e38479a19196ee9afe76,
-    type: 3}
-  doorPrefab: {fileID: 3880858464932068235, guid: 2961e9990c67b0e49ab06b3731074ac2,
-    type: 3}
 --- !u!4 &1956918583 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4656138864899141282, guid: 915f26012c9b67f48bbab37d8bc39261,
@@ -2745,38 +2580,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6786936337067502464}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2054958786
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2054958787}
-  m_Layer: 0
-  m_Name: Interactions
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2054958787
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2054958786}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 461825452}
-  m_Father: {fileID: 1735013267}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1551293882795563223
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using Generation.Components;
+using Generation.Level;
 using Items;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Generation
 
         public override void OnGeneration()
         {
-            Shop roomShop = Instantiate(shop, ComponentsGeneration.instance.shopParent);
+            Shop roomShop = Instantiate(shop, LevelBuilder.instance.shopParent);
             roomShop.transform.position = roomCenter;
             shop.OnGeneration();
         }

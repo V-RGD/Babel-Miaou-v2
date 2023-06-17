@@ -10,7 +10,8 @@ namespace Generation.Level
         public static GenProBuilder instance;
 
         [Header("--Values--")]
-        [SerializeField] float tileSize = 10;
+        [SerializeField]
+        public float tileSize = 10;
         [SerializeField] float tileSizeRatio = 0.8f;
 
         [SerializeField] float wallTopOffset = 20;
@@ -100,8 +101,8 @@ namespace Generation.Level
                     if (filters.Contains(tileValue)) continue;
                     
                     //calculates position and orientation compared to the ground tile
-                    Vector3 tilePosition = TileToWorldPos(tile) + Vector3.up * heightMap[tile.x, tile.y];
-                    Vector3 voidTilePosition = TileToWorldPos(analysedTile) + Vector3.up * heightMap[tile.x, tile.y];
+                    Vector3 tilePosition = GridUtilities.TileToWorldPos(tile) + Vector3.up * heightMap[tile.x, tile.y];
+                    Vector3 voidTilePosition = GridUtilities.TileToWorldPos(analysedTile) + Vector3.up * heightMap[tile.x, tile.y];
                     Vector3 wallDirection = (voidTilePosition - tilePosition).normalized;
 
                     //creates a new wall tile
@@ -121,8 +122,6 @@ namespace Generation.Level
             }
         }
 
-        
-
         public void DestroyLevelInstance()
         {
             //destroys grid and level
@@ -132,23 +131,11 @@ namespace Generation.Level
             }
         }
 
-        public Vector3 TileToWorldPos(Vector2Int tilePos)
-        {
-            float heightValue = 0;
-            if (tilePos.x >= buildingGrid.GetLength(0) || tilePos.y >= buildingGrid.GetLength(1) || tilePos.x < 0 || tilePos.y < 0)
-            {
-                heightValue = 0;
-            }
-            else
-            {
-                heightValue = heightMap[tilePos.x, tilePos.y];
-            }
-            return new Vector3(tilePos.x, heightValue, tilePos.y) * tileSize;
-        }
+        
 
         void CreateTile(GameObject tile, Vector2Int position, Vector3 rotation, Vector3 offset)
         {
-            Vector3 pos = TileToWorldPos(position) + offset;
+            Vector3 pos = GridUtilities.TileToWorldPos(position) + offset;
             GameObject newTile = Instantiate(tile, pos, Quaternion.Euler(rotation));
             newTile.transform.localScale = Vector3.one * tileSize * tileSizeRatio;
             newTile.transform.parent = levelParent;

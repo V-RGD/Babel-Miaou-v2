@@ -1,3 +1,4 @@
+using Generation.Components;
 using Interactions;
 using Unity.Mathematics;
 using UnityEngine;
@@ -27,6 +28,11 @@ namespace Items
             Potion newPotion = Instantiate(healthPotion, itemSpawnPoints[0].position, quaternion.identity);
             MaxPotion newMaxPotion = Instantiate(maxPotion, itemSpawnPoints[1].position, quaternion.identity);
             Interactions.Item newItem = Instantiate(item, itemSpawnPoints[2].position, quaternion.identity);
+
+            Transform parent = ComponentsGeneration.instance.interactionsParent.GetChild(0);
+            newPotion.transform.parent = parent;
+            newMaxPotion.transform.parent = parent;
+            newItem.transform.parent = parent;
             
             //assigns prices
             newPotion.price = basePotionPrice;
@@ -35,7 +41,6 @@ namespace Items
             
             //the object is randomized
             newItem.id = Random.Range(0, itemProfiles.Length);
-            Debug.Log("The shop has actually no way of knowing what items are held by the player, so it can and will drop useless items sometimes");
             Debug.Log("The shop has actually no way of knowing what items are held by the player, so it can and will drop useless items sometimes");
         }
 

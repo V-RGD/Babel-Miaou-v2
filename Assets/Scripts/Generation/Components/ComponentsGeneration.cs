@@ -13,13 +13,22 @@ namespace Generation.Components
         [Header("---Values---")] 
         [SerializeField] float doorHeightOffset = 1;
         [Header("---References---")] 
+        
+        [Header("---Parents---")] 
         [SerializeField] Transform roomsParent;
+        [SerializeField] Transform doorParent;
+        [SerializeField] public Transform shopParent;
+        [SerializeField] public Transform interactionsParent;
+        
+        
+        [Header("---Components---")]
         [SerializeField] StartRoom startRoomPrefab;
         [SerializeField] FightRoom fightRoomPrefab;
         [SerializeField] ShopRoom shopRoomPrefab;
         [SerializeField] BossRoom bossRoomPrefab;
         [SerializeField] StairsRoom stairsRoomPrefab;
-        
+        [SerializeField] Animator doorPrefab;
+
         void Awake()
         {
             if (instance != null)
@@ -43,37 +52,54 @@ namespace Generation.Components
                 switch (room.type)
                 {
                     case GenProPlanner.RoomType.StartingPoint:
-                        StartRoom startRoom = Instantiate(startRoomPrefab, roomsParent);
-                        startRoom.OnGeneration();
+                        StartRoom startRoom = InitiateRoom(startRoomPrefab, room);
                         break;
                     case GenProPlanner.RoomType.FightArea:
-                        FightRoom fightRoom = Instantiate(fightRoomPrefab, roomsParent);
                         fightRoomsIndex++;
-                        fightRoom.name = "FightRoom N° " + fightRoomsIndex;
-                        //generates enemies for the room
-                        EnemyGen.instance.GenerateEnemies(fightRoom);
-                        //creates and assigns doors depending on orientation
-                        fightRoom.doors = CreateDoors(room);
-                        fightRoom.OnGeneration();
+                        InitiateFightRoom(fightRoomsIndex, room);
                         break;
                     case GenProPlanner.RoomType.ShopRoom:
-                        ShopRoom shopRoom = Instantiate(shopRoomPrefab, roomsParent);
-                        shopRoom.name = "ShopRoom N° " + shopRoomsIndex;
-                        shopRoom.OnGeneration();
+                        shopRoomsIndex++;
+                        InitiateShop(shopRoomsIndex, room);
                         break;
                     case GenProPlanner.RoomType.BossRoom:
-                        BossRoom bossRoom = Instantiate(bossRoomPrefab, roomsParent);
-                        bossRoom.OnGeneration();
+                        BossRoom bossRoom = InitiateRoom(bossRoomPrefab, room);
                         break;
                     case GenProPlanner.RoomType.ExitStairs:
-                        StairsRoom exitRoom = Instantiate(stairsRoomPrefab, roomsParent);
-                        exitRoom.OnGeneration();
+                        StairsRoom exitRoom = InitiateRoom(stairsRoomPrefab, room);
                         break;
                 }
             }
         }
 
-        [SerializeField] Animator doorPrefab;
+        //creates a room and assigns useful info to the script
+        T InitiateRoom<T>(T prefab, GenProPlanner.RoomGenerationInfo roomInfo) where T : Room
+        {
+            T room = Instantiate(prefab, roomsParent);
+            room.transform.parent = roomsParent;
+            room.roomCenter = GridUtilities.TileToWorldPos(roomInfo.centerTile);
+            room.OnGeneration();
+            return room;
+        }
+
+        //creates a shop and renames it
+        void InitiateShop(int index, GenProPlanner.RoomGenerationInfo roomInfo)
+        {
+            ShopRoom shopRoom = InitiateRoom(shopRoomPrefab, roomInfo);
+            shopRoom.name = "ShopRoom " + index;
+        }
+
+        //creates a fight room, renames it, then generates enemies and door
+        void InitiateFightRoom(int index, GenProPlanner.RoomGenerationInfo roomInfo)
+        {
+            FightRoom fightRoom = InitiateRoom(fightRoomPrefab, roomInfo);
+            fightRoom.name = "FightRoom " + index;
+            //generates enemies for the room
+            EnemyGen.instance.GenerateEnemies(fightRoom);
+            //creates and assigns doors depending on orientation
+            fightRoom.doors = CreateDoors(roomInfo);
+        }
+
         Animator[] CreateDoors(GenProPlanner.RoomGenerationInfo room)
         {
             //creates and assigns doors depending on orientation
@@ -81,7 +107,8 @@ namespace Generation.Components
             for (int i = 0; i < 2; i++)
             {
                 //creates door
-                Animator door = Instantiate(doorPrefab, GenProBuilder.instance.TileToWorldPos(room.doorTiles[i] + room.instantiationTile) + Vector3.up * doorHeightOffset, Quaternion.identity);
+                Animator door = Instantiate(doorPrefab, GridUtilities.TileToWorldPos(room.doorTiles[i] + room.instantiationTile) + Vector3.up * doorHeightOffset, Quaternion.identity);
+                door.transform.parent = doorParent;
                 doors[i] = door;
             }
 

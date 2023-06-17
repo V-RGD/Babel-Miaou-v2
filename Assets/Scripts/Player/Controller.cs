@@ -51,7 +51,8 @@ namespace Player
         void Movement()
         {
             //clamps speed to match maximum allowed
-            _rb.velocity = Vector3.ClampMagnitude(_rb.velocity, maxSpeed);
+            Vector3 clampedVelocity = Vector3.ClampMagnitude(_rb.velocity, maxSpeed);
+            _rb.velocity = new Vector3(clampedVelocity.x, _rb.velocity.y, clampedVelocity.z);
 
             //if the player isn't allowed to move, do not calculate direction nor do apply velocity
             if (!canMove) return;

@@ -195,5 +195,22 @@ namespace Generation.Level
 
             return spriteExitType;
         }
+        
+        public static Vector3 TileToWorldPos(Vector2Int tilePos)
+        {
+            int[,] buildingGrid = GenProBuilder.instance.buildingGrid;
+            int[,] heightMap = GenProBuilder.instance.heightMap;
+            float tileSize = GenProBuilder.instance.tileSize;
+            float heightValue;
+            if (tilePos.x >= buildingGrid.GetLength(0) || tilePos.y >= buildingGrid.GetLength(1) || tilePos.x < 0 || tilePos.y < 0)
+            {
+                heightValue = 0;
+            }
+            else
+            {
+                heightValue = heightMap[tilePos.x, tilePos.y];
+            }
+            return new Vector3(tilePos.x, heightValue, tilePos.y) * tileSize;
+        }
     }
 }

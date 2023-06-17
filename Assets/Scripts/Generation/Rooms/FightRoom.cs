@@ -78,7 +78,7 @@ namespace Generation
             foreach (var enemy in enemies)
             {
                 Vector2Int tile = groundTilesAvailable[Random.Range(0, groundTilesAvailable.Count)];
-                Vector3 spawnPoint = GenProBuilder.instance.TileToWorldPos(tile) + Vector3.up * enemySpawnOffset;
+                Vector3 spawnPoint = GridUtilities.TileToWorldPos(tile) + Vector3.up * enemySpawnOffset;
                 StartCoroutine(enemy.Spawn());
                 yield return new WaitForSeconds(0.5f);
             }

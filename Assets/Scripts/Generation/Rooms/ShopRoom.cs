@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using Generation.Components;
 using Items;
 using UnityEngine;
 
@@ -8,11 +7,12 @@ namespace Generation
     public class ShopRoom : Room
     {
         //this room spawns a shop seller
-        [SerializeField] private Shop shop;
+        [SerializeField] Shop shop;
 
         public override void OnGeneration()
         {
-            Instantiate(shop, transform.position, Quaternion.identity);
+            Shop roomShop = Instantiate(shop, ComponentsGeneration.instance.shopParent);
+            roomShop.transform.position = roomCenter;
             shop.OnGeneration();
         }
     }

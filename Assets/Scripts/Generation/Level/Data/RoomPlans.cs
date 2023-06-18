@@ -11,5 +11,4 @@ public class RoomPlans : SerializedScriptableObject
     [TabGroup("Shops", Icon = SdfIconType.Coin, TextColor = "yellow")] public List<Sprite> shopRooms = new List<Sprite>();
     [TabGroup("Bosses", Icon = SdfIconType.EmojiAngryFill, TextColor = "red")] public List<Sprite> bossRooms = new List<Sprite>();
     [TabGroup("Stairs", Icon = SdfIconType.DoorOpenFill, TextColor = "blue")] public List<Sprite> stairsRooms = new List<Sprite>();
-
 }

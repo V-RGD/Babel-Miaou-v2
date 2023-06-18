@@ -1,3 +1,4 @@
+using System;
 using Generation.Rooms;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -27,6 +28,7 @@ namespace Generation.Level
         [Title("--- Instantiation ---", "Elements created and used in the game", TitleAlignments.Centered)]
         [Title("", "Tiles")]
         public GameObject groundTile;
+
         public GameObject topWallTile;
         public GameObject bridgeTile;
 
@@ -43,10 +45,112 @@ namespace Generation.Level
         [Title("", "Elements")] public Animator doorPrefab;
         public Animator stairs;
 
-        [Title("", "Enemies")] 
-        public Enemies.Enemy wanderer;
+        [Title("", "Enemies")] public Enemies.Enemy wanderer;
         public Enemies.Enemy bull;
         public Enemies.Enemy shooter;
         public Enemies.Enemy mk;
+        
+        // public LevelSettings levelSettings;
+        // public InstantiationSettings instantiationSettings;
+        //
+        // [Serializable]
+        // public class LevelSettings
+        // {
+        //     [TabGroup("Level", TextColor = "green")]
+        //     public Level level;
+        //     [TabGroup("Scale", TextColor = "blue")]
+        //     public Scale scale;
+        //     [TabGroup("Positioning", TextColor = "orange")]
+        //     public Positioning positioning;
+        //     [TabGroup("Offsets", TextColor = "purple")]
+        //     public Offsets offsets;
+        //     
+        //     [Serializable]
+        //     public class Level
+        //     {
+        //         public Vector2Int roomAmount = new(5, 7);
+        //         public int highestConsecutiveFights = 3;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Scale
+        //     {
+        //         public float tileSize = 10;
+        //         public float tileSizeRatio = 0.1f;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Positioning
+        //     {
+        //         public Vector2Int roomDistance = new(8, 11);
+        //         public int bridgeWidth = 1;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Offsets
+        //     {
+        //         public float wallTopOffset = 25;
+        //         public float exteriorWallsOffset = -5;
+        //         public float groundWallOffset = 10;
+        //         public float doorHeightOffset = 5;
+        //     }
+        // }
+        //
+        // [Serializable]
+        // public class InstantiationSettings
+        // {
+        //     [TabGroup("Tiles", TextColor = "green")]
+        //     public Tiles tiles;
+        //     [TabGroup("Walls", TextColor = "blue")]
+        //     public Walls walls;
+        //     [TabGroup("Rooms", TextColor = "orange")]
+        //     public Rooms rooms;
+        //     [TabGroup("Elements", TextColor = "yellow")]
+        //     public Elements elements;
+        //     [TabGroup("Enemies", TextColor = "red")]
+        //     public Enemies enemies;
+        //     
+        //     [Serializable]
+        //     public class Tiles
+        //     {
+        //         public GameObject groundTile;
+        //         public GameObject topWallTile;
+        //         public GameObject bridgeTile;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Walls
+        //     {
+        //         public GameObject groundWallTile;
+        //         public GameObject exteriorWallsTile;
+        //         public GameObject bridgeWallTile;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Rooms
+        //     {
+        //         public StartRoom startRoom;
+        //         public FightRoom fightRoom;
+        //         public ShopRoom shopRoom;
+        //         public BossRoom bossRoom;
+        //         public StairsRoom stairsRoom;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Elements
+        //     {
+        //         public Animator door;
+        //         public Animator stairs;
+        //     }
+        //
+        //     [Serializable]
+        //     public class Enemies
+        //     {
+        //         public global::Enemies.Enemy wanderer;
+        //         public global::Enemies.Enemy bull;
+        //         public global::Enemies.Enemy shooter;
+        //         public global::Enemies.Enemy mk;
+        //     }
+        // }
     }
 }

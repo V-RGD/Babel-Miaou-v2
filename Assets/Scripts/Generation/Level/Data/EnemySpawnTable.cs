@@ -9,17 +9,16 @@ namespace Generation.Level.Data
     public class EnemySpawnTable : SerializedScriptableObject
     {
         public List<RoomData> data = new List<RoomData>();
-
-        public struct RoomData
+        public class RoomData
         {
-            [HorizontalGroup(Order = 0)] public bool wanderers;
-            [HorizontalGroup(Order = 1)] public bool bulls;
-            [HorizontalGroup(Order = 2)] public bool shooters;
-            [HorizontalGroup(Order = 3)] public bool marksmen;
+            [HorizontalGroup] public bool wanderers;
+            [HorizontalGroup] public bool bulls;
+            [HorizontalGroup] public bool shooters;
+            [HorizontalGroup] public bool marksmen;
 
             [ShowIf("wanderers"), TabGroup("Wanderers", TextColor = "blue")]
             public GenerationValues wandererValues;
-
+            
             [ShowIf("bulls"), TabGroup("Bulls", TextColor = "red")]
             public GenerationValues bullValues;
 
@@ -29,13 +28,10 @@ namespace Generation.Level.Data
             [ShowIf("marksmen"), TabGroup("Marksmen", TextColor = "purple")]
             public GenerationValues marksmenValues;
         }
-
-        public List<Sprite> enemySprites;
-
         public struct GenerationValues
         {
+            [PropertySpace(SpaceAfter = 10)]
             public Vector2Int amountToSpawn;
-
             //values applied to the enemy when spawning
             public int health;
             public int attack;
@@ -48,16 +44,5 @@ namespace Generation.Level.Data
             Shooter,
             Mk
         }
-
-        [OnInspectorInit]
-        void CreateData()
-        {
-        }
-        // [DictionaryDrawerSettings(DisplayMode = DictionaryDisplayOptions.Foldout)]
-        // public Dictionary<SomeEnum, MyCustomType> EnumObjectLookup = new Dictionary<SomeEnum, MyCustomType>()
-        // {
-        //     { SomeEnum.Third, new MyCustomType() },
-        //     { SomeEnum.Fourth, new MyCustomType() },
-        // };
     }
 }

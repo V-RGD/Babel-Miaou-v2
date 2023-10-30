@@ -40,8 +40,7 @@ namespace Player
         void Update()
         {
             //updates player direction depending on input
-            Vector2 dir = _move.ReadValue<Vector2>();
-            Controller.instance.direction = new Vector3(dir.x, 0, dir.y);
+            Controller.instance.inputDir = _move.ReadValue<Vector2>();
         }
 
         void InputDash(InputAction.CallbackContext context)

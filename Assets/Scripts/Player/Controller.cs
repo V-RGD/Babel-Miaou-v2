@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Player
@@ -6,18 +7,19 @@ namespace Player
     {
         public static Controller instance;
 
-        [SerializeField] float maxSpeed;
+        [Title("Values", "", TitleAlignments.Centered)]
         [SerializeField] float walkSpeed;
-        public Vector2 inputDir;
-        public Vector3 direction;
-
-        Rigidbody _rb;
-
-        [SerializeField] float dashRange;
         [SerializeField] float dashLength;
         [SerializeField] float dashForce;
-        float _dashTimer;
+        [SerializeField] float dashCooldown = 1;
+        [SerializeField] float maxSpeed;
 
+        [Title("Debug", "", TitleAlignments.Centered)]
+        public Vector2 inputDir;
+        public Vector2 lastInputDir;
+        public Vector3 direction;
+        [ShowInInspector] float _dashTimer;
+        [ShowInInspector] float _dashCooldownTimer;
         public bool canMove;
 
         void Awake()
@@ -29,48 +31,55 @@ namespace Player
             }
 
             instance = this;
-            _rb = GetComponent<Rigidbody>();
         }
 
         void Update()
         {
             if (_dashTimer > 0) _dashTimer -= Time.deltaTime;
+            if (_dashCooldownTimer > 0) _dashCooldownTimer -= Time.deltaTime;
         }
 
         void FixedUpdate()
         {
+            if (_dashTimer > 0) return;
             Movement();
         }
 
         public void InputDash()
         {
-            if (_dashTimer > 0) return;
+            if (_dashCooldownTimer > 0) return;
             Dash();
         }
 
         void Movement()
         {
             //clamps speed to match maximum allowed
-            Vector3 clampedVelocity = Vector3.ClampMagnitude(_rb.velocity, maxSpeed);
-            _rb.velocity = new Vector3(clampedVelocity.x, _rb.velocity.y, clampedVelocity.z);
-
+            Vector3 velocity = Components.instance.rb.velocity;
+            // Vector3 clampedVelocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+            // Components.instance.rb.velocity = new Vector3(clampedVelocity.x, velocity.y, clampedVelocity.z);
+            
             //if the player isn't allowed to move, do not calculate direction nor do apply velocity
             if (!canMove) return;
 
             //converts input to world dir
-            direction = new Vector3(direction.x, 0, direction.y);
+            direction = Quaternion.AngleAxis(45, Vector3.up) * new Vector3(inputDir.x, 0, inputDir.y);
 
             //if no input, don't move
-            if (inputDir == Vector2.zero) return;
-            
+            if (inputDir == Vector2.zero)
+            {
+                Components.instance.rb.velocity = new Vector3(0, velocity.y, 0);
+                return;
+            }
+
             //moves body in the desired direction
-            _rb.AddForce(direction * walkSpeed);
+            Components.instance.rb.velocity = new Vector3(direction.x, velocity.y, direction.z) * walkSpeed;
         }
 
         void Dash()
         {
             _dashTimer = dashLength;
-            _rb.AddForce(direction * dashForce);
+            _dashCooldownTimer = dashCooldown;
+            Components.instance.rb.AddForce(direction * dashForce);
         }
     }
 }

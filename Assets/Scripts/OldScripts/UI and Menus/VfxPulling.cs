@@ -10,7 +10,7 @@ public class VfxPulling : MonoBehaviour
     [Header("CATEGORY")]
     public string name;
     //for burn marks on the floor
-    private PlayerAttacks _playerAttacks;
+    private PlayerAttacks_old _playerAttacks;
     private GameObject _player;
     private Transform _gameManager;
     
@@ -41,8 +41,8 @@ public class VfxPulling : MonoBehaviour
 
     private void Start()
     {
-        _playerAttacks = PlayerAttacks.instance;
-        _gameManager = GameManager.instance.transform;
+        _playerAttacks = PlayerAttacks_old.instance;
+        _gameManager = GameManager_old.instance.transform;
         _player = GameObject.Find("Player");
 
         foreach (var particleType in particleList)
@@ -200,7 +200,7 @@ public class VfxPulling : MonoBehaviour
     {
         //place vfx
         Particle particle = particleList[3];
-        StartCoroutine(PlaceNewVfx(particle, new Vector3(PlayerController.instance.lastWalkedDir.x, 0 ,PlayerController.instance.lastWalkedDir.y)));
+        StartCoroutine(PlaceNewVfx(particle, new Vector3(PlayerController__old.instance.lastWalkedDir.x, 0 ,PlayerController__old.instance.lastWalkedDir.y)));
     }
     
     public IEnumerator PlaceNewVfx(Particle newParticle, Vector3 position, bool isPlacedByPosition)

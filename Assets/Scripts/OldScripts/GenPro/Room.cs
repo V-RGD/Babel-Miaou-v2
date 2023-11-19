@@ -17,8 +17,8 @@ public class Room : MonoBehaviour
     //components
     UIManager _uiManager;
     DunGen _dunGen;
-    GameManager _gameManager;
-    ObjectsManager _objectsManager;
+    GameManager_old _gameManager;
+    ObjectsManager_old _objectsManager;
     RoomInfo _roomInfo;
     public Transform roomCenter;
     public Transform safeSpot;
@@ -48,8 +48,8 @@ public class Room : MonoBehaviour
         _player = GameObject.Find("Player");
         LevelManager.instance = LevelManager.instance;
         _dunGen = DunGen.instance;
-        _objectsManager = ObjectsManager.instance;
-        _gameManager = GameManager.instance;
+        _objectsManager = ObjectsManager_old.instance;
+        _gameManager = GameManager_old.instance;
         chest = LevelManager.instance.chest;
         doorPrefab = LevelManager.instance.door;
         _roomInfo = GetComponent<RoomInfo>();
@@ -180,14 +180,14 @@ public class Room : MonoBehaviour
             //spawns enemy
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.transform.Rotate(0, -45, 0);
-            enemySpawning.GetComponent<Enemy>().room = gameObject;
+            enemySpawning.GetComponent<Enemy_old>().room = gameObject;
             enemySpawning.SetActive(false);
 
             //sets variables
-            enemySpawning.GetComponent<Enemy>().health = LevelManager.instance.matrices[enemyType].enemyValues[stage].x;
-            enemySpawning.GetComponent<Enemy>().damage = LevelManager.instance.matrices[enemyType].enemyValues[stage].y;
-            enemySpawning.GetComponent<Enemy>().speed = LevelManager.instance.matrices[enemyType].enemyValues[stage].z;
-            enemySpawning.GetComponent<Enemy>().eyesLooted =
+            enemySpawning.GetComponent<Enemy_old>().health = LevelManager.instance.matrices[enemyType].enemyValues[stage].x;
+            enemySpawning.GetComponent<Enemy_old>().damage = LevelManager.instance.matrices[enemyType].enemyValues[stage].y;
+            enemySpawning.GetComponent<Enemy_old>().speed = LevelManager.instance.matrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy_old>().eyesLooted =
                 LevelManager.instance.matrices[enemyType].enemyValues[stage].w;
         }
     }
@@ -308,7 +308,7 @@ public class Room : MonoBehaviour
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.transform.parent = enemyGroup.transform;
             enemySpawning.transform.Rotate(0, -45, 0);
-            var enemyComponent = enemySpawning.GetComponent<Enemy>();
+            var enemyComponent = enemySpawning.GetComponent<Enemy_old>();
             enemyComponent.room = gameObject;
             enemySpawning.SetActive(false);
 
@@ -359,7 +359,7 @@ public class Room : MonoBehaviour
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-            var enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>();
+            var enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy_old>();
             enemy.enabled = true;
             enemy.StartCoroutine(enemy.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
@@ -370,7 +370,7 @@ public class Room : MonoBehaviour
             {
                 enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
                 enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-                var enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>();
+                var enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy_old>();
                 enemy.enabled = true;
                 enemy.StartCoroutine(enemy.EnemyApparition());
                 yield return new WaitForSeconds(0.5f);

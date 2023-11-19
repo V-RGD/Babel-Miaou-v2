@@ -80,7 +80,7 @@ public class LaserVisuals : MonoBehaviour
                 if (Physics.Raycast(transform.position, _laserDir, 4000, FinalBossIA.instance.values.playerLayerMask))
                 {
                     //deals damage
-                    GameManager.instance.DealDamageToPlayer(FinalBossIA.instance.values.m_laserDamage);
+                    GameManager_old.instance.DealDamageToPlayer(FinalBossIA.instance.values.m_laserDamage);
                     //can touch laser twice
                 }
             }

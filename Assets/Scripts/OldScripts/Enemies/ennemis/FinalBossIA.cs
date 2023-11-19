@@ -123,7 +123,7 @@ public class FinalBossIA : MonoBehaviour
     void Start()
     {
         cvCam = GameObject.Find("TestCam").GetComponent<CinemachineVirtualCamera>();
-        GameManager.instance = GameManager.instance;
+        GameManager_old.instance = GameManager_old.instance;
         healthBar = UIManager.instance.bossHealthFill;
         healthBarBG = UIManager.instance.bossHealthBG;
         healthBarAnim = healthBar.transform.parent.GetComponent<Animator>();
@@ -234,10 +234,10 @@ public class FinalBossIA : MonoBehaviour
             Vector3 spawnLocation = roomCenter.position + new Vector3(Random.Range(-_roomSize/2, _roomSize/2), 0, Random.Range(-_roomSize/2, _roomSize/2)) + Vector3.up * 0.8f;
             GameObject enemySpawning = Instantiate(LevelManager.instance.basicEnemies[0], spawnLocation, Quaternion.identity);
             enemySpawning.SetActive(true);
-            Enemy enemy = enemySpawning.GetComponent<Enemy>();
-            enemy.room = gameObject;
-            enemy.enabled = true;
-            enemy.StartCoroutine(enemy.EnemyApparition());
+            Enemy_old enemyOld = enemySpawning.GetComponent<Enemy_old>();
+            enemyOld.room = gameObject;
+            enemyOld.enabled = true;
+            enemyOld.StartCoroutine(enemyOld.EnemyApparition());
             source.PlayOneShot(GameSounds.instance.invocation);
             yield return new WaitForSeconds(values.wandererSpawnInterval);
         }
@@ -465,8 +465,8 @@ public class FinalBossIA : MonoBehaviour
                 if (hit.collider.gameObject.CompareTag("Player"))
                 {
                     //deals damage
-                    GameManager.instance.DealDamageToPlayer(values.hugeLaserDamage);
-                    PlayerController.instance.invincibleCounter = 2;
+                    GameManager_old.instance.DealDamageToPlayer(values.hugeLaserDamage);
+                    PlayerController__old.instance.invincibleCounter = 2;
                 }
                 //hLaserSparksFx.gameObject.SetActive(true);
                 //hLaserSparksFx.Play();
@@ -492,7 +492,7 @@ public class FinalBossIA : MonoBehaviour
         int damage = Mathf.CeilToInt(damageDealt);
         //applies damage
         health -= damage;
-        GameManager.instance.cmShake.ShakeCamera(4, .1f);
+        GameManager_old.instance.cmShake.ShakeCamera(4, .1f);
         healthBar.sizeDelta = new Vector2(1323.4f * health / maxHealth, 12.95f);
         healthBarBG.sizeDelta = new Vector2(1323.4f * health / maxHealth, 12.95f);
     }
@@ -508,13 +508,13 @@ public class FinalBossIA : MonoBehaviour
     private IEnumerator FinalBossDeath()
     {
         //Debug.Log("killed boss");
-        MenuManager.instance.winScreen.gameObject.SetActive(true);
-        MenuManager.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
+        MenuManager_old.instance.winScreen.gameObject.SetActive(true);
+        MenuManager_old.instance.winScreen.CrossFade(Animator.StringToHash("Win"), 0);
         yield return new WaitForSeconds(1);
-        MenuManager.instance.winScreen.gameObject.SetActive(false);
-        StartCoroutine(MenuManager.instance.OpenMenu(MenuManager.instance.leaderBoardScreen.gameObject,
-            MenuManager.instance.leaderBoardScreen, MenuManager.GameState.LeaderBoard));
-        StartCoroutine(GameScore.instance.ShowLeaderBoards());
+        MenuManager_old.instance.winScreen.gameObject.SetActive(false);
+        StartCoroutine(MenuManager_old.instance.OpenMenu(MenuManager_old.instance.leaderBoardScreen.gameObject,
+            MenuManager_old.instance.leaderBoardScreen, MenuManager_old.GameState.LeaderBoard));
+        StartCoroutine(GameScore_old.instance.ShowLeaderBoards());
         //successes check
     }
 
@@ -586,7 +586,7 @@ public class FinalBossIA : MonoBehaviour
         _currentAnimatorState = Invocation;
         yield return new WaitForSeconds(1);
         //post process spoopy
-        GameManager.instance.hurtVolume.CrossFade("Hurt", 0);
+        GameManager_old.instance.hurtVolume.CrossFade("Hurt", 0);
         
         healthBarAnim.gameObject.SetActive(true);
 
@@ -595,8 +595,8 @@ public class FinalBossIA : MonoBehaviour
         //not name
         healthBarAnim.CrossFade("Appear", 0);
         //active
-        PlayerAttacks.instance.enabled = true;
-        PlayerController.instance.enabled = true;
+        PlayerAttacks_old.instance.enabled = true;
+        PlayerController__old.instance.enabled = true;
         yield return new WaitForSeconds(2);
         StartCoroutine(ChooseNextAttack());
     }

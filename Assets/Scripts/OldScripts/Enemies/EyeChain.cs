@@ -35,7 +35,7 @@ public class EyeChain : MonoBehaviour
                 if (Physics.Raycast(transform.position, eye.transform.position - transform.position, (eye.transform.position - transform.position).magnitude, playerLayerMask))
                 {
                     //detects player collision
-                    GameManager.instance.DealDamageToPlayer(ia.values.eyesDamage);
+                    GameManager_old.instance.DealDamageToPlayer(ia.values.eyesDamage);
                 }
             }
         }

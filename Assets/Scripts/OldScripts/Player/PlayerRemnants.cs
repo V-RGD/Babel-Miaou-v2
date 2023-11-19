@@ -15,13 +15,13 @@ public class PlayerRemnants : MonoBehaviour
     public List<float> remnantTimers = new List<float>();
     private void Start()
     {
-        float duration = PlayerController.instance.dashLenght + 0.2f;
+        float duration = PlayerController__old.instance.dashLenght + 0.2f;
         _interval = duration / amount;
         _player = GameObject.Find("Player").transform;
         
         for (int i = 0; i < amount; i++)
         {
-            SpriteRenderer newRemnant = Instantiate(remnantFx, GameManager.instance.transform);
+            SpriteRenderer newRemnant = Instantiate(remnantFx, GameManager_old.instance.transform);
             _remnants.Add(newRemnant);
             remnantTimers.Add(0);
         }

@@ -34,7 +34,7 @@ public class BullIA : MonoBehaviour
     private GameObject _player;
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
-    private Enemy _enemyTrigger;
+    private Enemy_old _enemyOldTrigger;
     
     [SerializeField]private Animator _animator;
     public GameObject _sprite;
@@ -53,17 +53,17 @@ public class BullIA : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
-        _enemyTrigger = GetComponent<Enemy>();
-        enemyTypeData = _enemyTrigger.enemyTypeData;
+        _enemyOldTrigger = GetComponent<Enemy_old>();
+        enemyTypeData = _enemyOldTrigger.enemyTypeData;
 
         wallLayerMask = LayerMask.GetMask("Wall", "Pont");
-        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+        GetComponent<EnemyDamage>().damage = _enemyOldTrigger.damage;
         stunFx.gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
+        _agent.speed = _enemyOldTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         _playerDist = (_player.transform.position - transform.position).magnitude;
         playerDir = (_player.transform.position - transform.position).normalized;
 
@@ -78,7 +78,7 @@ public class BullIA : MonoBehaviour
         MaxSpeed();
         Friction();
 
-        if (_stunCounter < 0 && !_isDashing && _enemyTrigger.isActive)
+        if (_stunCounter < 0 && !_isDashing && _enemyOldTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
@@ -143,7 +143,7 @@ public class BullIA : MonoBehaviour
         yield return new WaitForSeconds(enemyTypeData.dashWarmUp);
         chargeSource.clip = GameSounds.instance.bullDash[0];
         chargeSource.Play();
-        _enemyTrigger.canTouchPlayer = true;
+        _enemyOldTrigger.canTouchPlayer = true;
         _sprite.SetActive(false);
         dashFx.gameObject.SetActive(true);
         dashFactor = 1;
@@ -158,7 +158,7 @@ public class BullIA : MonoBehaviour
         _animator.CrossFade(Stun, 0, 0);
         currentAnimatorState = Stun;
         _isDashing = false;
-        _enemyTrigger.canTouchPlayer = false;
+        _enemyOldTrigger.canTouchPlayer = false;
         //stops
         _rb.velocity = Vector3.zero;
         //recoil
@@ -193,16 +193,16 @@ public class BullIA : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && _player.GetComponent<PlayerController>().stunCounter < 0)
+        if (other.CompareTag("Player") && _player.GetComponent<PlayerController__old>().stunCounter < 0)
         {
             if (_isDashing)
             {
                 //bumps the player
-                PlayerController.instance.stunCounter = 1.5f;
+                PlayerController__old.instance.stunCounter = 1.5f;
                 _player.GetComponent<Rigidbody>().AddForce(playerDir * enemyTypeData.bumpForce);
             }
         }
-        if (other.CompareTag("PlayerAttack") && _isDashing && PlayerAttacks.instance.smashState != PlayerAttacks.SmashState.None)
+        if (other.CompareTag("PlayerAttack") && _isDashing && PlayerAttacks_old.instance.smashState != PlayerAttacks_old.SmashState.None)
         {
             _isTouchingWall = true;
         }

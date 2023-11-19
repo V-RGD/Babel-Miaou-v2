@@ -14,7 +14,7 @@ public class FlipSprite : MonoBehaviour
     
     public void Flip()
     {
-        Vector3 playerDir = PlayerController.instance.lastWalkedDir;
+        Vector3 playerDir = PlayerController__old.instance.lastWalkedDir;
         if (playerDir.x > 0 && _flipCounter < 1)
         {
             _flipCounter += Time.deltaTime * _turnSpeed;

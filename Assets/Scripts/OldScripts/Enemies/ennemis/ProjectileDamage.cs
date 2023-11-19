@@ -24,7 +24,7 @@ public class ProjectileDamage : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameManager.instance.DealDamageToPlayer(damage);
+            GameManager_old.instance.DealDamageToPlayer(damage);
             Destroy(gameObject);
         }
 

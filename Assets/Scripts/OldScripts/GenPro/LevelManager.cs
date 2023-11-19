@@ -71,7 +71,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel++;
             //don't destroy on load everything
-            StartCoroutine(MenuManager.instance.StartLevel());
+            StartCoroutine(MenuManager_old.instance.StartLevel());
             SceneManager.LoadScene("MainScene");
             DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
         }
@@ -79,7 +79,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel++;
             //don't destroy on load everything
-            CheatManager.instance.TpToBoss();
+            CheatManager_old.instance.TpToBoss();
         }
     }
 
@@ -90,7 +90,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel = 0;
             //don't destroy on load everything
-            StartCoroutine(MenuManager.instance.StartLevel());
+            StartCoroutine(MenuManager_old.instance.StartLevel());
             SceneManager.LoadScene("MainScene");
             DunGen.instance.StartCoroutine(DunGen.instance.GenPro());
         }
@@ -98,7 +98,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel++;
             //don't destroy on load everything
-            CheatManager.instance.TpToBoss();
+            CheatManager_old.instance.TpToBoss();
         }
     }
 }

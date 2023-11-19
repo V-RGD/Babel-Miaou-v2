@@ -13,7 +13,7 @@ public class LittleShit : MonoBehaviour
     public NavMeshAgent agent;
     public GameObject _player;
     private Rigidbody _rb;
-    private GameManager _gameManager;
+    private GameManager_old _gameManager;
     private LevelManager _lm;
     
     public bool isFlippingSprite;
@@ -51,11 +51,11 @@ public class LittleShit : MonoBehaviour
         yield return new WaitUntil(()=>DunGen.instance.finishedGeneration);
         animator = transform.GetChild(0).GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
-        _gameManager = GameManager.instance;
+        _gameManager = GameManager_old.instance;
         _lm = LevelManager.instance;
         transform.position = new Vector3(_player.transform.position.x, 0, _player.transform.position.z);
         isActive = true;
-        ObjectsManager.instance.eyeCollector = gameObject;
+        ObjectsManager_old.instance.eyeCollector = gameObject;
     }
 
     private void Update()
@@ -69,7 +69,7 @@ public class LittleShit : MonoBehaviour
         else
         {
             _rb.velocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
-            if (isActive && ObjectsManager.instance.eyeCollectorActive)
+            if (isActive && ObjectsManager_old.instance.eyeCollectorActive)
             {
                 agent.enabled = true;
                 Direction();
@@ -100,10 +100,10 @@ public class LittleShit : MonoBehaviour
 
     void SpawnChest()
     {
-        if (eyesInInventory > ObjectsManager.instance.gameVariables.eyeCollectorCollectCeil)
+        if (eyesInInventory > ObjectsManager_old.instance.gameVariables.eyeCollectorCollectCeil)
         {
             animator.CrossFade(Burp, 0, 0);
-            eyesInInventory -= ObjectsManager.instance.gameVariables.eyeCollectorCollectCeil;
+            eyesInInventory -= ObjectsManager_old.instance.gameVariables.eyeCollectorCollectCeil;
             _lm.chest = Instantiate(_lm.chest, transform.position + Vector3.up, quaternion.identity);
         }
     }
@@ -145,24 +145,24 @@ public class LittleShit : MonoBehaviour
             isStun = true;
             float force = 0;
             float bumpLength = 0;
-            if (PlayerAttacks.instance.comboState is PlayerAttacks.ComboState.SimpleAttack or PlayerAttacks.ComboState.ReverseAttack or PlayerAttacks.ComboState.ThirdAttack or PlayerAttacks.ComboState.SpinAttack)
+            if (PlayerAttacks_old.instance.comboState is PlayerAttacks_old.ComboState.SimpleAttack or PlayerAttacks_old.ComboState.ReverseAttack or PlayerAttacks_old.ComboState.ThirdAttack or PlayerAttacks_old.ComboState.SpinAttack)
             {
                 force = 5;
                 bumpLength = 0.3f;
             }
-            else if (PlayerAttacks.instance.smashPowerTimer > 0.3f)
+            else if (PlayerAttacks_old.instance.smashPowerTimer > 0.3f)
             {
-                if (PlayerAttacks.instance.smashState == PlayerAttacks.SmashState.Blue)
+                if (PlayerAttacks_old.instance.smashState == PlayerAttacks_old.SmashState.Blue)
                 {
                     force = 7;
                     bumpLength = 0.4f;
                 }
-                if (PlayerAttacks.instance.smashState == PlayerAttacks.SmashState.Orange)
+                if (PlayerAttacks_old.instance.smashState == PlayerAttacks_old.SmashState.Orange)
                 {
                     force = 10;
                     bumpLength = 0.5f;
                 }
-                if (PlayerAttacks.instance.smashState == PlayerAttacks.SmashState.Purple)
+                if (PlayerAttacks_old.instance.smashState == PlayerAttacks_old.SmashState.Purple)
                 {
                     force = 15;
                     bumpLength = 0.7f;

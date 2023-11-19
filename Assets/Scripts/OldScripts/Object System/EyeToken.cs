@@ -16,10 +16,10 @@ public class EyeToken : MonoBehaviour
     {
         player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody>();
-        _littleShit = ObjectsManager.instance.eyeCollector;
+        _littleShit = ObjectsManager_old.instance.eyeCollector;
         
         {
-            GameManager.instance.eyesInGame.Add(gameObject.transform);
+            GameManager_old.instance.eyesInGame.Add(gameObject.transform);
             //sort list
             //GameManager.instance.eyesInGame = GameManager.instance.eyesInGame.OrderBy( point => Vector3.Distance(player.transform.position,point.position)).ToList();
         }
@@ -43,8 +43,8 @@ public class EyeToken : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             //player collects coin
-            GameManager.instance.money++;
-            GameManager.instance.eyesInGame.Remove(transform);
+            GameManager_old.instance.money++;
+            GameManager_old.instance.eyesInGame.Remove(transform);
             PlayerSounds.instance.eyeSource.PlayOneShot(PlayerSounds.instance.eyeSource.clip);
             Destroy(gameObject);
         }
@@ -53,10 +53,10 @@ public class EyeToken : MonoBehaviour
             LittleShit.instance.animator.CrossFade(LittleShit.instance.Eat, 0, 0);
             //enemy collects it
             LittleShit.instance.eyesInInventory++;
-            GameManager.instance.eyesInGame.Remove(transform);
-            GameManager.instance.eyesInGame.Remove(transform);
+            GameManager_old.instance.eyesInGame.Remove(transform);
+            GameManager_old.instance.eyesInGame.Remove(transform);
             Destroy(gameObject);
-            ObjectsManager.instance.PlayActivationVfx(3);
+            ObjectsManager_old.instance.PlayActivationVfx(3);
         }
     }
 

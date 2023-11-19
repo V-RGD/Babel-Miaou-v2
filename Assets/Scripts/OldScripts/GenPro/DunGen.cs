@@ -264,7 +264,7 @@ public class DunGen : MonoBehaviour
         
         _navMeshSurface.BuildNavMesh();
         GameMusic.instance.ChooseMusic();
-        GameManager.instance.ChooseGlobalVolume();
+        GameManager_old.instance.ChooseGlobalVolume();
     }
     #endregion
 }

@@ -30,9 +30,9 @@ public class MarksManIA : MonoBehaviour
 
     //components
     private GameObject _player;
-    private GameManager _gameManager;
+    private GameManager_old _gameManager;
     private EnemyType enemyTypeData;
-    private Enemy _enemyTrigger;
+    private Enemy_old _enemyOldTrigger;
     [SerializeField]private LineRenderer _lineRenderer;
     public ParticleSystem laserFx;
     private AudioSource _audioSource;
@@ -46,15 +46,15 @@ public class MarksManIA : MonoBehaviour
     private void Awake()
     {
         laserFx.Stop();
-        _gameManager = GameManager.instance;
+        _gameManager = GameManager_old.instance;
         _player = GameObject.Find("Player");
-        _enemyTrigger = GetComponent<Enemy>();
+        _enemyOldTrigger = GetComponent<Enemy_old>();
         laserMaterial = _lineRenderer.material;
-        enemyTypeData = _enemyTrigger.enemyTypeData;
+        enemyTypeData = _enemyOldTrigger.enemyTypeData;
         _audioSource = GetComponent<AudioSource>();
 
         _playerLayerMask = LayerMask.GetMask("Player");
-        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+        GetComponent<EnemyDamage>().damage = _enemyOldTrigger.damage;
     }
 
     private void Start()
@@ -70,7 +70,7 @@ public class MarksManIA : MonoBehaviour
     private void FixedUpdate()
     {
         
-        if (_enemyTrigger.isActive)
+        if (_enemyOldTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
@@ -190,7 +190,7 @@ public class MarksManIA : MonoBehaviour
             {
                 //Debug.Log("hit player");
                 //deals damage
-                _gameManager.DealDamageToPlayer(_enemyTrigger.damage);
+                _gameManager.DealDamageToPlayer(_enemyOldTrigger.damage);
                 //can touch laser twice
             }
         }

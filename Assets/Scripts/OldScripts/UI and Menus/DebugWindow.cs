@@ -22,10 +22,10 @@ public class DebugWindow : MonoBehaviour
     public TMP_Text debugText;
 
     private float _deltaTime;
-    private PlayerController _pc;
-    private PlayerAttacks _playerAttacks;
-    private GameManager _gameManager;
-    private ObjectsManager _objectsManager;
+    private PlayerController__old _pc;
+    private PlayerAttacks_old _playerAttacks;
+    private GameManager_old _gameManager;
+    private ObjectsManager_old _objectsManager;
     private GameObject _player;
     private Rigidbody _rb;
     private GameObject _cam;
@@ -45,10 +45,10 @@ public class DebugWindow : MonoBehaviour
     //values
     void Start()
     {
-        _playerAttacks = PlayerAttacks.instance;
-        _pc = PlayerController.instance;
-        _gameManager = GameManager.instance;
-        _objectsManager = ObjectsManager.instance;
+        _playerAttacks = PlayerAttacks_old.instance;
+        _pc = PlayerController__old.instance;
+        _gameManager = GameManager_old.instance;
+        _objectsManager = ObjectsManager_old.instance;
         _activationKey = KeyCode.F1.ToString();
         _isActive = false;
         _uiPanel.SetActive(false);

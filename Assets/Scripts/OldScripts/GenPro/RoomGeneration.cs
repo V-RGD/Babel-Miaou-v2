@@ -37,8 +37,8 @@ public class RoomGeneration : MonoBehaviour
     private LevelManager _lm;
     private UIManager _uiManager;
     private DunGen _dunGen;
-    private GameManager _gameManager;
-    private ObjectsManager _objectsManager;
+    private GameManager_old _gameManager;
+    private ObjectsManager_old _objectsManager;
     private RoomInfo _roomInfo;
     #endregion
 
@@ -60,8 +60,8 @@ public class RoomGeneration : MonoBehaviour
         _player = GameObject.Find("Player");
         _lm = LevelManager.instance;
         _dunGen = DunGen.instance;
-        _objectsManager = ObjectsManager.instance;
-        _gameManager = GameManager.instance;
+        _objectsManager = ObjectsManager_old.instance;
+        _gameManager = GameManager_old.instance;
         enemyGroup = transform.GetChild(0).gameObject;
         _chest = _lm.chest;
         _roomInfo = GetComponent<RoomInfo>();
@@ -130,14 +130,14 @@ public class RoomGeneration : MonoBehaviour
             //spawns enemy
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.transform.Rotate(0, -45, 0);
-            enemySpawning.GetComponent<Enemy>().room = gameObject;
+            enemySpawning.GetComponent<Enemy_old>().room = gameObject;
             enemySpawning.SetActive(false);
             
             //sets variables
-            enemySpawning.GetComponent<Enemy>().health = _lm.matrices[enemyType].enemyValues[stage].x;
-            enemySpawning.GetComponent<Enemy>().damage = _lm.matrices[enemyType].enemyValues[stage].y;
-            enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
-            enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
+            enemySpawning.GetComponent<Enemy_old>().health = _lm.matrices[enemyType].enemyValues[stage].x;
+            enemySpawning.GetComponent<Enemy_old>().damage = _lm.matrices[enemyType].enemyValues[stage].y;
+            enemySpawning.GetComponent<Enemy_old>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy_old>().eyesLooted = _lm.matrices[enemyType].enemyValues[stage].w;
         }
     }
     void PropGeneration()
@@ -283,14 +283,14 @@ public class RoomGeneration : MonoBehaviour
             enemySpawning.transform.position = spawnPoint;
             enemySpawning.transform.parent = enemyGroup.transform;
             enemySpawning.transform.Rotate(0, -45, 0);
-            enemySpawning.GetComponent<Enemy>().room = gameObject;
+            enemySpawning.GetComponent<Enemy_old>().room = gameObject;
             enemySpawning.SetActive(false);
 
             //sets variables
-            enemySpawning.GetComponent<Enemy>().health = _lm.stelaMatrices[enemyType].enemyValues[stage].x;
-            enemySpawning.GetComponent<Enemy>().damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
-            enemySpawning.GetComponent<Enemy>().eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
-            enemySpawning.GetComponent<Enemy>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy_old>().health = _lm.stelaMatrices[enemyType].enemyValues[stage].x;
+            enemySpawning.GetComponent<Enemy_old>().damage = _lm.stelaMatrices[enemyType].enemyValues[stage].y;
+            enemySpawning.GetComponent<Enemy_old>().eyesLooted = _lm.stelaMatrices[enemyType].enemyValues[stage].z;
+            enemySpawning.GetComponent<Enemy_old>().speed = _lm.matrices[enemyType].enemyValues[stage].z;
         }
     }
     void ShopSpawn()
@@ -326,9 +326,9 @@ public class RoomGeneration : MonoBehaviour
         {
             enemyGroup.transform.GetChild(i).gameObject.SetActive(true);
             enemyGroup.transform.GetChild(i).gameObject.GetComponent<EnemyDamage>().enabled = true;
-            Enemy enemy = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy>();
-            enemy.enabled = true;
-            enemy.StartCoroutine(enemy.EnemyApparition());
+            Enemy_old enemyOld = enemyGroup.transform.GetChild(i).gameObject.GetComponent<Enemy_old>();
+            enemyOld.enabled = true;
+            enemyOld.StartCoroutine(enemyOld.EnemyApparition());
             yield return new WaitForSeconds(0.5f);
         }
     }

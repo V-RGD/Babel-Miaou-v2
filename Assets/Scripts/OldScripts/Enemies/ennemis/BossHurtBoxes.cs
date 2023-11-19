@@ -8,9 +8,9 @@ public class BossHurtBoxes : MonoBehaviour
     public int health = 30;
     public float respawnCooldown;
     public float respawnTimer;
-    private GameManager _gameManager;
+    private GameManager_old _gameManager;
     public GameObject visuals;
-    private void Start() => _gameManager = GameManager.instance;
+    private void Start() => _gameManager = GameManager_old.instance;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -47,15 +47,15 @@ public class BossHurtBoxes : MonoBehaviour
         health -= damage;
         _gameManager.cmShake.ShakeCamera(5, .1f);
         
-        switch (PlayerAttacks.instance.comboState)
+        switch (PlayerAttacks_old.instance.comboState)
         {
-            case PlayerAttacks.ComboState.SimpleAttack:
+            case PlayerAttacks_old.ComboState.SimpleAttack:
                 _gameManager.cmShake.ShakeCamera(2, .1f);
                 break;
-            case PlayerAttacks.ComboState.ReverseAttack:
+            case PlayerAttacks_old.ComboState.ReverseAttack:
                 _gameManager.cmShake.ShakeCamera(2, .1f);
                 break;
-            case PlayerAttacks.ComboState.SpinAttack:
+            case PlayerAttacks_old.ComboState.SpinAttack:
                 _gameManager.cmShake.ShakeCamera(2, .1f);
                 break;
         }

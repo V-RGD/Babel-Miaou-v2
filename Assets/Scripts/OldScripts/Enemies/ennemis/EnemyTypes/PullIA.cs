@@ -29,7 +29,7 @@ public class PullIA : MonoBehaviour
     private GameObject _player;
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
-    private Enemy _enemyTrigger;
+    private Enemy_old _enemyOldTrigger;
     private SpriteRenderer _spriteRenderer;
     public BoxCollider collider;
     private List<GameObject> _projeciles;
@@ -39,9 +39,9 @@ public class PullIA : MonoBehaviour
     {
         _player = GameObject.Find("Player");
         _canShootProjectile = true;
-        _enemyTrigger = GetComponent<Enemy>();
+        _enemyOldTrigger = GetComponent<Enemy_old>();
         _spriteRenderer = transform.GetChild(2).GetComponent<SpriteRenderer>();
-        enemyTypeData = _enemyTrigger.enemyTypeData;
+        enemyTypeData = _enemyOldTrigger.enemyTypeData;
 
         //creates a list of projectiles for further use
         _projeciles = new List<GameObject>();
@@ -63,7 +63,7 @@ public class PullIA : MonoBehaviour
     {
         _stunCounter -= Time.deltaTime;
         
-        if (!_isStunned && _enemyTrigger.isActive)
+        if (!_isStunned && _enemyOldTrigger.isActive)
         {
             //if is not stunned by player
             Behaviour();

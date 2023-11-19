@@ -23,14 +23,14 @@ public class AspirateurIA : MonoBehaviour
     public bool isStunned;
     
     private GameObject player;
-    private GameManager gameManager;
+    private GameManager_old gameManager;
     public GameObject eyeToken;
     public GameObject healthSlider;
     public GameObject mageProjectile;
     
     private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager_old>();
         player = GameObject.Find("Player");
         canShootProjectile = true;
         health = maxHealth;
@@ -175,7 +175,7 @@ public class AspirateurIA : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             gameManager.health -= damage;
-            player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+            player.GetComponent<PlayerController__old>().invincibleCounter = player.GetComponent<PlayerController__old>().invincibleTime;
         }
     }
 }

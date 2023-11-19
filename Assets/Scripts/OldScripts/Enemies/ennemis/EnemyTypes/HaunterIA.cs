@@ -27,7 +27,7 @@ public class HaunterIA : MonoBehaviour
     public bool isTank;
 
     //components
-    private Enemy _enemyTrigger;
+    private Enemy_old _enemyOldTrigger;
     private NavMeshAgent _agent;
     private GameObject _player;
     private GameObject _attackAnchor;
@@ -48,9 +48,9 @@ public class HaunterIA : MonoBehaviour
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
         _attackAnchor = transform.GetChild(1).gameObject;
-        _enemyTrigger = GetComponent<Enemy>();
-        _enemyTypeData = _enemyTrigger.enemyTypeData;
-        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+        _enemyOldTrigger = GetComponent<Enemy_old>();
+        _enemyTypeData = _enemyOldTrigger.enemyTypeData;
+        GetComponent<EnemyDamage>().damage = _enemyOldTrigger.damage;
         _jabDamage = _attackAnchor.transform.GetChild(0).gameObject.GetComponent<ObjectDamage>();
         _audioSource = GetComponent<AudioSource>();
     }
@@ -64,7 +64,7 @@ public class HaunterIA : MonoBehaviour
     {
         Vector3 playerPos = _player.transform.position;
         Vector3 position = transform.position;
-        _agent.speed = _enemyTrigger.speed * _speedFactor  * _enemyTypeData.enemySpeed;
+        _agent.speed = _enemyOldTrigger.speed * _speedFactor  * _enemyTypeData.enemySpeed;
         _playerDist = (playerPos - position).magnitude;
         _playerDir = (playerPos - position).normalized;
 
@@ -81,7 +81,7 @@ public class HaunterIA : MonoBehaviour
         Friction();
         StunProcess();
         
-        if (!_isStunned && _enemyTrigger.isActive)
+        if (!_isStunned && _enemyOldTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
@@ -142,7 +142,7 @@ public class HaunterIA : MonoBehaviour
             //determines attack length, damage, hitbox, force to add
             //stops movement
             //add current damage stat to weapon
-            _jabDamage.damage = _enemyTrigger.damage;
+            _jabDamage.damage = _enemyOldTrigger.damage;
             //warmup
             yield return new WaitForSeconds(_enemyTypeData.shootWarmup - 0.2f);
             Vector3 attackLocation = new Vector3(_player.transform.position.x, _attackAnchor.transform.position.y, _player.transform.position.z);
@@ -150,7 +150,7 @@ public class HaunterIA : MonoBehaviour
             //determine où l'attaque va se faire
             _attackAnchor.transform.LookAt(attackLocation);
             //actives weapon
-            _enemyTrigger.canTouchPlayer = true;
+            _enemyOldTrigger.canTouchPlayer = true;
             _audioSource.PlayOneShot(GameSounds.instance.wandererClaw[Random.Range(0, GameSounds.instance.wandererClaw.Length)]);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(true);
             clawFx.Play();
@@ -162,7 +162,7 @@ public class HaunterIA : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             yield return new WaitForSeconds(0.3f);
             _attackAnchor.transform.GetChild(0).gameObject.SetActive(false);
-            _enemyTrigger.canTouchPlayer = false;
+            _enemyOldTrigger.canTouchPlayer = false;
             //waits cooldown depending on the attack used
             yield return new WaitForSeconds(_enemyTypeData.attackCooldown - 0.4f);
             _rb.velocity = Vector3.zero;

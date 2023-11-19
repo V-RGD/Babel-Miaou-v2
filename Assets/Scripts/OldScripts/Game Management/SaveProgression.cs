@@ -32,16 +32,16 @@ public class SaveProgression : MonoBehaviour
 
     public void SetGameValues()
     {
-        health = GameManager.instance.health;
-        maxHealth = GameManager.instance.maxHealth;
-        initialMaxHealth = GameManager.instance.initialMaxHealth;
+        health = GameManager_old.instance.health;
+        maxHealth = GameManager_old.instance.maxHealth;
+        initialMaxHealth = GameManager_old.instance.initialMaxHealth;
 
-        money = GameManager.instance.money;
-        score = GameScore.instance.tempScore;
+        money = GameManager_old.instance.money;
+        score = GameScore_old.instance.tempScore;
 
-        for (int i = 0; i < ObjectsManager.instance.itemObjectsInventory.Count; i++)
+        for (int i = 0; i < ObjectsManager_old.instance.itemObjectsInventory.Count; i++)
         {
-            itemObjectsInventory[i] = ObjectsManager.instance.itemObjectsInventory[i];
+            itemObjectsInventory[i] = ObjectsManager_old.instance.itemObjectsInventory[i];
         }
     }
 }

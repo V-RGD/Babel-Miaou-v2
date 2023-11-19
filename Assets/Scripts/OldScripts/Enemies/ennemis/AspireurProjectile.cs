@@ -6,14 +6,14 @@ public class AspireurProjectile : MonoBehaviour
     public int damage;
 
     private GameObject player;
-    private GameManager gameManager;
+    private GameManager_old gameManager;
     private Rigidbody _rb;
     private LayerMask wallLayerMask;
     private LayerMask enemyLayerMask;
     public Vector3 wallCheckDir;
     private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager_old>();
         player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
         wallLayerMask = LayerMask.GetMask("Wall");
@@ -44,7 +44,7 @@ public class AspireurProjectile : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             gameManager.health -= damage;
-            player.GetComponent<PlayerController>().invincibleCounter = player.GetComponent<PlayerController>().invincibleTime;
+            player.GetComponent<PlayerController__old>().invincibleCounter = player.GetComponent<PlayerController__old>().invincibleTime;
         }
     }
 }

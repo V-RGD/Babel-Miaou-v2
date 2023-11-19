@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnemyHitFx : MonoBehaviour
 {
     //for burn marks on the floor
-    private PlayerAttacks _playerAttacks;
+    private PlayerAttacks_old _playerAttacks;
     private GameObject _player;
     [SerializeField]private GameObject hitFx;
     [SerializeField]private List<ParticleSystem> _hitFxList = new List<ParticleSystem>();
@@ -16,7 +16,7 @@ public class EnemyHitFx : MonoBehaviour
 
     private void Start()
     {
-        _playerAttacks = PlayerAttacks.instance;
+        _playerAttacks = PlayerAttacks_old.instance;
         _player = GameObject.Find("Player");
         
         for (int i = 0; i < _hitFxAmount; i++)

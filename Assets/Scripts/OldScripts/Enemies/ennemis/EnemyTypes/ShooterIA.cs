@@ -38,7 +38,7 @@ public class ShooterIA : MonoBehaviour
     public GameObject bigShooterProjo;
     private Rigidbody _rb;
     private EnemyType enemyTypeData;
-    private Enemy _enemyTrigger;
+    private Enemy_old _enemyOldTrigger;
     private AudioSource _audioSource;
 
     private Animator _animator;
@@ -63,22 +63,22 @@ public class ShooterIA : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _player = GameObject.Find("Player");
         _rb = GetComponent<Rigidbody>();
-        _enemyTrigger = GetComponent<Enemy>();
-        enemyTypeData = _enemyTrigger.enemyTypeData;
+        _enemyOldTrigger = GetComponent<Enemy_old>();
+        enemyTypeData = _enemyOldTrigger.enemyTypeData;
         _animator = GetComponent<Animator>();
         _audioSource = GetComponent<AudioSource>();
 
         wallLayerMask = LayerMask.GetMask("Wall");
-        GetComponent<EnemyDamage>().damage = _enemyTrigger.damage;
+        GetComponent<EnemyDamage>().damage = _enemyOldTrigger.damage;
     }
 
     void StunSystem()
     {
-        if (_enemyTrigger.stunCounter <= 0 && _enemyTrigger.isActive)
+        if (_enemyOldTrigger.stunCounter <= 0 && _enemyOldTrigger.isActive)
         {
             //if is not stunned by player
             //main behaviour
-            _enemyTrigger.canFlip = true;
+            _enemyOldTrigger.canFlip = true;
         }
         else
         {
@@ -100,7 +100,7 @@ public class ShooterIA : MonoBehaviour
 
     private void Update()
     {
-        _agent.speed = _enemyTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
+        _agent.speed = _enemyOldTrigger.speed * _speedFactor * enemyTypeData.enemySpeed;
         var playerPos = _player.transform.position;
         var position = transform.position;
         _playerDist = (playerPos - position).magnitude;
@@ -110,7 +110,7 @@ public class ShooterIA : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (_enemyTrigger.isActive)
+        if (_enemyOldTrigger.isActive)
         {
             Behaviour();
         }
@@ -137,7 +137,7 @@ public class ShooterIA : MonoBehaviour
     void CheckPlayerState()
     {
         //firs checks if it's stunned
-        if (_enemyTrigger.stunCounter > 0)    
+        if (_enemyOldTrigger.stunCounter > 0)    
         {
             SwitchState(ShooterStates.Stun);
             return;
@@ -182,7 +182,7 @@ public class ShooterIA : MonoBehaviour
         }
         //recule
         _speedFactor = 0;
-        _rb.AddForce(_fleeDir.normalized * (_enemyTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
+        _rb.AddForce(_fleeDir.normalized * (_enemyOldTrigger.speed * enemyTypeData.enemySpeed), ForceMode.VelocityChange);
         
         //flee dir
         RaycastHit hit;

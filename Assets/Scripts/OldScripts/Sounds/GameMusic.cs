@@ -29,7 +29,7 @@ public class GameMusic : MonoBehaviour
 
     public void ChooseMusic()
     {
-        if (MenuManager.instance.gameState == MenuManager.GameState.MainMenu)
+        if (MenuManager_old.instance.gameState == MenuManager_old.GameState.MainMenu)
         {
             source.clip = musics[0];
             source.Play();

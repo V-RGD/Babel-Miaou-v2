@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class PoisonCloud : MonoBehaviour
 {
-    private ObjectsManager objectsManager;
+    private ObjectsManager_old objectsManager;
     IEnumerator Start()
     {
-        objectsManager = ObjectsManager.instance;
+        objectsManager = ObjectsManager_old.instance;
         yield return new WaitForSeconds(objectsManager.gameVariables.poisonLenght);
         Destroy(gameObject);
     }

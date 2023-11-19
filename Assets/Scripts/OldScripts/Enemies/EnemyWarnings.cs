@@ -10,12 +10,12 @@ public class EnemyWarnings : MonoBehaviour
     private float _xCamCoord = 900;
     private float _yCamCoord = 477;
     private Transform player;
-    private Enemy enemy;
+    private Enemy_old _enemyOld;
     private void Start()
     {
-        enemy = GetComponent<Enemy>();
+        _enemyOld = GetComponent<Enemy_old>();
         _uiManager = UIManager.instance;
-        _enemySprite = enemy.sprite.GetComponent<SpriteRenderer>();
+        _enemySprite = _enemyOld.sprite.GetComponent<SpriteRenderer>();
         player = GameObject.Find("Player").transform;
         
         //creates new warning
@@ -25,7 +25,7 @@ public class EnemyWarnings : MonoBehaviour
 
     private void Update()
     {
-        if (enemy.isActive)
+        if (_enemyOld.isActive)
         {
             CheckEnemyOnScreen();
         }

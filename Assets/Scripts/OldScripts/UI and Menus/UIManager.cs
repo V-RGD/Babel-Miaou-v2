@@ -67,8 +67,8 @@ public class UIManager : MonoBehaviour
         //launches hurt anim
         hurtPanel.SetTrigger("RedOut");
         //updates low hp panel scale
-        float health = GameManager.instance.health;
-        float maxHealth = GameManager.instance.maxHealth;
+        float health = GameManager_old.instance.health;
+        float maxHealth = GameManager_old.instance.maxHealth;
         if (health / maxHealth < 0.5f)
         {
             float panelScale = 1 + (3 * (health / maxHealth));
@@ -83,11 +83,11 @@ public class UIManager : MonoBehaviour
     public void HealthBar(float health)
     {
         //sets bar max and min
-        healthBarText.text = (GameManager.instance.health * 10).ToString();
+        healthBarText.text = (GameManager_old.instance.health * 10).ToString();
         //sets health bar length depending on the health remaining
         float initialFillPos = 916;
         float initialFillSize = 1833;
-        float healthRatio = (float)health / (float)GameManager.instance.maxHealth;
+        float healthRatio = (float)health / (float)GameManager_old.instance.maxHealth;
         healthBarFill.localPosition = new Vector3(initialFillSize * (-1 + 1 * healthRatio), 0, 0);
         healthBarFill.sizeDelta = new Vector2(1 * healthRatio * initialFillSize, 145);
         healthBarFlare.position = healthBarFill.position + new Vector3(30, 0, 0);
@@ -98,7 +98,7 @@ public class UIManager : MonoBehaviour
     void Money()
     {
         //updates current money on screen
-        MoneyUI.text = GameManager.instance.money.ToString();
+        MoneyUI.text = GameManager_old.instance.money.ToString();
     }
 
     #region panel alpha
@@ -160,11 +160,11 @@ public class UIManager : MonoBehaviour
         //used to reload data from the object when added
         for (int i = 0; i < 3; i++)
         {
-            if (ObjectsManager.instance.itemObjectsInventory[i] != 999)
+            if (ObjectsManager_old.instance.itemObjectsInventory[i] != 999)
             {
-                int id = ObjectsManager.instance.itemObjectsInventory[i];
+                int id = ObjectsManager_old.instance.itemObjectsInventory[i];
                 //update : box name, icon, description, rarity color
-                Sprite icon = ObjectsManager.instance.objectSprites[id];
+                Sprite icon = ObjectsManager_old.instance.objectSprites[id];
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().enabled = true;
                 itemBoxHUD[i].transform.GetChild(2).GetComponent<Image>().sprite = icon;
             }

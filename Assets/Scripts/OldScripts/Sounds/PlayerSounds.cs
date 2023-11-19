@@ -46,8 +46,8 @@ public class PlayerSounds : MonoBehaviour
     {
         stepCooldownCounter -= Time.deltaTime;
         //if the player is moving
-        if (PlayerController.instance.movementDir != Vector2.zero && 
-            PlayerController.instance.currentState == PlayerController.PlayerStates.Run)
+        if (PlayerController__old.instance.movementDir != Vector2.zero && 
+            PlayerController__old.instance.currentState == PlayerController__old.PlayerStates.Run)
         {
             //if can play sound
             if (stepCooldownCounter <= 0)

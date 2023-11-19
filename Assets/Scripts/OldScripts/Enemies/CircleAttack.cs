@@ -9,7 +9,7 @@ public class CircleAttack : MonoBehaviour
     private float _maxDist;
     private float _minDist;
     private GameObject _player;
-    private GameManager _gameManager;
+    private GameManager_old _gameManager;
     private float _playerDist;
     public float damage;
     public float speed = 10.1f;
@@ -20,7 +20,7 @@ public class CircleAttack : MonoBehaviour
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _player = GameObject.Find("Player");
-        _gameManager = GameManager.instance;
+        _gameManager = GameManager_old.instance;
     }
 
     private void Update()
@@ -44,7 +44,7 @@ public class CircleAttack : MonoBehaviour
         transform.localScale = new Vector3(circleDist, circleDist, circleDist);
 
         //manages player hitbox check
-        if (_playerDist > _minDist && _playerDist < _maxDist && PlayerController.instance.invincibleCounter <= 0)
+        if (_playerDist > _minDist && _playerDist < _maxDist && PlayerController__old.instance.invincibleCounter <= 0)
         {
             _gameManager.DealDamageToPlayer(damage);
         }

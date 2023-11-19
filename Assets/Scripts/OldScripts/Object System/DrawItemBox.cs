@@ -34,7 +34,7 @@ public class DrawItemBox : MonoBehaviour
         //uses item as if it was collected normally
         AccessToItemMenu(items[0]);
         //disables menu
-        MenuManager.instance.drawMenu.gameObject.SetActive(false);
+        MenuManager_old.instance.drawMenu.gameObject.SetActive(false);
         //UpdateItemBox(1);
     }
     public void OnDrawBoxClick2()
@@ -42,7 +42,7 @@ public class DrawItemBox : MonoBehaviour
         //uses item as if it was collected normally
         AccessToItemMenu(items[1]);
         //disables menu
-        MenuManager.instance.drawMenu.gameObject.SetActive(false);
+        MenuManager_old.instance.drawMenu.gameObject.SetActive(false);
         //UpdateItemBox(2);
     }
 
@@ -50,14 +50,14 @@ public class DrawItemBox : MonoBehaviour
     {
         //GameObject box = GameObject.Find("GameManager").GetComponent<ObjectsManager>().uiItemBoxes[3];
         //box.SetActive(true);
-        ObjectsManager.instance.uiItemBoxes[3].SetActive(true);
-        MenuManager.instance.ObjectMenu();
+        ObjectsManager_old.instance.uiItemBoxes[3].SetActive(true);
+        MenuManager_old.instance.ObjectMenu();
         //puts it in the 6th box
         int newItem = id;
-        ObjectsManager.instance.itemObjectsInventory[3] = newItem;
+        ObjectsManager_old.instance.itemObjectsInventory[3] = newItem;
         //updates it's id
-        ObjectsManager.instance.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = ObjectsManager.instance.objectSprites[id];
-        ObjectsManager.instance.UiItemBoxesUpdate();
+        ObjectsManager_old.instance.uiItemBoxes[3].transform.GetChild(3).GetComponent<Image>().sprite = ObjectsManager_old.instance.objectSprites[id];
+        ObjectsManager_old.instance.UiItemBoxesUpdate();
         isMenuActive = true;
     }
 

@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 public class TpToBoss : MonoBehaviour
 {
     private GameObject _player;
-    private GameManager _gameManager;
+    private GameManager_old _gameManager;
     private LevelManager _levelManager;
     private DunGen _dunGen;
     void Start()
     {
-        _gameManager = GameManager.instance;
+        _gameManager = GameManager_old.instance;
         _dunGen = DunGen.instance;
         _player = GameObject.Find("Player");
         _levelManager = LevelManager.instance;
